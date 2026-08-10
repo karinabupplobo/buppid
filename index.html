@@ -189,11 +189,28 @@
   .settings-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .settings-btn.primary:hover { background: #000000; }
   #settings-users-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
-  .settings-user-row { display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
-  .settings-user-row input { flex: 1 1 0; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12.5px; }
+  .settings-user-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  .settings-user-row input { flex: 1 1 120px; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12.5px; }
   .settings-user-row select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; flex-shrink: 0; }
   .settings-user-row button { border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 5px; flex-shrink: 0; }
   .settings-user-row button:hover { background: #fcebeb; color: #a3312a; }
+  .settings-user-digest-row { display: flex; align-items: center; gap: 6px; width: 100%; flex-wrap: wrap; }
+  .settings-email-dropdown { position: relative; flex-shrink: 0; }
+  .settings-email-btn {
+    border: 1px solid var(--border) !important; background: #fff !important; color: var(--text) !important;
+    border-radius: 6px; padding: 5px 10px !important; font-size: 11.5px !important; font-weight: 600; display: flex; align-items: center; gap: 4px;
+  }
+  .settings-email-btn:hover { background: var(--land-default) !important; color: var(--text) !important; }
+  .settings-email-menu {
+    display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: #fff; border: 1px solid var(--border);
+    border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); z-index: 20; min-width: 170px; overflow: hidden;
+  }
+  .settings-email-menu.open { display: block; }
+  .settings-email-menu button {
+    display: block; width: 100%; text-align: left; border: none; background: #fff; color: var(--text) !important;
+    padding: 8px 12px !important; font-size: 12px !important; font-weight: 500 !important; cursor: pointer;
+  }
+  .settings-email-menu button:hover { background: var(--land-default); }
   #settings-msg { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
 </style>
 </head>
@@ -284,6 +301,10 @@
 
       <div id="settings-admin-section" class="hidden">
         <h3>Usuários</h3>
+        <div class="settings-field">
+          <label for="settings-webhook-url-input">URL do Apps Script (Web App) — cole aqui uma vez</label>
+          <input type="text" id="settings-webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
         <div id="settings-users-list"></div>
         <button class="settings-btn" id="settings-add-user-btn" type="button">+ Novo usuário</button>
       </div>
@@ -338,7 +359,7 @@ const TASK_STATUS_COLORS = {
   "On Hold":     { bg: "#fdf3d6", text: "#7a5b06" },
   "Cancelled":   { bg: "#efefec", text: "#6b6a63" }
 };
-const ROW_TYPE_ICONS = { goal: "🎯", milestone: "🚩", task: "✅" };
+const ROW_TYPE_ICONS = { goal: "🎯", milestone: "🚩", task: "📋" };
 const ROW_TYPE_LABELS = { goal: "Goal", milestone: "Milestone", task: "Task" };
 
 function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
@@ -389,7 +410,7 @@ try {
 tasksData = tasksData.map(t => ensureTaskDefaults(t, 0));
 
 function ensureUserDefaults(u) {
-  return { ...u, login: u.login || u.username, mustChangePassword: !!u.mustChangePassword };
+  return { ...u, login: u.login || u.username, email: u.email || "", mustChangePassword: !!u.mustChangePassword };
 }
 let usersList = [];
 try {
@@ -1008,19 +1029,151 @@ document.getElementById("task-comments-modal-body").addEventListener("change", e
   }
 });
 
-// --- Settings: users (login/password only — no permission checkboxes) ---
+// --- Email digest (reuses the SAME Apps Script Web App the big WPF
+// dashboard already has deployed — this only adds the client side that
+// calls it, no new backend needed). Matching against t.assignees uses
+// each user's login, so an assignee's typed name needs to match that. ---
+const EMAIL_DIGEST_ORDER = ["Late", "Not Started", "In Progress"];
+const DONE_LIKE_STATUSES = ["Done", "Cancelled"];
+function tomorrowISODash() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+function buildDigestForPerson(personName) {
+  const today = todayISO();
+  const grouped = { "Late": [], "Not Started": [], "In Progress": [] };
+  function walk(items, parentName) {
+    items.forEach(t => {
+      if (t.rowType === "task" && grouped[t.status] && (t.assignees || []).includes(personName) && t.startDate && t.startDate <= today) {
+        grouped[t.status].push({ id: t.id, name: t.name, status: t.status, parent: parentName, startDate: t.startDate, endDate: t.endDate });
+      }
+      walk(t.subtasks, t.name);
+    });
+  }
+  walk(tasksData, null);
+  return grouped;
+}
+function buildDueTomorrowForPerson(personName) {
+  const tomorrow = tomorrowISODash();
+  const out = [];
+  function walk(items, parentName) {
+    items.forEach(t => {
+      if (t.rowType === "task" && (t.assignees || []).includes(personName) && t.endDate === tomorrow && !DONE_LIKE_STATUSES.includes(t.status)) {
+        out.push({ id: t.id, name: t.name, status: t.status, parent: parentName, startDate: t.startDate, endDate: t.endDate });
+      }
+      walk(t.subtasks, t.name);
+    });
+  }
+  walk(tasksData, null);
+  return out;
+}
+
+const EMAIL_WEBHOOK_STORAGE_KEY = "tasks_std_email_webhook_url";
+function getEmailWebhookUrl() {
+  const boxEl = document.getElementById("settings-webhook-url-input");
+  const boxVal = boxEl ? boxEl.value.trim() : "";
+  return boxVal || localStorage.getItem(EMAIL_WEBHOOK_STORAGE_KEY) || "";
+}
+function settingsMsg(text, isError) {
+  const el = document.getElementById("settings-msg");
+  el.textContent = text;
+  el.style.color = isError ? "#a3312a" : "#0f6e56";
+}
+const webhookInput = document.getElementById("settings-webhook-url-input");
+webhookInput.value = localStorage.getItem(EMAIL_WEBHOOK_STORAGE_KEY) || "";
+webhookInput.addEventListener("change", e => {
+  localStorage.setItem(EMAIL_WEBHOOK_STORAGE_KEY, e.target.value.trim());
+});
+
+async function sendEmailNow(personName, btn, type) {
+  const url = getEmailWebhookUrl();
+  if (!url) { settingsMsg("Cole a URL do Apps Script (Web App) no campo do topo primeiro — precisa só uma vez.", true); return; }
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)) {
+    settingsMsg("Essa URL não parece uma URL de Apps Script válida — precisa começar com \"https://script.google.com/macros/s/\" e terminar em \"/exec\".", true);
+    return;
+  }
+  const person = usersList.find(u => (u.login || u.username) === personName);
+  const email = (person && person.email || "").trim();
+  if (!email) { settingsMsg(`${personName} não tem email cadastrado — preenche o campo de email dela na linha acima primeiro.`, true); return; }
+
+  let tasks;
+  if (type === "due_tomorrow") {
+    tasks = buildDueTomorrowForPerson(personName);
+    if (!tasks.length) { settingsMsg(`${personName} não tem nenhuma tarefa vencendo amanhã — nada foi enviado.`, true); return; }
+  } else {
+    const grouped = buildDigestForPerson(personName);
+    tasks = EMAIL_DIGEST_ORDER.flatMap(status => grouped[status]);
+    if (!tasks.length) { settingsMsg(`${personName} não tem tarefas pendentes hoje — nada foi enviado.`, true); return; }
+  }
+
+  const originalHTML = btn.innerHTML;
+  try {
+    btn.disabled = true;
+    btn.innerHTML = "⏳…";
+    settingsMsg(`Enviando pra ${personName}…`);
+    const payload = { personName, email, tasks, type };
+    let confirmed = false;
+    let errorMsg = "";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids a CORS preflight Apps Script can't answer
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const text = await res.text().catch(() => "");
+        confirmed = true;
+        if (/error|erro/i.test(text)) { confirmed = false; errorMsg = text.slice(0, 200); }
+      } else {
+        errorMsg = `HTTP ${res.status}`;
+      }
+    } catch (err) {
+      try {
+        await fetch(url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        errorMsg = "sent-blind";
+      } catch (err2) {
+        errorMsg = "Não consegui nem disparar a solicitação — confere se a URL está certa e se o script foi publicado como Web App (Anyone / Qualquer pessoa).";
+      }
+    }
+    if (confirmed) {
+      settingsMsg(`✅ Email enviado pra ${personName} agora.`);
+    } else if (errorMsg === "sent-blind") {
+      settingsMsg(`📨 Solicitação disparada pra ${personName} — o navegador não deixou confirmar, confere a caixa de entrada em instantes.`);
+    } else {
+      settingsMsg(`⚠️ Falha ao enviar pra ${personName}: ${errorMsg}`, true);
+    }
+  } catch (fatalErr) {
+    settingsMsg(`⚠️ Erro inesperado: ${fatalErr && fatalErr.message ? fatalErr.message : fatalErr}`, true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+  }
+}
+
+// --- Settings: users (login/password/email — no permission checkboxes) ---
 function renderSettingsUsersList() {
   const el = document.getElementById("settings-users-list");
   if (!el) return;
   el.innerHTML = usersList.map(u => `
     <div class="settings-user-row" data-username="${escAttr(u.username)}">
       <input type="text" class="settings-user-login" value="${escAttr(u.login || u.username)}" placeholder="login">
-      <input type="text" class="settings-user-password" value="${escAttr(u.password || "")}" placeholder="senha">
+      <input type="password" class="settings-user-password" value="" placeholder="nova senha (deixe em branco pra manter)" autocomplete="new-password">
       <select class="settings-user-role">
         <option value="colab" ${u.role === "colab" ? "selected" : ""}>Colab</option>
         <option value="adm" ${u.role === "adm" ? "selected" : ""}>Adm</option>
       </select>
       <button class="settings-user-delete" title="Remover usuário" type="button">🗑</button>
+      <div class="settings-user-digest-row">
+        <input type="email" class="settings-user-email" value="${escAttr(u.email || "")}" placeholder="email para avisos">
+        <div class="settings-email-dropdown">
+          <button class="settings-email-btn settings-email-toggle" type="button">📧 Email ▾</button>
+          <div class="settings-email-menu">
+            <button class="settings-digest-today-btn" type="button">Digest de hoje</button>
+            <button class="settings-digest-tomorrow-btn" type="button">Vence amanhã</button>
+          </div>
+        </div>
+      </div>
     </div>
   `).join("");
   el.querySelectorAll(".settings-user-row").forEach(row => {
@@ -1029,9 +1182,18 @@ function renderSettingsUsersList() {
       const u = usersList.find(x => x.username === username);
       if (u) { u.login = e.target.value.trim(); saveUsersList(); }
     });
+    row.querySelector(".settings-user-email").addEventListener("change", e => {
+      const u = usersList.find(x => x.username === username);
+      if (u) { u.email = e.target.value.trim(); saveUsersList(); }
+    });
     row.querySelector(".settings-user-password").addEventListener("change", e => {
       const u = usersList.find(x => x.username === username);
-      if (u) { u.password = e.target.value; u.mustChangePassword = false; saveUsersList(); }
+      if (!u) return;
+      if (!e.target.value) return; // left blank on purpose — keep the existing password
+      u.password = e.target.value;
+      u.mustChangePassword = true; // a reset password is provisional, same as a brand-new account
+      saveUsersList();
+      e.target.value = "";
     });
     row.querySelector(".settings-user-role").addEventListener("change", e => {
       const u = usersList.find(x => x.username === username);
@@ -1044,8 +1206,28 @@ function renderSettingsUsersList() {
       saveUsersList();
       renderSettingsUsersList();
     });
+    row.querySelector(".settings-email-toggle").addEventListener("click", (e) => {
+      e.stopPropagation();
+      const menu = row.querySelector(".settings-email-menu");
+      const wasOpen = menu.classList.contains("open");
+      document.querySelectorAll(".settings-email-menu.open").forEach(m => m.classList.remove("open"));
+      if (!wasOpen) menu.classList.add("open");
+    });
+    row.querySelector(".settings-digest-today-btn").addEventListener("click", (e) => {
+      row.querySelector(".settings-email-menu").classList.remove("open");
+      const u = usersList.find(x => x.username === username);
+      if (u) sendEmailNow(u.login || u.username, e.currentTarget, "digest");
+    });
+    row.querySelector(".settings-digest-tomorrow-btn").addEventListener("click", (e) => {
+      row.querySelector(".settings-email-menu").classList.remove("open");
+      const u = usersList.find(x => x.username === username);
+      if (u) sendEmailNow(u.login || u.username, e.currentTarget, "due_tomorrow");
+    });
   });
 }
+document.addEventListener("click", () => {
+  document.querySelectorAll(".settings-email-menu.open").forEach(m => m.classList.remove("open"));
+});
 document.getElementById("settings-add-user-btn").addEventListener("click", () => {
   const login = prompt("Login do novo usuário:");
   if (!login) return;

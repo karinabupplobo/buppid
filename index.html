@@ -56,7 +56,7 @@
   .tasks-subnav-btn.active { background: var(--text); border-color: var(--text); color: #fff; }
 
   /* --- Tasks table --- */
-  #tasks-table { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); overflow: hidden; }
+  #tasks-table { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
   .tasks-col-name, .tasks-col-status, .tasks-col-date, .tasks-col-assignee { position: relative; }
   .tasks-fill-handle {
     display: none;
@@ -90,7 +90,8 @@
     padding: 9px 14px;
     border-bottom: 1px solid var(--border);
   }
-  .tasks-header-row { background: var(--land-default); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+  .tasks-header-row { background: var(--land-default); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-radius: 11px 11px 0 0; }
+  #tasks-table-body .tasks-row:last-child { border-radius: 0 0 11px 11px; }
   .tasks-row:last-child { border-bottom: none; }
   .tasks-row:hover { background: #fbfaf7; }
 
@@ -1230,7 +1231,7 @@ function openEmailPreview(personName, type, btn) {
     settingsMsg("Essa URL não parece uma URL de Apps Script válida — precisa começar com \"https://script.google.com/macros/s/\" e terminar em \"/exec\".", true);
     return;
   }
-  const person = usersList.find(u => (u.login || u.username) === personName);
+  const person = usersList.find(u => (u.name || u.login || u.username) === personName);
   const email = (person && person.email || "").trim();
   if (!email) { settingsMsg(`${personName} não tem email cadastrado — preenche o campo de email dela na linha acima primeiro.`, true); return; }
 

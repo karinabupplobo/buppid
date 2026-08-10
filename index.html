@@ -177,10 +177,9 @@
   #tc-add-text-btn:hover, #tc-add-checklist-btn:hover { background: var(--land-default); }
 
   /* --- Settings (login/password only) --- */
-  #settings-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; max-width: 560px; }
-  #settings-panel h2 { font-size: 15px; margin: 0 0 16px; }
-  #settings-panel h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 22px 0 10px; }
-  #settings-panel h3:first-of-type { margin-top: 0; }
+  #settings-panel { max-width: 100%; }
+  #settings-my-password-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; max-width: 420px; }
+  #settings-my-password-card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 10px; }
   .settings-field { margin-bottom: 12px; }
   .settings-field label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
   .settings-field input, .settings-field select { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 13px; font-family: inherit; }
@@ -188,27 +187,41 @@
   .settings-btn:hover { background: var(--land-default); }
   .settings-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .settings-btn.primary:hover { background: #000000; }
-  #settings-users-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
-  .settings-user-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
-  .settings-user-row input { flex: 1 1 120px; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12.5px; }
-  .settings-user-row select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; flex-shrink: 0; }
-  .settings-user-row button { border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 5px; flex-shrink: 0; }
-  .settings-user-row button:hover { background: #fcebeb; color: #a3312a; }
-  .settings-user-digest-row { display: flex; align-items: center; gap: 6px; width: 100%; flex-wrap: wrap; }
-  .settings-email-dropdown { position: relative; flex-shrink: 0; }
-  .settings-email-btn {
-    border: 1px solid var(--border) !important; background: #fff !important; color: var(--text) !important;
-    border-radius: 6px; padding: 5px 10px !important; font-size: 11.5px !important; font-weight: 600; display: flex; align-items: center; gap: 4px;
+
+  #settings-users-section-title { font-size: 15px; font-weight: 700; margin: 0 0 12px; }
+  #settings-users-table { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); overflow: hidden; margin-bottom: 14px; }
+  .settings-header-row, .settings-user-row {
+    display: grid;
+    grid-template-columns: minmax(160px, 1.3fr) minmax(130px, 1fr) minmax(200px, 1.6fr) 190px 44px;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
   }
-  .settings-email-btn:hover { background: var(--land-default) !important; color: var(--text) !important; }
+  .settings-header-row { background: var(--land-default); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+  .settings-user-row:last-child { border-bottom: none; }
+  .settings-user-row:hover { background: #fbfaf7; }
+  .settings-user-row input {
+    border: none; background: transparent; font-size: 13px; color: var(--text); width: 100%; padding: 6px 4px; border-radius: 4px;
+  }
+  .settings-user-row input:focus { background: var(--bg); outline: 1px solid var(--border-strong); }
+  .settings-user-actions { display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
+  .settings-user-actions button { border: none; background: transparent; cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 5px; color: var(--text-muted); }
+  .settings-user-actions button:hover { background: var(--land-default); color: var(--text); }
+  .settings-user-actions .settings-user-delete:hover { background: #fcebeb; color: #a3312a; }
+
+  .settings-email-dropdown { position: relative; }
+  .settings-email-btn {
+    border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; width: 100%; justify-content: center;
+  }
+  .settings-email-btn:hover { background: var(--land-default); }
   .settings-email-menu {
     display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: #fff; border: 1px solid var(--border);
     border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); z-index: 20; min-width: 170px; overflow: hidden;
   }
   .settings-email-menu.open { display: block; }
   .settings-email-menu button {
-    display: block; width: 100%; text-align: left; border: none; background: #fff; color: var(--text) !important;
-    padding: 8px 12px !important; font-size: 12px !important; font-weight: 500 !important; cursor: pointer;
+    display: block; width: 100%; text-align: left; border: none; background: #fff; color: var(--text); padding: 8px 12px; font-size: 12px; font-weight: 500; cursor: pointer;
   }
   .settings-email-menu button:hover { background: var(--land-default); }
   #settings-msg { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
@@ -290,22 +303,31 @@
 
   <div id="settings-view" class="hidden">
     <div id="settings-panel">
-      <h2>Settings</h2>
-
-      <h3>Minha senha</h3>
-      <div class="settings-field">
-        <label for="settings-my-new-password">Nova senha</label>
-        <input type="password" id="settings-my-new-password">
+      <div id="settings-my-password-card">
+        <h3>Minha senha</h3>
+        <div class="settings-field">
+          <label for="settings-my-new-password">Nova senha</label>
+          <input type="password" id="settings-my-new-password">
+        </div>
+        <button class="settings-btn primary" id="settings-change-my-password-btn" type="button">Salvar nova senha</button>
       </div>
-      <button class="settings-btn primary" id="settings-change-my-password-btn" type="button">Salvar nova senha</button>
 
       <div id="settings-admin-section" class="hidden">
-        <h3>Usuários</h3>
-        <div class="settings-field">
+        <h2 id="settings-users-section-title">Usuários</h2>
+        <div class="settings-field" style="max-width:420px;">
           <label for="settings-webhook-url-input">URL do Apps Script (Web App) — cole aqui uma vez</label>
           <input type="text" id="settings-webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec">
         </div>
-        <div id="settings-users-list"></div>
+        <div id="settings-users-table">
+          <div class="settings-header-row">
+            <div>Nome</div>
+            <div>Username</div>
+            <div>Email Address</div>
+            <div></div>
+            <div></div>
+          </div>
+          <div id="settings-users-list"></div>
+        </div>
         <button class="settings-btn" id="settings-add-user-btn" type="button">+ Novo usuário</button>
       </div>
 
@@ -347,6 +369,7 @@ const SUPABASE_HEADERS = {
 const CLOUD_SECTIONS = ["tasks", "users"];
 
 const TASKS_STORAGE_KEY = "tasks_std_data";
+const DEFAULT_PASSWORD = "nossaempresa"; // provisional password for every new account and every password reset
 const USERS_STORAGE_KEY = "tasks_std_users";
 const REVISION_KEY = "tasks_std_revision";
 
@@ -380,7 +403,7 @@ const TASKS_SEED = [
   ]}
 ];
 const USERS_SEED = [
-  { username: "karina", login: "karina", password: "nossaempresa", role: "adm", mustChangePassword: true }
+  { username: "karina", login: "karina", name: "Karina", email: "", password: DEFAULT_PASSWORD, role: "adm", mustChangePassword: true }
 ];
 
 function ensureTaskDefaults(t, depth) {
@@ -410,7 +433,7 @@ try {
 tasksData = tasksData.map(t => ensureTaskDefaults(t, 0));
 
 function ensureUserDefaults(u) {
-  return { ...u, login: u.login || u.username, email: u.email || "", mustChangePassword: !!u.mustChangePassword };
+  return { ...u, login: u.login || u.username, name: u.name || u.login || u.username, email: u.email || "", mustChangePassword: !!u.mustChangePassword };
 }
 let usersList = [];
 try {
@@ -423,6 +446,26 @@ usersList = usersList.map(ensureUserDefaults);
 
 let currentUser = null;
 function isAdm() { return !!currentUser && currentUser.role === "adm"; }
+
+// --- Session persistence: keeps you logged in across refreshes for a
+// while, instead of every reload dumping you back to the login screen. ---
+const AUTH_SESSION_KEY = "tasks_std_auth_session";
+const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000; // 12 hours
+function saveSession(user) {
+  localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({ username: user.username, role: user.role, savedAt: Date.now() }));
+}
+function clearSession() {
+  localStorage.removeItem(AUTH_SESSION_KEY);
+}
+function tryRestoreSession() {
+  let raw;
+  try { raw = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || "null"); } catch (e) { return null; }
+  if (!raw || !raw.username) return null;
+  if (Date.now() - raw.savedAt > SESSION_MAX_AGE_MS) { clearSession(); return null; }
+  const u = usersList.find(x => x.username === raw.username);
+  if (!u) { clearSession(); return null; } // account was deleted since — don't restore a session for it
+  return { username: u.username, role: u.role };
+}
 
 let localRevision = parseInt(localStorage.getItem(REVISION_KEY) || "0", 10) || 0;
 function bumpLocalRevision() { localRevision++; localStorage.setItem(REVISION_KEY, String(localRevision)); return localRevision; }
@@ -506,9 +549,18 @@ async function loadFromCloud() {
   cloudUsersLoaded = true;
   if (typeof renderTasksTable === "function") renderTasksTable();
   if (typeof renderSettingsUsersList === "function") renderSettingsUsersList();
+  // Cloud data just landed — usersList may have changed, so re-check the
+  // session against the freshest list before it's too late to bounce a
+  // now-invalid one back to the login screen.
+  if (currentUser) {
+    const restored = tryRestoreSession();
+    if (!restored) {
+      currentUser = null;
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("login-gate-backdrop").classList.remove("hidden");
+    }
+  }
 }
-initialCloudLoadPromise = loadFromCloud();
-
 // --- Login ---
 function hideLoginGate() {
   document.getElementById("login-gate-backdrop").classList.add("hidden");
@@ -539,6 +591,7 @@ async function attemptLogin() {
     return;
   }
   currentUser = { username: match.username, role: match.role };
+  saveSession(currentUser);
   hideLoginGate();
   afterLogin();
 }
@@ -555,6 +608,7 @@ function submitPasswordChange() {
   u.mustChangePassword = false;
   saveUsersList();
   currentUser = { username: u.username, role: u.role };
+  saveSession(currentUser);
   hideLoginGate();
   afterLogin();
 }
@@ -566,6 +620,7 @@ document.getElementById("login-gate-new-password-confirm").addEventListener("key
 
 document.getElementById("logout-btn").addEventListener("click", () => {
   currentUser = null;
+  clearSession();
   document.getElementById("app").classList.add("hidden");
   document.getElementById("login-gate-backdrop").classList.remove("hidden");
   document.getElementById("login-gate-login-fields").classList.remove("hidden");
@@ -1157,27 +1212,28 @@ function renderSettingsUsersList() {
   if (!el) return;
   el.innerHTML = usersList.map(u => `
     <div class="settings-user-row" data-username="${escAttr(u.username)}">
-      <input type="text" class="settings-user-login" value="${escAttr(u.login || u.username)}" placeholder="login">
-      <input type="password" class="settings-user-password" value="" placeholder="nova senha (deixe em branco pra manter)" autocomplete="new-password">
-      <select class="settings-user-role">
-        <option value="colab" ${u.role === "colab" ? "selected" : ""}>Colab</option>
-        <option value="adm" ${u.role === "adm" ? "selected" : ""}>Adm</option>
-      </select>
-      <button class="settings-user-delete" title="Remover usuário" type="button">🗑</button>
-      <div class="settings-user-digest-row">
-        <input type="email" class="settings-user-email" value="${escAttr(u.email || "")}" placeholder="email para avisos">
-        <div class="settings-email-dropdown">
-          <button class="settings-email-btn settings-email-toggle" type="button">📧 Email ▾</button>
-          <div class="settings-email-menu">
-            <button class="settings-digest-today-btn" type="button">Digest de hoje</button>
-            <button class="settings-digest-tomorrow-btn" type="button">Vence amanhã</button>
-          </div>
+      <input type="text" class="settings-user-name" value="${escAttr(u.name || "")}" placeholder="nome (igual em Responsáveis)">
+      <input type="text" class="settings-user-login" value="${escAttr(u.login || u.username)}" placeholder="username">
+      <input type="email" class="settings-user-email" value="${escAttr(u.email || "")}" placeholder="email para avisos">
+      <div class="settings-email-dropdown">
+        <button class="settings-email-btn settings-email-toggle" type="button">📧 Email ▾</button>
+        <div class="settings-email-menu">
+          <button class="settings-digest-today-btn" type="button">Digest de hoje</button>
+          <button class="settings-digest-tomorrow-btn" type="button">Vence amanhã</button>
         </div>
+      </div>
+      <div class="settings-user-actions">
+        <button class="settings-user-reset-password" title="Redefinir senha para a padrão">🔄</button>
+        <button class="settings-user-delete" title="Remover usuário">🗑</button>
       </div>
     </div>
   `).join("");
   el.querySelectorAll(".settings-user-row").forEach(row => {
     const username = row.dataset.username;
+    row.querySelector(".settings-user-name").addEventListener("change", e => {
+      const u = usersList.find(x => x.username === username);
+      if (u) { u.name = e.target.value.trim(); saveUsersList(); }
+    });
     row.querySelector(".settings-user-login").addEventListener("change", e => {
       const u = usersList.find(x => x.username === username);
       if (u) { u.login = e.target.value.trim(); saveUsersList(); }
@@ -1186,18 +1242,14 @@ function renderSettingsUsersList() {
       const u = usersList.find(x => x.username === username);
       if (u) { u.email = e.target.value.trim(); saveUsersList(); }
     });
-    row.querySelector(".settings-user-password").addEventListener("change", e => {
+    row.querySelector(".settings-user-reset-password").addEventListener("click", () => {
       const u = usersList.find(x => x.username === username);
       if (!u) return;
-      if (!e.target.value) return; // left blank on purpose — keep the existing password
-      u.password = e.target.value;
-      u.mustChangePassword = true; // a reset password is provisional, same as a brand-new account
+      if (!confirm(`Redefinir a senha de "${u.name || u.login}" para a senha padrão? A pessoa vai precisar trocar no próximo login.`)) return;
+      u.password = DEFAULT_PASSWORD;
+      u.mustChangePassword = true;
       saveUsersList();
-      e.target.value = "";
-    });
-    row.querySelector(".settings-user-role").addEventListener("change", e => {
-      const u = usersList.find(x => x.username === username);
-      if (u) { u.role = e.target.value; saveUsersList(); }
+      settingsMsg(`Senha de "${u.name || u.login}" redefinida para a padrão.`);
     });
     row.querySelector(".settings-user-delete").addEventListener("click", () => {
       if (usersList.length <= 1) { alert("Precisa manter pelo menos um usuário."); return; }
@@ -1216,12 +1268,12 @@ function renderSettingsUsersList() {
     row.querySelector(".settings-digest-today-btn").addEventListener("click", (e) => {
       row.querySelector(".settings-email-menu").classList.remove("open");
       const u = usersList.find(x => x.username === username);
-      if (u) sendEmailNow(u.login || u.username, e.currentTarget, "digest");
+      if (u) sendEmailNow(u.name || u.login || u.username, e.currentTarget, "digest");
     });
     row.querySelector(".settings-digest-tomorrow-btn").addEventListener("click", (e) => {
       row.querySelector(".settings-email-menu").classList.remove("open");
       const u = usersList.find(x => x.username === username);
-      if (u) sendEmailNow(u.login || u.username, e.currentTarget, "due_tomorrow");
+      if (u) sendEmailNow(u.name || u.login || u.username, e.currentTarget, "due_tomorrow");
     });
   });
 }
@@ -1229,13 +1281,15 @@ document.addEventListener("click", () => {
   document.querySelectorAll(".settings-email-menu.open").forEach(m => m.classList.remove("open"));
 });
 document.getElementById("settings-add-user-btn").addEventListener("click", () => {
-  const login = prompt("Login do novo usuário:");
+  const name = prompt("Nome da pessoa (igual ao que vai usar em Responsáveis nas tasks):");
+  if (!name) return;
+  const login = prompt("Username (pra fazer login):", name.trim().toLowerCase().replace(/\s+/g, ""));
   if (!login) return;
   const username = login.trim().toLowerCase().replace(/\s+/g, "-") + "-" + Date.now().toString(36).slice(-4);
-  usersList.push({ username, login: login.trim(), password: "trocar123", role: "colab", mustChangePassword: true });
+  usersList.push({ username, login: login.trim(), name: name.trim(), email: "", password: DEFAULT_PASSWORD, role: "adm", mustChangePassword: true });
   saveUsersList();
   renderSettingsUsersList();
-  document.getElementById("settings-msg").textContent = `Usuário criado. Senha provisória: trocar123`;
+  settingsMsg(`Usuário criado. Senha provisória: "${DEFAULT_PASSWORD}" (vai pedir pra trocar no primeiro login).`);
 });
 document.getElementById("settings-change-my-password-btn").addEventListener("click", () => {
   const pw = document.getElementById("settings-my-new-password").value;
@@ -1250,6 +1304,23 @@ document.getElementById("settings-change-my-password-btn").addEventListener("cli
   msgEl.textContent = "Senha atualizada.";
   msgEl.style.color = "#0f6e56";
 });
+
+// Restore a session (if there's a valid one) now that everything it needs
+// — render functions, task/UI state — is defined, so a refresh goes
+// straight back into the app instead of flashing the login screen.
+// Only kicked off now, at the very end of the script, so that even in the
+// worst case (fetch throwing synchronously — e.g. a malformed Supabase URL)
+// every render function this can call already has everything it needs.
+initialCloudLoadPromise = loadFromCloud();
+
+(function restoreSessionOnLoad() {
+  const restored = tryRestoreSession();
+  if (restored) {
+    currentUser = restored;
+    hideLoginGate();
+    afterLogin();
+  }
+})();
 </script>
 </body>
 </html>

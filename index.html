@@ -178,8 +178,6 @@
 
   /* --- Settings (login/password only) --- */
   #settings-panel { max-width: 100%; }
-  #settings-my-password-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; max-width: 420px; }
-  #settings-my-password-card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 10px; }
   .settings-field { margin-bottom: 12px; }
   .settings-field label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
   .settings-field input, .settings-field select { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 13px; font-family: inherit; }
@@ -189,7 +187,7 @@
   .settings-btn.primary:hover { background: #000000; }
 
   #settings-users-section-title { font-size: 15px; font-weight: 700; margin: 0 0 12px; }
-  #settings-users-table { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); overflow: hidden; margin-bottom: 14px; }
+  #settings-users-table { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); margin-bottom: 14px; }
   .settings-header-row, .settings-user-row {
     display: grid;
     grid-template-columns: minmax(160px, 1.3fr) minmax(130px, 1fr) minmax(200px, 1.6fr) 190px 44px;
@@ -198,7 +196,8 @@
     padding: 9px 14px;
     border-bottom: 1px solid var(--border);
   }
-  .settings-header-row { background: var(--land-default); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+  .settings-header-row { background: var(--land-default); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; border-radius: 11px 11px 0 0; }
+  #settings-users-table .settings-user-row:last-child { border-radius: 0 0 11px 11px; }
   .settings-user-row:last-child { border-bottom: none; }
   .settings-user-row:hover { background: #fbfaf7; }
   .settings-user-row input {
@@ -303,21 +302,8 @@
 
   <div id="settings-view" class="hidden">
     <div id="settings-panel">
-      <div id="settings-my-password-card">
-        <h3>Minha senha</h3>
-        <div class="settings-field">
-          <label for="settings-my-new-password">Nova senha</label>
-          <input type="password" id="settings-my-new-password">
-        </div>
-        <button class="settings-btn primary" id="settings-change-my-password-btn" type="button">Salvar nova senha</button>
-      </div>
-
       <div id="settings-admin-section" class="hidden">
         <h2 id="settings-users-section-title">Usuários</h2>
-        <div class="settings-field" style="max-width:420px;">
-          <label for="settings-webhook-url-input">URL do Apps Script (Web App) — cole aqui uma vez</label>
-          <input type="text" id="settings-webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec">
-        </div>
         <div id="settings-users-table">
           <div class="settings-header-row">
             <div>Nome</div>
@@ -1124,26 +1110,21 @@ function buildDueTomorrowForPerson(personName) {
   return out;
 }
 
-const EMAIL_WEBHOOK_STORAGE_KEY = "tasks_std_email_webhook_url";
+// Cole a URL do seu Apps Script (Web App), publicada na conta Google
+// separada, entre as aspas abaixo — termina em "/exec".
+const EMAIL_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwkbPwWeQnynywd1YlWg-1abZ-un4czEaBbVAc-tXh8eMxMzF6JoIsDpZj2AYwCG1lk/exec";
 function getEmailWebhookUrl() {
-  const boxEl = document.getElementById("settings-webhook-url-input");
-  const boxVal = boxEl ? boxEl.value.trim() : "";
-  return boxVal || localStorage.getItem(EMAIL_WEBHOOK_STORAGE_KEY) || "";
+  return EMAIL_WEBHOOK_URL;
 }
 function settingsMsg(text, isError) {
   const el = document.getElementById("settings-msg");
   el.textContent = text;
   el.style.color = isError ? "#a3312a" : "#0f6e56";
 }
-const webhookInput = document.getElementById("settings-webhook-url-input");
-webhookInput.value = localStorage.getItem(EMAIL_WEBHOOK_STORAGE_KEY) || "";
-webhookInput.addEventListener("change", e => {
-  localStorage.setItem(EMAIL_WEBHOOK_STORAGE_KEY, e.target.value.trim());
-});
 
 async function sendEmailNow(personName, btn, type) {
   const url = getEmailWebhookUrl();
-  if (!url) { settingsMsg("Cole a URL do Apps Script (Web App) no campo do topo primeiro — precisa só uma vez.", true); return; }
+  if (!url || url === "PASTE_YOUR_APPS_SCRIPT_URL_HERE") { settingsMsg("A URL do Apps Script ainda não foi configurada no código — pede pra alguém preencher a constante EMAIL_WEBHOOK_URL.", true); return; }
   if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)) {
     settingsMsg("Essa URL não parece uma URL de Apps Script válida — precisa começar com \"https://script.google.com/macros/s/\" e terminar em \"/exec\".", true);
     return;
@@ -1290,19 +1271,6 @@ document.getElementById("settings-add-user-btn").addEventListener("click", () =>
   saveUsersList();
   renderSettingsUsersList();
   settingsMsg(`Usuário criado. Senha provisória: "${DEFAULT_PASSWORD}" (vai pedir pra trocar no primeiro login).`);
-});
-document.getElementById("settings-change-my-password-btn").addEventListener("click", () => {
-  const pw = document.getElementById("settings-my-new-password").value;
-  const msgEl = document.getElementById("settings-msg");
-  if (!pw || pw.length < 4) { msgEl.textContent = "A senha precisa ter pelo menos 4 caracteres."; msgEl.style.color = "#a3312a"; return; }
-  const u = usersList.find(x => x.username === currentUser.username);
-  if (!u) return;
-  u.password = pw;
-  u.mustChangePassword = false;
-  saveUsersList();
-  document.getElementById("settings-my-new-password").value = "";
-  msgEl.textContent = "Senha atualizada.";
-  msgEl.style.color = "#0f6e56";
 });
 
 // Restore a session (if there's a valid one) now that everything it needs

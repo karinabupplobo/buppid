@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1912-sem-projetos — 11/08/2026
+- O que mudou: REVERSÃO. Desfeitos os dois commits da camada de projetos
+  (abas, filtro, sincronização e o "Mover para…"). Feito com git revert, ou
+  seja, o código dos projetos continua no histórico e nas tags — dá para
+  trazer de volta a qualquer momento com:
+  git cherry-pick 6a6d65b d66bf3b
+- Arquivos: index.html, NEXT_STEPS.md
+- Motivo: os projetos foram um experimento e não agradaram.
+- Reverter para o estado ANTERIOR a esta mudança (traz os projetos de volta):
+  git checkout v-20260811-1902-mover-projetos
+
 ## v-20260811-1902-mover-projetos — 11/08/2026
 - O que mudou: com itens selecionados, a barra de seleção agora traz um
   "Mover para…" com a lista de projetos e "Sem projeto". Mover promove o

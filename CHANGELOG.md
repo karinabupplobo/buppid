@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1812-cartoes-compactos — 11/08/2026
+- O que mudou: no celular os campos do cartão passam a fluir lado a lado
+  (flex-wrap, base de 150px cada) em vez de um por linha. Controles e
+  espaçamento menores. O tamanho da letra dos campos continua em 16px de
+  propósito — abaixo disso o iPhone dá zoom sozinho ao focar.
+- Arquivos: index.html
+- Motivo: cada cartão estava com quase 400px de altura e só cabia um na
+  tela. Não era o layout que tinha sido combinado.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1800-settings-responsivo
+
 ## v-20260811-1800-settings-responsivo — 11/08/2026
 - O que mudou: a tabela de usuários também vira cartões empilhados no
   celular, com rótulo em cima de cada campo. Cada input foi envolvido num

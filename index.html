@@ -309,26 +309,29 @@
     #login-gate-box { width: auto; max-width: 92vw; }
 
     .tasks-header-row { display: none; }
-    .tasks-row { display: block; padding: 10px 12px; }
-    .tasks-col-name { padding-left: calc(var(--depth, 0) * 10px); flex-wrap: wrap; overflow: visible; }
+    /* Os campos fluem lado a lado e quebram sozinhos conforme a largura:
+       2 por fileira num celular, 3 ou 4 numa janela estreita de desktop. */
+    .tasks-row { display: flex; flex-wrap: wrap; gap: 8px 10px; padding: 10px 12px; }
+    .tasks-col-name { flex: 1 1 100%; padding-left: calc(var(--depth, 0) * 10px); flex-wrap: wrap; overflow: visible; }
     .tasks-name-input { font-size: 16px; }
     .tasks-name-multiline { width: 100%; }
     /* Arrastar e o autofill dependem do mouse; no toque não respondem. */
     .tasks-drag-handle, .tasks-fill-handle { display: none !important; }
 
-    .tasks-row > div[data-label] { margin-top: 9px; }
+    .tasks-row > div[data-label] { flex: 1 1 150px; min-width: 140px; }
     .tasks-row > div[data-label]::before {
       content: attr(data-label);
       display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
-      opacity: 0.6; margin-bottom: 3px;
+      opacity: 0.6; margin-bottom: 2px;
     }
-    .tasks-rowtype-select, .tasks-status-select, .tasks-assignee-toggle { font-size: 16px; padding: 9px 10px; }
-    .tasks-date-input { font-size: 16px; border: 1px solid var(--border); background: #fff; padding: 9px 10px; }
+    /* 16px é proposital: abaixo disso o iPhone dá zoom ao focar o campo. */
+    .tasks-rowtype-select, .tasks-status-select, .tasks-assignee-toggle { font-size: 16px; padding: 7px 9px; }
+    .tasks-date-input { font-size: 16px; border: 1px solid var(--border); background: #fff; padding: 6px 8px; }
     .tasks-assignee-toggle { border: 1px solid var(--border); background: #fff; }
     .tasks-assignee-menu { min-width: 100%; }
 
-    .tasks-row-actions { margin-top: 12px; justify-content: flex-start; gap: 8px; }
-    .tasks-row-actions button { font-size: 15px; padding: 7px 12px; border: 1px solid var(--border); background: #fff; }
+    .tasks-row-actions { flex: 1 1 100%; margin-top: 2px; justify-content: flex-start; gap: 8px; }
+    .tasks-row-actions button { font-size: 14px; padding: 6px 11px; border: 1px solid var(--border); background: #fff; }
     .tasks-move-btn { display: inline-flex; align-items: center; }
     #tasks-footer { flex-direction: column; align-items: stretch; gap: 10px; }
     #tasks-add-btn { padding: 11px 14px; font-size: 14px; }

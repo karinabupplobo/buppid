@@ -36,5 +36,7 @@
       celular, precisa de uma versão por touch events.
 - [ ] A Inter vem do Google Fonts: sem internet, a página cai no fallback
       do sistema. Se isso incomodar, dá pra embutir a fonte no arquivo.
-- [ ] A classe `tasks-name-top` continua sendo aplicada no render mas não
-      tem mais nenhuma regra CSS. Remover se não for usar pra outra coisa.
+- [ ] As colunas Início, Fim e Responsáveis ainda podem ceder espaço para
+      o Nome se ele continuar apertado.
+- [ ] O estado de "nome expandido" se perde ao trocar de aba ou recarregar.
+      Se incomodar, dá pra guardar no localStorage.

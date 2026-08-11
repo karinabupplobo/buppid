@@ -2,6 +2,35 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1740-expandir-nome — 11/08/2026
+- O que mudou: quando o nome não cabe na coluna, aparece um botão de
+  expandir ao lado. Clicando, o campo vira multi-linha e cresce até mostrar
+  o texto inteiro; clicando de novo, volta a uma linha. O botão só aparece
+  nas linhas em que o texto está mesmo cortado.
+- Arquivos: index.html
+- Motivo: nomes longos ficavam cortados sem nenhuma forma de ler o resto.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1734-colunas-nome
+
+## v-20260811-1734-colunas-nome — 11/08/2026
+- O que mudou: coluna Tipo de 150px para 100px e coluna Fim de 200px para
+  130px (mesma largura da coluna Início). Os 120px sobrando foram para a
+  coluna Nome, que é a única elástica da grade.
+- Arquivos: index.html
+- Motivo: o nome cortava enquanto Tipo e Fim tinham espaço sobrando.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1732-cor-por-status
+
+## v-20260811-1732-cor-por-status — 11/08/2026
+- O que mudou: as linhas agora mostram a cor do status. Task recebe a cor
+  de fundo cheia; goal e milestone recebem só uma barra lateral colorida e
+  o nome na cor do status. Cada status ganhou uma cor de barra própria no
+  TASK_STATUS_COLORS.
+- Arquivos: index.html
+- Motivo: bater o olho e ver o andamento sem precisar ler a coluna Status.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1719-fonte-inter
+
 ## v-20260811-1719-fonte-inter — 11/08/2026
 - O que mudou: fonte do app trocada da stack do sistema para Inter,
   carregada do Google Fonts, com a stack antiga como fallback. Campos de

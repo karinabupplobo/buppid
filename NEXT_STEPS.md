@@ -20,6 +20,9 @@
 
 ## Backlog
 
+- [ ] Depois que todo mundo tiver aberto a versão nova pelo menos uma vez,
+      a migração de responsáveis pode ser removida do código.
+
 - [ ] Parar de guardar senha em texto puro (hash no cliente já ajudaria,
       migrar para Supabase Auth seria o certo).
 - [ ] Tirar `DEFAULT_PASSWORD` de dentro do código (index.html:415).

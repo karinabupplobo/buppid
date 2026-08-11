@@ -2,6 +2,28 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1842-responsavel-por-id — 11/08/2026
+- O que mudou: os responsáveis passaram a ser gravados pelo username (que
+  nunca muda) em vez do nome. O nome é resolvido só na hora de exibir, em
+  todos os lugares: linha, resumo do celular, view Atrasadas e envio de
+  email. Migração única converte os dados antigos; valor que não bate com
+  nenhum usuário fica intacto e continua aparecendo como está.
+- Arquivos: index.html
+- Motivo: renomear ou apagar um usuário em Settings deixava as tasks dele
+  com um nome órfão, que aparecia na linha mas não existia no menu — o
+  mesmo problema do "Você", só que criado por uso normal.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1834-limpar-voce
+
+## v-20260811-1834-limpar-voce — 11/08/2026
+- O que mudou: removido o responsável "Você" da task de exemplo no código e
+  dos dados já gravados. A limpeza não roda se existir usuário com esse nome.
+- Arquivos: index.html
+- Motivo: "Você" era texto solto, não um usuário. Não aparecia no menu de
+  responsáveis, então não dava para tirar pela interface.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1822-celular-compacto
+
 ## v-20260811-1822-celular-compacto — 11/08/2026
 - O que mudou: no celular o cartão mostra só o nome e uma linha de resumo
   com "Vence dd/mm · Responsável"; a cor do status continua indicando o

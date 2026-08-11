@@ -196,6 +196,7 @@
   #tasks-add-btn:hover { background: var(--land-default); }
   #tasks-bulk-bar { display: none; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-muted); }
   #tasks-bulk-bar.visible { display: flex; }
+  #tasks-bulk-project { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 7px; padding: 6px 8px; font-size: 12px; cursor: pointer; }
   #tasks-bulk-delete { border: 1px solid #a3312a; background: #fff; color: #a3312a; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
   #tasks-bulk-delete:hover { background: #fcebeb; }
 
@@ -460,6 +461,7 @@
       <button id="tasks-add-btn" type="button">+ Nova task</button>
       <div id="tasks-bulk-bar">
         <span id="tasks-bulk-count"></span>
+        <select id="tasks-bulk-project"></select>
         <button id="tasks-bulk-delete" type="button">Excluir selecionadas</button>
       </div>
     </div>
@@ -1413,7 +1415,31 @@ function updateTasksBulkBar() {
   const count = tasksSelected.size;
   bar.classList.toggle("visible", count > 0);
   document.getElementById("tasks-bulk-count").textContent = `${count} selecionada${count === 1 ? "" : "s"}`;
+  const sel = document.getElementById("tasks-bulk-project");
+  sel.innerHTML = `<option value="">Mover para…</option><option value="__none__">Sem projeto</option>`
+    + projectsList.map(p => `<option value="${escAttr(p.id)}">${esc(p.name)}</option>`).join("");
+  sel.value = "";
 }
+// Mover para um projeto sempre promove o item a topo — projeto é a camada
+// acima do goal, então uma subtask movida deixa de estar embaixo do pai.
+document.getElementById("tasks-bulk-project").addEventListener("change", e => {
+  const escolha = e.target.value;
+  if (!escolha || !tasksSelected.size) { e.target.value = ""; return; }
+  const destino = escolha === "__none__" ? null : escolha;
+  const nomeDestino = destino ? (projectsList.find(p => p.id === destino) || {}).name : "sem projeto";
+  if (!confirm(`Mover ${tasksSelected.size} item(ns) para "${nomeDestino}"? Item que hoje é subtask vira item de topo do projeto.`)) { e.target.value = ""; return; }
+  tasksSelected.forEach(id => {
+    const found = findTaskContainer(tasksData, id);
+    if (!found) return;
+    const [item] = found.list.splice(found.index, 1);
+    item.projectId = destino;
+    tasksData.push(item);
+  });
+  tasksSelected.clear();
+  saveTasksData();
+  renderTasksTable();
+  updateTasksBulkBar();
+});
 document.getElementById("tasks-bulk-delete").addEventListener("click", () => {
   if (!tasksSelected.size) return;
   if (!confirm(`Excluir ${tasksSelected.size} item(ns) selecionado(s)?`)) return;

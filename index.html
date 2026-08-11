@@ -82,6 +82,20 @@
   .tasks-fill-target { box-shadow: inset 0 0 0 2px var(--accent); background: rgba(90,53,194,0.08); }
   body.tasks-fill-active { user-select: none; }
 
+  /* --- Arrastar linhas para reordenar --- */
+  .tasks-drag-handle {
+    flex-shrink: 0; display: inline-flex; align-items: center; color: var(--border-strong);
+    cursor: grab; padding: 2px 0; opacity: 0; transition: opacity 0.12s;
+  }
+  .tasks-row:hover .tasks-drag-handle { opacity: 1; }
+  .tasks-drag-handle:hover { color: var(--text-muted); }
+  .tasks-drag-handle:active { cursor: grabbing; }
+  .tasks-drag-handle svg { width: 10px; height: 16px; display: block; }
+  .tasks-row.tasks-dragging { opacity: 0.4; }
+  .tasks-row.drop-before { box-shadow: inset 0 2px 0 0 var(--accent); }
+  .tasks-row.drop-after { box-shadow: inset 0 -2px 0 0 var(--accent); }
+  .tasks-row.drop-inside { background: #eef2fb; box-shadow: inset 0 0 0 2px var(--accent); }
+
   .tasks-header-row, .tasks-row {
     display: grid;
     grid-template-columns: minmax(240px, 2.4fr) 150px 130px 130px 200px 140px 90px;
@@ -762,6 +776,7 @@ function renderTaskRow(t, depth) {
   rows.push(`
     <div class="tasks-row" data-id="${t.id}">
       <div class="tasks-col-name" style="padding-left:${depth * 22}px">
+        <span class="tasks-drag-handle" data-id="${t.id}" title="Arraste para mover"><svg viewBox="0 0 10 16" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="7" cy="3" r="1.3"/><circle cx="3" cy="8" r="1.3"/><circle cx="7" cy="8" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="7" cy="13" r="1.3"/></svg></span>
         <input type="checkbox" class="tasks-select-checkbox" data-id="${t.id}" ${tasksSelected.has(t.id) ? "checked" : ""}>
         <button class="tasks-toggle ${hasChildren ? "" : "empty"}" data-id="${t.id}" type="button">${expanded ? "▼" : "▶"}</button>
         <span class="tasks-row-icon" title="${ROW_TYPE_LABELS[t.rowType]}">${icon}</span>
@@ -899,6 +914,7 @@ function renderTasksTable() {
     btn.addEventListener("click", (e) => { e.stopPropagation(); openTaskCommentsModal(btn.dataset.id); });
   });
   wireFillHandles(body);
+  wireDragAndDrop(body);
 }
 
 // --- Fill handle: click a cell (name/status/dates/assignees) to select it,
@@ -969,6 +985,101 @@ document.addEventListener("mouseup", (e) => {
   saveTasksData();
   renderTasksTable();
 });
+
+// --- Arrastar e soltar: reordena as linhas movendo o item (com todas as
+// subtasks dele junto). Soltar no topo/rodapé de uma linha põe o item como
+// irmão dela; soltar no meio põe como filho. Só a alça inicia o arraste,
+// pra não atrapalhar quem está editando os campos da linha. ---
+let tasksDrag = null;       // { id } enquanto uma linha está sendo arrastada
+let tasksDropTarget = null; // { id, position } última posição válida sob o cursor
+
+function findTaskContainer(list, id) {
+  const idx = list.findIndex(t => t.id === id);
+  if (idx !== -1) return { list, index: idx };
+  for (const t of list) {
+    const found = findTaskContainer(t.subtasks, id);
+    if (found) return found;
+  }
+  return null;
+}
+// Impede soltar um item dentro dele mesmo ou de um descendente — isso
+// arrancaria o galho da árvore e perderia as tasks.
+function isSelfOrDescendant(ancestorId, id) {
+  if (ancestorId === id) return true;
+  const ancestor = findTaskById(tasksData, ancestorId);
+  if (!ancestor) return false;
+  let found = false;
+  walkAllTasks(ancestor.subtasks, t => { if (t.id === id) found = true; });
+  return found;
+}
+function moveTask(dragId, targetId, position) {
+  if (!dragId || !targetId || isSelfOrDescendant(dragId, targetId)) return false;
+  const src = findTaskContainer(tasksData, dragId);
+  if (!src) return false;
+  const [moved] = src.list.splice(src.index, 1);
+  if (position === "inside") {
+    const target = findTaskById(tasksData, targetId);
+    if (!target) { src.list.splice(src.index, 0, moved); return false; }
+    target.subtasks.push(moved);
+    tasksExpanded.add(targetId);
+  } else {
+    const dst = findTaskContainer(tasksData, targetId);
+    if (!dst) { src.list.splice(src.index, 0, moved); return false; }
+    dst.list.splice(dst.index + (position === "after" ? 1 : 0), 0, moved);
+  }
+  return true;
+}
+function clearDropMarks() {
+  document.querySelectorAll(".drop-before, .drop-after, .drop-inside")
+    .forEach(el => el.classList.remove("drop-before", "drop-after", "drop-inside"));
+}
+function wireDragAndDrop(body) {
+  body.querySelectorAll(".tasks-drag-handle").forEach(handle => {
+    const row = handle.closest(".tasks-row");
+    if (!row) return;
+    handle.addEventListener("mousedown", () => { row.setAttribute("draggable", "true"); });
+    // Clique sem arrastar: devolve a linha ao estado normal.
+    handle.addEventListener("mouseup", () => { row.removeAttribute("draggable"); });
+  });
+  body.querySelectorAll(".tasks-row").forEach(row => {
+    row.addEventListener("dragstart", e => {
+      if (tasksFill) { e.preventDefault(); return; } // autofill em andamento tem prioridade
+      tasksDrag = { id: row.dataset.id };
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", row.dataset.id); } catch (err) {}
+      row.classList.add("tasks-dragging");
+    });
+    row.addEventListener("dragend", () => {
+      row.removeAttribute("draggable");
+      row.classList.remove("tasks-dragging");
+      clearDropMarks();
+      tasksDrag = null;
+      tasksDropTarget = null;
+    });
+    row.addEventListener("dragover", e => {
+      if (!tasksDrag) return;
+      const id = row.dataset.id;
+      if (isSelfOrDescendant(tasksDrag.id, id)) { clearDropMarks(); tasksDropTarget = null; return; }
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      const rect = row.getBoundingClientRect();
+      const rel = (e.clientY - rect.top) / rect.height;
+      const position = rel < 0.25 ? "before" : (rel > 0.75 ? "after" : "inside");
+      clearDropMarks();
+      row.classList.add("drop-" + position);
+      tasksDropTarget = { id, position };
+    });
+    row.addEventListener("drop", e => {
+      e.preventDefault();
+      if (!tasksDrag || !tasksDropTarget) return;
+      const moved = moveTask(tasksDrag.id, tasksDropTarget.id, tasksDropTarget.position);
+      clearDropMarks();
+      tasksDrag = null;
+      tasksDropTarget = null;
+      if (moved) { saveTasksData(); renderTasksTable(); }
+    });
+  });
+}
 
 function updateTasksBulkBar() {
   const bar = document.getElementById("tasks-bulk-bar");

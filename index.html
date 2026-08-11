@@ -560,7 +560,7 @@ function formatDate(d) {
 const TASKS_SEED = [
   { id: "t-1", name: "Exemplo de Goal", rowType: "goal", status: "In Progress", startDate: "", endDate: "", assignees: [], comments: [], subtasks: [
     { id: "t-1-1", name: "Exemplo de Milestone", rowType: "milestone", status: "In Progress", startDate: "", endDate: "", assignees: [], comments: [], subtasks: [
-      { id: "t-1-1-1", name: "Exemplo de Task", rowType: "task", status: "Not Started", startDate: "", endDate: todayISO(), assignees: ["Você"], comments: [], subtasks: [] }
+      { id: "t-1-1-1", name: "Exemplo de Task", rowType: "task", status: "Not Started", startDate: "", endDate: todayISO(), assignees: [], comments: [], subtasks: [] }
     ]}
   ]}
 ];
@@ -708,6 +708,7 @@ async function loadFromCloud() {
     console.warn("Cloud load failed, using local data:", err);
     setCloudStatus("error");
   }
+  limparResponsavelPlaceholder();
   cloudUsersLoaded = true;
   if (typeof renderTasksTable === "function") renderTasksTable();
   if (typeof renderSettingsUsersList === "function") renderSettingsUsersList();
@@ -723,6 +724,22 @@ async function loadFromCloud() {
     }
   }
 }
+// Limpeza única: "Você" era um texto que vinha na task de exemplo, não um
+// usuário de verdade. Como não existe ninguém com esse nome, ele não aparece
+// no menu de responsáveis e não dá para desmarcar pela interface. Se um dia
+// existir alguém chamado "Você", esta limpeza não mexe em nada.
+function limparResponsavelPlaceholder() {
+  if (usersList.some(u => (u.name || u.login || u.username) === "Você")) return;
+  let mudou = false;
+  walkAllTasks(tasksData, t => {
+    if (Array.isArray(t.assignees) && t.assignees.includes("Você")) {
+      t.assignees = t.assignees.filter(a => a !== "Você");
+      mudou = true;
+    }
+  });
+  if (mudou) saveTasksData();
+}
+
 // --- Login ---
 function hideLoginGate() {
   document.getElementById("login-gate-backdrop").classList.add("hidden");

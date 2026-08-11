@@ -709,6 +709,7 @@ async function loadFromCloud() {
     setCloudStatus("error");
   }
   limparResponsavelPlaceholder();
+  migrarResponsaveisParaUsername();
   cloudUsersLoaded = true;
   if (typeof renderTasksTable === "function") renderTasksTable();
   if (typeof renderSettingsUsersList === "function") renderSettingsUsersList();
@@ -724,6 +725,35 @@ async function loadFromCloud() {
     }
   }
 }
+// Os responsáveis são gravados pelo username (que nunca muda) e traduzidos
+// para o nome só na hora de exibir. Valor que não bate com nenhum usuário é
+// mostrado como está, para nunca sumir da tela sem aviso.
+function nomeDoResponsavel(valor) {
+  const u = usersList.find(x => x.username === valor);
+  return u ? (u.name || u.login || u.username) : valor;
+}
+function nomesDosResponsaveis(lista) {
+  return (lista || []).map(nomeDoResponsavel);
+}
+
+// Migração única: antes o responsável era gravado pelo NOME, então renomear
+// alguém em Settings órfãos todas as tasks dele. Converte o que der para
+// username e deixa intacto o que não bater com ninguém.
+function migrarResponsaveisParaUsername() {
+  if (!usersList.length) return;
+  let mudou = false;
+  walkAllTasks(tasksData, t => {
+    if (!Array.isArray(t.assignees)) return;
+    const novo = t.assignees.map(valor => {
+      if (usersList.some(u => u.username === valor)) return valor;
+      const u = usersList.find(x => (x.name || "") === valor || (x.login || "") === valor);
+      return u ? u.username : valor;
+    });
+    if (novo.some((v, i) => v !== t.assignees[i])) { t.assignees = novo; mudou = true; }
+  });
+  if (mudou) saveTasksData();
+}
+
 // Limpeza única: "Você" era um texto que vinha na task de exemplo, não um
 // usuário de verdade. Como não existe ninguém com esse nome, ele não aparece
 // no menu de responsáveis e não dá para desmarcar pela interface. Se um dia
@@ -899,7 +929,7 @@ function renderTaskRow(t, depth) {
   // Resumo do celular: só o essencial. Sem data nem responsável, nem aparece.
   const resumo = [];
   if (t.endDate) resumo.push("Vence " + formatDate(t.endDate));
-  if (t.assignees && t.assignees.length) resumo.push(esc(t.assignees.join(", ")));
+  if (t.assignees && t.assignees.length) resumo.push(esc(nomesDosResponsaveis(t.assignees).join(", ")));
   const resumoHtml = resumo.length ? `<div class="tasks-mobile-summary">${resumo.join(" · ")}</div>` : "";
   const nameField = nameOpen
     ? `<textarea class="tasks-name-input tasks-name-multiline" data-id="${t.id}" data-field="name" rows="1">${esc(t.name)}</textarea>`
@@ -937,10 +967,10 @@ function renderTaskRow(t, depth) {
       </div>
       <div class="tasks-col-assignee" data-label="Responsáveis">
         <div class="tasks-assignee-dropdown" data-id="${t.id}">
-          <button class="tasks-assignee-toggle" type="button">${(t.assignees && t.assignees.length) ? esc(t.assignees.join(", ")) : "+ Responsável"}</button>
+          <button class="tasks-assignee-toggle" type="button">${(t.assignees && t.assignees.length) ? esc(nomesDosResponsaveis(t.assignees).join(", ")) : "+ Responsável"}</button>
           <div class="tasks-assignee-menu">
             ${usersList.length
-              ? usersList.map(u => `<label class="tasks-assignee-option"><input type="checkbox" value="${escAttr(u.name || u.login)}" ${(t.assignees || []).includes(u.name || u.login) ? "checked" : ""}> ${esc(u.name || u.login)}</label>`).join("")
+              ? usersList.map(u => `<label class="tasks-assignee-option"><input type="checkbox" value="${escAttr(u.username)}" ${(t.assignees || []).includes(u.username) ? "checked" : ""}> ${esc(u.name || u.login)}</label>`).join("")
               : `<div class="tasks-assignee-empty">Nenhum usuário em Settings ainda.</div>`}
           </div>
         </div>
@@ -1037,7 +1067,7 @@ function renderTasksTable() {
         saveTasksData();
         // Update the toggle's label live instead of a full re-render, so
         // the menu stays open while picking several people in one go.
-        toggle.textContent = t.assignees.length ? t.assignees.join(", ") : "+ Responsável";
+        toggle.textContent = t.assignees.length ? nomesDosResponsaveis(t.assignees).join(", ") : "+ Responsável";
       });
     });
   });
@@ -1325,7 +1355,7 @@ function renderTasksLateView() {
   if (!items.length) { el.innerHTML = `<div id="tasks-late-empty">Nenhuma task atrasada 🎉</div>`; return; }
   el.innerHTML = items.map(t => {
     const parentName = findParentTaskName(t.id);
-    const assignees = (t.assignees || []).join(", ");
+    const assignees = nomesDosResponsaveis(t.assignees).join(", ");
     return `<div class="tasks-late-row">
       <span class="tasks-row-icon">${ROW_TYPE_ICONS[t.rowType] || ""}</span>
       <div class="tasks-late-info">
@@ -1477,8 +1507,8 @@ document.getElementById("task-comments-modal-body").addEventListener("change", e
 
 // --- Email digest (reuses the SAME Apps Script Web App the big WPF
 // dashboard already has deployed — this only adds the client side that
-// calls it, no new backend needed). Matching against t.assignees uses
-// each user's login, so an assignee's typed name needs to match that. ---
+// calls it, no new backend needed). O casamento com t.assignees é feito
+// pelo username, então renomear a pessoa não quebra o envio. ---
 const EMAIL_DIGEST_ORDER = ["Late", "Not Started", "In Progress"];
 const DONE_LIKE_STATUSES = ["Done", "Cancelled"];
 function tomorrowISODash() {
@@ -1486,12 +1516,12 @@ function tomorrowISODash() {
   d.setDate(d.getDate() + 1);
   return d.toISOString().slice(0, 10);
 }
-function buildDigestForPerson(personName) {
+function buildDigestForPerson(username) {
   const today = todayISO();
   const grouped = { "Late": [], "Not Started": [], "In Progress": [] };
   function walk(items, parentName) {
     items.forEach(t => {
-      if (t.rowType === "task" && grouped[t.status] && (t.assignees || []).includes(personName) && t.startDate && t.startDate <= today) {
+      if (t.rowType === "task" && grouped[t.status] && (t.assignees || []).includes(username) && t.startDate && t.startDate <= today) {
         grouped[t.status].push({ id: t.id, name: t.name, status: t.status, parent: parentName, startDate: t.startDate, endDate: t.endDate });
       }
       walk(t.subtasks, t.name);
@@ -1500,12 +1530,12 @@ function buildDigestForPerson(personName) {
   walk(tasksData, null);
   return grouped;
 }
-function buildDueTomorrowForPerson(personName) {
+function buildDueTomorrowForPerson(username) {
   const tomorrow = tomorrowISODash();
   const out = [];
   function walk(items, parentName) {
     items.forEach(t => {
-      if (t.rowType === "task" && (t.assignees || []).includes(personName) && t.endDate === tomorrow && !DONE_LIKE_STATUSES.includes(t.status)) {
+      if (t.rowType === "task" && (t.assignees || []).includes(username) && t.endDate === tomorrow && !DONE_LIKE_STATUSES.includes(t.status)) {
         out.push({ id: t.id, name: t.name, status: t.status, parent: parentName, startDate: t.startDate, endDate: t.endDate });
       }
       walk(t.subtasks, t.name);
@@ -1543,25 +1573,27 @@ function epRowHtml(t, type) {
   </div>`;
 }
 
-function openEmailPreview(personName, type, btn) {
+function openEmailPreview(username, type, btn) {
   const url = getEmailWebhookUrl();
+  const person = usersList.find(u => u.username === username);
+  if (!person) return;
+  const personName = person.name || person.login || person.username;
   if (!url || url === "PASTE_YOUR_APPS_SCRIPT_URL_HERE") { settingsMsg("A URL do Apps Script ainda não foi configurada no código — pede pra alguém preencher a constante EMAIL_WEBHOOK_URL.", true); return; }
   if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)) {
     settingsMsg("Essa URL não parece uma URL de Apps Script válida — precisa começar com \"https://script.google.com/macros/s/\" e terminar em \"/exec\".", true);
     return;
   }
-  const person = usersList.find(u => (u.name || u.login || u.username) === personName);
-  const email = (person && person.email || "").trim();
+  const email = (person.email || "").trim();
   if (!email) { settingsMsg(`${personName} não tem email cadastrado — preenche o campo de email dela na linha acima primeiro.`, true); return; }
 
   let tasks, title, body;
   if (type === "due_tomorrow") {
-    tasks = buildDueTomorrowForPerson(personName);
+    tasks = buildDueTomorrowForPerson(username);
     if (!tasks.length) { settingsMsg(`${personName} não tem nenhuma tarefa vencendo amanhã — nada foi enviado.`, true); return; }
     title = `Vence amanhã — ${personName}`;
     body = `<p class="ep-hint">Pré-visualização — nada foi enviado ainda.</p>` + tasks.map(t => epRowHtml(t, type)).join("");
   } else {
-    const grouped = buildDigestForPerson(personName);
+    const grouped = buildDigestForPerson(username);
     tasks = EMAIL_DIGEST_ORDER.flatMap(status => grouped[status]);
     if (!tasks.length) { settingsMsg(`${personName} não tem tarefas pendentes hoje — nada foi enviado.`, true); return; }
     title = `Digest de hoje — ${personName}`;
@@ -1717,12 +1749,12 @@ function renderSettingsUsersList() {
     row.querySelector(".settings-digest-today-btn").addEventListener("click", (e) => {
       row.querySelector(".settings-email-menu").classList.remove("open");
       const u = usersList.find(x => x.username === username);
-      if (u) openEmailPreview(u.name || u.login || u.username, "digest", e.currentTarget);
+      if (u) openEmailPreview(u.username, "digest", e.currentTarget);
     });
     row.querySelector(".settings-digest-tomorrow-btn").addEventListener("click", (e) => {
       row.querySelector(".settings-email-menu").classList.remove("open");
       const u = usersList.find(x => x.username === username);
-      if (u) openEmailPreview(u.name || u.login || u.username, "due_tomorrow", e.currentTarget);
+      if (u) openEmailPreview(u.username, "due_tomorrow", e.currentTarget);
     });
   });
 }

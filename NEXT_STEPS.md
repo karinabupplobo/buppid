@@ -2,6 +2,9 @@
 
 ## Próximo
 
+- [ ] Testar os projetos e decidir se ficam. Para desfazer tudo:
+      git checkout v-20260811-1842-responsavel-por-id
+
 - [ ] Abrir no celular e conferir: a lista deve mostrar só nome, resumo e
       cor; o lápis abre o resto; os botões de subir/descer reordenam.
 - [ ] Testar o arraste no navegador: reordenar no mesmo nível, jogar uma

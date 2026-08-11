@@ -2,6 +2,28 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1902-mover-projetos — 11/08/2026
+- O que mudou: com itens selecionados, a barra de seleção agora traz um
+  "Mover para…" com a lista de projetos e "Sem projeto". Mover promove o
+  item a topo — subtask movida deixa de estar embaixo do pai.
+- Arquivos: index.html
+- Motivo: sem isso, só dava para colocar em projeto o que fosse criado
+  depois das abas existirem.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1856-projetos
+
+## v-20260811-1856-projetos — 11/08/2026
+- O que mudou: nova camada de projetos acima dos goals. Barra de abas com
+  "Todos" mais um botão por projeto, criar/renomear/excluir projeto, e
+  filtro da lista e da view Atrasadas pela aba ativa. Item de topo guarda
+  o projectId; subtasks acompanham o pai. Excluir projeto não apaga tasks —
+  elas voltam para "sem projeto". Projetos sincronizam pelo Supabase numa
+  seção nova chamada "projects".
+- Arquivos: index.html
+- Motivo: experimento para ver se separar por projeto ajuda na organização.
+- Reverter para o estado ANTERIOR a esta mudança (desfaz projetos inteiro):
+  git checkout v-20260811-1842-responsavel-por-id
+
 ## v-20260811-1842-responsavel-por-id — 11/08/2026
 - O que mudou: os responsáveis passaram a ser gravados pelo username (que
   nunca muda) em vez do nome. O nome é resolvido só na hora de exibir, em

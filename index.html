@@ -98,7 +98,8 @@
   .tasks-col-name { display: flex; align-items: center; gap: 6px; overflow: hidden; }
   .tasks-toggle { border: none; background: none; cursor: pointer; font-size: 10px; color: var(--text-muted); width: 16px; flex-shrink: 0; }
   .tasks-toggle.empty { visibility: hidden; }
-  .tasks-row-icon { flex-shrink: 0; font-size: 13px; }
+  .tasks-row-icon { flex-shrink: 0; display: inline-flex; align-items: center; color: var(--text-muted); }
+  .row-type-icon { width: 15px; height: 15px; display: block; }
   .tasks-name-input {
     border: none; background: transparent; font-size: 13.5px; color: var(--text); flex: 1 1 0; min-width: 0; padding: 4px 4px; border-radius: 4px;
   }
@@ -425,7 +426,13 @@ const TASK_STATUS_COLORS = {
   "On Hold":     { bg: "#fdf3d6", text: "#7a5b06" },
   "Cancelled":   { bg: "#efefec", text: "#6b6a63" }
 };
-const ROW_TYPE_ICONS = { goal: "🎯", milestone: "🚩", task: "📋" };
+// Ícones SVG desenhados inline (sem biblioteca externa). Herdam a cor do
+// texto via currentColor e são dimensionados pelo CSS (.row-type-icon).
+const ROW_TYPE_ICONS = {
+  goal: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="0" cy="0" r="15"/><circle cx="0" cy="0" r="8"/><circle cx="0" cy="0" r="2.4" fill="currentColor" stroke="none"/></svg>`,
+  milestone: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9 17 L-9 -16"/><path d="M-9 -16 L14 -16 L6 -5 L14 6 L-9 6 Z"/><path d="M-4 -6 L-1 -3 L7 -13"/></svg>`,
+  task: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="-14" y="-14" width="28" height="28" rx="7"/><path d="M-6 0 L-1 5 L7 -5"/></svg>`
+};
 const ROW_TYPE_LABELS = { goal: "Goal", milestone: "Milestone", task: "Task" };
 
 function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
@@ -1008,7 +1015,7 @@ function renderTasksLateView() {
     const parentName = findParentTaskName(t.id);
     const assignees = (t.assignees || []).join(", ");
     return `<div class="tasks-late-row">
-      ${ROW_TYPE_ICONS[t.rowType] || ""}
+      <span class="tasks-row-icon">${ROW_TYPE_ICONS[t.rowType] || ""}</span>
       <div class="tasks-late-info">
         ${parentName ? `<div class="tasks-late-parent">↳ ${esc(parentName)}</div>` : ""}
         <div class="tasks-late-name">${esc(t.name)}</div>

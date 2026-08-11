@@ -2,6 +2,9 @@
 
 ## Próximo
 
+- [ ] Abrir no celular e conferir os cartões: tocar em status e data deve
+      abrir os seletores nativos, e os botões de subir/descer devem
+      reordenar.
 - [ ] Testar o arraste no navegador: reordenar no mesmo nível, jogar uma
       task pra dentro de outro goal, e conferir se a ordem sobrevive a um
       refresh (sincroniza via Supabase junto com o resto).
@@ -31,9 +34,9 @@
         nunca dispara
       - CSS `#login-gate-box h2` (index.html:25) — não existe esse `<h2>`
 - [ ] Preencher o README.md (hoje só tem "# ingl-s").
-- [ ] O arraste usa a API de drag and drop do HTML5, que não funciona por
-      toque — em celular/tablet não dá pra reordenar. Se for usar no
-      celular, precisa de uma versão por touch events.
+- [ ] No celular a reordenação é só entre irmãos (botões de subir/descer).
+      Reaninhar (mover uma task para outro goal) continua sendo só no
+      computador, via arraste.
 - [ ] A Inter vem do Google Fonts: sem internet, a página cai no fallback
       do sistema. Se isso incomodar, dá pra embutir a fonte no arquivo.
 - [ ] As colunas Início, Fim e Responsáveis ainda podem ceder espaço para

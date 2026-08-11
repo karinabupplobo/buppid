@@ -2,6 +2,38 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1800-settings-responsivo — 11/08/2026
+- O que mudou: a tabela de usuários também vira cartões empilhados no
+  celular, com rótulo em cima de cada campo. Cada input foi envolvido num
+  container para poder receber o rótulo.
+- Arquivos: index.html
+- Motivo: a grade de 5 colunas fixas estourava a largura da tela.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1756-mover-celular
+
+## v-20260811-1756-mover-celular — 11/08/2026
+- O que mudou: cada linha ganhou dois botões de subir e descer, visíveis
+  só no celular. Reordenam o item entre os irmãos dele; ficam desabilitados
+  quando o item já está na ponta da lista.
+- Arquivos: index.html
+- Motivo: o arraste não responde a toque, então no celular não havia
+  nenhuma forma de reordenar.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1752-tasks-responsivo
+
+## v-20260811-1752-tasks-responsivo — 11/08/2026
+- O que mudou: abaixo de 720px de largura a tabela deixa de ser grade e
+  cada linha vira um cartão empilhado, com o rótulo de cada campo em cima.
+  Indentação de subtask cai para 10px por nível, campos vão a 16px (abaixo
+  disso o iPhone dá zoom sozinho), e a alça de arraste e as de autofill
+  ficam escondidas por dependerem do mouse. Cabeçalho, rodapé, view
+  Atrasadas e os dois modais também foram ajustados.
+- Arquivos: index.html
+- Motivo: a grade tinha quase 1000px fixos e a tela saía rolando pro lado
+  no celular.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1740-expandir-nome
+
 ## v-20260811-1740-expandir-nome — 11/08/2026
 - O que mudou: quando o nome não cabe na coluna, aparece um botão de
   expandir ao lado. Clicando, o campo vira multi-linha e cresce até mostrar

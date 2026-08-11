@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260811-1822-celular-compacto — 11/08/2026
+- O que mudou: no celular o cartão mostra só o nome e uma linha de resumo
+  com "Vence dd/mm · Responsável"; a cor do status continua indicando o
+  andamento. Um lápis ao lado do nome abre Tipo, Status, Início, Fim,
+  Responsáveis e os botões de ação. Sem data nem responsável, a linha de
+  resumo não aparece.
+- Arquivos: index.html
+- Motivo: mesmo com os campos lado a lado, cada cartão ocupava meia tela e
+  a lista virava uma rolagem infinita.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1812-cartoes-compactos
+
 ## v-20260811-1812-cartoes-compactos — 11/08/2026
 - O que mudou: no celular os campos do cartão passam a fluir lado a lado
   (flex-wrap, base de 150px cada) em vez de um por linha. Controles e

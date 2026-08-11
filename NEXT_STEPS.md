@@ -2,9 +2,8 @@
 
 ## Próximo
 
-- [ ] Abrir no celular e conferir os cartões: tocar em status e data deve
-      abrir os seletores nativos, e os botões de subir/descer devem
-      reordenar.
+- [ ] Abrir no celular e conferir: a lista deve mostrar só nome, resumo e
+      cor; o lápis abre o resto; os botões de subir/descer reordenam.
 - [ ] Testar o arraste no navegador: reordenar no mesmo nível, jogar uma
       task pra dentro de outro goal, e conferir se a ordem sobrevive a um
       refresh (sincroniza via Supabase junto com o resto).

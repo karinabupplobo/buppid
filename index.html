@@ -271,6 +271,7 @@
   #settings-users-table .settings-user-row:last-child { border-radius: 0 0 11px 11px; }
   .settings-user-row:last-child { border-bottom: none; }
   .settings-user-row:hover { background: #fbfaf7; }
+  .settings-user-cell { min-width: 0; }
   .settings-user-row input {
     border: none; background: transparent; font-size: 13px; color: var(--text); width: 100%; padding: 6px 4px; border-radius: 4px;
   }
@@ -339,6 +340,21 @@
     #task-comments-modal, #email-preview-modal { max-height: 90vh; width: 94vw; }
     #tc-text-input, .tc-checklist-add-row input { font-size: 16px; }
     #email-preview-modal-footer { flex-wrap: wrap; gap: 8px; }
+
+    .settings-header-row { display: none; }
+    .settings-user-row { display: block; padding: 12px; }
+    .settings-user-cell + .settings-user-cell, .settings-email-dropdown { margin-top: 10px; }
+    .settings-user-cell::before {
+      content: attr(data-label);
+      display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); margin-bottom: 3px;
+    }
+    .settings-user-row input { font-size: 16px; border: 1px solid var(--border); background: #fff; padding: 9px 10px; }
+    .settings-email-btn { padding: 9px 12px; font-size: 13px; }
+    .settings-email-menu { left: auto; right: 0; }
+    .settings-user-actions { margin-top: 12px; justify-content: flex-start; gap: 8px; }
+    .settings-user-actions button { font-size: 15px; padding: 7px 12px; border: 1px solid var(--border); background: #fff; }
+    #settings-add-user-btn { width: 100%; padding: 11px 14px; font-size: 14px; }
   }
 </style>
 </head>
@@ -1592,9 +1608,9 @@ function renderSettingsUsersList() {
   if (!el) return;
   el.innerHTML = usersList.map(u => `
     <div class="settings-user-row" data-username="${escAttr(u.username)}">
-      <input type="text" class="settings-user-name" value="${escAttr(u.name || "")}" placeholder="nome (igual em Responsáveis)">
-      <input type="text" class="settings-user-login" value="${escAttr(u.login || u.username)}" placeholder="username">
-      <input type="email" class="settings-user-email" value="${escAttr(u.email || "")}" placeholder="email para avisos">
+      <div class="settings-user-cell" data-label="Nome"><input type="text" class="settings-user-name" value="${escAttr(u.name || "")}" placeholder="nome (igual em Responsáveis)"></div>
+      <div class="settings-user-cell" data-label="Username"><input type="text" class="settings-user-login" value="${escAttr(u.login || u.username)}" placeholder="username"></div>
+      <div class="settings-user-cell" data-label="Email Address"><input type="email" class="settings-user-email" value="${escAttr(u.email || "")}" placeholder="email para avisos"></div>
       <div class="settings-email-dropdown">
         <button class="settings-email-btn settings-email-toggle" type="button">📧 Email ▾</button>
         <div class="settings-email-menu">

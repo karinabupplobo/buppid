@@ -165,6 +165,10 @@
   .tasks-row-actions button { border: none; background: transparent; cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 5px; color: var(--text-muted); }
   .tasks-row-actions button:hover { background: var(--land-default); color: var(--text); }
   .tasks-row-actions .tasks-delete-btn:hover { background: #fcebeb; color: #a3312a; }
+  /* Só aparecem no celular, onde arrastar não funciona. */
+  .tasks-move-btn { display: none; }
+  .tasks-move-btn svg { width: 13px; height: 13px; display: block; }
+  .tasks-move-btn:disabled { opacity: 0.3; cursor: default; }
   .tasks-row input[type="checkbox"].tasks-select-checkbox { margin-right: 8px; accent-color: var(--accent); }
 
   #tasks-footer { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
@@ -324,6 +328,7 @@
 
     .tasks-row-actions { margin-top: 12px; justify-content: flex-start; gap: 8px; }
     .tasks-row-actions button { font-size: 15px; padding: 7px 12px; border: 1px solid var(--border); background: #fff; }
+    .tasks-move-btn { display: inline-flex; align-items: center; }
     #tasks-footer { flex-direction: column; align-items: stretch; gap: 10px; }
     #tasks-add-btn { padding: 11px 14px; font-size: 14px; }
     #tasks-bulk-bar.visible { flex-wrap: wrap; }
@@ -880,6 +885,8 @@ function renderTaskRow(t, depth) {
         <span class="tasks-fill-handle" data-id="${t.id}" data-field="assignees" title="Arraste para copiar os responsáveis para as linhas abaixo"></span>
       </div>
       <div class="tasks-row-actions">
+        <button class="tasks-move-btn tasks-move-up" data-id="${t.id}" data-dir="-1" title="Mover para cima" type="button"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7.5 L6 4 L9.5 7.5"/></svg></button>
+        <button class="tasks-move-btn tasks-move-down" data-id="${t.id}" data-dir="1" title="Mover para baixo" type="button"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 L6 8 L9.5 4.5"/></svg></button>
         <button class="tasks-add-sub-btn" data-id="${t.id}" title="Adicionar subtask" type="button">+</button>
         <button class="tasks-delete-btn" data-id="${t.id}" title="Excluir" type="button">🗑</button>
       </div>
@@ -970,6 +977,15 @@ function renderTasksTable() {
         // the menu stays open while picking several people in one go.
         toggle.textContent = t.assignees.length ? t.assignees.join(", ") : "+ Responsável";
       });
+    });
+  });
+  body.querySelectorAll(".tasks-move-btn").forEach(btn => {
+    const found = findTaskContainer(tasksData, btn.dataset.id);
+    const dir = parseInt(btn.dataset.dir, 10);
+    // Já está na ponta da lista de irmãos: não tem para onde ir.
+    if (!found || found.index + dir < 0 || found.index + dir >= found.list.length) btn.disabled = true;
+    btn.addEventListener("click", () => {
+      if (moveTaskAmongSiblings(btn.dataset.id, dir)) { saveTasksData(); renderTasksTable(); }
     });
   });
   body.querySelectorAll(".tasks-add-sub-btn").forEach(btn => {
@@ -1132,6 +1148,17 @@ function moveTask(dragId, targetId, position) {
     if (!dst) { src.list.splice(src.index, 0, moved); return false; }
     dst.list.splice(dst.index + (position === "after" ? 1 : 0), 0, moved);
   }
+  return true;
+}
+// Sobe ou desce um item uma posição entre os irmãos dele. Não muda o pai —
+// para reaninhar, é o arraste (que só funciona no computador).
+function moveTaskAmongSiblings(id, dir) {
+  const found = findTaskContainer(tasksData, id);
+  if (!found) return false;
+  const alvo = found.index + dir;
+  if (alvo < 0 || alvo >= found.list.length) return false;
+  const [item] = found.list.splice(found.index, 1);
+  found.list.splice(alvo, 0, item);
   return true;
 }
 function clearDropMarks() {

@@ -53,7 +53,19 @@
   }
   .header-btn:hover { background: var(--land-default); }
 
-  #tasks-subnav { display: flex; gap: 6px; margin-bottom: 16px; }
+  #tasks-subnav { display: flex; gap: 6px; margin-bottom: 12px; }
+  #projects-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 16px; }
+  .project-tab {
+    border: 1px solid var(--border); background: #fff; color: var(--text-muted); border-radius: 999px;
+    padding: 6px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  }
+  .project-tab:hover { background: var(--land-default); color: var(--text); }
+  .project-tab.active { background: var(--text); border-color: var(--text); color: #fff; }
+  .project-tab-add { border-style: dashed; }
+  .project-actions { display: flex; gap: 2px; margin-left: 4px; }
+  .project-actions button { border: none; background: transparent; cursor: pointer; font-size: 12px; padding: 5px 7px; border-radius: 6px; color: var(--text-muted); }
+  .project-actions button:hover { background: var(--land-default); color: var(--text); }
+  #tasks-empty { padding: 22px 16px; text-align: center; color: var(--text-muted); font-size: 13px; }
   .tasks-subnav-btn {
     border: 1px solid var(--border); background: #fff; color: var(--text-muted); border-radius: 7px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer;
   }
@@ -425,6 +437,8 @@
       <button class="tasks-subnav-btn" id="tasks-nav-late" type="button">Atrasadas</button>
     </div>
 
+    <div id="projects-bar"></div>
+
     <div id="tasks-table">
       <div class="tasks-header-row">
         <div>Nome</div>
@@ -525,6 +539,7 @@ const SUPABASE_HEADERS = {
 const CLOUD_SECTIONS = ["tasks", "users"];
 
 const TASKS_STORAGE_KEY = "tasks_std_data";
+const PROJECTS_STORAGE_KEY = "tasks_std_projects";
 const DEFAULT_PASSWORD = "nossaempresa"; // provisional password for every new account and every password reset
 const USERS_STORAGE_KEY = "tasks_std_users";
 const REVISION_KEY = "tasks_std_revision";
@@ -581,6 +596,7 @@ function ensureTaskDefaults(t, depth) {
   if (!Array.isArray(t.assignees)) t.assignees = [];
   if (!Array.isArray(t.comments)) t.comments = [];
   if (!Array.isArray(t.subtasks)) t.subtasks = [];
+  if (t.projectId === undefined) t.projectId = null; // só vale para item de topo
   t.subtasks.forEach(sub => ensureTaskDefaults(sub, depth + 1));
   return t;
 }
@@ -593,6 +609,16 @@ try {
   tasksData = TASKS_SEED.map(t => JSON.parse(JSON.stringify(t)));
 }
 tasksData = tasksData.map(t => ensureTaskDefaults(t, 0));
+
+let projectsList = [];
+try {
+  const stored = JSON.parse(localStorage.getItem(PROJECTS_STORAGE_KEY) || "null");
+  projectsList = Array.isArray(stored) ? stored : [];
+} catch (e) {
+  projectsList = [];
+}
+// null = aba "Todos". Não é persistido: recarregar volta para Todos.
+let projetoAtivo = null;
 
 function ensureUserDefaults(u) {
   return { ...u, login: u.login || u.username, name: u.name || u.login || u.username, email: u.email || "", mustChangePassword: !!u.mustChangePassword };
@@ -637,6 +663,11 @@ function saveTasksData() {
   bumpLocalRevision();
   scheduleCloudSave();
 }
+function saveProjectsList() {
+  localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projectsList));
+  bumpLocalRevision();
+  scheduleCloudSave();
+}
 function saveUsersList() {
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersList));
   bumpLocalRevision();
@@ -671,7 +702,8 @@ function scheduleCloudSave() {
 async function pushAllSectionsToCloud() {
   const rows = [
     { section: "tasks", data: tasksData, revision: localRevision, updated_at: new Date().toISOString() },
-    { section: "users", data: usersList, revision: localRevision, updated_at: new Date().toISOString() }
+    { section: "users", data: usersList, revision: localRevision, updated_at: new Date().toISOString() },
+    { section: "projects", data: projectsList, revision: localRevision, updated_at: new Date().toISOString() }
   ];
   const res = await fetch(SUPABASE_TABLE_URL, {
     method: "POST",
@@ -687,7 +719,7 @@ async function pushAllSectionsToCloud() {
 async function loadFromCloud() {
   setCloudStatus("loading");
   try {
-    const res = await fetch(`${SUPABASE_TABLE_URL}?section=in.(tasks,users)&select=*`, { headers: SUPABASE_HEADERS });
+    const res = await fetch(`${SUPABASE_TABLE_URL}?section=in.(tasks,users,projects)&select=*`, { headers: SUPABASE_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const rows = await res.json();
     const cloudRevision = rows.reduce((max, r) => Math.max(max, r.revision || 0), 0);
@@ -695,11 +727,13 @@ async function loadFromCloud() {
       rows.forEach(r => {
         if (r.section === "tasks" && Array.isArray(r.data)) tasksData = r.data.map(t => ensureTaskDefaults(t, 0));
         if (r.section === "users" && Array.isArray(r.data) && r.data.length) usersList = r.data.map(ensureUserDefaults);
+        if (r.section === "projects" && Array.isArray(r.data)) projectsList = r.data;
       });
       localRevision = cloudRevision;
       localStorage.setItem(REVISION_KEY, String(localRevision));
       localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasksData));
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersList));
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projectsList));
     } else if (localRevision > cloudRevision) {
       await pushAllSectionsToCloud();
     }
@@ -711,6 +745,7 @@ async function loadFromCloud() {
   limparResponsavelPlaceholder();
   migrarResponsaveisParaUsername();
   cloudUsersLoaded = true;
+  if (typeof renderProjectTabs === "function") renderProjectTabs();
   if (typeof renderTasksTable === "function") renderTasksTable();
   if (typeof renderSettingsUsersList === "function") renderSettingsUsersList();
   // Cloud data just landed — usersList may have changed, so re-check the
@@ -841,6 +876,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 
 function afterLogin() {
   document.getElementById("settings-admin-section").classList.toggle("hidden", !isAdm());
+  renderProjectTabs();
   renderTasksTable();
   renderSettingsUsersList();
   setTasksViewMode("list");
@@ -898,6 +934,63 @@ function autoSyncLateStatuses() {
     if (overdue && t.status !== "Late") { t.status = "Late"; changed = true; }
   });
   if (changed) { localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasksData)); }
+}
+
+// --- Projetos: uma camada acima dos goals. Só item de topo pertence a um
+// projeto; as subtasks acompanham o pai. Excluir um projeto não apaga nada,
+// os itens dele voltam para "sem projeto". ---
+function itensDoProjetoAtivo() {
+  return projetoAtivo === null ? tasksData : tasksData.filter(t => t.projectId === projetoAtivo);
+}
+function renderProjectTabs() {
+  const el = document.getElementById("projects-bar");
+  if (!el) return;
+  const abas = [`<button class="project-tab ${projetoAtivo === null ? "active" : ""}" data-id="" type="button">Todos</button>`]
+    .concat(projectsList.map(p => `<button class="project-tab ${projetoAtivo === p.id ? "active" : ""}" data-id="${escAttr(p.id)}" type="button">${esc(p.name)}</button>`));
+  const projeto = projectsList.find(p => p.id === projetoAtivo);
+  el.innerHTML = abas.join("")
+    + `<button class="project-tab project-tab-add" id="project-add-btn" type="button">+ Projeto</button>`
+    + (projeto ? `<span class="project-actions"><button id="project-rename-btn" type="button" title="Renomear projeto">✎</button><button id="project-delete-btn" type="button" title="Excluir projeto">🗑</button></span>` : "");
+
+  el.querySelectorAll(".project-tab[data-id]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      projetoAtivo = btn.dataset.id || null;
+      renderProjectTabs();
+      renderTasksTable();
+      if (tasksViewMode === "late") renderTasksLateView();
+    });
+  });
+  const btnAdd = document.getElementById("project-add-btn");
+  if (btnAdd) btnAdd.addEventListener("click", () => {
+    const nome = prompt("Nome do projeto:");
+    if (!nome || !nome.trim()) return;
+    const id = "proj-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+    projectsList.push({ id, name: nome.trim() });
+    projetoAtivo = id;
+    saveProjectsList();
+    renderProjectTabs();
+    renderTasksTable();
+  });
+  const btnRename = document.getElementById("project-rename-btn");
+  if (btnRename) btnRename.addEventListener("click", () => {
+    const nome = prompt("Novo nome do projeto:", projeto.name);
+    if (!nome || !nome.trim()) return;
+    projeto.name = nome.trim();
+    saveProjectsList();
+    renderProjectTabs();
+  });
+  const btnDelete = document.getElementById("project-delete-btn");
+  if (btnDelete) btnDelete.addEventListener("click", () => {
+    const quantos = tasksData.filter(t => t.projectId === projeto.id).length;
+    if (!confirm(`Excluir o projeto "${projeto.name}"? ${quantos ? `Os ${quantos} item(ns) dele voltam para "sem projeto" — nada é apagado.` : ""}`)) return;
+    tasksData.forEach(t => { if (t.projectId === projeto.id) t.projectId = null; });
+    projectsList = projectsList.filter(p => p.id !== projeto.id);
+    projetoAtivo = null;
+    saveProjectsList();
+    saveTasksData();
+    renderProjectTabs();
+    renderTasksTable();
+  });
 }
 
 // --- Task tree rendering ---
@@ -993,7 +1086,10 @@ function renderTaskRow(t, depth) {
 function renderTasksTable() {
   autoSyncLateStatuses();
   const body = document.getElementById("tasks-table-body");
-  body.innerHTML = tasksData.map(t => renderTaskRow(t, 0)).join("");
+  const raiz = itensDoProjetoAtivo();
+  body.innerHTML = raiz.length
+    ? raiz.map(t => renderTaskRow(t, 0)).join("")
+    : `<div id="tasks-empty">Nenhum item neste projeto ainda.</div>`;
 
   body.querySelectorAll(".tasks-toggle").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -1330,7 +1426,7 @@ document.getElementById("tasks-bulk-delete").addEventListener("click", () => {
 
 document.getElementById("tasks-add-btn").addEventListener("click", () => {
   const newId = "t-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7);
-  tasksData.push({ id: newId, name: "Nova task", rowType: "milestone", status: "Not Started", startDate: "", endDate: "", assignees: [], comments: [], subtasks: [] });
+  tasksData.push({ id: newId, name: "Nova task", rowType: "milestone", status: "Not Started", startDate: "", endDate: "", assignees: [], comments: [], subtasks: [], projectId: projetoAtivo });
   saveTasksData();
   renderTasksTable();
 });
@@ -1346,7 +1442,7 @@ function getAllOverdueTasks() {
       walk(t.subtasks);
     });
   }
-  walk(tasksData);
+  walk(itensDoProjetoAtivo());
   return list.sort((a, b) => (a.endDate < b.endDate ? -1 : 1));
 }
 function renderTasksLateView() {

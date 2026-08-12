@@ -706,11 +706,12 @@ const TASK_STATUS_COLORS = {
 // Ícones SVG desenhados inline (sem biblioteca externa). Herdam a cor do
 // texto via currentColor e são dimensionados pelo CSS (.row-type-icon).
 const ROW_TYPE_ICONS = {
+  project: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="-15" y="-8" width="30" height="21" rx="4"/><path d="M-6 -8 L-6 -13.5 L6 -13.5 L6 -8"/><path d="M-15 2 L15 2"/></svg>`,
   goal: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="0" cy="0" r="15"/><circle cx="0" cy="0" r="8"/><circle cx="0" cy="0" r="2.4" fill="currentColor" stroke="none"/></svg>`,
   milestone: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9 17 L-9 -16"/><path d="M-9 -16 L14 -16 L6 -5 L14 6 L-9 6 Z"/><path d="M-4 -6 L-1 -3 L7 -13"/></svg>`,
   task: `<svg class="row-type-icon" viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="-14" y="-14" width="28" height="28" rx="7"/><path d="M-6 0 L-1 5 L7 -5"/></svg>`
 };
-const ROW_TYPE_LABELS = { goal: "Goal", milestone: "Milestone", task: "Task" };
+const ROW_TYPE_LABELS = { project: "Project", goal: "Goal", milestone: "Milestone", task: "Task" };
 
 function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function escAttr(s) { return esc(s).replace(/"/g, "&quot;"); }
@@ -737,7 +738,7 @@ function ensureTaskDefaults(t, depth) {
   depth = depth || 0;
   t.id = t.id || ("t-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7));
   t.name = t.name || "";
-  if (t.rowType !== "goal" && t.rowType !== "milestone" && t.rowType !== "task") {
+  if (!["project", "goal", "milestone", "task"].includes(t.rowType)) {
     t.rowType = depth > 0 ? "task" : "milestone";
   }
   if (!TASK_STATUS_OPTIONS.includes(t.status)) t.status = "Not Started";
@@ -1565,7 +1566,7 @@ function taskStatusOptionsMarkup(selected) {
   return TASK_STATUS_OPTIONS.map(s => `<option value="${s}" ${s === selected ? "selected" : ""}>${s}</option>`).join("");
 }
 function rowTypeOptionsMarkup(selected) {
-  return ["goal", "milestone", "task"].map(rt => `<option value="${rt}" ${rt === selected ? "selected" : ""}>${ROW_TYPE_LABELS[rt]}</option>`).join("");
+  return ["project", "goal", "milestone", "task"].map(rt => `<option value="${rt}" ${rt === selected ? "selected" : ""}>${ROW_TYPE_LABELS[rt]}</option>`).join("");
 }
 
 function renderTaskRow(t, depth) {
@@ -1585,7 +1586,7 @@ function renderTaskRow(t, depth) {
   const nameField = nameOpen
     ? `<textarea class="tasks-name-input tasks-name-multiline" data-id="${t.id}" data-field="name" rows="1">${esc(t.name)}</textarea>`
     : `<input class="tasks-name-input" data-id="${t.id}" data-field="name" value="${escAttr(t.name)}">`;
-  const iconStyle = t.rowType === "task" ? "" : ` style="color:${colors.bar}"`;
+  const iconStyle = t.rowType === "task" ? "" : ` style="color:${colors.bar}"`;   // project, goal e milestone
   const rowStyle = t.rowType === "task"
     ? `background:${colors.bg};color:${colors.text};--depth:${depth}`
     : `border-left-color:${colors.bar};color:${colors.text};--depth:${depth}`;

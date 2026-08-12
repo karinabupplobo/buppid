@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1936-varredura-publica — 12/08/2026
+- O que mudou: varredura por fonte pública nas 8 empresas premium. Gravado o
+  que era verificável: CNPJ da Marilan, tirado de documento no site dela
+  mesma, e um contato nomeado na Nelogica, vindo da cobertura da premiação da
+  ADVB/RS. A ficha ganhou linha de CNPJ, e o contato passou a mostrar nome e
+  link da fonte de onde veio — que é o registro de origem exigido pela LGPD.
+  Nenhum e-mail foi deduzido nem inventado.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: medir quanto de contato de T&D dá para levantar sem Sales Navigator.
+  Sete das oito não têm ninguém de RH ou T&D citado em fonte pública alguma.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1918-icone-status
+
 ## v-20260812-1918-icone-status — 12/08/2026
 - O que mudou: o ícone de goal e de milestone passou a usar a cor do status,
   a mesma da barra lateral da linha. O ícone de task continua cinza, porque a

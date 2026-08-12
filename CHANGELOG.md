@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1918-icone-status — 12/08/2026
+- O que mudou: o ícone de goal e de milestone passou a usar a cor do status,
+  a mesma da barra lateral da linha. O ícone de task continua cinza, porque a
+  linha inteira dele já vem pintada com a cor do status. Vale também na view
+  Atrasadas.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: goal e milestone só sinalizavam o status na barra fina da esquerda;
+  o ícone estava fixo em cinza e desperdiçava o sinal visual.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1905-responsivo
+
 ## v-20260812-1905-responsivo — 12/08/2026
 - O que mudou: o app deixou de parar em 1400px e agora ocupa a largura da tela
   (teto de 2100px em telas muito largas). O corte era pior do que parecia: a

@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1952-tipo-project — 12/08/2026
+- O que mudou: novo tipo de linha "Project", acima de Goal no seletor, com
+  ícone de maleta desenhado no mesmo traçado dos outros três. Segue a regra de
+  goal e milestone: barra lateral e ícone na cor do status, sem pintar a linha
+  inteira — isso continua sendo só de task. Linhas antigas com tipo inválido
+  seguem caindo em milestone no topo e task quando aninhadas.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: faltava um nível acima de Goal para agrupar frentes maiores.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1936-varredura-publica
+
 ## v-20260812-1936-varredura-publica — 12/08/2026
 - O que mudou: varredura por fonte pública nas 8 empresas premium. Gravado o
   que era verificável: CNPJ da Marilan, tirado de documento no site dela

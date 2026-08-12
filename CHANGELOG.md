@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1755-leads — 12/08/2026
+- O que mudou: menu lateral fixo à esquerda (Tasks e Leads) e uma view nova de
+  geração de leads. O motor pontua cada empresa em quatro eixos independentes —
+  fit, facilidade de venda, acesso e intenção — e classifica em premium, alta,
+  média, baixa ou bloqueada. Sinais têm curvas de decaimento diferentes (degrau
+  para vaga, atraso para M&A e aporte, linear para o resto), penalidades pontuam
+  para baixo, e a intenção é multiplicada pela sazonalidade do orçamento de T&D.
+  Base inicial com 62 empresas e sinais com link de evidência. Sincroniza pelo
+  Supabase numa seção nova chamada "leads".
+- Arquivos: index.html, CHANGELOG.md, NEXT_STEPS.md
+- Motivo: transformar a pesquisa de ICP em ferramenta operacional dentro da
+  própria dash, em vez de documento parado.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260811-1912-sem-projetos
+
 ## v-20260811-1912-sem-projetos — 11/08/2026
 - O que mudou: REVERSÃO. Desfeitos os dois commits da camada de projetos
   (abas, filtro, sincronização e o "Mover para…"). Feito com git revert, ou

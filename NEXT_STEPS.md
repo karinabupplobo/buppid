@@ -2,6 +2,17 @@
 
 ## Próximo
 
+- [ ] Validar CNPJ, porte e site das 62 empresas do seed antes de qualquer
+      abordagem. As marcadas como "conhecimento_base" não foram verificadas.
+- [ ] Mapear contatos das 8 empresas premium. Sem contato, o eixo Acesso fica
+      em zero e a empresa não deveria estar em premium de verdade.
+- [ ] Rodar coletores.py na máquina local: o ambiente do Claude não alcança
+      receitafederal.gov.br nem opencnpj.org (403 no proxy).
+- [ ] Registrar interações com o campo "gatilho" preenchido. A calibração de
+      peso só liga com 20 envios por tipo de gatilho.
+- [ ] Decidir se o seed de leads deve mesmo nascer no código ou vir só da nuvem.
+
+
 
 - [ ] Abrir no celular e conferir: a lista deve mostrar só nome, resumo e
       cor; o lápis abre o resto; os botões de subir/descer reordenam.

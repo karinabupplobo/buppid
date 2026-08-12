@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1848-funil-colorido — 12/08/2026
+- O que mudou: removidos os cartões de resumo do topo da view Leads e a barra
+  de filtros (busca, "Todas", "Bloqueadas"). A busca passou para dentro do
+  painel do funil, logo abaixo do título. As oito etapas ganharam um degradê de
+  vermelho a verde; a cor do texto de cada faixa é escolhida pela luminância
+  real dela, para todas passarem em contraste. Clicar na etapa já ativa limpa o
+  filtro, que era o que o botão "Todas" fazia.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a tela tinha três controles de filtro concorrentes e dois blocos de
+  contagem dizendo a mesma coisa que o funil já dizia.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1830-funil-unico
+
 ## v-20260812-1830-funil-unico — 12/08/2026
 - O que mudou: o funil virou um só, com oito etapas: prioridade baixa, média,
   alta, premium, contatada, reunião, proposta e cliente. As quatro primeiras o

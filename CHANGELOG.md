@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-2035-dominios — 12/08/2026
+- O que mudou: domínio e CNPJ verificados por fonte pública para Peccin,
+  Conservas Oderich e DaColônia Alimentos. Premium passou de 2 para 5 empresas
+  com domínio conhecido, de 11. Nada foi deduzido: só entrou o que apareceu no
+  site da própria empresa ou no Portal da Transparência.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: sem domínio o casamento em qualquer provedor de contato fica ruim, e
+  a auditoria mostrou que 9 das 11 premium não tinham.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-2010-revisao-base
+
 ## v-20260812-2010-revisao-base — 12/08/2026
 - O que mudou: auditoria da base de leads (62 empresas, nenhum erro estrutural)
   e duas correções. A região deixou de ser uma lista fixa de cidades e virou

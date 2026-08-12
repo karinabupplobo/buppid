@@ -43,7 +43,8 @@
   #login-gate-pw-intro { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin: 0 0 16px; }
 
   /* --- App shell --- */
-  #app { max-width: 1400px; margin: 0 auto; padding: 24px 28px 60px; }
+  #app { max-width: 1400px; margin: 0 auto; padding: 24px 28px 60px; margin-left: 62px; }
+  @media (max-width: 760px) { #app { margin-left: 0; padding-bottom: 80px; } }
   #app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
   #app-title { font-size: 19px; font-weight: 700; margin: 0; }
   #app-header-actions { display: flex; align-items: center; gap: 10px; }
@@ -375,6 +376,115 @@
     .settings-user-actions button { font-size: 15px; padding: 7px 12px; border: 1px solid var(--border); background: #fff; }
     #settings-add-user-btn { width: 100%; padding: 11px 14px; font-size: 14px; }
   }
+
+  /* ================= Menu lateral ================= */
+  #sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 62px; background: var(--panel);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center;
+    padding: 18px 0; gap: 6px; z-index: 50; }
+  #sidebar.hidden { display: none !important; }
+  .side-btn { width: 42px; height: 42px; border: 1px solid transparent; background: transparent;
+    border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); position: relative; }
+  .side-btn:hover { background: var(--land-default); color: var(--text); }
+  .side-btn.active { background: var(--text); border-color: var(--text); color: #fff; }
+  .side-btn svg { width: 19px; height: 19px; }
+  .side-btn::after { content: attr(data-label); position: absolute; left: 52px; white-space: nowrap;
+    background: var(--text); color: #fff; font-size: 11.5px; font-weight: 600; padding: 4px 8px;
+    border-radius: 6px; opacity: 0; pointer-events: none; transition: opacity .12s; }
+  .side-btn:hover::after { opacity: 1; }
+  #sidebar-badge { position: absolute; top: 4px; right: 4px; min-width: 15px; height: 15px;
+    background: #b5641f; color: #fff; border-radius: 8px; font-size: 9.5px; font-weight: 700;
+    line-height: 15px; text-align: center; padding: 0 3px; }
+  .side-btn.active #sidebar-badge { background: #e08a3c; }
+
+  /* ================= Leads ================= */
+  #leads-view.hidden { display: none !important; }
+  #leads-subnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  #leads-search { border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px;
+    font-size: 12.5px; min-width: 200px; flex: 1 1 200px; background: #fff; color: var(--text); }
+  #leads-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .lead-stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; min-width: 108px; }
+  .lead-stat b { display: block; font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .lead-stat span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+  #leads-list { border: 1px solid var(--border); border-radius: 12px; background: var(--panel);
+    overflow: hidden; }
+  .lead-row { border-bottom: 1px solid var(--border); }
+  .lead-row:last-child { border-bottom: none; }
+  .lead-row > summary { list-style: none; cursor: pointer; padding: 12px 15px; display: grid;
+    grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+  .lead-row > summary::-webkit-details-marker { display: none; }
+  .lead-row[open] > summary { background: var(--land-default); }
+  .lead-row:hover > summary { background: #faf9f5; }
+  .lead-name { font-size: 14px; font-weight: 600; }
+  .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+  .lead-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+  .tag { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 5px;
+    border: 1px solid var(--border-strong); color: var(--text-muted); background: #fff;
+    letter-spacing: .02em; }
+  .tag-fit-A { background:#1d3b2a; color:#fff; border-color:#1d3b2a; }
+  .tag-fit-B { background:#e2ece4; color:#2c4d38; border-color:#c4d9c9; }
+  .tag-fit-C { background:#f2efe6; color:#77766f; border-color:var(--border-strong); }
+  .tag-fit-D { background:#fff; color:#a09e95; }
+  .tag-facil { background:#e9f0e6; color:#3d5b32; border-color:#cadcc2; }
+  .tag-media  { background:#f5efe0; color:#7a6224; border-color:#e3d5b0; }
+  .tag-dificil{ background:#f6e9e6; color:#8d4034; border-color:#e5c9c3; }
+  .tag-quente { background:#b5641f; color:#fff; border-color:#b5641f; }
+  .tag-morno  { background:#f3e7d5; color:#8a6522; border-color:#e2cfab; }
+  .tag-frio   { background:#fff; color:#a09e95; }
+  .lead-score { text-align: right; }
+  .lead-score b { font-size: 19px; font-weight: 700; display: block; line-height: 1.1; }
+  .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
+
+  .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9; }
+  .lead-why { background: #fff7ec; border: 1px solid #e8d5b8; border-left: 3px solid #b5641f;
+    border-radius: 8px; padding: 10px 13px; margin: 14px 0; font-size: 13px; line-height: 1.55; }
+  .lead-why b { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: #8a6522; margin-bottom: 5px; }
+  .lead-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .lead-cols h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+  .lead-kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .lead-kv td { padding: 4px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .lead-kv td:first-child { color: var(--text-muted); white-space: nowrap; padding-right: 12px; width: 38%; }
+  .lead-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 6px 0 12px;
+    background: var(--land-default); }
+  .lead-bar i { display: block; height: 100%; }
+  .lead-sinal { border-left: 2px solid #b5641f; padding: 3px 0 3px 11px; margin-bottom: 12px; font-size: 13px; }
+  .lead-sinal b { font-size: 12.5px; }
+  .lead-sinal p { margin: 3px 0 4px; color: #4a4a46; line-height: 1.5; }
+  .lead-sinal .f { font-size: 11px; color: var(--text-muted); }
+  .lead-abertura { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 11px 13px; margin-top: 14px; font-size: 13px; line-height: 1.55; }
+  .lead-abertura h4 { margin-bottom: 5px; }
+  .lead-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
+  .lead-actions button, .lead-actions select { border: 1px solid var(--border); background: #fff;
+    color: var(--text); border-radius: 7px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .lead-actions button:hover { background: var(--land-default); }
+  .lead-falta { font-size: 11.5px; color: #a06a2c; }
+  #leads-footer { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #leads-footer button { border: 1px solid var(--border); background: #fff; border-radius: 7px;
+    padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--text); }
+  #leads-footer button:hover { background: var(--land-default); }
+  #leads-updated { font-size: 11.5px; color: var(--text-muted); }
+  .tag-premium { background:#4a2f6b; color:#fff; border-color:#4a2f6b; }
+  .tag-alto    { background:#1d3b2a; color:#fff; border-color:#1d3b2a; }
+  .tag-medio   { background:#eef0e9; color:#5d6b4f; border-color:#d3d9c8; }
+  .tag-baixo   { background:#fff; color:#a09e95; }
+  .tag-bloqueado { background:#f6e9e6; color:#8d4034; border-color:#e5c9c3; text-decoration:line-through; }
+  .lead-pen { background:#f9edea; border:1px solid #e5c9c3; border-left:3px solid #8d4034;
+    border-radius:8px; padding:10px 13px; margin:0 0 14px; font-size:13px; line-height:1.55; }
+  .lead-pen b { display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    color:#8d4034; margin-bottom:5px; }
+  .lead-sazon { font-size:11.5px; color:var(--text-muted); margin-left:6px; }
+  @media (max-width: 760px) {
+    .lead-cols { grid-template-columns: 1fr; }
+    #sidebar { width: 100%; height: 54px; bottom: 0; top: auto; flex-direction: row;
+      justify-content: center; padding: 0; border-right: none; border-top: 1px solid var(--border); }
+    .side-btn::after { display: none; }
+  }
+
 </style>
 </head>
 <body>
@@ -409,6 +519,17 @@
   </div>
 </div>
 
+<nav id="sidebar" class="hidden" aria-label="Navegação principal">
+  <button class="side-btn active" id="side-tasks" type="button" data-label="Tasks" aria-label="Tasks">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  </button>
+  <button class="side-btn" id="side-leads" type="button" data-label="Leads" aria-label="Gerador de leads">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
+    <span id="sidebar-badge" class="hidden">0</span>
+  </button>
+</nav>
 <div id="app" class="hidden">
   <div id="app-header">
     <h1 id="app-title">Tasks</h1>
@@ -448,6 +569,26 @@
         <span id="tasks-bulk-count"></span>
         <button id="tasks-bulk-delete" type="button">Excluir selecionadas</button>
       </div>
+    </div>
+  </div>
+
+  <div id="leads-view" class="hidden">
+    <div id="leads-stats"></div>
+    <div id="leads-subnav">
+      <input id="leads-search" type="search" placeholder="filtrar por nome, setor, cidade…" aria-label="Filtrar leads">
+      <button class="tasks-subnav-btn active" data-lf="fila" type="button">Fila do dia</button>
+      <button class="tasks-subnav-btn" data-lf="premium" type="button">Premium</button>
+      <button class="tasks-subnav-btn" data-lf="alto" type="button">Alta</button>
+      <button class="tasks-subnav-btn" data-lf="medio" type="button">Média</button>
+      <button class="tasks-subnav-btn" data-lf="baixo" type="button">Baixa</button>
+      <button class="tasks-subnav-btn" data-lf="bloqueado" type="button">Bloqueadas</button>
+      <button class="tasks-subnav-btn" data-lf="todos" type="button">Todas</button>
+    </div>
+    <div id="leads-list"></div>
+    <div id="leads-footer">
+      <button id="leads-add-btn" type="button">+ Nova empresa</button>
+      <button id="leads-recalc-btn" type="button">Recalcular agora</button>
+      <span id="leads-updated"></span>
     </div>
   </div>
 
@@ -522,7 +663,7 @@ const SUPABASE_HEADERS = {
   "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
   "Content-Type": "application/json"
 };
-const CLOUD_SECTIONS = ["tasks", "users"];
+const CLOUD_SECTIONS = ["tasks", "users", "leads"];
 
 const TASKS_STORAGE_KEY = "tasks_std_data";
 const DEFAULT_PASSWORD = "nossaempresa"; // provisional password for every new account and every password reset
@@ -671,7 +812,8 @@ function scheduleCloudSave() {
 async function pushAllSectionsToCloud() {
   const rows = [
     { section: "tasks", data: tasksData, revision: localRevision, updated_at: new Date().toISOString() },
-    { section: "users", data: usersList, revision: localRevision, updated_at: new Date().toISOString() }
+    { section: "users", data: usersList, revision: localRevision, updated_at: new Date().toISOString() },
+    { section: "leads", data: leadsData, revision: localRevision, updated_at: new Date().toISOString() }
   ];
   const res = await fetch(SUPABASE_TABLE_URL, {
     method: "POST",
@@ -687,7 +829,7 @@ async function pushAllSectionsToCloud() {
 async function loadFromCloud() {
   setCloudStatus("loading");
   try {
-    const res = await fetch(`${SUPABASE_TABLE_URL}?section=in.(tasks,users)&select=*`, { headers: SUPABASE_HEADERS });
+    const res = await fetch(`${SUPABASE_TABLE_URL}?section=in.(tasks,users,leads)&select=*`, { headers: SUPABASE_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const rows = await res.json();
     const cloudRevision = rows.reduce((max, r) => Math.max(max, r.revision || 0), 0);
@@ -695,11 +837,13 @@ async function loadFromCloud() {
       rows.forEach(r => {
         if (r.section === "tasks" && Array.isArray(r.data)) tasksData = r.data.map(t => ensureTaskDefaults(t, 0));
         if (r.section === "users" && Array.isArray(r.data) && r.data.length) usersList = r.data.map(ensureUserDefaults);
+        if (r.section === "leads" && Array.isArray(r.data)) leadsData = r.data;
       });
       localRevision = cloudRevision;
       localStorage.setItem(REVISION_KEY, String(localRevision));
       localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasksData));
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersList));
+      localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(leadsData));
     } else if (localRevision > cloudRevision) {
       await pushAllSectionsToCloud();
     }
@@ -721,6 +865,7 @@ async function loadFromCloud() {
     if (!restored) {
       currentUser = null;
       document.getElementById("app").classList.add("hidden");
+  document.getElementById("sidebar").classList.add("hidden");
       document.getElementById("login-gate-backdrop").classList.remove("hidden");
     }
   }
@@ -774,6 +919,7 @@ function limparResponsavelPlaceholder() {
 function hideLoginGate() {
   document.getElementById("login-gate-backdrop").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
+  document.getElementById("sidebar").classList.remove("hidden");
 }
 let pendingPasswordChangeUsername = null;
 
@@ -831,6 +977,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
   currentUser = null;
   clearSession();
   document.getElementById("app").classList.add("hidden");
+  document.getElementById("sidebar").classList.add("hidden");
   document.getElementById("login-gate-backdrop").classList.remove("hidden");
   document.getElementById("login-gate-login-fields").classList.remove("hidden");
   document.getElementById("login-gate-pw-fields").classList.add("hidden");
@@ -847,13 +994,429 @@ function afterLogin() {
   showView("tasks");
 }
 
-// --- View switching (Tasks / Settings) ---
+
+// ===================== GERADOR DE LEADS =====================
+const LEADS_STORAGE_KEY = "tasks_std_leads";
+
+// --- Dicionários de pontuação. Mexer aqui muda o ranking inteiro. ---
+const LEAD_SETORES = {
+  automotivo:{d:"Automotivo e autopeças",p:30}, industria_maq:{d:"Máquinas e eletroeletrônicos",p:30},
+  quimica_farma:{d:"Química e farmacêutica",p:30}, papel_celulose:{d:"Papel, celulose e embalagens",p:28},
+  mineracao_metal:{d:"Mineração e siderurgia",p:28}, alimentos_agro:{d:"Alimentos e agro exportador",p:28},
+  tech_saas:{d:"Tecnologia e software",p:30}, comex_logistica:{d:"Comércio exterior e logística",p:30},
+  couro_calcado:{d:"Couro, calçados e têxtil",p:26}, moveis_madeira:{d:"Móveis e madeira",p:24},
+  financeiro:{d:"Serviços financeiros",p:20}, servicos_prof:{d:"Advocacia e consultoria",p:20},
+  bens_consumo:{d:"Bens de consumo",p:14}, varejo:{d:"Varejo",p:5},
+  saude:{d:"Saúde",p:10}, educacao:{d:"Educação",p:5}
+};
+const LEAD_VINCULOS = {
+  subsidiaria_estrangeira:{d:"Subsidiária de grupo estrangeiro",fit:40,local:12},
+  adquirida_estrangeiro:{d:"Adquirida por grupo estrangeiro",fit:40,local:20},
+  exportadora:{d:"Exportadora",fit:33,local:25},
+  internacionalizada:{d:"Nacional com operação no exterior",fit:30,local:22},
+  nacional:{d:"Nacional sem interlocução internacional",fit:6,local:25}
+};
+const LEAD_PORTES = {
+  "50-200":  {fit:8,  facil:26, ciclo:"30-60 dias",  nota:"Decide rápido, mas verba de T&D costuma ser informal."},
+  "200-1000":{fit:15, facil:40, ciclo:"45-90 dias",  nota:"Faixa mais fácil: já tem verba de T&D e ainda decide sem procurement pesado."},
+  "1000-5000":{fit:15,facil:32, ciclo:"60-120 dias", nota:"Verba estruturada; compras aparece no fim do processo."},
+  "5000+":   {fit:9,  facil:14, ciclo:"6-12 meses",  nota:"Ticket alto, mas RFP, procurement e às vezes contrato global travam."}
+};
+
+// curva: como o sinal perde valor com o tempo.
+//  degrau  = vale cheio enquanto está aberto, despenca no fim (vaga)
+//  linear  = perde valor de forma constante
+//  atraso  = sobe até o pico e só depois cai (M&A, aporte: a dor aparece meses depois)
+const LEAD_SINAIS = {
+  vaga_td:            {r:"Vaga de T&D / Educação Corporativa",       p:35,v:60, curva:"degrau", plato:0.65},
+  vaga_ingles:        {r:"Vaga exigindo inglês avançado",            p:30,v:45, curva:"degrau", plato:0.70},
+  beneficio_idioma:   {r:"Já oferece auxílio idioma",                p:25,v:120,curva:"linear"},
+  insatisfacao_prog:  {r:"Reclamação pública do programa de idiomas",p:40,v:180,curva:"linear"},
+  troca_rh:           {r:"Troca de Head de RH / CHRO",               p:30,v:120,curva:"atraso", pico:0.25},
+  ma_estrangeiro:     {r:"Aquisição ou fusão com grupo estrangeiro", p:35,v:365,curva:"atraso", pico:0.35},
+  aporte:             {r:"Recebeu aporte / rodada de investimento",  p:30,v:300,curva:"atraso", pico:0.30},
+  ipo:                {r:"IPO ou abertura de capital",               p:25,v:365,curva:"atraso", pico:0.30},
+  expansao_intl:      {r:"Abriu operação no exterior",               p:25,v:270,curva:"atraso", pico:0.30},
+  novo_cliente_global:{r:"Anunciou cliente ou contrato internacional",p:22,v:180,curva:"atraso",pico:0.25},
+  entrou_exportadora: {r:"Entrou na lista de exportadoras do MDIC",  p:20,v:365,curva:"linear"},
+  premio_exportacao:  {r:"Premiada como destaque exportador",        p:22,v:365,curva:"linear"},
+  case_td:            {r:"Apresentou case de T&D em CBTD/CONARH",    p:20,v:365,curva:"linear"},
+  ranking_gptw:       {r:"Entrou em ranking GPTW / Melhores",        p:15,v:365,curva:"linear"},
+  crescimento:        {r:"Crescimento acelerado de headcount",       p:15,v:120,curva:"linear"},
+  certificacao_intl:  {r:"Certificação internacional / cadeia global",p:15,v:180,curva:"linear"}
+};
+
+// Penalidades: pontuam para BAIXO. Sem isso a fila só sabe dizer sim.
+const LEAD_PENALIDADES = {
+  fornecedor_recente:  {r:"Assinou com concorrente há menos de 12 meses", p:-45, v:365},
+  demissoes:           {r:"Demissões ou corte de custos anunciado",       p:-35, v:180},
+  recuperacao_judicial:{r:"Recuperação judicial ou falência",             p:-100,v:730},
+  disse_nao:           {r:"Já disse não nesta oferta",                    p:-40, v:180},
+  sem_resposta_3x:     {r:"Três cadências sem nenhuma resposta",          p:-25, v:180},
+  opt_out:             {r:"Pediu descadastro",                            p:-100,v:3650},
+  estatal_licitacao:   {r:"Estatal ou órgão público — exige licitação",   p:-30, v:3650},
+  contrato_global:     {r:"Idiomas contratado pela matriz lá fora",       p:-50, v:730}
+};
+
+// Acesso: pontuar a empresa e vender para a pessoa eram coisas desconectadas.
+const LEAD_PERSONAS = {
+  campeao:     {r:"Gerente/Coord. de T&D",           p:30},
+  orcamento:   {r:"Head de RH / DHO / CHRO",         p:22},
+  patrocinador:{r:"Liderança da área que sente a dor",p:18},
+  matriz:      {r:"Country manager / reporte à matriz",p:12},
+  bloqueador:  {r:"Compras / Procurement",           p:4}
+};
+
+// Sazonalidade do orçamento de T&D no Brasil. Multiplica a intenção inteira.
+const LEAD_SAZONAL = {
+  0:{m:1.10,n:"janeiro — verba nova liberada"},      1:{m:1.10,n:"fevereiro — verba nova liberada"},
+  2:{m:1.00,n:"março"},                              3:{m:1.00,n:"abril"},
+  4:{m:0.95,n:"maio"},                               5:{m:0.95,n:"junho"},
+  6:{m:0.85,n:"julho — férias, decisão trava"},      7:{m:1.00,n:"agosto"},
+  8:{m:1.25,n:"setembro — janela de orçamento"},     9:{m:1.25,n:"outubro — janela de orçamento"},
+  10:{m:1.20,n:"novembro — fechando orçamento"},     11:{m:0.70,n:"dezembro — ninguém decide"}
+};
+
+const LEAD_REGIAO_A = new Set(["São Paulo","Barueri","Osasco","São Bernardo do Campo","Santo André",
+  "São Caetano do Sul","Campinas","Jundiaí","Sorocaba","Sumaré","São José dos Campos","Guarulhos",
+  "Itapira","Várzea Paulista","Santos","Curitiba","Joinville","Jaraguá do Sul","Blumenau","Brusque",
+  "Porto Alegre","Caxias do Sul","Novo Hamburgo","São Leopoldo","Canoas","Campo Bom","Montenegro",
+  "Belo Horizonte","Rio de Janeiro","Florianópolis","Recife","Itajaí","Marília","Garibaldi"]);
+
+const LEADS_SEED = [{"n":"Aché Laboratórios","m":"Guarulhos","u":"SP","d":"ache.com.br","h":"5000+","s":"quimica_farma","v":"exportadora","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Atlas Copco Brasil","m":"Barueri","u":"SP","d":null,"h":"1000-5000","s":"industria_maq","v":"subsidiaria_estrangeira","p":"Suécia","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Audaces","m":"Florianópolis","u":"SC","d":"audaces.com","h":"200-1000","s":"tech_saas","v":"internacionalizada","p":null,"o":"pesquisa_web_2026","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"expansao_intl","ds":"Adquiriu a BKR Internacional (Portugal) e transforma a unidade portuguesa em polo de produção e desenvolvimento, com previsão de dobrar capacidade até 2027 e ~30 novos trabalhadores.","url":"https://sapo.pt/artigo/multinacional-brasileira-compra-empresa-de-famalicao-por-seis-milhoes-69d812f8092af892697989e9","dt":"2026-04-09"}],"pn":[],"ct":[],"it":[]},{"n":"BASF Brasil","m":"São Paulo","u":"SP","d":null,"h":"5000+","s":"quimica_farma","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Bayer Brasil","m":"São Paulo","u":"SP","d":null,"h":"5000+","s":"quimica_farma","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Brasilseg","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"financeiro","v":"subsidiaria_estrangeira","p":"França","o":"pesquisa_web_2026","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"vaga_td","ds":"Vaga de Analista de Educação e Desenvolvimento Jr em São Paulo.","url":"https://br.indeed.com/q-analista-treinamento-e-desenvolvimento-vagas.html","dt":"2026-07-25"}],"pn":[],"ct":[],"it":[]},{"n":"Braskem","m":"São Paulo","u":"SP","d":"braskem.com.br","h":"5000+","s":"quimica_farma","v":"exportadora","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"CI&T","m":"Campinas","u":"SP","d":"ciandt.com","h":"5000+","s":"tech_saas","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Continental Brasil","m":"Várzea Paulista","u":"SP","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Cristal Embalagens","m":"Morro da Fumaça","u":"SC","d":null,"h":"200-1000","s":"papel_celulose","v":"adquirida_estrangeiro","p":"Itália","o":"pesquisa_web_2026","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"ma_estrangeiro","ds":"Adquirida pelo grupo italiano Goglio, que assumiu a gestão. Segunda aquisição do grupo no Sul do país.","url":"https://www.4oito.com.br/noticia/multinacional-italiana-compra-fabricante-de-embalagens-de-sc-para-ampliar-operacao-no-brasil-88015","dt":"2026-07-20"}],"pn":[],"ct":[],"it":[]},{"n":"Cristália","m":"Itapira","u":"SP","d":"cristalia.com.br","h":"1000-5000","s":"quimica_farma","v":"exportadora","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"DHL Supply Chain Brasil","m":"Barueri","u":"SP","d":null,"h":"5000+","s":"comex_logistica","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Embraer","m":"São José dos Campos","u":"SP","d":"embraer.com","h":"5000+","s":"industria_maq","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Eurofarma","m":"São Paulo","u":"SP","d":"eurofarma.com.br","h":"5000+","s":"quimica_farma","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Gerdau","m":"Porto Alegre","u":"RS","d":"gerdau.com","h":"5000+","s":"mineracao_metal","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Honda Automóveis","m":"Sumaré","u":"SP","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Japão","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Iguatemi","m":"São Paulo","u":"SP","d":"iguatemi.com.br","h":"1000-5000","s":"varejo","v":"nacional","p":null,"o":"pesquisa_web_2026","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"vaga_td","ds":"Vaga de Analista de T&D anunciada em São Paulo.","url":"https://br.trabajo.org/emprego-5470-1048eb1d1417a6cbb1b1b0d5c6f3ddae","dt":"2026-07-06"}],"pn":[],"ct":[],"it":[]},{"n":"Klabin","m":"São Paulo","u":"SP","d":"klabin.com.br","h":"5000+","s":"papel_celulose","v":"exportadora","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Kuehne+Nagel Brasil","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"comex_logistica","v":"subsidiaria_estrangeira","p":"Suíça","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Maersk Brasil","m":"Santos","u":"SP","d":null,"h":"200-1000","s":"comex_logistica","v":"subsidiaria_estrangeira","p":"Dinamarca","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Mahle Metal Leve","m":"Jundiaí","u":"SP","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Marcopolo","m":"Caxias do Sul","u":"RS","d":"marcopolo.com.br","h":"5000+","s":"automotivo","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Marilan Alimentos","m":"Marília","u":"SP","d":"marilan.com","h":"1000-5000","s":"alimentos_agro","v":"exportadora","p":null,"o":"pesquisa_web_2026","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"vaga_td","ds":"Vaga de analista na área de desenvolvimento anunciada em Marília/SP.","url":"https://www.glassdoor.com.br/Vaga/sao-paulo-treinamento-e-desenvolvimento-organizacional-vagas-SRCH_IL.0,9_IM1009_KO10,54.htm","dt":"2026-08-01"}],"pn":[],"ct":[],"it":[]},{"n":"Mills","m":"São Paulo","u":"SP","d":"mills.com.br","h":"1000-5000","s":"servicos_prof","v":"nacional","p":null,"o":"pesquisa_web_2026","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"vaga_td","ds":"Vaga de Analista RH II com foco em Treinamento e Desenvolvimento.","url":"https://br.indeed.com/q-analista-treinamento-e-desenvolvimento-vagas.html","dt":"2026-07-28"}],"pn":[],"ct":[],"it":[]},{"n":"Natura","m":"São Paulo","u":"SP","d":"natura.com.br","h":"5000+","s":"bens_consumo","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Nidec Global Appliance (ex-Embraco)","m":"Joinville","u":"SC","d":null,"h":"1000-5000","s":"industria_maq","v":"subsidiaria_estrangeira","p":"Japão","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Nokia Brasil","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"tech_saas","v":"subsidiaria_estrangeira","p":"Finlândia","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Novartis Brasil","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"quimica_farma","v":"subsidiaria_estrangeira","p":"Suíça","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Nubank","m":"São Paulo","u":"SP","d":"nubank.com.br","h":"5000+","s":"financeiro","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Nutrire Indústria de Alimentos","m":"Garibaldi","u":"RS","d":null,"h":"200-1000","s":"alimentos_agro","v":"adquirida_estrangeiro","p":"Japão","o":"pesquisa_web_2026","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"ma_estrangeiro","ds":"Adquirida pela Unicharm Corporation (Tóquio). ~400 colaboradores, unidades em Garibaldi/RS e Poços de Caldas/MG, apontada como uma das principais exportadoras do setor. Gestão local mantida — ou seja, time brasileiro passa a reportar a uma matriz japonesa.","url":"https://portal6.com.br/2026/05/20/multinacional-japonesa-anuncia-a-compra-de-industria-no-brasil/","dt":"2026-05-20"}],"pn":[],"ct":[],"it":[]},{"n":"Randon","m":"Caxias do Sul","u":"RS","d":"randoncorp.com","h":"5000+","s":"automotivo","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Robert Bosch","m":"Campinas","u":"SP","d":"bosch.com.br","h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Sandvik Brasil","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"mineracao_metal","v":"subsidiaria_estrangeira","p":"Suécia","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Sanofi Brasil","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"quimica_farma","v":"subsidiaria_estrangeira","p":"França","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Scania Latin America","m":"São Bernardo do Campo","u":"SP","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Suécia","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Schneider Electric Brasil","m":"São Paulo","u":"SP","d":null,"h":"1000-5000","s":"industria_maq","v":"subsidiaria_estrangeira","p":"França","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Serra Verde","m":"Minaçu","u":"GO","d":null,"h":"200-1000","s":"mineracao_metal","v":"adquirida_estrangeiro","p":"Estados Unidos","o":"pesquisa_web_2026","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"ma_estrangeiro","ds":"Adquirida pela USA Rare Earth em operação de ~US$ 2,8 bi. Passa a integrar grupo com oito operações no Brasil, EUA, França e Reino Unido; dois executivos brasileiros entram na diretoria.","url":"https://www.brasildefato.com.br/2026/04/20/empresa-dos-eua-compra-unica-mina-brasileira-de-terras-raras/","dt":"2026-04-20"}],"pn":[],"ct":[],"it":[]},{"n":"Sertrading","m":"São Paulo","u":"SP","d":"sertrading.com","h":"1000-5000","s":"comex_logistica","v":"exportadora","p":null,"o":"pesquisa_web_2026","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"vaga_td","ds":"Vaga aberta de Analista de T&D Sênior em Pessoas & Cultura, para estruturar a estratégia de Educação Corporativa — em uma trading de comércio exterior.","url":"https://www.adzuna.com.br/são-paulo/analista-de-treinamento-e-desenvolvimento","dt":"2026-08-05"}],"pn":[],"ct":[],"it":[]},{"n":"Siemens","m":"São Paulo","u":"SP","d":"siemens.com.br","h":"5000+","s":"industria_maq","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Suzano","m":"São Paulo","u":"SP","d":"suzano.com.br","h":"5000+","s":"papel_celulose","v":"exportadora","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"TOTVS","m":"São Paulo","u":"SP","d":"totvs.com","h":"5000+","s":"tech_saas","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Tigre","m":"Joinville","u":"SC","d":"tigre.com.br","h":"5000+","s":"industria_maq","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Tirolez","m":"São Paulo","u":"SP","d":"tirolez.com.br","h":"1000-5000","s":"alimentos_agro","v":"nacional","p":null,"o":"pesquisa_web_2026","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[{"t":"vaga_td","ds":"Vaga de Analista Sênior de Treinamento com responsabilidade sobre desempenho de plataforma e otimização do investimento em capacitação.","url":"https://br.indeed.com/q-analista-de-treinamento-l-são-paulo,-sp-vagas.html","dt":"2026-07-30"}],"pn":[],"ct":[],"it":[]},{"n":"Toyota do Brasil","m":"Sorocaba","u":"SP","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Japão","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"VTEX","m":"Rio de Janeiro","u":"RJ","d":"vtex.com","h":"1000-5000","s":"tech_saas","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Volvo do Brasil","m":"Curitiba","u":"PR","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Suécia","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"WEG","m":"Jaraguá do Sul","u":"SC","d":"weg.net","h":"5000+","s":"industria_maq","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Whirlpool Latin America","m":"Joinville","u":"SC","d":null,"h":"5000+","s":"industria_maq","v":"subsidiaria_estrangeira","p":"Estados Unidos","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"XP Inc.","m":"São Paulo","u":"SP","d":"xpi.com.br","h":"5000+","s":"financeiro","v":"internacionalizada","p":null,"o":"conhecimento_base","st":"novo","f":"cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"ZF do Brasil","m":"Sorocaba","u":"SP","d":null,"h":"5000+","s":"automotivo","v":"subsidiaria_estrangeira","p":"Alemanha","o":"conhecimento_base","st":"novo","f":"dominio,cnpj,linkedin_url,headcount_est,contatos","sg":[],"pn":[],"ct":[],"it":[]},{"n":"Divinut Indústria de Nozes","m":"Porto Alegre","u":"RS","d":null,"h":"200-1000","s":"alimentos_agro","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Calçados Beira Rio","m":"Novo Hamburgo","u":"RS","d":null,"h":"1000-5000","s":"couro_calcado","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Curtume A.P. Müller","m":"Portão","u":"RS","d":null,"h":"200-1000","s":"couro_calcado","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Peccin","m":"Erechim","u":"RS","d":null,"h":"1000-5000","s":"alimentos_agro","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Docile Alimentos","m":"Lajeado","u":"RS","d":null,"h":"1000-5000","s":"alimentos_agro","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"DaColônia Alimentos","m":"Bento Gonçalves","u":"RS","d":null,"h":"200-1000","s":"alimentos_agro","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Conservas Oderich","m":"São Sebastião do Caí","u":"RS","d":null,"h":"1000-5000","s":"alimentos_agro","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Clemar Assessoria e Logística em Comércio Internacional","m":"Novo Hamburgo","u":"RS","d":null,"h":"50-200","s":"comex_logistica","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Premium International Freight Agency","m":"Novo Hamburgo","u":"RS","d":null,"h":"50-200","s":"comex_logistica","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Hy Brasil Beachwear","m":"Novo Hamburgo","u":"RS","d":null,"h":"50-200","s":"couro_calcado","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"Nelogica","m":"Porto Alegre","u":"RS","d":null,"h":"200-1000","s":"tech_saas","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]},{"n":"SLC Agrícola","m":"Porto Alegre","u":"RS","d":null,"h":"5000+","s":"alimentos_agro","v":"exportadora","p":null,"o":"premio_exportacao_rs_2026","st":"novo","f":"cnpj,dominio,linkedin_url,contatos","sg":[{"t":"premio_exportacao","ds":"Reconhecida na 54a edicao do Premio Exportacao RS (ADVB/RS), que premiou 64 empresas gauchas em 06/08/2026.","url":"https://expansao.co/premio-exportacao-rs-reconhece-64-empresas-e-homenageia-marcos-boschetti/","dt":"2026-08-06"}],"pn":[],"ct":[],"it":[]}];
+
+let leadsData = [];
+try { leadsData = JSON.parse(localStorage.getItem(LEADS_STORAGE_KEY) || "null") || []; } catch (e) { leadsData = []; }
+if (!leadsData.length) leadsData = LEADS_SEED.map(e => ({ ...e, sg: (e.sg || []).map(s => ({ ...s })) }));
+
+function saveLeadsData() {
+  localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(leadsData));
+  bumpLocalRevision();
+  scheduleCloudSave();
+}
+
+function leadDias(iso) { return Math.floor((Date.now() - new Date(iso + "T00:00:00").getTime()) / 86400000); }
+
+// Calibração: peso aprendido com a taxa de resposta real de cada gatilho.
+// Enquanto não houver amostra mínima, devolve 1 e o peso original vale.
+const LEAD_CALIBRACAO_N_MIN = 20;
+function leadCalibracao(tipo) {
+  let env = 0, resp = 0;
+  leadsData.forEach(e => (e.it || []).forEach(i => {
+    if (i.gatilho !== tipo) return;
+    env++; if (i.resultado === "positiva") resp++;
+  }));
+  if (env < LEAD_CALIBRACAO_N_MIN) return { m: 1, n: env, taxa: null };
+  const taxa = resp / env, base = 0.05;                 // 5% é a referência de outbound
+  return { m: Math.max(0.4, Math.min(2, taxa / base)), n: env, taxa };
+}
+
+function leadFrescor(def, dias) {
+  const t = dias / def.v;
+  if (t >= 1) return 0;
+  if (def.curva === "degrau") {
+    // vale cheio no platô, depois cai rápido
+    return t <= def.plato ? 1 : Math.max(0, 1 - (t - def.plato) / (1 - def.plato));
+  }
+  if (def.curva === "atraso") {
+    // sobe até o pico e depois desce — a dor não nasce no dia do anúncio
+    const p = def.pico;
+    return t <= p ? (0.25 + 0.75 * (t / p)) : Math.max(0, 1 - (t - p) / (1 - p));
+  }
+  return Math.max(0, 1 - t);
+}
+
+function calcularLead(e) {
+  const setor = LEAD_SETORES[e.s] || { d: e.s || "—", p: 10 };
+  const vinc  = LEAD_VINCULOS[e.v] || { d: e.v || "—", fit: 6, local: 20 };
+  const porte = LEAD_PORTES[e.h]   || { fit: 8, facil: 20, ciclo: "?", nota: "Porte desconhecido — enriquecer." };
+  const regA  = LEAD_REGIAO_A.has(e.m || "");
+
+  const fitDet = { setor: setor.p, vinculo: vinc.fit, porte: porte.fit, regiao: regA ? 15 : 8 };
+  const fit = fitDet.setor + fitDet.vinculo + fitDet.porte + fitDet.regiao;
+  const nivel = fit >= 88 ? "A" : fit >= 72 ? "B" : fit >= 52 ? "C" : "D";
+
+  const temTD = (e.sg || []).some(s => s.t === "vaga_td" || s.t === "case_td");
+  const facDet = { porte: porte.facil, local: vinc.local, regiao: regA ? 20 : 10, areaTD: temTD ? 15 : 7 };
+  const facil = facDet.porte + facDet.local + facDet.regiao + facDet.areaTD;
+  const facilNivel = facil >= 78 ? "facil" : facil >= 55 ? "media" : "dificil";
+
+  // acesso: quem eu já tenho mapeado dentro dessa empresa
+  const contatos = e.ct || [];
+  const acesso = Math.min(100, contatos.reduce((a, c) =>
+    a + ((LEAD_PERSONAS[c.persona] || { p: 5 }).p), 0));
+  const acessoNivel = acesso >= 45 ? "mapeado" : acesso > 0 ? "parcial" : "sem contato";
+
+  const sinais = (e.sg || []).map(s => {
+    const def = LEAD_SINAIS[s.t] || { r: s.t, p: 10, v: 90, curva: "linear" };
+    const dias = leadDias(s.dt);
+    const frescor = leadFrescor(def, dias);
+    const cal = leadCalibracao(s.t);
+    return { ...s, rotulo: def.r, peso: def.p, validade: def.v, curva: def.curva || "linear",
+             dias, frescor, cal, efetivo: +(def.p * frescor * cal.m).toFixed(1), vivo: frescor > 0 };
+  }).sort((a, b) => b.efetivo - a.efetivo);
+
+  const penalidades = (e.pn || []).map(p => {
+    const def = LEAD_PENALIDADES[p.t] || { r: p.t, p: -20, v: 180 };
+    const dias = leadDias(p.dt);
+    return { ...p, rotulo: def.r, peso: def.p, dias, vivo: dias < def.v };
+  }).filter(p => p.vivo);
+  const penal = penalidades.reduce((a, p) => a + p.peso, 0);
+
+  const saz = LEAD_SAZONAL[new Date().getMonth()];
+  const intencaoBruta = sinais.reduce((a, s) => a + s.efetivo, 0);
+  const intencao = +(intencaoBruta * saz.m).toFixed(1);
+  const temperatura = intencao >= 20 ? "quente" : intencao > 0 ? "morno" : "frio";
+  const total = +(fit + intencao + penal + acesso * 0.2).toFixed(1);
+
+  // Prioridade por regra, não por soma: dá para explicar por que cada uma caiu onde caiu.
+  let prioridade, motivoPrioridade;
+  if (penal <= -60) { prioridade = "bloqueado"; motivoPrioridade = "Penalidade eliminatória ativa."; }
+  else if (fit >= 88 && intencao >= 20 && facil >= 55 && penal > -20) {
+    prioridade = "premium"; motivoPrioridade = "Fit A, gatilho quente, venda viável e nada bloqueando. Trabalhar à mão, uma a uma."; }
+  else if ((fit >= 72 && intencao >= 12) || (fit >= 88 && intencao > 0)) {
+    prioridade = "alto"; motivoPrioridade = "Bom perfil com motivo real para falar agora. Cadência personalizada."; }
+  else if (fit >= 72 || intencao >= 20) {
+    prioridade = "medio"; motivoPrioridade = "Vale o funil automatizado, não vale tempo de pesquisa manual."; }
+  else { prioridade = "baixo"; motivoPrioridade = "Fica na base. Só sobe se aparecer gatilho."; }
+
+  return { setor, vinc, porte, fit, fitDet, nivel, facil, facDet, facilNivel,
+           acesso, acessoNivel, contatos, sinais, penalidades, penal,
+           saz, intencaoBruta: +intencaoBruta.toFixed(1), intencao, temperatura,
+           prioridade, motivoPrioridade, total };
+}
+
+function leadPorQue(e, c) {
+  if (!c.sinais.length || !c.sinais[0].vivo)
+    return "Nenhum gatilho ativo. Entra por perfil, não por momento — vale conteúdo, não ligação.";
+  const s = c.sinais[0];
+  const forma = { degrau: "vale cheio enquanto a vaga está aberta e despenca depois",
+                  atraso: "ainda está subindo — a dor aparece meses depois do anúncio, não no dia",
+                  linear: "perde valor de forma constante" }[s.curva];
+  const pico = s.curva === "atraso" && s.dias < s.validade * 0.35;
+  return `${s.rotulo}, detectado há ${s.dias} dia(s). Vale ${s.efetivo} de ${s.peso} pontos: ` +
+    `frescor ${Math.round(s.frescor * 100)}% (curva ${s.curva} — ${forma})` +
+    (c.saz.m !== 1 ? `, mês multiplica por ${c.saz.m} (${c.saz.n})` : "") + ". " +
+    (pico ? "Ainda não é o melhor momento: o pico vem em algumas semanas. " : "") +
+    (c.sinais.length > 1 ? `Mais ${c.sinais.length - 1} sinal(is) somando junto. ` : "") +
+    (c.penal ? `Penalidade de ${c.penal} pontos aplicada.` : "");
+}
+
+function leadAbertura(e, c) {
+  const s = c.sinais[0]; const pais = e.p || "o exterior";
+  if (!s || !s.vivo) return "Sem gancho de timing. Abordagem por conteúdo, não por e-mail frio.";
+  const m = {
+    vaga_td: "Vi que vocês estão contratando para Treinamento e Desenvolvimento. Quando a área se estrutura, o programa de idiomas costuma ser dos primeiros a ser revisto — quase sempre pelo mesmo motivo: o anterior era genérico demais para engajar.",
+    vaga_ingles: "Vi a vaga de vocês pedindo inglês avançado. Como cerca de 1% dos brasileiros é fluente, essa vaga tende a ficar aberta muito mais tempo do que deveria — e sai mais barato formar quem já está dentro.",
+    ma_estrangeiro: `Vi a operação com o grupo de ${pais}. Passados alguns meses da integração, o que costuma aparecer é reunião, relatório e avaliação em inglês com um time contratado para operar em português.`,
+    aporte: "Vi o aporte que vocês receberam. Board novo costuma significar reporte em inglês e metas revisadas — e quem apresenta os números raramente foi preparado para isso.",
+    ipo: "Vi o movimento de abertura de capital. Relação com investidor estrangeiro muda o padrão de comunicação da liderança inteira.",
+    expansao_intl: "Vi a expansão internacional de vocês. A parte que costuma travar não é a operação — é o time daqui sustentando a conversa do outro lado.",
+    beneficio_idioma: "Vi que vocês já oferecem auxílio idioma. Quem tem a verba normalmente já tem o problema junto: baixa adesão e nenhum dado de progresso para levar à diretoria.",
+    insatisfacao_prog: "Li relatos de colaboradores de vocês sobre o programa de idiomas. O padrão é sempre o mesmo: começa cheio e esvazia no segundo mês, porque a aula não fala do trabalho de quem está na sala.",
+    troca_rh: "Vi a mudança na liderança de RH. Os primeiros noventa dias são quando os contratos de desenvolvimento voltam para a mesa.",
+    premio_exportacao: "Vi o reconhecimento de vocês como destaque exportador. Quem exporta nesse nível chega num ponto em que a barreira deixa de ser mercado e passa a ser a conversa.",
+    entrou_exportadora: "Vi que vocês passaram a constar na lista de exportadoras do MDIC.",
+    novo_cliente_global: "Vi o contrato internacional que vocês anunciaram.",
+    case_td: "Vi o case de T&D que vocês apresentaram — e é justamente por levarem isso a sério que faz sentido essa conversa.",
+    ranking_gptw: "Vi vocês no ranking de melhores empresas para trabalhar.",
+    crescimento: "Vi o ritmo de contratação de vocês nos últimos meses.",
+    certificacao_intl: "Vi a entrada de vocês em cadeia de suprimento internacional."
+  };
+  return m[s.t] || s.rotulo;
+}
+
+// --- Render ---
+let leadsFiltro = "fila", leadsBusca = "";
+const LEAD_ROT_FACIL = { facil: "Fácil", media: "Média", dificil: "Difícil" };
+
+function renderLeads() {
+  const calc = leadsData.map(e => ({ e, c: calcularLead(e) })).sort((a, b) => b.c.total - a.c.total);
+  const conta = p => calc.filter(x => x.c.prioridade === p).length;
+  const saz = LEAD_SAZONAL[new Date().getMonth()];
+
+  document.getElementById("leads-stats").innerHTML = `
+    <div class="lead-stat"><b>${calc.length}</b><span>empresas</span></div>
+    <div class="lead-stat"><b>${conta("premium")}</b><span>premium</span></div>
+    <div class="lead-stat"><b>${conta("alto")}</b><span>alta</span></div>
+    <div class="lead-stat"><b>${conta("medio")}</b><span>média</span></div>
+    <div class="lead-stat"><b>${calc.filter(x => x.c.intencao > 0).length}</b><span>com gatilho vivo</span></div>
+    <div class="lead-stat"><b>${saz.m}×</b><span>${saz.n}</span></div>`;
+
+  const badge = document.getElementById("sidebar-badge");
+  const urgente = conta("premium") + conta("alto");
+  badge.textContent = urgente; badge.classList.toggle("hidden", urgente === 0);
+
+  const visivel = x => {
+    const t = `${x.e.n} ${x.c.setor.d} ${x.e.m} ${x.e.u}`.toLowerCase();
+    if (leadsBusca && !t.includes(leadsBusca)) return false;
+    if (leadsFiltro === "fila") return x.c.prioridade === "premium" || x.c.prioridade === "alto";
+    if (leadsFiltro === "todos") return true;
+    return x.c.prioridade === leadsFiltro;
+  };
+  const lista = calc.filter(visivel);
+  const pct = v => v + "%";
+
+  document.getElementById("leads-list").innerHTML = lista.length ? lista.map(({ e, c }, i) => `
+    <details class="lead-row">
+      <summary>
+        <div>
+          <div class="lead-name">${i + 1}. ${e.n}</div>
+          <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
+          <div class="lead-tags">
+            <span class="tag tag-${c.prioridade}">${c.prioridade}</span>
+            <span class="tag tag-fit-${c.nivel}">Fit ${c.nivel} · ${c.fit}</span>
+            <span class="tag tag-${c.facilNivel}">Venda ${LEAD_ROT_FACIL[c.facilNivel]}</span>
+            <span class="tag tag-${c.temperatura}">${c.temperatura}${c.intencao ? " · " + c.intencao : ""}</span>
+            <span class="tag">${e.h || "porte ?"}</span>
+            <span class="tag">ciclo ${c.porte.ciclo}</span>
+            <span class="tag">${c.acessoNivel}</span>
+            ${c.penal ? `<span class="tag tag-dificil">${c.penal} pts</span>` : ""}
+          </div>
+        </div>
+        <div class="lead-score"><b>${c.total}</b><span>total</span></div>
+      </summary>
+      <div class="lead-body">
+        ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
+          c.penalidades.map(p => `${p.rotulo} (${p.peso} pts, há ${p.dias} dias)${p.ds ? " — " + p.ds : ""}`).join("<br>")
+        }</div>` : ""}
+        <div class="lead-why"><b>Prioridade ${c.prioridade} — por quê</b>${c.motivoPrioridade}<br><br>
+          <b style="margin-top:6px">Temperatura ${c.temperatura}</b>${leadPorQue(e, c)}</div>
+        <div class="lead-cols">
+          <div>
+            <h4>Gatilhos</h4>
+            ${c.sinais.length ? c.sinais.map(s => `
+              <div class="lead-sinal" style="${s.vivo ? "" : "opacity:.4"}">
+                <b>${s.rotulo}</b>
+                <p>${s.ds || ""}</p>
+                <span class="f">${s.dt} · há ${s.dias}d · curva ${s.curva} · peso ${s.peso} ×
+                frescor ${Math.round(s.frescor * 100)}%${s.cal.m !== 1 ? ` × calibração ${s.cal.m.toFixed(2)}` : ""}
+                = <b>${s.efetivo}</b>${s.cal.taxa === null ? ` <i>(calibração: ${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios)</i>` : ""}</span>
+                ${s.url ? ` · <a class="f" href="${s.url}" target="_blank" rel="noopener">evidência</a>` : ""}
+              </div>`).join("") : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
+            <div class="lead-abertura"><h4>Primeira linha sugerida</h4>${leadAbertura(e, c)}</div>
+          </div>
+          <div>
+            <h4>Fit ${c.fit}/100 — nível ${c.nivel}</h4>
+            <div class="lead-bar">
+              <i style="width:${pct(c.fitDet.setor)};background:#2f5d43"></i>
+              <i style="width:${pct(c.fitDet.vinculo)};background:#4d8464"></i>
+              <i style="width:${pct(c.fitDet.porte)};background:#7cae8d"></i>
+              <i style="width:${pct(c.fitDet.regiao)};background:#b3d3bd"></i></div>
+            <table class="lead-kv">
+              <tr><td>setor</td><td>${c.fitDet.setor} — ${c.setor.d}</td></tr>
+              <tr><td>vínculo internacional</td><td>${c.fitDet.vinculo} — ${c.vinc.d}</td></tr>
+              <tr><td>porte para o produto</td><td>${c.fitDet.porte} — ${e.h || "?"}</td></tr>
+              <tr><td>região</td><td>${c.fitDet.regiao} — ${e.m || "?"}</td></tr>
+            </table>
+            <h4 style="margin-top:14px">Facilidade ${c.facil}/100 — ${LEAD_ROT_FACIL[c.facilNivel]}</h4>
+            <div class="lead-bar">
+              <i style="width:${pct(c.facDet.porte)};background:#8a6522"></i>
+              <i style="width:${pct(c.facDet.local)};background:#b5872f"></i>
+              <i style="width:${pct(c.facDet.regiao)};background:#d8b268"></i>
+              <i style="width:${pct(c.facDet.areaTD)};background:#eeddb4"></i></div>
+            <table class="lead-kv">
+              <tr><td>porte</td><td>${c.facDet.porte} — ${c.porte.nota}</td></tr>
+              <tr><td>decisão é local?</td><td>${c.facDet.local} — ${c.vinc.d}</td></tr>
+              <tr><td>proximidade</td><td>${c.facDet.regiao} — ${c.facDet.regiao >= 20 ? "dá para reunião presencial" : "remoto"}</td></tr>
+              <tr><td>já tem área de T&amp;D</td><td>${c.facDet.areaTD} — ${c.facDet.areaTD === 15 ? "sim, tem sinal disso" : "não confirmado"}</td></tr>
+              <tr><td>ciclo estimado</td><td>${c.porte.ciclo}</td></tr>
+            </table>
+            <h4 style="margin-top:14px">Acesso ${c.acesso}/100 — ${c.acessoNivel}</h4>
+            <table class="lead-kv">
+              ${c.contatos.length ? c.contatos.map(ct => `<tr><td>${(LEAD_PERSONAS[ct.persona] || {r:ct.persona}).r}</td><td>${ct.cargo || "—"}${ct.li ? ` · <a href="${ct.li}" target="_blank" rel="noopener">perfil</a>` : ""}</td></tr>`).join("")
+                : `<tr><td>contatos</td><td class="lead-falta">nenhum mapeado — sem isso a empresa não sobe para premium</td></tr>`}
+              <tr><td>site</td><td>${e.d ? `<a href="https://${e.d}" target="_blank" rel="noopener">${e.d}</a>` : "—"}</td></tr>
+              <tr><td>origem do dado</td><td>${e.o || "—"}</td></tr>
+              <tr><td>falta enriquecer</td><td class="lead-falta">${(e.f || "—").split(",").join(" · ")}</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="lead-actions">
+          <select data-lead-status="${e.n}">
+            ${["novo","qualificada","em_cadencia","reuniao","proposta","cliente","descartada"]
+              .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
+          </select>
+          <button data-lead-sinal="${e.n}" type="button">+ Gatilho</button>
+          <button data-lead-penal="${e.n}" type="button">+ Freio</button>
+          <button data-lead-contato="${e.n}" type="button">+ Contato</button>
+          <button data-lead-inter="${e.n}" type="button">+ Interação</button>
+        </div>
+      </div>
+    </details>`).join("") : `<div style="padding:22px;color:var(--text-muted);font-size:13px">Nada nesse filtro.</div>`;
+
+  document.getElementById("leads-updated").textContent =
+    "recalculado " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+// --- Interações ---
+document.getElementById("leads-search").addEventListener("input", ev => {
+  leadsBusca = ev.target.value.toLowerCase().trim(); renderLeads();
+});
+document.querySelectorAll("#leads-subnav [data-lf]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#leads-subnav [data-lf]").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); leadsFiltro = b.dataset.lf; renderLeads();
+}));
+document.getElementById("leads-recalc-btn").addEventListener("click", renderLeads);
+document.getElementById("leads-add-btn").addEventListener("click", () => {
+  const n = prompt("Nome da empresa:"); if (!n) return;
+  leadsData.push({ n: n.trim(), m: prompt("Cidade:") || "", u: (prompt("UF:") || "").toUpperCase(),
+    d: prompt("Site (sem https):") || null, h: prompt("Porte (50-200 / 200-1000 / 1000-5000 / 5000+):") || "200-1000",
+    s: prompt("Setor:\n" + Object.keys(LEAD_SETORES).join(", ")) || "servicos_prof",
+    v: prompt("Vínculo:\n" + Object.keys(LEAD_VINCULOS).join(", ")) || "nacional",
+    p: prompt("País da matriz (vazio se nacional):") || null,
+    o: "manual", st: "novo", f: "cnpj,linkedin_url,contatos", sg: [], pn: [], ct: [], it: [] });
+  saveLeadsData(); renderLeads();
+});
+document.getElementById("leads-list").addEventListener("change", ev => {
+  const nome = ev.target.dataset.leadStatus; if (!nome) return;
+  const e = leadsData.find(x => x.n === nome); if (!e) return;
+  e.st = ev.target.value; saveLeadsData(); renderLeads();
+});
+document.getElementById("leads-list").addEventListener("click", ev => {
+  const d = ev.target.dataset;
+  const nome = d.leadSinal || d.leadPenal || d.leadContato || d.leadInter; if (!nome) return;
+  const e = leadsData.find(x => x.n === nome); if (!e) return;
+  const hoje = new Date().toISOString().slice(0, 10);
+
+  if (d.leadSinal) {
+    const t = prompt("Gatilho:\n" + Object.keys(LEAD_SINAIS).join("\n")); if (!t || !LEAD_SINAIS[t]) return;
+    (e.sg = e.sg || []).push({ t, ds: prompt("O que aconteceu:") || "", url: prompt("Link da evidência:") || "", dt: hoje });
+  }
+  if (d.leadPenal) {
+    const t = prompt("Freio:\n" + Object.keys(LEAD_PENALIDADES).join("\n")); if (!t || !LEAD_PENALIDADES[t]) return;
+    (e.pn = e.pn || []).push({ t, ds: prompt("Detalhe:") || "", dt: hoje });
+  }
+  if (d.leadContato) {
+    const p = prompt("Persona:\n" + Object.keys(LEAD_PERSONAS).join("\n")); if (!p || !LEAD_PERSONAS[p]) return;
+    (e.ct = e.ct || []).push({ persona: p, cargo: prompt("Cargo:") || "", li: prompt("URL do LinkedIn:") || "" });
+  }
+  if (d.leadInter) {
+    const g = prompt("Qual gatilho você usou na abordagem?\n" + Object.keys(LEAD_SINAIS).join("\n")); if (!g) return;
+    const r = prompt("Resultado (positiva / negativa / sem_resposta):") || "sem_resposta";
+    (e.it = e.it || []).push({ gatilho: g, resultado: r, dt: hoje });
+  }
+  saveLeadsData(); renderLeads();
+});
+
+// Recalcula sozinho a cada 15 minutos: o frescor cai mesmo com a aba aberta.
+setInterval(() => { if (!document.getElementById("leads-view").classList.contains("hidden")) renderLeads(); }, 900000);
+
+// --- View switching (Tasks / Leads / Settings) ---
 function showView(name) {
   document.getElementById("tasks-view").classList.toggle("hidden", name !== "tasks");
+  document.getElementById("leads-view").classList.toggle("hidden", name !== "leads");
   document.getElementById("settings-view").classList.toggle("hidden", name !== "settings");
+  document.getElementById("app-title").textContent =
+    name === "leads" ? "Leads" : name === "settings" ? "Settings" : "Tasks";
+  document.getElementById("side-tasks").classList.toggle("active", name === "tasks");
+  document.getElementById("side-leads").classList.toggle("active", name === "leads");
+  if (name === "leads") renderLeads();
 }
 document.getElementById("nav-settings-btn").addEventListener("click", () => showView("settings"));
 document.getElementById("settings-back-btn").addEventListener("click", () => showView("tasks"));
+document.getElementById("side-tasks").addEventListener("click", () => showView("tasks"));
+document.getElementById("side-leads").addEventListener("click", () => showView("leads"));
 
 // --- Tasks: find/walk helpers ---
 function findTaskById(list, id) {

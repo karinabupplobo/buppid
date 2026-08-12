@@ -399,14 +399,9 @@
 
   /* ================= Leads ================= */
   #leads-view.hidden { display: none !important; }
-  #leads-subnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
-  #leads-search { border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px;
-    font-size: 12.5px; min-width: 200px; flex: 1 1 200px; background: #fff; color: var(--text); }
-  #leads-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-  .lead-stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 10px 14px; min-width: 108px; }
-  .lead-stat b { display: block; font-size: 20px; font-weight: 700; line-height: 1.1; }
-  .lead-stat span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+  #leads-search { width: 100%; border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 10px; font-size: 12px; background: #fff; color: var(--text); margin-bottom: 12px; }
+  #leads-search:focus { outline: 2px solid var(--border-strong); outline-offset: -1px; }
 
   #leads-list { border: 1px solid var(--border); border-radius: 12px; background: var(--panel);
     overflow: hidden; }
@@ -473,14 +468,14 @@
     padding: 14px 13px; position: sticky; top: 18px; }
   #leads-funnel h4 { margin: 0 0 12px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
-  .funnel-stage { display: block; width: 100%; border: 1px solid var(--border-strong); background: #fff;
-    color: var(--text); cursor: pointer; margin: 0 auto 5px; padding: 9px 8px; border-radius: 7px;
-    text-align: center; transition: transform .12s, background .12s; }
-  .funnel-stage:hover { background: var(--land-default); transform: translateX(-2px); }
-  .funnel-stage.active { background: var(--text); border-color: var(--text); color: #fff; }
+  .funnel-stage { display: block; width: 100%; border: none; color: #fff; cursor: pointer;
+    margin: 0 auto 4px; padding: 9px 8px; border-radius: 7px; text-align: center;
+    transition: transform .12s, filter .12s, box-shadow .12s; }
+  .funnel-stage:hover { filter: brightness(1.08); transform: scale(1.02); }
+  .funnel-stage.active { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--text); }
   .funnel-stage b { display: block; font-size: 17px; font-weight: 700; line-height: 1.15; }
-  .funnel-stage span { font-size: 10.5px; font-weight: 600; opacity: .78; }
-  .funnel-stage.vazio { opacity: .45; }
+  .funnel-stage span { font-size: 10.5px; font-weight: 600; opacity: .92; }
+  .funnel-stage.vazio { filter: saturate(.3) opacity(.55); }
   .funnel-drop { font-size: 10px; color: var(--text-muted); text-align: center; margin: -2px 0 4px; }
   #funnel-hint { font-size: 10.5px; color: var(--text-muted); line-height: 1.45; margin-top: 10px;
     border-top: 1px solid var(--border); padding-top: 9px; }
@@ -591,15 +586,10 @@
   </div>
 
   <div id="leads-view" class="hidden">
-    <div id="leads-stats"></div>
-    <div id="leads-subnav">
-      <input id="leads-search" type="search" placeholder="filtrar por nome, setor, cidade…" aria-label="Filtrar leads">
-      <button class="tasks-subnav-btn active" data-lf="todos" type="button">Todas</button>
-      <button class="tasks-subnav-btn" data-lf="bloqueado" type="button">Bloqueadas</button>
-    </div>
     <div id="leads-main">
       <aside id="leads-funnel">
         <h4>Funil</h4>
+        <input id="leads-search" type="search" placeholder="filtrar por nome, setor, cidade…" aria-label="Filtrar leads">
         <div id="funnel-stages"></div>
         <div id="funnel-hint"></div>
       </aside>
@@ -1252,17 +1242,6 @@ const LEAD_ROT_FACIL = { facil: "Fácil", media: "Média", dificil: "Difícil" }
 
 function renderLeads() {
   const calc = leadsData.map(e => ({ e, c: calcularLead(e) })).sort((a, b) => b.c.total - a.c.total);
-  const conta = p => calc.filter(x => x.c.prioridade === p).length;
-  const saz = LEAD_SAZONAL[new Date().getMonth()];
-
-  document.getElementById("leads-stats").innerHTML = `
-    <div class="lead-stat"><b>${calc.length}</b><span>empresas</span></div>
-    <div class="lead-stat"><b>${conta("premium")}</b><span>premium</span></div>
-    <div class="lead-stat"><b>${conta("alto")}</b><span>alta</span></div>
-    <div class="lead-stat"><b>${conta("medio")}</b><span>média</span></div>
-    <div class="lead-stat"><b>${calc.filter(x => x.c.intencao > 0).length}</b><span>com gatilho vivo</span></div>
-    <div class="lead-stat"><b>${saz.m}×</b><span>${saz.n}</span></div>`;
-
   const badge = document.getElementById("sidebar-badge");
   const urgente = calc.filter(x => ["premium", "alto"].includes(etapaDoLead(x))).length;
   badge.textContent = urgente; badge.classList.toggle("hidden", urgente === 0);
@@ -1395,17 +1374,38 @@ function etapaDoLead(x) {
   return x.c.prioridade;   // baixo, medio, alto, premium ou bloqueado
 }
 
+// Luminância relativa (WCAG) para decidir se o texto da faixa vai claro ou escuro.
+function luminancia(h, s, l) {
+  s /= 100; l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+  let r, g, b;
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else [r, g, b] = [0, x, c];
+  const f = v => { v += m; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+}
+
 function renderFunil(calc) {
   const nums = FUNIL.map(e => calc.filter(x => etapaDoLead(x) === e.k).length);
   let html = "";
   FUNIL.forEach((e, i) => {
     const larg = Math.max(44, Math.round(100 - i * (56 / (FUNIL.length - 1))));
+    // matiz de 4 (vermelho) a 142 (verde), passando pelo amarelo no meio
+    const t = i / (FUNIL.length - 1);
+    const hue = Math.round(4 + t * 138);
+    const luz = 48 + Math.round(Math.sin(t * Math.PI) * 4);
+    const cor = `hsl(${hue} 64% ${luz}%)`;
+    // amarelo e verde ficam claros demais para texto branco; escolhe o texto
+    // pela luminância real da faixa em vez de fixar uma cor só
+    const escuro = luminancia(hue, 64, luz) > 0.22;
     if (i > 0) {
       const antes = nums[i - 1];
       html += `<div class="funnel-drop">↓ ${antes > 0 ? Math.round((nums[i] / antes) * 100) : 0}%</div>`;
     }
     html += `<button class="funnel-stage${leadsFiltro === e.k ? " active" : ""}${nums[i] === 0 ? " vazio" : ""}"
-      style="width:${larg}%" data-fs="${e.k}" title="${e.d}" type="button">
+      style="width:${larg}%;background:${cor};color:${escuro ? "#241f14" : "#fff"}" data-fs="${e.k}" title="${e.d}" type="button">
       <b>${nums[i]}</b><span>${e.r}</span></button>`;
   });
   document.getElementById("funnel-stages").innerHTML = html;
@@ -1421,9 +1421,8 @@ function renderFunil(calc) {
 
 document.getElementById("funnel-stages").addEventListener("click", ev => {
   const b = ev.target.closest("[data-fs]"); if (!b) return;
-  leadsFiltro = b.dataset.fs;
-  document.querySelectorAll("#leads-subnav [data-lf]").forEach(x =>
-    x.classList.toggle("active", x.dataset.lf === leadsFiltro));
+  // clicar na etapa já ativa limpa o filtro e volta a mostrar tudo
+  leadsFiltro = leadsFiltro === b.dataset.fs ? "todos" : b.dataset.fs;
   renderLeads();
 });
 
@@ -1431,10 +1430,6 @@ document.getElementById("funnel-stages").addEventListener("click", ev => {
 document.getElementById("leads-search").addEventListener("input", ev => {
   leadsBusca = ev.target.value.toLowerCase().trim(); renderLeads();
 });
-document.querySelectorAll("#leads-subnav [data-lf]").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll("#leads-subnav [data-lf]").forEach(x => x.classList.remove("active"));
-  b.classList.add("active"); leadsFiltro = b.dataset.lf; renderLeads();
-}));
 document.getElementById("leads-recalc-btn").addEventListener("click", renderLeads);
 document.getElementById("leads-add-btn").addEventListener("click", () => {
   const n = prompt("Nome da empresa:"); if (!n) return;

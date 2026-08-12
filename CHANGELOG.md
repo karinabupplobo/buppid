@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-2140-cbtd-contatos — 12/08/2026
+- O que mudou: varredura da Comissão Científica do CBTD 2026 (ABTD), que lista
+  publicamente 24 líderes de T&D com nome, cargo e empresa. Entraram 14
+  empresas novas, todas já com contato de T&D mapeado, mais contatos para duas
+  que já estavam na base: Tirolez e Gerdau. Base foi de 62 para 76 empresas, e
+  de 1 para 17 com contato. Transpetro entrou com o freio de estatal ligado,
+  o que a derrubou de premium para média — primeira vez que a penalidade age.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: as fontes de cadastro entregam e-mail fiscal, não gente de T&D. O
+  comitê do CBTD entrega exatamente o cargo que interessa, de graça e público.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-2110-varredura-fontes
+
 ## v-20260812-2110-varredura-fontes — 12/08/2026
 - O que mudou: cada empresa agora registra quais das oito fontes públicas já
   foram varridas, quando, e o que cada uma devolveu. A ficha mostra a lista

@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-2110-varredura-fontes — 12/08/2026
+- O que mudou: cada empresa agora registra quais das oito fontes públicas já
+  foram varridas, quando, e o que cada uma devolveu. A ficha mostra a lista
+  inteira com marca de checado ou não, então dá para ver o buraco em vez de
+  supor. Varredura feita em Marilan, Oderich, Peccin e Nelogica.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: sem esse registro a varredura dependia de eu lembrar o que já tinha
+  sido olhado, e a mesma fonte seria consultada de novo sem necessidade.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-2035-dominios
+
 ## v-20260812-2035-dominios — 12/08/2026
 - O que mudou: domínio e CNPJ verificados por fonte pública para Peccin,
   Conservas Oderich e DaColônia Alimentos. Premium passou de 2 para 5 empresas

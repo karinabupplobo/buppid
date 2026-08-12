@@ -1584,6 +1584,7 @@ function renderTaskRow(t, depth) {
   const nameField = nameOpen
     ? `<textarea class="tasks-name-input tasks-name-multiline" data-id="${t.id}" data-field="name" rows="1">${esc(t.name)}</textarea>`
     : `<input class="tasks-name-input" data-id="${t.id}" data-field="name" value="${escAttr(t.name)}">`;
+  const iconStyle = t.rowType === "task" ? "" : ` style="color:${colors.bar}"`;
   const rowStyle = t.rowType === "task"
     ? `background:${colors.bg};color:${colors.text};--depth:${depth}`
     : `border-left-color:${colors.bar};color:${colors.text};--depth:${depth}`;
@@ -1594,7 +1595,7 @@ function renderTaskRow(t, depth) {
         <span class="tasks-drag-handle" data-id="${t.id}" title="Arraste para mover"><svg viewBox="0 0 10 16" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="7" cy="3" r="1.3"/><circle cx="3" cy="8" r="1.3"/><circle cx="7" cy="8" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="7" cy="13" r="1.3"/></svg></span>
         <input type="checkbox" class="tasks-select-checkbox" data-id="${t.id}" ${tasksSelected.has(t.id) ? "checked" : ""}>
         <button class="tasks-toggle ${hasChildren ? "" : "empty"}" data-id="${t.id}" type="button">${expanded ? "▼" : "▶"}</button>
-        <span class="tasks-row-icon" title="${ROW_TYPE_LABELS[t.rowType]}">${icon}</span>
+        <span class="tasks-row-icon"${iconStyle} title="${ROW_TYPE_LABELS[t.rowType]}">${icon}</span>
         ${nameField}
         <button class="tasks-name-expand ${nameOpen ? "open visible" : ""}" data-id="${t.id}" type="button" title="${nameOpen ? "Recolher o texto" : "Mostrar o texto inteiro"}"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 L6 8 L9.5 4.5"/></svg></button>
         <button class="tasks-comments-btn ${t.comments.length ? "has-comments" : ""}" data-id="${t.id}" type="button" title="${t.comments.length ? t.comments.length + " comentário(s)" : "Adicionar comentário"}">💬${t.comments.length ? `<span class="tasks-comments-count">${t.comments.length}</span>` : ""}</button>
@@ -2006,8 +2007,10 @@ function renderTasksLateView() {
   el.innerHTML = items.map(t => {
     const parentName = findParentTaskName(t.id);
     const assignees = nomesDosResponsaveis(t.assignees).join(", ");
+    const cores = TASK_STATUS_COLORS[t.status] || TASK_STATUS_COLORS["Not Started"];
+    const iconStyle = t.rowType === "task" ? "" : ` style="color:${cores.bar}"`;
     return `<div class="tasks-late-row">
-      <span class="tasks-row-icon">${ROW_TYPE_ICONS[t.rowType] || ""}</span>
+      <span class="tasks-row-icon"${iconStyle}>${ROW_TYPE_ICONS[t.rowType] || ""}</span>
       <div class="tasks-late-info">
         ${parentName ? `<div class="tasks-late-parent">↳ ${esc(parentName)}</div>` : ""}
         <div class="tasks-late-name">${esc(t.name)}</div>

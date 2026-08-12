@@ -468,6 +468,26 @@
     padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--text); }
   #leads-footer button:hover { background: var(--land-default); }
   #leads-updated { font-size: 11.5px; color: var(--text-muted); }
+  #leads-main { display: grid; grid-template-columns: 1fr 232px; gap: 16px; align-items: start; }
+  #leads-funnel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 13px; position: sticky; top: 18px; }
+  #leads-funnel h4 { margin: 0 0 3px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+  #funnel-modes { display: flex; gap: 4px; margin: 9px 0 13px; }
+  #funnel-modes button { flex: 1; border: 1px solid var(--border); background: #fff; color: var(--text-muted);
+    border-radius: 6px; padding: 5px 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  #funnel-modes button.active { background: var(--text); border-color: var(--text); color: #fff; }
+  .funnel-stage { display: block; width: 100%; border: 1px solid var(--border-strong); background: #fff;
+    color: var(--text); cursor: pointer; margin: 0 auto 5px; padding: 9px 8px; border-radius: 7px;
+    text-align: center; transition: transform .12s, background .12s; }
+  .funnel-stage:hover { background: var(--land-default); transform: translateX(-2px); }
+  .funnel-stage.active { background: var(--text); border-color: var(--text); color: #fff; }
+  .funnel-stage b { display: block; font-size: 17px; font-weight: 700; line-height: 1.15; }
+  .funnel-stage span { font-size: 10.5px; font-weight: 600; opacity: .78; }
+  .funnel-stage.vazio { opacity: .45; }
+  .funnel-drop { font-size: 10px; color: var(--text-muted); text-align: center; margin: -2px 0 4px; }
+  #funnel-hint { font-size: 10.5px; color: var(--text-muted); line-height: 1.45; margin-top: 10px;
+    border-top: 1px solid var(--border); padding-top: 9px; }
   .tag-premium { background:#4a2f6b; color:#fff; border-color:#4a2f6b; }
   .tag-alto    { background:#1d3b2a; color:#fff; border-color:#1d3b2a; }
   .tag-medio   { background:#eef0e9; color:#5d6b4f; border-color:#d3d9c8; }
@@ -478,6 +498,8 @@
   .lead-pen b { display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
     color:#8d4034; margin-bottom:5px; }
   .lead-sazon { font-size:11.5px; color:var(--text-muted); margin-left:6px; }
+  @media (max-width: 900px) { #leads-main { grid-template-columns: 1fr; }
+    #leads-funnel { position: static; order: -1; } }
   @media (max-width: 760px) {
     .lead-cols { grid-template-columns: 1fr; }
     #sidebar { width: 100%; height: 54px; bottom: 0; top: auto; flex-direction: row;
@@ -576,7 +598,7 @@
     <div id="leads-stats"></div>
     <div id="leads-subnav">
       <input id="leads-search" type="search" placeholder="filtrar por nome, setor, cidade…" aria-label="Filtrar leads">
-      <button class="tasks-subnav-btn active" data-lf="fila" type="button">Fila do dia</button>
+      <button class="tasks-subnav-btn active" data-lf="fila" type="button">Prioritários</button>
       <button class="tasks-subnav-btn" data-lf="premium" type="button">Premium</button>
       <button class="tasks-subnav-btn" data-lf="alto" type="button">Alta</button>
       <button class="tasks-subnav-btn" data-lf="medio" type="button">Média</button>
@@ -584,7 +606,18 @@
       <button class="tasks-subnav-btn" data-lf="bloqueado" type="button">Bloqueadas</button>
       <button class="tasks-subnav-btn" data-lf="todos" type="button">Todas</button>
     </div>
-    <div id="leads-list"></div>
+    <div id="leads-main">
+      <div id="leads-list"></div>
+      <aside id="leads-funnel">
+        <h4>Funil</h4>
+        <div id="funnel-modes">
+          <button data-fm="prioridade" class="active" type="button">Prioridade</button>
+          <button data-fm="pipeline" type="button">Pipeline</button>
+        </div>
+        <div id="funnel-stages"></div>
+        <div id="funnel-hint"></div>
+      </aside>
+    </div>
     <div id="leads-footer">
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
@@ -1247,11 +1280,14 @@ function renderLeads() {
   const urgente = conta("premium") + conta("alto");
   badge.textContent = urgente; badge.classList.toggle("hidden", urgente === 0);
 
+  renderFunil(calc);
+
   const visivel = x => {
     const t = `${x.e.n} ${x.c.setor.d} ${x.e.m} ${x.e.u}`.toLowerCase();
     if (leadsBusca && !t.includes(leadsBusca)) return false;
     if (leadsFiltro === "fila") return x.c.prioridade === "premium" || x.c.prioridade === "alto";
     if (leadsFiltro === "todos") return true;
+    if (leadsFiltro.startsWith("st:")) return (x.e.st || "novo") === leadsFiltro.slice(3);
     return x.c.prioridade === leadsFiltro;
   };
   const lista = calc.filter(visivel);
@@ -1348,6 +1384,70 @@ function renderLeads() {
   document.getElementById("leads-updated").textContent =
     "recalculado " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
+
+// --- Funil ---
+let funilModo = "prioridade";
+
+const FUNIL_PRIORIDADE = [
+  { k: "todos",   r: "Todas na base",  d: "tudo que já entrou" },
+  { k: "medio",   r: "Prioridade média", d: "vale funil automatizado" },
+  { k: "alto",    r: "Prioridade alta",  d: "cadência personalizada" },
+  { k: "premium", r: "Premium",          d: "trabalhar à mão, uma a uma" }
+];
+const FUNIL_PIPELINE = [
+  { k: "st:novo",        r: "Novo",        d: "ainda não tocada" },
+  { k: "st:qualificada", r: "Qualificada", d: "contato mapeado, pronta para abordar" },
+  { k: "st:em_cadencia", r: "Em cadência", d: "mensagem enviada, aguardando" },
+  { k: "st:reuniao",     r: "Reunião",     d: "respondeu e marcou" },
+  { k: "st:proposta",    r: "Proposta",    d: "proposta na mesa" },
+  { k: "st:cliente",     r: "Cliente",     d: "fechou" }
+];
+
+function renderFunil(calc) {
+  const etapas = funilModo === "prioridade" ? FUNIL_PRIORIDADE : FUNIL_PIPELINE;
+  const conta = k => k === "todos" ? calc.length
+    : k.startsWith("st:") ? calc.filter(x => (x.e.st || "novo") === k.slice(3)).length
+    : calc.filter(x => x.c.prioridade === k).length;
+
+  const nums = etapas.map(e => conta(e.k));
+  const topo = Math.max(1, nums[0]);
+  let html = "";
+  etapas.forEach((e, i) => {
+    const n = nums[i];
+    const larg = Math.max(46, Math.round(100 - i * (54 / Math.max(1, etapas.length - 1))));
+    if (i > 0) {
+      const antes = nums[i - 1];
+      const taxa = antes > 0 ? Math.round((n / antes) * 100) : 0;
+      html += `<div class="funnel-drop">↓ ${taxa}%</div>`;
+    }
+    html += `<button class="funnel-stage${leadsFiltro === e.k ? " active" : ""}${n === 0 ? " vazio" : ""}"
+      style="width:${larg}%" data-fs="${e.k}" title="${e.d}" type="button">
+      <b>${n}</b><span>${e.r}</span></button>`;
+  });
+  document.getElementById("funnel-stages").innerHTML = html;
+
+  const bloq = calc.filter(x => x.c.prioridade === "bloqueado").length;
+  document.getElementById("funnel-hint").innerHTML = funilModo === "prioridade"
+    ? `Prioridade é calculada: fit, gatilho, facilidade e freios. Você não move — o motor move.${bloq ? `<br><b>${bloq} bloqueada(s)</b> por penalidade.` : ""}`
+    : `Pipeline é você quem move, no seletor de status dentro de cada ficha.`;
+}
+
+document.querySelectorAll("#funnel-modes [data-fm]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#funnel-modes [data-fm]").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); funilModo = b.dataset.fm;
+  leadsFiltro = funilModo === "prioridade" ? "fila" : "st:novo";
+  document.querySelectorAll("#leads-subnav [data-lf]").forEach(x =>
+    x.classList.toggle("active", x.dataset.lf === leadsFiltro));
+  renderLeads();
+}));
+
+document.getElementById("funnel-stages").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-fs]"); if (!b) return;
+  leadsFiltro = b.dataset.fs;
+  document.querySelectorAll("#leads-subnav [data-lf]").forEach(x =>
+    x.classList.toggle("active", x.dataset.lf === leadsFiltro));
+  renderLeads();
+});
 
 // --- Interações ---
 document.getElementById("leads-search").addEventListener("input", ev => {

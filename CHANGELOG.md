@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1905-responsivo — 12/08/2026
+- O que mudou: o app deixou de parar em 1400px e agora ocupa a largura da tela
+  (teto de 2100px em telas muito largas). O corte era pior do que parecia: a
+  margem "auto" da esquerda tinha sido anulada pela margem da barra lateral, e
+  toda a folga sobrava só do lado direito. A tabela de tasks passou a virar
+  cartão empilhado abaixo de 1140px, não mais só em 720px — a grade de sete
+  colunas precisa de cerca de 1020px e estourava a tela na horizontal entre um
+  ponto e outro. As regras de toque ficaram num bloco próprio de 720px, junto
+  com a barra lateral virando barra inferior. Acima de 1500px o funil e a ficha
+  do lead ganham mais espaço.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: em tela grande sobrava um terço da tela vazio e em tela média a
+  tabela de tasks vazava para fora.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1848-funil-colorido
+
 ## v-20260812-1848-funil-colorido — 12/08/2026
 - O que mudou: removidos os cartões de resumo do topo da view Leads e a barra
   de filtros (busca, "Todas", "Bloqueadas"). A busca passou para dentro do

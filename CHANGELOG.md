@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-2010-revisao-base — 12/08/2026
+- O que mudou: auditoria da base de leads (62 empresas, nenhum erro estrutural)
+  e duas correções. A região deixou de ser uma lista fixa de cidades e virou
+  camada: eixo São Paulo, eixo industrial Sul/Sudeste, ou fora do eixo. A lista
+  antiga penalizava qualquer cidade não listada, o que rebaixava por engano
+  Bento Gonçalves, Lajeado, Erechim, Portão e São Sebastião do Caí — premium
+  subiu de 8 para 11. Cada empresa passou a registrar se a busca de contato já
+  foi feita e quando, para não repetir consulta e queimar crédito.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a lista de cidades não sobrevive a empresa nova, e sem registro de
+  busca a mesma empresa seria consultada de novo a cada sessão.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1952-tipo-project
+
 ## v-20260812-1952-tipo-project — 12/08/2026
 - O que mudou: novo tipo de linha "Project", acima de Goal no seletor, com
   ícone de maleta desenhado no mesmo traçado dos outros três. Segue a regra de

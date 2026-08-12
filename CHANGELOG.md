@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1830-funil-unico — 12/08/2026
+- O que mudou: o funil virou um só, com oito etapas: prioridade baixa, média,
+  alta, premium, contatada, reunião, proposta e cliente. As quatro primeiras o
+  motor calcula; as quatro últimas você move pelo status na ficha. Contatar tira
+  a empresa da faixa de prioridade, então cada empresa aparece em exatamente uma
+  etapa. Funil passou para a esquerda e a lista para a direita. Removidos o
+  filtro "Prioritários" e os botões de modo do funil. Status "em cadência"
+  virou "contatada".
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: prioridade e pipeline eram a mesma jornada quebrada em dois painéis;
+  separados, não dava para ver quantas empresas realmente saíram da fila.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1812-funil
+
 ## v-20260812-1812-funil — 12/08/2026
 - O que mudou: funil clicável à direita da lista de leads, com dois modos.
   "Prioridade" mostra quantas empresas estão em cada nível calculado pelo motor

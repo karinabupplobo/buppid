@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-1812-funil — 12/08/2026
+- O que mudou: funil clicável à direita da lista de leads, com dois modos.
+  "Prioridade" mostra quantas empresas estão em cada nível calculado pelo motor
+  (todas, média, alta, premium) com a taxa de passagem entre elas. "Pipeline"
+  mostra o status que você move à mão (novo, qualificada, em cadência, reunião,
+  proposta, cliente). Clicar em qualquer etapa filtra a lista. O filtro antes
+  chamado "Fila do dia" virou "Prioritários" — o nome sugeria uma fila diária
+  que não existia.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: ver a distribuição da base e navegar por ela sem depender dos botões
+  de filtro, e separar o que o motor decide do que a pessoa decide.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-1755-leads
+
 ## v-20260812-1755-leads — 12/08/2026
 - O que mudou: menu lateral fixo à esquerda (Tasks e Leads) e uma view nova de
   geração de leads. O motor pontua cada empresa em quatro eixos independentes —

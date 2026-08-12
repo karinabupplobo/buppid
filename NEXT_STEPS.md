@@ -2,6 +2,25 @@
 
 ## Próximo
 
+- [ ] ROTINA DIÁRIA (a partir de 13/08/2026): atualizar a base de leads —
+      buscar empresas novas, criar gatilhos novos e RECHECAR os gatilhos
+      existentes antes de deixá-los envelhecer. Se houver evidência online de
+      que o sinal continua vivo, renovar a data em vez de deixar decair.
+- [ ] Implementar o estado "vencido, aguardando recheca": sinal que passou da
+      validade para de somar pontos mas continua visível e marcado, em vez de
+      sumir. A fila do dia passa a mostrar o que precisa ser rechecado primeiro,
+      para nenhum lead morrer numa janela em que ninguém olhou.
+- [ ] Varrer o CONARH 2026 (18 a 20/08, São Paulo Expo) atrás de contatos de
+      T&D, no mesmo formato que funcionou com o comitê do CBTD.
+- [ ] Varrer os finalistas do Prêmio Destaque da ABTD: empresa que inscreve
+      case de T&D é compradora declarada.
+- [ ] Adicionar as ~50 empresas restantes do Prêmio Exportação RS 2026.
+- [ ] Conseguir o e-mail dos 17 contatos já mapeados. Apollo gratuito não
+      libera nenhuma API de pessoa (testado em 12/08, nenhum crédito gasto).
+- [ ] Avaliar Edge Function com cron no Supabase para o coletores.py rodar
+      sozinho todo dia. Depende de acesso ao projeto Supabase da dash.
+
+
 - [ ] Validar CNPJ, porte e site das 62 empresas do seed antes de qualquer
       abordagem. As marcadas como "conhecimento_base" não foram verificadas.
 - [ ] Mapear contatos das 8 empresas premium. Sem contato, o eixo Acesso fica

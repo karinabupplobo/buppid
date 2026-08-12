@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-2155-apollo-bloqueado — 12/08/2026
+- O que mudou: registro, nas 17 empresas com contato mapeado, de que o Apollo
+  está bloqueado no plano gratuito. Testados e recusados: people/match,
+  people/bulk_match e mixed_people/api_search. Só o endpoint de perfil
+  responde. Nenhum crédito foi consumido — os 205 seguem intactos.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: deixar gravado na própria base para não repetir o teste a cada
+  sessão nem gastar crédito descobrindo o mesmo limite de novo.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-2140-cbtd-contatos
+
 ## v-20260812-2140-cbtd-contatos — 12/08/2026
 - O que mudou: varredura da Comissão Científica do CBTD 2026 (ABTD), que lista
   publicamente 24 líderes de T&D com nome, cargo e empresa. Entraram 14

@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-1945-build-tag — 13/08/2026
+- O que mudou: marcador de versão no rodapé da página de leads, ao lado do
+  "recalculado". Mostra o build publicado, para dar para saber de olho qual
+  versão o GitHub Pages está servindo em vez de adivinhar pelo layout.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: o Pages seguiu servindo a versão anterior depois do push, e não havia
+  jeito de distinguir "build velho no ar" de "código errado no repositório".
+  Auditado: o index.html em main não tem mais + Gatilho, + Freio nem
+  + Interação, e tem lead-cats e lead-coment. O repositório está correto.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1934-docs-comentarios
+
 ## v-20260813-1930-cats-comentarios — 13/08/2026
 - O que mudou: a ficha passou a ter seis categorias na mesma linha — Fit,
   Intenção, Facilidade, Acesso, Gatilho e Contato — cada uma com ícone colorido

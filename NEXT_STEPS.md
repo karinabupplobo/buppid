@@ -2,6 +2,14 @@
 
 ## Próximo
 
+- [ ] Testar no navegador: arrastar lead até as etapas do funil (só desktop —
+      no celular continua sendo o seletor de status dentro da ficha).
+- [ ] Decidir se a lista de leads deve ser AGRUPADA por etapa do funil, com
+      cabeçalho por faixa. Hoje é uma lista única ordenada por pontuação; o
+      funil só filtra.
+- [ ] Preencher e-mail dos 17 contatos já mapeados usando o formulário novo da
+      ficha, marcando "verificado" só quando a fonte for real.
+
 - [ ] ROTINA DIÁRIA (a partir de 13/08/2026): atualizar a base de leads —
       buscar empresas novas, criar gatilhos novos e RECHECAR os gatilhos
       existentes antes de deixá-los envelhecer. Se houver evidência online de

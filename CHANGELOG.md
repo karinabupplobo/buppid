@@ -2,6 +2,50 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-1822-ficha-densa — 13/08/2026
+- O que mudou: a ficha do lead perdeu o texto corrido. Saiu o bloco "por quê" com
+  a explicação da prioridade e da temperatura; entraram cinco métricas com barra
+  (Total, Fit, Intenção, Facilidade, Acesso), tabela de gatilhos com barra de
+  frescor e chips de fonte que abrem ao clique. A explicação virou tooltip, não
+  sumiu. "Primeira linha sugerida" ficou recolhida.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a ficha exigia ler quatro parágrafos para achar dois números.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1805-contato-editavel
+
+## v-20260813-1805-contato-editavel — 13/08/2026
+- O que mudou: contato deixou de ser três prompt() em sequência e virou
+  formulário dentro da ficha, com nome, cargo, papel, e-mail, marca de e-mail
+  verificado, telefone, LinkedIn e fonte. Dá para editar e remover contato já
+  gravado. A ficha agora fica aberta depois de salvar, e o recálculo automático
+  de 15 minutos não redesenha enquanto um formulário está aberto.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: não havia como guardar e-mail nem corrigir contato errado, e o
+  prompt() nem pedia o nome da pessoa.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1748-tags-card
+
+## v-20260813-1748-tags-card — 13/08/2026
+- O que mudou: o card da lista ficou com quatro tags — temperatura, porte,
+  contato e venda. Prioridade, Fit, ciclo e penalidade passaram para dentro da
+  ficha. A prioridade virou faixa colorida na borda esquerda da linha.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: oito tags por linha competiam entre si e a lista virava ruído.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1740-drag-funil
+
+## v-20260813-1740-drag-funil — 13/08/2026
+- O que mudou: dá para arrastar a empresa da lista até a caixinha do funil.
+  Soltar em Contatada, Reunião, Proposta ou Cliente grava o status. Soltar numa
+  das quatro faixas de prioridade devolve a empresa para a faixa automática e,
+  se o motor discordar do destino, avisa a diferença com os números em vez de
+  gravar o que foi pedido.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: só dava para mover pelo seletor dentro da ficha; e prioridade é
+  cálculo, não status — deixar arrastar para lá sem aviso corromperia o score.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1712-changelog-retroativo
+
 ## v-20260812-2044-rotina-diaria — 12/08/2026 (registrado em 13/08/2026)
 - O que mudou: entrada retroativa. O commit d7340ad, que acrescentou ao
   NEXT_STEPS.md a rotina diária de atualização da base e a recheca de gatilhos,

@@ -2,6 +2,16 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2250-inbound-sem-cinza — 13/08/2026
+- O que mudou: Inbound deixou de ficar cinza quando vazio. A regra CSS que
+  dessaturava faixas vazias é agora exceção para Inbound, que mantém a cor
+  amarelo-claro original (hsl 44/55/84) independente do número de leads lá.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: Inbound é uma faixa intencional vazia, não um incômodo que merecia
+  visualização atenuada como as outras vazias.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2248-docs-degrade
+
 ## v-20260813-2245-degrade-funil — 13/08/2026
 - O que mudou: Outbound Alto manteve exatamente a cor de antes (hsl 44/64/51).
   Inbound deixou de ser azul e virou o mesmo amarelo do Alto, só que bem mais

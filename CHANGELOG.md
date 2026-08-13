@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2245-degrade-funil — 13/08/2026
+- O que mudou: Outbound Alto manteve exatamente a cor de antes (hsl 44/64/51).
+  Inbound deixou de ser azul e virou o mesmo amarelo do Alto, só que bem mais
+  claro (hsl 44/55/84) — herda a família de cor sem se confundir com a faixa
+  de cima. De Contatada a Cliente virou uma rampa só, de azul (210) a verde
+  (140), passando por ciano e verde-água. A lógica de cor foi centralizada
+  numa função só (hslDaEtapa), usada tanto pelo funil quanto pela faixa
+  esquerda de cada lead, para as duas nunca mais poderem divergir.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: pedido direto de calibrar o degradê — manter o que já estava bom em
+  Alto, diferenciar Inbound sem perder a família de cor, e fazer a metade final
+  do funil ler como uma transição clara de azul para verde.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2223-docs-fit-outbound
+
 ## v-20260813-2220-fit-outbound-dropdown — 13/08/2026
 - O que mudou: a tag de fit virou "FIT Alta" (verde), "FIT Médio" (amarelo) e
   "FIT Baixo" (vermelho), com "FIT" sempre maiúsculo. As três primeiras faixas

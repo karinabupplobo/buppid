@@ -405,7 +405,6 @@
   .lead-row.prio-medio     { border-left-color: #b9c4ac; }
   .lead-row.prio-baixo     { border-left-color: #e6e4dc; }
   .lead-row.prio-bloqueado { border-left-color: #8d4034; }
-  .lead-tags-ficha { margin: 12px 0 0; }
   .lead-row > summary { list-style: none; cursor: pointer; padding: 12px 15px; display: grid;
     grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
   .lead-row > summary::-webkit-details-marker { display: none; }
@@ -432,21 +431,13 @@
   .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
 
   .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9; }
-  .lead-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  .lead-cols h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--text-muted); font-weight: 700; }
   .lead-kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   .lead-kv td { padding: 4px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
   .lead-kv td:first-child { color: var(--text-muted); white-space: nowrap; padding-right: 12px; width: 38%; }
   .lead-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 6px 0 12px;
     background: var(--land-default); }
   .lead-bar i { display: block; height: 100%; }
-  /* faixa de números no topo da ficha, no lugar do texto corrido */
-  .lead-metricas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 16px; }
-  .lm { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
-  .lm span { display: block; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--text-muted); font-weight: 700; }
-  .lm b { display: block; font-size: 17px; font-weight: 700; line-height: 1.2; margin: 1px 0 4px; }
+  /* barra fina usada na tabela de gatilhos */
   .lm-bar { display: block; height: 4px; border-radius: 2px; background: var(--land-default); overflow: hidden; }
   .lm-bar u { display: block; height: 100%; text-decoration: none; }
 
@@ -471,12 +462,47 @@
   .chip > div { border: 1px solid var(--border); border-top: none; border-radius: 0 0 5px 5px;
     padding: 6px 8px; font-size: 11.5px; line-height: 1.45; background: #fff; }
 
+  /* quatro categorias com ícone: a cor do ícone é a leitura da categoria */
+  .lead-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 12px 0 0; }
+  .cat { display: flex; align-items: center; gap: 8px; background: #fff; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; text-align: left;
+    color: var(--text); transition: border-color .12s, background .12s; }
+  .cat:hover { background: var(--land-default); }
+  .cat.aberta { border-color: var(--text); background: var(--land-default); }
+  .cat-ico { flex: none; width: 20px; height: 20px; display: block; }
+  .cat-ico svg { width: 100%; height: 100%; display: block; }
+  .cat span { font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; display: block; }
+  .cat b { font-size: 16px; font-weight: 700; line-height: 1.15; display: block; }
+  .saude-ok     .cat-ico { color: #3d5b32; }
+  .saude-quente .cat-ico { color: #b5641f; }
+  .saude-med    .cat-ico { color: #b5872f; }
+  .saude-ruim   .cat-ico { color: #8d4034; }
+  .saude-neutro .cat-ico { color: #b6b3a8; }
+  .cat-det { border: 1px solid var(--border); border-radius: 9px; background: #fff;
+    padding: 11px 13px; margin-top: 8px; }
+  .cat-det h4 { margin: 12px 0 7px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+
+  /* linhas de resumo sempre visíveis: gatilho e contato */
+  .lead-linha { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    padding: 7px 2px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+  .lead-linha:first-of-type { margin-top: 12px; border-top: 1px solid var(--border); }
+  .ll-rot { flex: none; width: 62px; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+  .ll-txt { flex: 1; min-width: 120px; }
+  .ll-txt.vazio { color: var(--text-muted); }
+  .ll-txt.morto { opacity: .45; }
+  .ll-mais, .ll-add { border: 1px solid var(--border); background: #fff; border-radius: 6px;
+    padding: 2px 8px; font-size: 11px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+  .ll-mais:hover, .ll-add:hover { background: var(--land-default); }
+  .lead-rodape { font-size: 11px; color: var(--text-muted); padding: 8px 2px 0; }
+
   .lead-abertura { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
-    padding: 9px 13px; margin-top: 14px; font-size: 13px; line-height: 1.55; }
-  .lead-abertura > summary { list-style: none; cursor: pointer; font-size: 11px; letter-spacing: .07em;
-    text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
-  .lead-abertura > summary::-webkit-details-marker { display: none; }
-  .lead-abertura p { margin: 7px 0 0; }
+    padding: 9px 13px; margin-top: 12px; font-size: 13px; line-height: 1.55; }
+  .lead-abertura > span { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+  .lead-abertura p { margin: 6px 0 0; }
   .lead-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
   .lead-actions button, .lead-actions select { border: 1px solid var(--border); background: #fff;
     color: var(--text); border-radius: 7px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -555,7 +581,6 @@
     #leads-funnel { position: static; } }
   @media (min-width: 1500px) {
     #leads-main { grid-template-columns: 264px 1fr; gap: 20px; }
-    .lead-cols { grid-template-columns: 1.15fr 1fr; gap: 26px; }
     .lead-row > summary { padding: 14px 18px; }
     .lead-body { padding: 4px 18px 20px; }
   }
@@ -563,6 +588,7 @@
      folga da esquerda e os campos sobem para 16px (abaixo disso o iPhone dá
      zoom ao focar). --- */
   @media (max-width: 720px) {
+    .lead-cats { grid-template-columns: repeat(2, 1fr); }
     #app { padding: 16px 12px 80px; }
     #app-header { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     #app-title { font-size: 17px; }
@@ -571,8 +597,6 @@
     #tasks-subnav { flex-wrap: wrap; }
     #login-gate-box { width: auto; max-width: 92vw; }
     #leads-search { font-size: 16px; }
-    .lead-cols { grid-template-columns: 1fr; }
-    .lead-metricas { grid-template-columns: repeat(3, 1fr); }
     #sidebar { width: 100%; height: 54px; bottom: 0; top: auto; flex-direction: row;
       justify-content: center; padding: 0; border-right: none; border-top: 1px solid var(--border); }
     .side-btn::after { display: none; }
@@ -1343,6 +1367,33 @@ function leadAbertura(e, c) {
   return m[s.t] || s.rotulo;
 }
 
+// Ícones das quatro categorias da ficha. Mesmo padrão dos ícones de tipo de
+// linha: SVG inline, sem biblioteca, herdando a cor via currentColor.
+const LEAD_CAT_ICONS = {
+  fit: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="0" r="14"/><circle cx="0" cy="0" r="7.5"/><circle cx="0" cy="0" r="2.2" fill="currentColor" stroke="none"/></svg>`,
+  intencao: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M0 15 C -10 10, -10 0, -2 -15 C -2 -6, 7 -6, 5 0 C 11 4, 9 12, 0 15 Z"/></svg>`,
+  facilidade: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M-14 8 A 14 14 0 1 1 14 8"/><path d="M0 8 L8 -5"/><circle cx="0" cy="8" r="2.2" fill="currentColor" stroke="none"/></svg>`,
+  acesso: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="-6" r="6.5"/><path d="M-12 15 C -12 4, 12 4, 12 15"/></svg>`
+};
+
+// A cor do ícone é a leitura da categoria: verde é bom, amarelo é atenção,
+// vermelho é problema, cinza é ausência de informação.
+function leadCategorias(e, c) {
+  const fitSaude = c.nivel === "A" ? "ok" : c.nivel === "D" ? "neutro" : "med";
+  const intSaude = c.temperatura === "quente" ? "quente" : c.temperatura === "morno" ? "med" : "neutro";
+  const facSaude = c.facilNivel === "facil" ? "ok" : c.facilNivel === "media" ? "med" : "ruim";
+  const aceSaude = c.acessoNivel === "mapeado" ? "ok" : c.acessoNivel === "parcial" ? "med" : "ruim";
+  return [
+    { k: "fit", r: "Fit", v: c.fit, saude: fitSaude, t: `Nível ${c.nivel}: setor, vínculo, porte e região` },
+    { k: "intencao", r: "Intenção", v: c.intencao, saude: intSaude, t: leadPorQue(e, c) },
+    { k: "facilidade", r: "Facilidade", v: c.facil, saude: facSaude, t: `Venda ${LEAD_ROT_FACIL[c.facilNivel]} — ciclo ${c.porte.ciclo}` },
+    { k: "acesso", r: "Acesso", v: c.acesso, saude: aceSaude, t: `${c.acessoNivel} — ${c.contatos.length} contato(s)` }
+  ];
+}
+
+// Qual categoria está aberta em cada ficha. Uma de cada vez.
+const leadsCatAberta = new Map();
+
 // --- Contatos da ficha ---
 // Regra da base: e-mail só entra verificado, com fonte. Nada de padrão deduzido
 // (nome.sobrenome@empresa). E-mail sem verificação fica gravado, mas marcado.
@@ -1430,99 +1481,108 @@ function renderLeads() {
         <div class="lead-score"><b>${c.total}</b><span>total</span></div>
       </summary>
       <div class="lead-body">
-        <div class="lead-tags lead-tags-ficha">
-          <span class="tag tag-${c.prioridade}" title="${escAttr(c.motivoPrioridade)}">${c.prioridade}</span>
-          <span class="tag tag-fit-${c.nivel}">Fit ${c.nivel} · ${c.fit}</span>
-          <span class="tag">ciclo ${c.porte.ciclo}</span>
-          ${c.penal ? `<span class="tag tag-dificil">${c.penal} pts</span>` : ""}
-        </div>
         ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
           c.penalidades.map(p => `${p.rotulo} (${p.peso} pts, há ${p.dias} dias)${p.ds ? " — " + p.ds : ""}`).join("<br>")
         }</div>` : ""}
-        <div class="lead-metricas">
-          ${[["Total", c.total, Math.min(100, c.total / 1.6), "#4a2f6b", "fit + intenção + acesso, menos penalidade"],
-             ["Fit", c.fit, c.fit, "#2f5d43", "perfil da empresa: setor, vínculo, porte e região"],
-             ["Intenção", c.intencao, Math.min(100, c.intencao * 2.5), "#b5641f", leadPorQue(e, c)],
-             ["Facilidade", c.facil, c.facil, "#8a6522", "quão fácil é vender: porte, decisão local, proximidade e área de T&D"],
-             ["Acesso", c.acesso, c.acesso, "#3d5b32", "quem eu já tenho mapeado dentro da empresa"]]
-            .map(([r, v, w, cor, t]) => `<div class="lm" title="${escAttr(t)}">
-              <span>${r}</span><b>${v}</b>
-              <i class="lm-bar"><u style="width:${Math.max(0, Math.round(w))}%;background:${cor}"></u></i>
-            </div>`).join("")}
+
+        <div class="lead-cats">
+          ${leadCategorias(e, c).map(k => `
+            <button type="button" class="cat saude-${k.saude}${leadsCatAberta.get(e.n) === k.k ? " aberta" : ""}"
+              data-cat="${k.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(k.t)}">
+              <i class="cat-ico">${LEAD_CAT_ICONS[k.k]}</i>
+              <span>${k.r}</span><b>${k.v}</b>
+            </button>`).join("")}
         </div>
-        <div class="lead-cols">
-          <div>
-            <h4>Gatilhos</h4>
-            ${c.sinais.length ? `<table class="lead-kv lead-sinais">
-              <tr><th>gatilho</th><th>quando</th><th>frescor</th><th>pts</th></tr>
-              ${c.sinais.map(s => `<tr class="${s.vivo ? "" : "morto"}" title="${escAttr(
-                  `${s.ds || ""}\ncurva ${s.curva}, peso ${s.peso}, validade ${s.validade} dias` +
-                  (s.cal.m !== 1 ? `, calibração ×${s.cal.m.toFixed(2)}` : "") +
-                  (s.cal.taxa === null ? ` (${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios para calibrar)` : ""))}">
-                <td>${s.rotulo}${s.url ? ` <a href="${escAttr(s.url)}" target="_blank" rel="noopener">↗</a>` : ""}</td>
-                <td>${s.dt}<br><span class="f">há ${s.dias}d</span></td>
-                <td><i class="lm-bar"><u style="width:${Math.round(s.frescor * 100)}%;background:#b5641f"></u></i>
-                  <span class="f">${Math.round(s.frescor * 100)}%</span></td>
-                <td><b>${s.efetivo}</b></td></tr>`).join("")}
-            </table>` : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
-            <details class="lead-abertura"><summary>Primeira linha sugerida</summary>
-              <p>${leadAbertura(e, c)}</p></details>
+
+        ${leadsCatAberta.get(e.n) === "fit" ? `<div class="cat-det">
+          <div class="lead-bar">
+            <i style="width:${pct(c.fitDet.setor)};background:#2f5d43"></i>
+            <i style="width:${pct(c.fitDet.vinculo)};background:#4d8464"></i>
+            <i style="width:${pct(c.fitDet.porte)};background:#7cae8d"></i>
+            <i style="width:${pct(c.fitDet.regiao)};background:#b3d3bd"></i></div>
+          <table class="lead-kv">
+            <tr><td>setor</td><td>${c.fitDet.setor} — ${c.setor.d}</td></tr>
+            <tr><td>vínculo internacional</td><td>${c.fitDet.vinculo} — ${c.vinc.d}</td></tr>
+            <tr><td>porte para o produto</td><td>${c.fitDet.porte} — ${e.h || "?"}</td></tr>
+            <tr><td>região</td><td>${c.fitDet.regiao} — ${c.regiao.nota}</td></tr>
+          </table></div>` : ""}
+
+        ${leadsCatAberta.get(e.n) === "intencao" ? `<div class="cat-det">
+          ${c.sinais.length ? `<table class="lead-kv lead-sinais">
+            <tr><th>gatilho</th><th>quando</th><th>frescor</th><th>pts</th></tr>
+            ${c.sinais.map(s => `<tr class="${s.vivo ? "" : "morto"}" title="${escAttr(
+                `${s.ds || ""}\ncurva ${s.curva}, peso ${s.peso}, validade ${s.validade} dias` +
+                (s.cal.m !== 1 ? `, calibração ×${s.cal.m.toFixed(2)}` : "") +
+                (s.cal.taxa === null ? ` (${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios para calibrar)` : ""))}">
+              <td>${s.rotulo}${s.url ? ` <a href="${escAttr(s.url)}" target="_blank" rel="noopener">↗</a>` : ""}</td>
+              <td>${s.dt}<br><span class="f">há ${s.dias}d</span></td>
+              <td><i class="lm-bar"><u style="width:${Math.round(s.frescor * 100)}%;background:#b5641f"></u></i>
+                <span class="f">${Math.round(s.frescor * 100)}%</span></td>
+              <td><b>${s.efetivo}</b></td></tr>`).join("")}
+          </table>` : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
+          <div class="lead-abertura"><span>Primeira linha sugerida</span><p>${leadAbertura(e, c)}</p></div>
+        </div>` : ""}
+
+        ${leadsCatAberta.get(e.n) === "facilidade" ? `<div class="cat-det">
+          <div class="lead-bar">
+            <i style="width:${pct(c.facDet.porte)};background:#8a6522"></i>
+            <i style="width:${pct(c.facDet.local)};background:#b5872f"></i>
+            <i style="width:${pct(c.facDet.regiao)};background:#d8b268"></i>
+            <i style="width:${pct(c.facDet.areaTD)};background:#eeddb4"></i></div>
+          <table class="lead-kv">
+            <tr><td>porte</td><td>${c.facDet.porte} — ${c.porte.nota}</td></tr>
+            <tr><td>decisão é local?</td><td>${c.facDet.local} — ${c.vinc.d}</td></tr>
+            <tr><td>proximidade</td><td>${c.facDet.regiao} — ${c.regiao.nota}</td></tr>
+            <tr><td>já tem área de T&amp;D</td><td>${c.facDet.areaTD} — ${c.facDet.areaTD === 15 ? "sim, tem sinal disso" : "não confirmado"}</td></tr>
+            <tr><td>ciclo estimado</td><td>${c.porte.ciclo}</td></tr>
+          </table></div>` : ""}
+
+        ${leadsCatAberta.get(e.n) === "acesso" ? `<div class="cat-det">
+          <div class="lead-contatos">
+            ${c.contatos.length ? c.contatos.map((ct, ci) => contatoCardHTML(e.n, ct, ci)).join("")
+              : `<p class="lead-falta ct-vazio">Nenhum contato mapeado.</p>`}
+            <div class="ct-card ct-novo">${contatoFormHTML(e.n, null, -1)}</div>
           </div>
-          <div>
-            <h4>Fit ${c.fit}/100 — nível ${c.nivel}</h4>
-            <div class="lead-bar">
-              <i style="width:${pct(c.fitDet.setor)};background:#2f5d43"></i>
-              <i style="width:${pct(c.fitDet.vinculo)};background:#4d8464"></i>
-              <i style="width:${pct(c.fitDet.porte)};background:#7cae8d"></i>
-              <i style="width:${pct(c.fitDet.regiao)};background:#b3d3bd"></i></div>
-            <table class="lead-kv">
-              <tr><td>setor</td><td>${c.fitDet.setor} — ${c.setor.d}</td></tr>
-              <tr><td>vínculo internacional</td><td>${c.fitDet.vinculo} — ${c.vinc.d}</td></tr>
-              <tr><td>porte para o produto</td><td>${c.fitDet.porte} — ${e.h || "?"}</td></tr>
-              <tr><td>região</td><td>${c.fitDet.regiao} — ${c.regiao.nota}</td></tr>
-            </table>
-            <h4 style="margin-top:14px">Facilidade ${c.facil}/100 — ${LEAD_ROT_FACIL[c.facilNivel]}</h4>
-            <div class="lead-bar">
-              <i style="width:${pct(c.facDet.porte)};background:#8a6522"></i>
-              <i style="width:${pct(c.facDet.local)};background:#b5872f"></i>
-              <i style="width:${pct(c.facDet.regiao)};background:#d8b268"></i>
-              <i style="width:${pct(c.facDet.areaTD)};background:#eeddb4"></i></div>
-            <table class="lead-kv">
-              <tr><td>porte</td><td>${c.facDet.porte} — ${c.porte.nota}</td></tr>
-              <tr><td>decisão é local?</td><td>${c.facDet.local} — ${c.vinc.d}</td></tr>
-              <tr><td>proximidade</td><td>${c.facDet.regiao} — ${c.regiao.nota}</td></tr>
-              <tr><td>já tem área de T&amp;D</td><td>${c.facDet.areaTD} — ${c.facDet.areaTD === 15 ? "sim, tem sinal disso" : "não confirmado"}</td></tr>
-              <tr><td>ciclo estimado</td><td>${c.porte.ciclo}</td></tr>
-            </table>
-            <h4 style="margin-top:14px">Acesso ${c.acesso}/100 — ${c.acessoNivel}</h4>
-            <div class="lead-contatos">
-              ${c.contatos.length ? c.contatos.map((ct, ci) => contatoCardHTML(e.n, ct, ci)).join("")
-                : `<p class="lead-falta ct-vazio">Nenhum contato mapeado — sem isso a empresa não sobe para premium.</p>`}
-              <div class="ct-card ct-novo">${contatoFormHTML(e.n, null, -1)}</div>
-            </div>
-            <table class="lead-kv">
-              <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
-              <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
-            </table>
-            <h4 style="margin-top:14px">Fontes varridas
-              <span class="f">${(e.fo || []).length}/${LEAD_FONTES.length}</span></h4>
-            <div class="fontes-chips">
-              ${LEAD_FONTES.map(f => {
-                const a = (e.fo || []).find(x => x.f === f.k);
-                return `<details class="chip ${a ? "ok" : "no"}">
-                  <summary>${a ? "✓" : "○"} ${f.r}</summary>
-                  <div>${a ? `${esc(a.r)}<br><span class="lead-falta">${a.dt}</span>`
-                           : `<span class="lead-falta">não varrida — ${f.d}</span>`}</div>
-                </details>`;
-              }).join("")}
-            </div>
-            <table class="lead-kv">
-              <tr><td>site</td><td>${e.d ? `<a href="https://${e.d}" target="_blank" rel="noopener">${e.d}</a>` : "—"}</td></tr>
-              <tr><td>origem do dado</td><td>${e.o || "—"}</td></tr>
-              <tr><td>falta enriquecer</td><td class="lead-falta">${(e.f || "—").split(",").join(" · ")}</td></tr>
-            </table>
-          </div>
+          <table class="lead-kv">
+            <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
+            <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
+          </table>
+          <h4>Fontes varridas <span class="f">${(e.fo || []).length}/${LEAD_FONTES.length}</span></h4>
+          <div class="fontes-chips">
+            ${LEAD_FONTES.map(f => {
+              const a = (e.fo || []).find(x => x.f === f.k);
+              return `<details class="chip ${a ? "ok" : "no"}">
+                <summary>${a ? "✓" : "○"} ${f.r}</summary>
+                <div>${a ? `${esc(a.r)}<br><span class="lead-falta">${a.dt}</span>`
+                         : `<span class="lead-falta">não varrida — ${f.d}</span>`}</div>
+              </details>`;
+            }).join("")}
+          </div></div>` : ""}
+
+        <div class="lead-linha">
+          <span class="ll-rot">Gatilho</span>
+          ${c.sinais.length ? `<span class="ll-txt${c.sinais[0].vivo ? "" : " morto"}">${c.sinais[0].rotulo}
+              · há ${c.sinais[0].dias}d · <b>${c.sinais[0].efetivo} pts</b></span>
+            ${c.sinais.length > 1 ? `<button type="button" class="ll-mais" data-cat="intencao"
+              data-cat-lead="${escAttr(e.n)}">+${c.sinais.length - 1}</button>` : ""}`
+            : `<span class="ll-txt vazio">nenhum gatilho ativo</span>`}
         </div>
+
+        <div class="lead-linha">
+          <span class="ll-rot">Contato</span>
+          ${c.contatos.length ? `<span class="ll-txt"><b>${esc(c.contatos[0].nome || "sem nome")}</b>
+              — ${esc(c.contatos[0].cargo || "cargo não informado")}</span>
+            ${c.contatos.length > 1 ? `<button type="button" class="ll-mais" data-cat="acesso"
+              data-cat-lead="${escAttr(e.n)}">+${c.contatos.length - 1}</button>` : ""}`
+            : `<span class="ll-txt vazio">nenhum contato mapeado</span>`}
+          <button type="button" class="ll-add" data-lead-contato="${escAttr(e.n)}">+ contato</button>
+        </div>
+
+        <div class="lead-rodape">
+          ${e.d ? `<a href="https://${escAttr(e.d)}" target="_blank" rel="noopener">${esc(e.d)}</a> · ` : ""}
+          origem: ${esc(e.o || "—")} · falta: ${esc((e.f || "—").split(",").join(", "))}
+        </div>
+
         <div class="lead-actions">
           <select data-lead-status="${e.n}">
             ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
@@ -1530,7 +1590,6 @@ function renderLeads() {
           </select>
           <button data-lead-sinal="${e.n}" type="button">+ Gatilho</button>
           <button data-lead-penal="${e.n}" type="button">+ Freio</button>
-          <button data-lead-contato="${e.n}" type="button">+ Contato</button>
           <button data-lead-inter="${e.n}" type="button">+ Interação</button>
         </div>
       </div>
@@ -1733,8 +1792,12 @@ document.getElementById("leads-list").addEventListener("click", ev => {
     (e.pn = e.pn || []).push({ t, ds: prompt("Detalhe:") || "", dt: hoje });
   }
   if (d.leadContato) {
-    // não grava nada aqui: só abre o formulário em branco dentro da ficha
-    const box = ev.target.closest(".lead-body").querySelector(".ct-novo");
+    // não grava nada aqui: abre a categoria Acesso e o formulário em branco
+    leadsCatAberta.set(e.n, "acesso");
+    renderLeads();
+    const linha = [...document.querySelectorAll("[data-lead-nome]")]
+      .find(x => x.dataset.leadNome === e.n);
+    const box = linha && linha.querySelector(".ct-novo");
     if (box) {
       box.classList.add("editando");
       if (box.scrollIntoView) box.scrollIntoView({ block: "nearest" });
@@ -1754,6 +1817,15 @@ document.getElementById("leads-list").addEventListener("click", ev => {
 document.getElementById("leads-list").addEventListener("click", ev => {
   const b = ev.target.closest("button"); if (!b) return;
   const d = b.dataset;
+
+  // acordeão das categorias: clicar na aberta fecha
+  if (d.catLead) {
+    const atual = leadsCatAberta.get(d.catLead);
+    if (atual === d.cat) leadsCatAberta.delete(d.catLead);
+    else leadsCatAberta.set(d.catLead, d.cat);
+    renderLeads();
+    return;
+  }
 
   if (d.ctEditar) { b.closest(".ct-card").classList.add("editando"); return; }
   if (d.ctCancelar) { renderLeads(); return; }

@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2045-tags-na-linha — 13/08/2026
+- O que mudou: as tags subiram para a mesma linha do nome da empresa e viraram
+  os únicos controles: temperatura (sem número), venda, gatilho, contato e
+  notas. Cada uma abre o próprio detalhe, uma por vez, sem fechar a linha. A
+  pontuação total virou botão e abre a composição do score com o fit dentro.
+  Sumiram a fileira de pastilhas dentro da ficha e as tags de porte e acesso —
+  porte foi para o rodapé, acesso entrou no detalhe de contato.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a informação aparecia duas vezes, uma como tag embaixo do nome e
+  outra como pastilha dentro da ficha, e nenhuma das duas dizia onde clicar.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2018-docs-compacta
+
 ## v-20260813-2015-ficha-compacta — 13/08/2026
 - O que mudou: a ficha parou de esticar até a borda do monitor — o conteúdo
   ficou travado em 820px. Os seis quadrados viraram pastilhas do tamanho do

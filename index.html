@@ -457,6 +457,37 @@
     color: var(--text); border-radius: 7px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .lead-actions button:hover { background: var(--land-default); }
   .lead-falta { font-size: 11.5px; color: #a06a2c; }
+
+  /* ---- contatos da ficha ---- */
+  .lead-contatos { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .ct-card { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 9px 11px; }
+  .ct-card .ct-form { display: none; }
+  .ct-card.editando .ct-form { display: block; }
+  .ct-card.editando .ct-view { display: none; }
+  .ct-novo { border-style: dashed; background: transparent; padding: 0; }
+  .ct-novo:not(.editando) { display: none; }
+  .ct-novo.editando { padding: 9px 11px; background: #fff; }
+  .ct-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ct-topo b { font-size: 13px; }
+  .ct-topo button { border: none; background: none; color: var(--text-muted); font-size: 11px;
+    cursor: pointer; text-decoration: underline; padding: 0; }
+  .ct-linha { font-size: 12px; color: #4a4a46; margin-top: 3px; }
+  .ct-sel { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+  .ct-sel.ok  { background: #e9f0e6; color: #3d5b32; }
+  .ct-sel.nao { background: #f6e9e6; color: #8d4034; }
+  .ct-form label { display: block; font-size: 10.5px; color: var(--text-muted);
+    font-weight: 600; margin-bottom: 6px; }
+  .ct-form input[type=text], .ct-form input[type=email], .ct-form input[type=url], .ct-form select {
+    display: block; width: 100%; margin-top: 2px; border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 7px; font-size: 12px; color: var(--text); background: #fff; font-weight: 400; }
+  .ct-form .ct-check { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text); }
+  .ct-aviso { font-size: 10.5px; color: #a06a2c; margin: 2px 0 8px; line-height: 1.4; }
+  .ct-botoes { display: flex; gap: 6px; }
+  .ct-botoes button { border: 1px solid var(--border); background: #fff; border-radius: 6px;
+    padding: 5px 11px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text); }
+  .ct-botoes button:hover { background: var(--land-default); }
+  .ct-botoes .ct-del { margin-left: auto; color: #8d4034; border-color: #e5c9c3; }
+  .ct-vazio { margin: 0; }
   #leads-footer { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   #leads-footer button { border: 1px solid var(--border); background: #fff; border-radius: 7px;
     padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--text); }
@@ -1286,8 +1317,56 @@ function leadAbertura(e, c) {
   return m[s.t] || s.rotulo;
 }
 
+// --- Contatos da ficha ---
+// Regra da base: e-mail só entra verificado, com fonte. Nada de padrão deduzido
+// (nome.sobrenome@empresa). E-mail sem verificação fica gravado, mas marcado.
+function contatoFormHTML(nomeEmpresa, ct, i) {
+  const c = ct || { persona: "campeao", nome: "", cargo: "", email: "", emailOk: false, tel: "", li: "", fonte: "" };
+  return `<div class="ct-form">
+    <label>Nome<input type="text" data-ctf="nome" value="${escAttr(c.nome || "")}"></label>
+    <label>Cargo<input type="text" data-ctf="cargo" value="${escAttr(c.cargo || "")}"></label>
+    <label>Papel<select data-ctf="persona">${Object.entries(LEAD_PERSONAS).map(([k, v]) =>
+      `<option value="${k}"${c.persona === k ? " selected" : ""}>${v.r}</option>`).join("")}</select></label>
+    <label>E-mail<input type="email" data-ctf="email" value="${escAttr(c.email || "")}"
+      placeholder="só se você viu publicado"></label>
+    <label class="ct-check"><input type="checkbox" data-ctf="emailOk"${c.emailOk ? " checked" : ""}>
+      e-mail verificado na fonte</label>
+    <label>Telefone<input type="text" data-ctf="tel" value="${escAttr(c.tel || "")}"></label>
+    <label>LinkedIn<input type="url" data-ctf="li" value="${escAttr(c.li || "")}"></label>
+    <label>Onde achou<input type="text" data-ctf="fonte" value="${escAttr(c.fonte || "")}"
+      placeholder="link ou nome da fonte"></label>
+    <p class="ct-aviso">Não deduza padrão de e-mail. Sem verificação, o contato fica marcado.</p>
+    <div class="ct-botoes">
+      <button type="button" data-ct-salvar="${escAttr(nomeEmpresa)}" data-ct-i="${i}">Salvar</button>
+      <button type="button" data-ct-cancelar="1">Cancelar</button>
+      ${i < 0 ? "" : `<button type="button" class="ct-del" data-ct-remover="${escAttr(nomeEmpresa)}" data-ct-i="${i}">Remover</button>`}
+    </div>
+  </div>`;
+}
+
+function contatoCardHTML(nomeEmpresa, ct, i) {
+  const rot = (LEAD_PERSONAS[ct.persona] || { r: ct.persona || "papel não definido" }).r;
+  const link = v => /^https?:/.test(v);
+  return `<div class="ct-card">
+    <div class="ct-view">
+      <div class="ct-topo"><b>${esc(ct.nome || "sem nome")}</b>
+        <button type="button" data-ct-editar="1">editar</button></div>
+      <div class="ct-linha">${esc(ct.cargo || "cargo não informado")} · <i>${esc(rot)}</i></div>
+      ${ct.email ? `<div class="ct-linha">${esc(ct.email)}
+        <span class="ct-sel ${ct.emailOk ? "ok" : "nao"}">${ct.emailOk ? "verificado" : "não verificado"}</span></div>` : ""}
+      ${ct.tel ? `<div class="ct-linha">${esc(ct.tel)}</div>` : ""}
+      ${ct.li ? `<div class="ct-linha"><a href="${escAttr(ct.li)}" target="_blank" rel="noopener">LinkedIn</a></div>` : ""}
+      ${ct.fonte ? `<div class="ct-linha lead-falta">origem: ${link(ct.fonte)
+        ? `<a href="${escAttr(ct.fonte)}" target="_blank" rel="noopener">fonte</a>` : esc(ct.fonte)}</div>` : ""}
+    </div>
+    ${contatoFormHTML(nomeEmpresa, ct, i)}
+  </div>`;
+}
+
 // --- Render ---
 let leadsFiltro = "todos", leadsBusca = "";
+// Quais fichas estão abertas. Sem isso, salvar um contato fecha a ficha.
+const leadsAbertos = new Set();
 const LEAD_ROT_FACIL = { facil: "Fácil", media: "Média", dificil: "Difícil" };
 
 function renderLeads() {
@@ -1310,7 +1389,7 @@ function renderLeads() {
 
   document.getElementById("leads-list").innerHTML = lista.length ? lista.map(({ e, c }, i) => `
     <details class="lead-row prio-${c.prioridade}" data-lead-nome="${escAttr(e.n)}"
-      title="prioridade ${c.prioridade}">
+      title="prioridade ${c.prioridade}"${leadsAbertos.has(e.n) ? " open" : ""}>
       <summary draggable="true">
         <div>
           <div class="lead-name">${i + 1}. ${e.n}</div>
@@ -1377,9 +1456,12 @@ function renderLeads() {
               <tr><td>ciclo estimado</td><td>${c.porte.ciclo}</td></tr>
             </table>
             <h4 style="margin-top:14px">Acesso ${c.acesso}/100 — ${c.acessoNivel}</h4>
+            <div class="lead-contatos">
+              ${c.contatos.length ? c.contatos.map((ct, ci) => contatoCardHTML(e.n, ct, ci)).join("")
+                : `<p class="lead-falta ct-vazio">Nenhum contato mapeado — sem isso a empresa não sobe para premium.</p>`}
+              <div class="ct-card ct-novo">${contatoFormHTML(e.n, null, -1)}</div>
+            </div>
             <table class="lead-kv">
-              ${c.contatos.length ? c.contatos.map(ct => `<tr><td>${(LEAD_PERSONAS[ct.persona] || {r:ct.persona}).r}</td><td>${ct.nome ? `<b>${ct.nome}</b> — ` : ""}${ct.cargo || "—"}${ct.li ? ` · <a href="${ct.li}" target="_blank" rel="noopener">perfil</a>` : ""}${ct.fonte ? `<br><span class="lead-falta">origem: <a href="${ct.fonte}" target="_blank" rel="noopener">fonte pública</a></span>` : ""}</td></tr>`).join("")
-                : `<tr><td>contatos</td><td class="lead-falta">nenhum mapeado — sem isso a empresa não sobe para premium</td></tr>`}
               <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
               <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
             </table>
@@ -1607,8 +1689,14 @@ document.getElementById("leads-list").addEventListener("click", ev => {
     (e.pn = e.pn || []).push({ t, ds: prompt("Detalhe:") || "", dt: hoje });
   }
   if (d.leadContato) {
-    const p = prompt("Persona:\n" + Object.keys(LEAD_PERSONAS).join("\n")); if (!p || !LEAD_PERSONAS[p]) return;
-    (e.ct = e.ct || []).push({ persona: p, cargo: prompt("Cargo:") || "", li: prompt("URL do LinkedIn:") || "" });
+    // não grava nada aqui: só abre o formulário em branco dentro da ficha
+    const box = ev.target.closest(".lead-body").querySelector(".ct-novo");
+    if (box) {
+      box.classList.add("editando");
+      if (box.scrollIntoView) box.scrollIntoView({ block: "nearest" });
+      const campo = box.querySelector("input"); if (campo) campo.focus();
+    }
+    return;
   }
   if (d.leadInter) {
     const g = prompt("Qual gatilho você usou na abordagem?\n" + Object.keys(LEAD_SINAIS).join("\n")); if (!g) return;
@@ -1618,8 +1706,59 @@ document.getElementById("leads-list").addEventListener("click", ev => {
   saveLeadsData(); renderLeads();
 });
 
+// --- Contatos: abrir, salvar e remover ---
+document.getElementById("leads-list").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const d = b.dataset;
+
+  if (d.ctEditar) { b.closest(".ct-card").classList.add("editando"); return; }
+  if (d.ctCancelar) { renderLeads(); return; }
+
+  if (d.ctSalvar !== undefined) {
+    const e = leadsData.find(x => x.n === d.ctSalvar); if (!e) return;
+    const form = b.closest(".ct-form");
+    const val = f => {
+      const el = form.querySelector(`[data-ctf="${f}"]`);
+      if (!el) return "";
+      return el.type === "checkbox" ? el.checked : el.value.trim();
+    };
+    const novo = { persona: val("persona"), nome: val("nome"), cargo: val("cargo"),
+                   email: val("email"), emailOk: !!val("emailOk"), tel: val("tel"),
+                   li: val("li"), fonte: val("fonte") };
+    if (!novo.nome && !novo.cargo && !novo.email) {
+      alert("Preencha ao menos nome, cargo ou e-mail."); return;
+    }
+    const i = parseInt(d.ctI, 10);
+    e.ct = e.ct || [];
+    if (i >= 0 && e.ct[i]) e.ct[i] = { ...e.ct[i], ...novo }; else e.ct.push(novo);
+    saveLeadsData(); renderLeads();
+    return;
+  }
+
+  if (d.ctRemover !== undefined) {
+    const e = leadsData.find(x => x.n === d.ctRemover); if (!e) return;
+    const i = parseInt(d.ctI, 10);
+    if (!(e.ct && e.ct[i])) return;
+    if (!confirm(`Remover ${e.ct[i].nome || "esse contato"} de ${e.n}?`)) return;
+    e.ct.splice(i, 1);
+    saveLeadsData(); renderLeads();
+  }
+});
+
+// Guarda quais fichas estão abertas. O evento toggle não sobe, daí a captura.
+document.getElementById("leads-list").addEventListener("toggle", ev => {
+  const row = ev.target; if (!row.matches || !row.matches(".lead-row")) return;
+  const n = row.dataset.leadNome; if (!n) return;
+  if (row.open) leadsAbertos.add(n); else leadsAbertos.delete(n);
+}, true);
+
 // Recalcula sozinho a cada 15 minutos: o frescor cai mesmo com a aba aberta.
-setInterval(() => { if (!document.getElementById("leads-view").classList.contains("hidden")) renderLeads(); }, 900000);
+// Não redesenha no meio do preenchimento de um contato, senão apaga o que foi digitado.
+setInterval(() => {
+  if (document.getElementById("leads-view").classList.contains("hidden")) return;
+  if (document.querySelector(".ct-card.editando")) return;
+  renderLeads();
+}, 900000);
 
 // --- View switching (Tasks / Leads / Settings) ---
 function showView(name) {

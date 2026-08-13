@@ -432,10 +432,6 @@
   .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
 
   .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9; }
-  .lead-why { background: #fff7ec; border: 1px solid #e8d5b8; border-left: 3px solid #b5641f;
-    border-radius: 8px; padding: 10px 13px; margin: 14px 0; font-size: 13px; line-height: 1.55; }
-  .lead-why b { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-    color: #8a6522; margin-bottom: 5px; }
   .lead-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .lead-cols h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
@@ -445,13 +441,42 @@
   .lead-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 6px 0 12px;
     background: var(--land-default); }
   .lead-bar i { display: block; height: 100%; }
-  .lead-sinal { border-left: 2px solid #b5641f; padding: 3px 0 3px 11px; margin-bottom: 12px; font-size: 13px; }
-  .lead-sinal b { font-size: 12.5px; }
-  .lead-sinal p { margin: 3px 0 4px; color: #4a4a46; line-height: 1.5; }
-  .lead-sinal .f { font-size: 11px; color: var(--text-muted); }
+  /* faixa de números no topo da ficha, no lugar do texto corrido */
+  .lead-metricas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 16px; }
+  .lm { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
+  .lm span { display: block; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+  .lm b { display: block; font-size: 17px; font-weight: 700; line-height: 1.2; margin: 1px 0 4px; }
+  .lm-bar { display: block; height: 4px; border-radius: 2px; background: var(--land-default); overflow: hidden; }
+  .lm-bar u { display: block; height: 100%; text-decoration: none; }
+
+  .lead-sinais th { font-size: 9.5px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; text-align: left; padding: 0 8px 4px 0;
+    border-bottom: 1px solid var(--border); }
+  .lead-sinais td { padding: 6px 8px 6px 0; font-size: 12px; }
+  .lead-sinais td:first-child { color: var(--text); white-space: normal; width: 40%; }
+  .lead-sinais td:last-child { text-align: right; padding-right: 0; white-space: nowrap; }
+  .lead-sinais tr.morto { opacity: .42; }
+  .lead-sinais .f { font-size: 10px; color: var(--text-muted); }
+  .lead-sinais .lm-bar { min-width: 42px; margin-bottom: 2px; }
+
+  .fontes-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+  .chip { font-size: 11px; }
+  .chip > summary { list-style: none; cursor: pointer; border: 1px solid var(--border-strong);
+    border-radius: 5px; padding: 2px 7px; background: #fff; color: var(--text-muted); font-weight: 600; }
+  .chip > summary::-webkit-details-marker { display: none; }
+  .chip.ok > summary { background: #e9f0e6; color: #3d5b32; border-color: #cadcc2; }
+  .chip[open] { width: 100%; }
+  .chip[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .chip > div { border: 1px solid var(--border); border-top: none; border-radius: 0 0 5px 5px;
+    padding: 6px 8px; font-size: 11.5px; line-height: 1.45; background: #fff; }
+
   .lead-abertura { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
-    padding: 11px 13px; margin-top: 14px; font-size: 13px; line-height: 1.55; }
-  .lead-abertura h4 { margin-bottom: 5px; }
+    padding: 9px 13px; margin-top: 14px; font-size: 13px; line-height: 1.55; }
+  .lead-abertura > summary { list-style: none; cursor: pointer; font-size: 11px; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+  .lead-abertura > summary::-webkit-details-marker { display: none; }
+  .lead-abertura p { margin: 7px 0 0; }
   .lead-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
   .lead-actions button, .lead-actions select { border: 1px solid var(--border); background: #fff;
     color: var(--text); border-radius: 7px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -547,6 +572,7 @@
     #login-gate-box { width: auto; max-width: 92vw; }
     #leads-search { font-size: 16px; }
     .lead-cols { grid-template-columns: 1fr; }
+    .lead-metricas { grid-template-columns: repeat(3, 1fr); }
     #sidebar { width: 100%; height: 54px; bottom: 0; top: auto; flex-direction: row;
       justify-content: center; padding: 0; border-right: none; border-top: 1px solid var(--border); }
     .side-btn::after { display: none; }
@@ -1405,7 +1431,7 @@ function renderLeads() {
       </summary>
       <div class="lead-body">
         <div class="lead-tags lead-tags-ficha">
-          <span class="tag tag-${c.prioridade}">${c.prioridade}</span>
+          <span class="tag tag-${c.prioridade}" title="${escAttr(c.motivoPrioridade)}">${c.prioridade}</span>
           <span class="tag tag-fit-${c.nivel}">Fit ${c.nivel} · ${c.fit}</span>
           <span class="tag">ciclo ${c.porte.ciclo}</span>
           ${c.penal ? `<span class="tag tag-dificil">${c.penal} pts</span>` : ""}
@@ -1413,21 +1439,34 @@ function renderLeads() {
         ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
           c.penalidades.map(p => `${p.rotulo} (${p.peso} pts, há ${p.dias} dias)${p.ds ? " — " + p.ds : ""}`).join("<br>")
         }</div>` : ""}
-        <div class="lead-why"><b>Prioridade ${c.prioridade} — por quê</b>${c.motivoPrioridade}<br><br>
-          <b style="margin-top:6px">Temperatura ${c.temperatura}</b>${leadPorQue(e, c)}</div>
+        <div class="lead-metricas">
+          ${[["Total", c.total, Math.min(100, c.total / 1.6), "#4a2f6b", "fit + intenção + acesso, menos penalidade"],
+             ["Fit", c.fit, c.fit, "#2f5d43", "perfil da empresa: setor, vínculo, porte e região"],
+             ["Intenção", c.intencao, Math.min(100, c.intencao * 2.5), "#b5641f", leadPorQue(e, c)],
+             ["Facilidade", c.facil, c.facil, "#8a6522", "quão fácil é vender: porte, decisão local, proximidade e área de T&D"],
+             ["Acesso", c.acesso, c.acesso, "#3d5b32", "quem eu já tenho mapeado dentro da empresa"]]
+            .map(([r, v, w, cor, t]) => `<div class="lm" title="${escAttr(t)}">
+              <span>${r}</span><b>${v}</b>
+              <i class="lm-bar"><u style="width:${Math.max(0, Math.round(w))}%;background:${cor}"></u></i>
+            </div>`).join("")}
+        </div>
         <div class="lead-cols">
           <div>
             <h4>Gatilhos</h4>
-            ${c.sinais.length ? c.sinais.map(s => `
-              <div class="lead-sinal" style="${s.vivo ? "" : "opacity:.4"}">
-                <b>${s.rotulo}</b>
-                <p>${s.ds || ""}</p>
-                <span class="f">${s.dt} · há ${s.dias}d · curva ${s.curva} · peso ${s.peso} ×
-                frescor ${Math.round(s.frescor * 100)}%${s.cal.m !== 1 ? ` × calibração ${s.cal.m.toFixed(2)}` : ""}
-                = <b>${s.efetivo}</b>${s.cal.taxa === null ? ` <i>(calibração: ${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios)</i>` : ""}</span>
-                ${s.url ? ` · <a class="f" href="${s.url}" target="_blank" rel="noopener">evidência</a>` : ""}
-              </div>`).join("") : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
-            <div class="lead-abertura"><h4>Primeira linha sugerida</h4>${leadAbertura(e, c)}</div>
+            ${c.sinais.length ? `<table class="lead-kv lead-sinais">
+              <tr><th>gatilho</th><th>quando</th><th>frescor</th><th>pts</th></tr>
+              ${c.sinais.map(s => `<tr class="${s.vivo ? "" : "morto"}" title="${escAttr(
+                  `${s.ds || ""}\ncurva ${s.curva}, peso ${s.peso}, validade ${s.validade} dias` +
+                  (s.cal.m !== 1 ? `, calibração ×${s.cal.m.toFixed(2)}` : "") +
+                  (s.cal.taxa === null ? ` (${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios para calibrar)` : ""))}">
+                <td>${s.rotulo}${s.url ? ` <a href="${escAttr(s.url)}" target="_blank" rel="noopener">↗</a>` : ""}</td>
+                <td>${s.dt}<br><span class="f">há ${s.dias}d</span></td>
+                <td><i class="lm-bar"><u style="width:${Math.round(s.frescor * 100)}%;background:#b5641f"></u></i>
+                  <span class="f">${Math.round(s.frescor * 100)}%</span></td>
+                <td><b>${s.efetivo}</b></td></tr>`).join("")}
+            </table>` : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
+            <details class="lead-abertura"><summary>Primeira linha sugerida</summary>
+              <p>${leadAbertura(e, c)}</p></details>
           </div>
           <div>
             <h4>Fit ${c.fit}/100 — nível ${c.nivel}</h4>
@@ -1465,14 +1504,19 @@ function renderLeads() {
               <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
               <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
             </table>
-            <h4 style="margin-top:14px">Fontes varridas</h4>
-            <table class="lead-kv">
+            <h4 style="margin-top:14px">Fontes varridas
+              <span class="f">${(e.fo || []).length}/${LEAD_FONTES.length}</span></h4>
+            <div class="fontes-chips">
               ${LEAD_FONTES.map(f => {
                 const a = (e.fo || []).find(x => x.f === f.k);
-                return `<tr><td>${a ? "✓" : "○"} ${f.r}</td><td>${
-                  a ? `${a.r}<br><span class="lead-falta">${a.dt}</span>`
-                    : `<span class="lead-falta">não varrida — ${f.d}</span>`}</td></tr>`;
+                return `<details class="chip ${a ? "ok" : "no"}">
+                  <summary>${a ? "✓" : "○"} ${f.r}</summary>
+                  <div>${a ? `${esc(a.r)}<br><span class="lead-falta">${a.dt}</span>`
+                           : `<span class="lead-falta">não varrida — ${f.d}</span>`}</div>
+                </details>`;
               }).join("")}
+            </div>
+            <table class="lead-kv">
               <tr><td>site</td><td>${e.d ? `<a href="https://${e.d}" target="_blank" rel="noopener">${e.d}</a>` : "—"}</td></tr>
               <tr><td>origem do dado</td><td>${e.o || "—"}</td></tr>
               <tr><td>falta enriquecer</td><td class="lead-falta">${(e.f || "—").split(",").join(" · ")}</td></tr>

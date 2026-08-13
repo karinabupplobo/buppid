@@ -469,6 +469,13 @@
   .funnel-stage span { font-size: 10.5px; font-weight: 600; opacity: .92; }
   .funnel-stage.vazio { filter: saturate(.3) opacity(.55); }
   .funnel-drop { font-size: 10px; color: var(--text-muted); text-align: center; margin: -2px 0 4px; }
+  /* arraste do lead até a etapa */
+  .lead-row.arrastando { opacity: .45; }
+  .funnel-stage.alvo { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px #b5641f; transform: scale(1.03); }
+  #funnel-stages.recebendo .funnel-stage { filter: none; opacity: 1; }
+  #funnel-msg { font-size: 10.5px; line-height: 1.45; margin-top: 9px; padding: 8px 9px;
+    border-radius: 7px; background: #fff7ec; border: 1px solid #e8d5b8; color: #6b5220; }
+  #funnel-msg.hidden { display: none; }
   #funnel-hint { font-size: 10.5px; color: var(--text-muted); line-height: 1.45; margin-top: 10px;
     border-top: 1px solid var(--border); padding-top: 9px; }
   .tag-premium { background:#4a2f6b; color:#fff; border-color:#4a2f6b; }
@@ -605,6 +612,7 @@
         <h4>Funil</h4>
         <input id="leads-search" type="search" placeholder="filtrar por nome, setor, cidade…" aria-label="Filtrar leads">
         <div id="funnel-stages"></div>
+        <div id="funnel-msg" class="hidden"></div>
         <div id="funnel-hint"></div>
       </aside>
       <div id="leads-list"></div>
@@ -1294,8 +1302,8 @@ function renderLeads() {
   const pct = v => v + "%";
 
   document.getElementById("leads-list").innerHTML = lista.length ? lista.map(({ e, c }, i) => `
-    <details class="lead-row">
-      <summary>
+    <details class="lead-row" data-lead-nome="${escAttr(e.n)}">
+      <summary draggable="true">
         <div>
           <div class="lead-name">${i + 1}. ${e.n}</div>
           <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
@@ -1459,8 +1467,9 @@ function renderFunil(calc) {
   const bloq = calc.filter(x => x.c.prioridade === "bloqueado" && !ETAPAS_TRABALHO.includes(x.e.st || "novo")).length;
   const desc = calc.filter(x => (x.e.st || "novo") === "descartada").length;
   document.getElementById("funnel-hint").innerHTML =
-    `As quatro primeiras etapas o motor calcula. As quatro últimas você move, no seletor
-     de status dentro da ficha. Contatar tira a empresa da prioridade.` +
+    `Arraste a empresa até a etapa, ou use o seletor de status dentro da ficha.
+     As quatro primeiras etapas o motor calcula: soltar numa delas devolve a empresa
+     para a faixa automática. Contatar tira a empresa da prioridade.` +
     (bloq ? `<br><b>${bloq} bloqueada(s)</b> por penalidade.` : "") +
     (desc ? `<br>${desc} descartada(s), fora do funil.` : "");
 }
@@ -1470,6 +1479,87 @@ document.getElementById("funnel-stages").addEventListener("click", ev => {
   // clicar na etapa já ativa limpa o filtro e volta a mostrar tudo
   leadsFiltro = leadsFiltro === b.dataset.fs ? "todos" : b.dataset.fs;
   renderLeads();
+});
+
+// --- Arrastar o lead até a etapa ---
+// As quatro últimas etapas são status de verdade: o arraste grava. As quatro
+// primeiras o motor calcula, então soltar numa delas devolve a empresa para a
+// faixa automática. Se o motor discordar do lugar onde ela foi solta, a
+// diferença é avisada em vez de ser gravada — senão o score viraria ficção.
+let leadArrastado = null;
+let funilMsgTimer = null;
+
+function funilMsg(html) {
+  const el = document.getElementById("funnel-msg");
+  el.innerHTML = html;
+  el.classList.remove("hidden");
+  clearTimeout(funilMsgTimer);
+  funilMsgTimer = setTimeout(() => el.classList.add("hidden"), 14000);
+}
+
+function moverLeadParaEtapa(e, alvo) {
+  const antes = e.st || "novo";
+  const rot = k => (FUNIL.find(f => f.k === k) || { r: k }).r;
+
+  if (alvo.startsWith("st:")) {
+    e.st = alvo.slice(3);
+    saveLeadsData(); renderLeads();
+    funilMsg(`<b>${esc(e.n)}</b>: ${antes} → ${e.st}.`);
+    return;
+  }
+
+  e.st = "novo";
+  saveLeadsData(); renderLeads();
+  const c = calcularLead(e);
+  if (c.prioridade === alvo) {
+    funilMsg(`<b>${esc(e.n)}</b> voltou para a faixa automática e caiu em ${rot(alvo)}.`);
+  } else if (c.prioridade === "bloqueado") {
+    funilMsg(`<b>${esc(e.n)}</b> voltou para a faixa automática, mas está bloqueada por
+      penalidade (${c.penal} pts) — não entra em ${rot(alvo)}.`);
+  } else {
+    funilMsg(`<b>${esc(e.n)}</b> voltou para a faixa automática e o motor colocou em
+      <b>${rot(c.prioridade)}</b>, não em ${rot(alvo)}. Hoje: fit ${c.fit}, intenção
+      ${c.intencao}, facilidade ${c.facil}. Premium pede fit ≥ 88, intenção ≥ 20 e
+      facilidade ≥ 55. Alta pede fit ≥ 72 com intenção ≥ 12.`);
+  }
+}
+
+document.getElementById("leads-list").addEventListener("dragstart", ev => {
+  const row = ev.target.closest("[data-lead-nome]"); if (!row) return;
+  leadArrastado = row.dataset.leadNome;
+  row.classList.add("arrastando");
+  ev.dataTransfer.effectAllowed = "move";
+  ev.dataTransfer.setData("text/plain", leadArrastado);
+});
+document.getElementById("leads-list").addEventListener("dragend", () => {
+  leadArrastado = null;
+  document.querySelectorAll(".lead-row.arrastando").forEach(r => r.classList.remove("arrastando"));
+  document.querySelectorAll(".funnel-stage.alvo").forEach(b => b.classList.remove("alvo"));
+});
+
+const funilEl = document.getElementById("funnel-stages");
+funilEl.addEventListener("dragover", ev => {
+  if (!leadArrastado) return;
+  const b = ev.target.closest("[data-fs]"); if (!b) return;
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = "move";
+  if (!b.classList.contains("alvo")) {
+    funilEl.querySelectorAll(".alvo").forEach(x => x.classList.remove("alvo"));
+    b.classList.add("alvo");
+  }
+});
+funilEl.addEventListener("dragleave", ev => {
+  const b = ev.target.closest("[data-fs]");
+  if (b && !b.contains(ev.relatedTarget)) b.classList.remove("alvo");
+});
+funilEl.addEventListener("drop", ev => {
+  const b = ev.target.closest("[data-fs]"); if (!b || !leadArrastado) return;
+  ev.preventDefault();
+  const alvo = b.dataset.fs;
+  const e = leadsData.find(x => x.n === leadArrastado);
+  leadArrastado = null;
+  funilEl.querySelectorAll(".alvo").forEach(x => x.classList.remove("alvo"));
+  if (e) moverLeadParaEtapa(e, alvo);
 });
 
 // --- Interações ---

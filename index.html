@@ -400,20 +400,22 @@
   /* a faixa da esquerda usa exatamente a cor da etapa em que o lead está */
   .lead-row { border-bottom: 1px solid var(--border); border-left: 5px solid #d9d6cc; }
   .lead-row:last-child { border-bottom: none; }
-  /* o card não abre nada: quem abre são as tags. daí o cursor de arrastar. */
-  .lead-row > summary { list-style: none; cursor: grab; padding: 10px 15px; display: block; }
+  /* o card não abre nada: quem abre são as tags. daí o cursor de arrastar.
+     nome+info ficam à esquerda; as tags ficam agrupadas à direita, centralizadas
+     verticalmente contra a altura inteira da linha (nome + info juntos). */
+  .lead-row > summary { list-style: none; cursor: grab; padding: 10px 15px; display: flex;
+    align-items: center; gap: 14px; }
   .lead-row > summary:active { cursor: grabbing; }
-  .lead-topo { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-  .lead-name { flex: none; }
-  .lead-tags-topo { margin-left: auto; display: flex; align-items: center;
-    flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+  .lead-left { flex: 1; min-width: 0; }
+  .lead-tags-topo { flex: none; margin-left: auto; display: flex; align-items: center;
+    flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: 60%; }
   .lead-etapa { border: 1px solid var(--border); background: #fff; color: var(--text-muted);
     border-radius: 6px; padding: 2px 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .lead-row > summary::-webkit-details-marker { display: none; }
   .lead-row[open] > summary { background: var(--land-default); }
   .lead-row:hover > summary { background: #faf9f5; }
   .lead-name { font-size: 14px; font-weight: 600; white-space: nowrap; }
-  .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+  .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
   .lead-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
   .tag { display: inline-flex; align-items: center; gap: 4px; font: inherit;
     font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
@@ -429,10 +431,9 @@
   .saude-med    .tag-ico { color: #b5872f; }
   .saude-ruim   .tag-ico { color: #8d4034; }
   .saude-neutro .tag-ico { color: #b6b3a8; }
-  .tag-fit-A { background:#1d3b2a; color:#fff; border-color:#1d3b2a; }
-  .tag-fit-B { background:#e2ece4; color:#2c4d38; border-color:#c4d9c9; }
-  .tag-fit-C { background:#f2efe6; color:#77766f; border-color:var(--border-strong); }
-  .tag-fit-D { background:#fff; color:#a09e95; }
+  .tag-fitn-alta  { background:#1d3b2a; color:#fff; border-color:#1d3b2a; }
+  .tag-fitn-media { background:#f5efe0; color:#7a6224; border-color:#e3d5b0; }
+  .tag-fitn-baixa { background:#f6e9e6; color:#8d4034; border-color:#e5c9c3; }
   .tag-facil { background:#e9f0e6; color:#3d5b32; border-color:#cadcc2; }
   .tag-media  { background:#f5efe0; color:#7a6224; border-color:#e3d5b0; }
   .tag-dificil{ background:#f6e9e6; color:#8d4034; border-color:#e5c9c3; }
@@ -718,7 +719,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2155</span>
+      <span id="build-tag">build 20260813-2220</span>
     </div>
   </div>
 
@@ -1391,9 +1392,11 @@ const LEAD_CAT_ICONS = {
 function leadTags(e, c) {
   const vivos = c.sinais.filter(s => s.vivo).length;
   const nCt = c.contatos.length, nCm = (e.cm || []).length;
-  const fitRot = c.nivel === "A" ? "Alta" : c.nivel === "B" ? "Média" : "Baixa";
+  // "FIT" sempre maiúsculo; três níveis com cor de saúde: verde, amarelo, vermelho.
+  const fitRot = c.nivel === "A" ? "Alta" : c.nivel === "B" ? "Médio" : "Baixo";
+  const fitCls = c.nivel === "A" ? "tag-fitn-alta" : c.nivel === "B" ? "tag-fitn-media" : "tag-fitn-baixa";
   return [
-    { k: "fit", r: "Fit " + fitRot, cls: "tag-fit-" + c.nivel,
+    { k: "fit", r: "FIT " + fitRot, cls: fitCls,
       t: `Fit ${c.fit}/100 — nível ${c.nivel}: setor, vínculo, porte e região` },
     { k: "temperatura", r: c.temperatura.charAt(0).toUpperCase() + c.temperatura.slice(1),
       cls: "tag-" + c.temperatura, t: leadPorQue(e, c) },
@@ -1486,21 +1489,22 @@ function renderLeads() {
       style="border-left-color:${corDaEtapa(etapaDoLead({ e, c }))}"
       title="${escAttr(rotuloDaEtapa(etapaDoLead({ e, c })))}"${leadsAbertos.has(e.n) ? " open" : ""}>
       <summary draggable="true">
-        <div class="lead-topo">
+        <div class="lead-left">
           <span class="lead-name">${i + 1}. ${e.n}</span>
-          <div class="lead-tags-topo">
-            ${leadTags(e, c).map(t => `<button type="button"
-              class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
-              data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
-              ${t.ico ? `<i class="tag-ico">${LEAD_CAT_ICONS[t.ico]}</i>` : ""}${t.r}${t.v !== undefined ? ` <b>${t.v}</b>` : ""}
-            </button>`).join("")}
-            <select class="lead-etapa" data-lead-status="${e.n}" title="etapa do funil">
-              ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
-                .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
-            </select>
-          </div>
+          <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
         </div>
-        <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
+        <div class="lead-tags-topo">
+          ${leadTags(e, c).map(t => `<button type="button"
+            class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
+            data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
+            ${t.ico ? `<i class="tag-ico">${LEAD_CAT_ICONS[t.ico]}</i>` : ""}${t.r}${t.v !== undefined ? ` <b>${t.v}</b>` : ""}
+          </button>`).join("")}
+          <select class="lead-etapa" data-lead-status="${e.n}" title="etapa do funil">
+            ${!ETAPAS_TRABALHO.includes(e.st || "novo")
+              ? `<option value="${e.st || "novo"}" disabled selected>${esc(rotuloDaEtapa(etapaDoLead({ e, c })))}</option>` : ""}
+            ${ETAPAS_TRABALHO.map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${rotuloDaEtapa("st:" + s)}</option>`).join("")}
+          </select>
+        </div>
       </summary>
       <div class="lead-body">
         ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
@@ -1639,9 +1643,9 @@ function renderLeads() {
 // de vermelho a verde gastava metade das faixas no verde. Agora passa por
 // vermelho, laranja, amarelo, azul e só então fecha no verde.
 const FUNIL = [
-  { k: "baixo",         h: 4,   r: "Prioridade baixa", d: "fica na base; só sobe se aparecer gatilho" },
-  { k: "medio",         h: 26,  r: "Prioridade média", d: "vale funil automatizado" },
-  { k: "alto",          h: 44,  r: "Prioridade alta",  d: "cadência personalizada" },
+  { k: "baixo",         h: 4,   r: "Outbound Fraco",   d: "fica na base; só sobe se aparecer gatilho" },
+  { k: "medio",         h: 26,  r: "Outbound Médio",   d: "vale funil automatizado" },
+  { k: "alto",          h: 44,  r: "Outbound Alto",    d: "cadência personalizada" },
   { k: "inbound",       h: 210, r: "Inbound",          d: "" }, // vazia por enquanto, de propósito
   { k: "st:contatada",  h: 196, r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
   { k: "st:reuniao",    h: 180, r: "Reunião",          d: "respondeu e marcou" },

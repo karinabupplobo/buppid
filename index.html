@@ -558,6 +558,9 @@
     padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--text); }
   #leads-footer button:hover { background: var(--land-default); }
   #leads-updated { font-size: 11.5px; color: var(--text-muted); }
+  /* marcador de versão publicada: serve para saber qual build o Pages está servindo */
+  #build-tag { margin-left: auto; font-size: 10.5px; color: var(--text-muted);
+    border: 1px solid var(--border); border-radius: 5px; padding: 2px 7px; }
   #leads-main { display: grid; grid-template-columns: 232px 1fr; gap: 16px; align-items: start; }
   #leads-funnel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px 13px; position: sticky; top: 18px; }
@@ -723,6 +726,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
+      <span id="build-tag">build 20260813-1945</span>
     </div>
   </div>
 

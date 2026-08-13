@@ -405,17 +405,32 @@
   .lead-row.prio-medio     { border-left-color: #b9c4ac; }
   .lead-row.prio-baixo     { border-left-color: #e6e4dc; }
   .lead-row.prio-bloqueado { border-left-color: #8d4034; }
-  .lead-row > summary { list-style: none; cursor: pointer; padding: 12px 15px; display: grid;
-    grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+  .lead-row > summary { list-style: none; cursor: pointer; padding: 11px 15px; display: grid;
+    grid-template-columns: 1fr auto; grid-template-areas: "topo score" "meta score";
+    column-gap: 12px; align-items: center; }
+  .lead-topo { grid-area: topo; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .lead-row > summary > .lead-meta { grid-area: meta; }
+  .lead-row > summary > .lead-score { grid-area: score; align-self: center; }
   .lead-row > summary::-webkit-details-marker { display: none; }
   .lead-row[open] > summary { background: var(--land-default); }
   .lead-row:hover > summary { background: #faf9f5; }
   .lead-name { font-size: 14px; font-weight: 600; }
   .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
   .lead-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
-  .tag { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 5px;
+  .tag { display: inline-flex; align-items: center; gap: 4px; font: inherit;
+    font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
     border: 1px solid var(--border-strong); color: var(--text-muted); background: #fff;
-    letter-spacing: .02em; }
+    letter-spacing: .02em; cursor: pointer; line-height: 1.3; }
+  .tag:hover { filter: brightness(.97); }
+  .tag.aberta { box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--text); }
+  .tag b { font-weight: 700; }
+  .tag-ico { width: 12px; height: 12px; display: block; flex: none; }
+  .tag-ico svg { width: 100%; height: 100%; display: block; }
+  .saude-ok     .tag-ico { color: #3d5b32; }
+  .saude-quente .tag-ico { color: #b5641f; }
+  .saude-med    .tag-ico { color: #b5872f; }
+  .saude-ruim   .tag-ico { color: #8d4034; }
+  .saude-neutro .tag-ico { color: #b6b3a8; }
   .tag-fit-A { background:#1d3b2a; color:#fff; border-color:#1d3b2a; }
   .tag-fit-B { background:#e2ece4; color:#2c4d38; border-color:#c4d9c9; }
   .tag-fit-C { background:#f2efe6; color:#77766f; border-color:var(--border-strong); }
@@ -426,7 +441,10 @@
   .tag-quente { background:#b5641f; color:#fff; border-color:#b5641f; }
   .tag-morno  { background:#f3e7d5; color:#8a6522; border-color:#e2cfab; }
   .tag-frio   { background:#fff; color:#a09e95; }
-  .lead-score { text-align: right; }
+  .lead-score { text-align: right; background: none; border: 1px solid transparent;
+    border-radius: 8px; padding: 3px 6px; cursor: pointer; color: var(--text); font: inherit; }
+  .lead-score:hover { border-color: var(--border); }
+  .lead-score.aberta { border-color: var(--text); }
   .lead-score b { font-size: 19px; font-weight: 700; display: block; line-height: 1.1; }
   .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
 
@@ -463,25 +481,8 @@
   .chip > div { border: 1px solid var(--border); border-top: none; border-radius: 0 0 5px 5px;
     padding: 6px 8px; font-size: 11.5px; line-height: 1.45; background: #fff; }
 
-  /* quatro categorias com ícone: a cor do ícone é a leitura da categoria */
-  .lead-cats { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0 0; }
-  .cat { display: inline-flex; align-items: center; gap: 6px; background: #fff; cursor: pointer;
-    border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px 4px 8px; text-align: left;
-    color: var(--text); transition: border-color .12s, background .12s; }
-  .cat:hover { background: var(--land-default); }
-  .cat.aberta { border-color: var(--text); background: var(--land-default); }
-  .cat-ico { flex: none; width: 15px; height: 15px; display: block; }
-  .cat-ico svg { width: 100%; height: 100%; display: block; }
-  .cat span { font-size: 10px; letter-spacing: .04em; text-transform: uppercase;
-    color: var(--text-muted); font-weight: 700; }
-  .cat b { font-size: 12.5px; font-weight: 700; margin-left: 1px; }
-  .saude-ok     .cat-ico { color: #3d5b32; }
-  .saude-quente .cat-ico { color: #b5641f; }
-  .saude-med    .cat-ico { color: #b5872f; }
-  .saude-ruim   .cat-ico { color: #8d4034; }
-  .saude-neutro .cat-ico { color: #b6b3a8; }
   .cat-det { border: 1px solid var(--border); border-radius: 9px; background: #fff;
-    padding: 11px 13px; margin-top: 8px; }
+    padding: 11px 13px; margin-top: 10px; }
   .cat-det h4 { margin: 12px 0 7px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
 
@@ -727,7 +728,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2015</span>
+      <span id="build-tag">build 20260813-2045</span>
     </div>
   </div>
 
@@ -1386,36 +1387,29 @@ function leadAbertura(e, c) {
   return m[s.t] || s.rotulo;
 }
 
-// Ícones das quatro categorias da ficha. Mesmo padrão dos ícones de tipo de
-// linha: SVG inline, sem biblioteca, herdando a cor via currentColor.
+// Ícones das tags que abrem detalhe. Mesmo padrão dos ícones de tipo de linha:
+// SVG inline, sem biblioteca, herdando a cor via currentColor.
 const LEAD_CAT_ICONS = {
-  fit: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="0" r="14"/><circle cx="0" cy="0" r="7.5"/><circle cx="0" cy="0" r="2.2" fill="currentColor" stroke="none"/></svg>`,
-  intencao: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M0 15 C -10 10, -10 0, -2 -15 C -2 -6, 7 -6, 5 0 C 11 4, 9 12, 0 15 Z"/></svg>`,
-  facilidade: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M-14 8 A 14 14 0 1 1 14 8"/><path d="M0 8 L8 -5"/><circle cx="0" cy="8" r="2.2" fill="currentColor" stroke="none"/></svg>`,
-  acesso: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="-6" r="6.5"/><path d="M-12 15 C -12 4, 12 4, 12 15"/></svg>`,
-  gatilho: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 -15 L-10 2 L-1 2 L-3 15 L10 -2 L1 -2 Z"/></svg>`,
-  contato: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="-15" y="-12" width="30" height="24" rx="4"/><circle cx="-6" cy="-3" r="3.6"/><path d="M-12 7 C -12 2, 0 2, 0 7"/><path d="M5 -4 L11 -4"/><path d="M5 3 L11 3"/></svg>`,
-  notas: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-14 -11 L14 -11 L14 7 L-2 7 L-9 14 L-9 7 L-14 7 Z"/></svg>`
+  gatilho: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 -15 L-10 2 L-1 2 L-3 15 L10 -2 L1 -2 Z"/></svg>`,
+  contato: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="-15" y="-12" width="30" height="24" rx="4"/><circle cx="-6" cy="-3" r="3.6"/><path d="M-12 7 C -12 2, 0 2, 0 7"/><path d="M5 -4 L11 -4"/><path d="M5 3 L11 3"/></svg>`,
+  notas: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-14 -11 L14 -11 L14 7 L-2 7 L-9 14 L-9 7 L-14 7 Z"/></svg>`
 };
 
-// A cor do ícone é a leitura da categoria: verde é bom, amarelo é atenção,
-// vermelho é problema, cinza é ausência de informação.
-function leadCategorias(e, c) {
-  const fitSaude = c.nivel === "A" ? "ok" : c.nivel === "D" ? "neutro" : "med";
-  const intSaude = c.temperatura === "quente" ? "quente" : c.temperatura === "morno" ? "med" : "neutro";
-  const facSaude = c.facilNivel === "facil" ? "ok" : c.facilNivel === "media" ? "med" : "ruim";
-  const aceSaude = c.acessoNivel === "mapeado" ? "ok" : c.acessoNivel === "parcial" ? "med" : "ruim";
+// As cinco tags que ficam ao lado do nome. Cada uma abre o próprio detalhe.
+// Temperatura vem sem número: o número está dentro, não na etiqueta.
+function leadTags(e, c) {
   const vivos = c.sinais.filter(s => s.vivo).length;
-  const gatSaude = vivos ? "quente" : c.sinais.length ? "med" : "neutro";
+  const nCt = c.contatos.length, nCm = (e.cm || []).length;
   return [
-    { k: "fit", r: "Fit", v: c.fit, saude: fitSaude, t: `Nível ${c.nivel}: setor, vínculo, porte e região` },
-    { k: "intencao", r: "Intenção", v: c.intencao, saude: intSaude, t: leadPorQue(e, c) },
-    { k: "facilidade", r: "Facilidade", v: c.facil, saude: facSaude, t: `Venda ${LEAD_ROT_FACIL[c.facilNivel]} — ciclo ${c.porte.ciclo}` },
-    { k: "acesso", r: "Acesso", v: c.acesso, saude: aceSaude, t: `${c.acessoNivel} — ${c.contatos.length} contato(s)` },
-    { k: "gatilho", r: "Gatilho", v: vivos, saude: gatSaude, t: vivos ? `${vivos} gatilho(s) ainda valendo pontos` : "nenhum gatilho vivo" },
-    { k: "contato", r: "Contato", v: c.contatos.length, saude: c.contatos.length ? "ok" : "ruim", t: c.contatos.length ? "quem já está mapeado dentro da empresa" : "ninguém mapeado" },
-    // notas não é eixo de score: fica sempre em cinza para não competir com os outros
-    { k: "notas", r: "Notas", v: (e.cm || []).length, saude: "neutro", t: "comentários e abordagens registradas" }
+    { k: "temperatura", r: c.temperatura, cls: "tag-" + c.temperatura, t: leadPorQue(e, c) },
+    { k: "venda", r: "Venda " + LEAD_ROT_FACIL[c.facilNivel], cls: "tag-" + c.facilNivel,
+      t: `Facilidade ${c.facil}/100 — ciclo ${c.porte.ciclo}` },
+    { k: "gatilho", r: "Gatilho", v: vivos, ico: "gatilho", cls: "saude-" + (vivos ? "quente" : c.sinais.length ? "med" : "neutro"),
+      t: vivos ? `${vivos} gatilho(s) ainda valendo pontos` : "nenhum gatilho vivo" },
+    { k: "contato", r: "Contato", v: nCt, ico: "contato", cls: "saude-" + (nCt ? "ok" : "ruim"),
+      t: nCt ? `${nCt} contato(s) — acesso ${c.acesso}/100` : "ninguém mapeado dentro da empresa" },
+    { k: "notas", r: "Notas", v: nCm, ico: "notas", cls: "saude-neutro",
+      t: nCm ? `${nCm} comentário(s)` : "nenhum comentário" }
   ];
 }
 
@@ -1496,33 +1490,33 @@ function renderLeads() {
     <details class="lead-row prio-${c.prioridade}" data-lead-nome="${escAttr(e.n)}"
       title="prioridade ${c.prioridade}"${leadsAbertos.has(e.n) ? " open" : ""}>
       <summary draggable="true">
-        <div>
-          <div class="lead-name">${i + 1}. ${e.n}</div>
-          <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
-          <div class="lead-tags">
-            <span class="tag tag-${c.temperatura}">${c.temperatura}${c.intencao ? " · " + c.intencao : ""}</span>
-            <span class="tag">${e.h || "porte ?"}</span>
-            <span class="tag">${c.acessoNivel}</span>
-            <span class="tag tag-${c.facilNivel}">Venda ${LEAD_ROT_FACIL[c.facilNivel]}</span>
-          </div>
+        <div class="lead-topo">
+          <span class="lead-name">${i + 1}. ${e.n}</span>
+          ${leadTags(e, c).map(t => `<button type="button"
+            class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
+            data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
+            ${t.ico ? `<i class="tag-ico">${LEAD_CAT_ICONS[t.ico]}</i>` : ""}${t.r}${t.v !== undefined ? ` <b>${t.v}</b>` : ""}
+          </button>`).join("")}
         </div>
-        <div class="lead-score"><b>${c.total}</b><span>total</span></div>
+        <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
+        <button type="button" class="lead-score${leadsCatAberta.get(e.n) === "pontuacao" ? " aberta" : ""}"
+          data-cat="pontuacao" data-cat-lead="${escAttr(e.n)}" title="como esses pontos foram somados">
+          <b>${c.total}</b><span>total</span></button>
       </summary>
       <div class="lead-body">
         ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
           c.penalidades.map(p => `${p.rotulo} (${p.peso} pts, há ${p.dias} dias)${p.ds ? " — " + p.ds : ""}`).join("<br>")
         }</div>` : ""}
 
-        <div class="lead-cats">
-          ${leadCategorias(e, c).map(k => `
-            <button type="button" class="cat saude-${k.saude}${leadsCatAberta.get(e.n) === k.k ? " aberta" : ""}"
-              data-cat="${k.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(k.t)}">
-              <i class="cat-ico">${LEAD_CAT_ICONS[k.k]}</i>
-              <span>${k.r}</span><b>${k.v}</b>
-            </button>`).join("")}
-        </div>
-
-        ${leadsCatAberta.get(e.n) === "fit" ? `<div class="cat-det">
+        ${leadsCatAberta.get(e.n) === "pontuacao" ? `<div class="cat-det">
+          <table class="lead-kv">
+            <tr><td>fit</td><td><b>${c.fit}</b>/100 — nível ${c.nivel}</td></tr>
+            <tr><td>intenção</td><td>+${c.intencao} — ${c.temperatura}</td></tr>
+            <tr><td>acesso</td><td>+${(c.acesso * 0.2).toFixed(1)} (${c.acesso}/100 com peso de 20%)</td></tr>
+            ${c.penal ? `<tr><td>penalidade</td><td>${c.penal}</td></tr>` : ""}
+            <tr><td>total</td><td><b>${c.total}</b></td></tr>
+          </table>
+          <h4>De onde vem o fit</h4>
           <div class="lead-bar">
             <i style="width:${pct(c.fitDet.setor)};background:#2f5d43"></i>
             <i style="width:${pct(c.fitDet.vinculo)};background:#4d8464"></i>
@@ -1531,11 +1525,13 @@ function renderLeads() {
           <table class="lead-kv">
             <tr><td>setor</td><td>${c.fitDet.setor} — ${c.setor.d}</td></tr>
             <tr><td>vínculo internacional</td><td>${c.fitDet.vinculo} — ${c.vinc.d}</td></tr>
-            <tr><td>porte para o produto</td><td>${c.fitDet.porte} — ${e.h || "?"}</td></tr>
+            <tr><td>porte</td><td>${c.fitDet.porte} — ${e.h || "?"}</td></tr>
             <tr><td>região</td><td>${c.fitDet.regiao} — ${c.regiao.nota}</td></tr>
-          </table></div>` : ""}
+          </table>
+          <p class="cat-nota">Prioridade ${c.prioridade}: ${esc(c.motivoPrioridade)}</p>
+        </div>` : ""}
 
-        ${leadsCatAberta.get(e.n) === "intencao" ? `<div class="cat-det">
+        ${leadsCatAberta.get(e.n) === "temperatura" ? `<div class="cat-det">
           <table class="lead-kv">
             <tr><td>soma dos gatilhos</td><td>${c.intencaoBruta}</td></tr>
             <tr><td>mês</td><td>×${c.saz.m} — ${c.saz.n}</td></tr>
@@ -1544,7 +1540,7 @@ function renderLeads() {
           <p class="cat-nota">${leadPorQue(e, c)}</p>
         </div>` : ""}
 
-        ${leadsCatAberta.get(e.n) === "facilidade" ? `<div class="cat-det">
+        ${leadsCatAberta.get(e.n) === "venda" ? `<div class="cat-det">
           <div class="lead-bar">
             <i style="width:${pct(c.facDet.porte)};background:#8a6522"></i>
             <i style="width:${pct(c.facDet.local)};background:#b5872f"></i>
@@ -1556,19 +1552,8 @@ function renderLeads() {
             <tr><td>proximidade</td><td>${c.facDet.regiao} — ${c.regiao.nota}</td></tr>
             <tr><td>já tem área de T&amp;D</td><td>${c.facDet.areaTD} — ${c.facDet.areaTD === 15 ? "sim, tem sinal disso" : "não confirmado"}</td></tr>
             <tr><td>ciclo estimado</td><td>${c.porte.ciclo}</td></tr>
+            <tr><td>facilidade</td><td><b>${c.facil}</b>/100 — ${LEAD_ROT_FACIL[c.facilNivel]}</td></tr>
           </table></div>` : ""}
-
-        ${leadsCatAberta.get(e.n) === "acesso" ? `<div class="cat-det">
-          <table class="lead-kv">
-            ${c.contatos.length ? c.contatos.map(ct => {
-              const p = LEAD_PERSONAS[ct.persona] || { r: ct.persona || "papel não definido", p: 5 };
-              return `<tr><td>${p.r}</td><td>+${p.p} — ${esc(ct.nome || "sem nome")}</td></tr>`;
-            }).join("") : `<tr><td colspan="2" class="lead-falta">Ninguém mapeado: o eixo Acesso fica em zero.</td></tr>`}
-            <tr><td>total</td><td><b>${c.acesso}</b>/100 — ${c.acessoNivel}</td></tr>
-          </table>
-          <p class="cat-nota">Cada papel vale um tanto: ${Object.values(LEAD_PERSONAS).map(p => `${p.r} +${p.p}`).join(" · ")}.
-            O total entra na nota final com peso de 20%.</p>
-        </div>` : ""}
 
         ${leadsCatAberta.get(e.n) === "gatilho" ? `<div class="cat-det">
           ${c.sinais.length ? `<table class="lead-kv lead-sinais">
@@ -1583,9 +1568,6 @@ function renderLeads() {
                 <span class="f">${Math.round(s.frescor * 100)}%</span></td>
               <td><b>${s.efetivo}</b></td></tr>`).join("")}
           </table>` : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
-          ${c.penalidades.length ? `<table class="lead-kv">
-            ${c.penalidades.map(p => `<tr><td>freio: ${p.rotulo}</td><td>${p.peso} pts, há ${p.dias} dias${p.ds ? " — " + p.ds : ""}</td></tr>`).join("")}
-          </table>` : ""}
           <div class="lead-abertura"><span>Primeira linha sugerida</span><p>${leadAbertura(e, c)}</p></div>
         </div>` : ""}
 
@@ -1597,6 +1579,7 @@ function renderLeads() {
           </div>
           <button type="button" class="ll-add" data-lead-contato="${escAttr(e.n)}">+ contato</button>
           <table class="lead-kv">
+            <tr><td>acesso</td><td><b>${c.acesso}</b>/100 — ${c.acessoNivel}</td></tr>
             <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
             <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
             <tr><td>falta enriquecer</td><td class="lead-falta">${esc((e.f || "—").split(",").join(" · "))}</td></tr>
@@ -1615,13 +1598,12 @@ function renderLeads() {
 
         ${leadsCatAberta.get(e.n) === "notas" ? `<div class="cat-det">
           <div class="lead-coment">
-            <h4>Comentários <span class="f">${(e.cm || []).length}</span></h4>
             ${(e.cm || []).length ? `<div class="cm-lista">${(e.cm || []).slice().reverse().map(m => `
               <div class="cm-item">
                 <div class="cm-meta">${esc(m.quem || "—")} · ${m.dt}${m.ab
                   ? ` · <span class="cm-ab">abordagem: ${esc((LEAD_SINAIS[m.ab.gatilho] || { r: m.ab.gatilho }).r)} → ${esc(m.ab.resultado)}</span>` : ""}</div>
                 <p>${esc(m.t)}</p>
-              </div>`).join("")}</div>` : ""}
+              </div>`).join("")}</div>` : `<p class="lead-meta">Nenhum comentário ainda.</p>`}
             <textarea data-cm-txt="${escAttr(e.n)}" rows="2" placeholder="o que aconteceu com essa empresa…"></textarea>
             <label class="cm-check"><input type="checkbox" data-cm-ab="${escAttr(e.n)}"> foi uma abordagem</label>
             <div class="cm-abordagem">
@@ -1646,7 +1628,7 @@ function renderLeads() {
               .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
           </select>
           ${e.d ? `<a href="https://${escAttr(e.d)}" target="_blank" rel="noopener">${esc(e.d)}</a>` : ""}
-          <span class="lr-org">origem: ${esc(e.o || "—")}</span>
+          <span class="lr-org">${e.h || "porte ?"} · origem: ${esc(e.o || "—")}</span>
         </div>
       </div>
     </details>`).join("") : `<div style="padding:22px;color:var(--text-muted);font-size:13px">Nada nesse filtro.</div>`;
@@ -1854,11 +1836,13 @@ document.getElementById("leads-list").addEventListener("click", ev => {
   const b = ev.target.closest("button"); if (!b) return;
   const d = b.dataset;
 
-  // acordeão das categorias: clicar na aberta fecha
+  // as tags ao lado do nome abrem o próprio detalhe. preventDefault impede que
+  // o clique dentro do summary feche a linha logo depois de abrir.
   if (d.catLead) {
+    ev.preventDefault();
     const atual = leadsCatAberta.get(d.catLead);
     if (atual === d.cat) leadsCatAberta.delete(d.catLead);
-    else leadsCatAberta.set(d.catLead, d.cat);
+    else { leadsCatAberta.set(d.catLead, d.cat); leadsAbertos.add(d.catLead); }
     renderLeads();
     return;
   }

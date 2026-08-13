@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260812-2044-rotina-diaria — 12/08/2026 (registrado em 13/08/2026)
+- O que mudou: entrada retroativa. O commit d7340ad, que acrescentou ao
+  NEXT_STEPS.md a rotina diária de atualização da base e a recheca de gatilhos,
+  foi feito sem tag e sem registro no CHANGELOG. A tag foi criada agora,
+  apontando para o commit original.
+- Arquivos: NEXT_STEPS.md
+- Motivo: fechar a divergência entre o último commit e a última entrada do
+  CHANGELOG, para a cadeia de reversão não ter buraco.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260812-2155-apollo-bloqueado
+
 ## v-20260812-2155-apollo-bloqueado — 12/08/2026
 - O que mudou: registro, nas 17 empresas com contato mapeado, de que o Apollo
   está bloqueado no plano gratuito. Testados e recusados: people/match,

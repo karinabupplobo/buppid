@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2135-fit-e-cores — 13/08/2026
+- O que mudou: entrou a tag Fit (Alta, Média, Baixa) antes da temperatura,
+  abrindo a composição do score. A pontuação total saiu do card e a info da
+  empresa voltou para baixo do nome. Clicar no card não abre mais nada — só as
+  tags abrem, e fechar a tag aberta fecha a ficha. A faixa colorida da esquerda
+  passou a usar exatamente a cor da etapa do funil. O degradê do funil deixou
+  de ser calculado e virou matiz escrito por etapa: vermelho, laranja, amarelo,
+  azul e verde, em vez de metade das faixas em verde.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a faixa da esquerda dizia prioridade e o funil dizia etapa, com cores
+  diferentes para a mesma empresa; e o total ocupava espaço sem ser acionável.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2108-docs-linha-unica
+
 ## v-20260813-2105-linha-unica — 13/08/2026
 - O que mudou: a linha do lead virou uma linha só de verdade — nome, info,
   temperatura (com inicial maiúscula), venda, gatilho, contato, notas e o

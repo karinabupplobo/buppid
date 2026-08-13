@@ -397,8 +397,15 @@
 
   #leads-list { border: 1px solid var(--border); border-radius: 12px; background: var(--panel);
     overflow: hidden; }
-  .lead-row { border-bottom: 1px solid var(--border); }
+  .lead-row { border-bottom: 1px solid var(--border); border-left: 4px solid transparent; }
   .lead-row:last-child { border-bottom: none; }
+  /* a prioridade saiu das tags do card e virou faixa: mesma informação, sem texto */
+  .lead-row.prio-premium   { border-left-color: #4a2f6b; }
+  .lead-row.prio-alto      { border-left-color: #1d3b2a; }
+  .lead-row.prio-medio     { border-left-color: #b9c4ac; }
+  .lead-row.prio-baixo     { border-left-color: #e6e4dc; }
+  .lead-row.prio-bloqueado { border-left-color: #8d4034; }
+  .lead-tags-ficha { margin: 12px 0 0; }
   .lead-row > summary { list-style: none; cursor: pointer; padding: 12px 15px; display: grid;
     grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
   .lead-row > summary::-webkit-details-marker { display: none; }
@@ -1302,25 +1309,28 @@ function renderLeads() {
   const pct = v => v + "%";
 
   document.getElementById("leads-list").innerHTML = lista.length ? lista.map(({ e, c }, i) => `
-    <details class="lead-row" data-lead-nome="${escAttr(e.n)}">
+    <details class="lead-row prio-${c.prioridade}" data-lead-nome="${escAttr(e.n)}"
+      title="prioridade ${c.prioridade}">
       <summary draggable="true">
         <div>
           <div class="lead-name">${i + 1}. ${e.n}</div>
           <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
           <div class="lead-tags">
-            <span class="tag tag-${c.prioridade}">${c.prioridade}</span>
-            <span class="tag tag-fit-${c.nivel}">Fit ${c.nivel} · ${c.fit}</span>
-            <span class="tag tag-${c.facilNivel}">Venda ${LEAD_ROT_FACIL[c.facilNivel]}</span>
             <span class="tag tag-${c.temperatura}">${c.temperatura}${c.intencao ? " · " + c.intencao : ""}</span>
             <span class="tag">${e.h || "porte ?"}</span>
-            <span class="tag">ciclo ${c.porte.ciclo}</span>
             <span class="tag">${c.acessoNivel}</span>
-            ${c.penal ? `<span class="tag tag-dificil">${c.penal} pts</span>` : ""}
+            <span class="tag tag-${c.facilNivel}">Venda ${LEAD_ROT_FACIL[c.facilNivel]}</span>
           </div>
         </div>
         <div class="lead-score"><b>${c.total}</b><span>total</span></div>
       </summary>
       <div class="lead-body">
+        <div class="lead-tags lead-tags-ficha">
+          <span class="tag tag-${c.prioridade}">${c.prioridade}</span>
+          <span class="tag tag-fit-${c.nivel}">Fit ${c.nivel} · ${c.fit}</span>
+          <span class="tag">ciclo ${c.porte.ciclo}</span>
+          ${c.penal ? `<span class="tag tag-dificil">${c.penal} pts</span>` : ""}
+        </div>
         ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
           c.penalidades.map(p => `${p.rotulo} (${p.peso} pts, há ${p.dias} dias)${p.ds ? " — " + p.ds : ""}`).join("<br>")
         }</div>` : ""}

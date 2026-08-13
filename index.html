@@ -403,7 +403,10 @@
   /* o card não abre nada: quem abre são as tags. daí o cursor de arrastar. */
   .lead-row > summary { list-style: none; cursor: grab; padding: 10px 15px; display: block; }
   .lead-row > summary:active { cursor: grabbing; }
-  .lead-topo { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .lead-topo { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .lead-name { flex: none; }
+  .lead-tags-topo { margin-left: auto; display: flex; align-items: center;
+    flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
   .lead-etapa { border: 1px solid var(--border); background: #fff; color: var(--text-muted);
     border-radius: 6px; padding: 2px 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .lead-row > summary::-webkit-details-marker { display: none; }
@@ -715,7 +718,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2135</span>
+      <span id="build-tag">build 20260813-2155</span>
     </div>
   </div>
 
@@ -1320,8 +1323,9 @@ function calcularLead(e) {
   // Prioridade por regra, não por soma: dá para explicar por que cada uma caiu onde caiu.
   let prioridade, motivoPrioridade;
   if (penal <= -60) { prioridade = "bloqueado"; motivoPrioridade = "Penalidade eliminatória ativa."; }
-  else if (fit >= 88 && intencao >= 20 && facil >= 55 && penal > -20) {
-    prioridade = "premium"; motivoPrioridade = "Fit A, gatilho quente, venda viável e nada bloqueando. Trabalhar à mão, uma a uma."; }
+  // A faixa Premium do funil está temporariamente vazia por decisão da Karina:
+  // o que antes virava "premium" aqui agora entra em "alto" (a condição de
+  // premium já era um subconjunto da condição de alto, então nada se perde).
   else if ((fit >= 72 && intencao >= 12) || (fit >= 88 && intencao > 0)) {
     prioridade = "alto"; motivoPrioridade = "Bom perfil com motivo real para falar agora. Cadência personalizada."; }
   else if (fit >= 72 || intencao >= 20) {
@@ -1484,15 +1488,17 @@ function renderLeads() {
       <summary draggable="true">
         <div class="lead-topo">
           <span class="lead-name">${i + 1}. ${e.n}</span>
-          ${leadTags(e, c).map(t => `<button type="button"
-            class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
-            data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
-            ${t.ico ? `<i class="tag-ico">${LEAD_CAT_ICONS[t.ico]}</i>` : ""}${t.r}${t.v !== undefined ? ` <b>${t.v}</b>` : ""}
-          </button>`).join("")}
-          <select class="lead-etapa" data-lead-status="${e.n}" title="etapa do funil">
-            ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
-              .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
-          </select>
+          <div class="lead-tags-topo">
+            ${leadTags(e, c).map(t => `<button type="button"
+              class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
+              data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
+              ${t.ico ? `<i class="tag-ico">${LEAD_CAT_ICONS[t.ico]}</i>` : ""}${t.r}${t.v !== undefined ? ` <b>${t.v}</b>` : ""}
+            </button>`).join("")}
+            <select class="lead-etapa" data-lead-status="${e.n}" title="etapa do funil">
+              ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
+                .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
+            </select>
+          </div>
         </div>
         <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
       </summary>
@@ -1636,7 +1642,7 @@ const FUNIL = [
   { k: "baixo",         h: 4,   r: "Prioridade baixa", d: "fica na base; só sobe se aparecer gatilho" },
   { k: "medio",         h: 26,  r: "Prioridade média", d: "vale funil automatizado" },
   { k: "alto",          h: 44,  r: "Prioridade alta",  d: "cadência personalizada" },
-  { k: "premium",       h: 210, r: "Premium",          d: "trabalhar à mão, uma a uma" },
+  { k: "inbound",       h: 210, r: "Inbound",          d: "" }, // vazia por enquanto, de propósito
   { k: "st:contatada",  h: 196, r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
   { k: "st:reuniao",    h: 180, r: "Reunião",          d: "respondeu e marcou" },
   { k: "st:proposta",   h: 160, r: "Proposta",         d: "proposta na mesa" },
@@ -1689,7 +1695,7 @@ function renderFunil(calc) {
     const cor = corDaEtapa(e.k);
     // amarelo e verde ficam claros demais para texto branco; escolhe o texto
     // pela luminância real da faixa em vez de fixar uma cor só
-    const escuro = luminancia(hue, 64, luz) > 0.22;
+    const escuro = luminancia(hue, 64, luz) > 0.23;
     if (i > 0) {
       const antes = nums[i - 1];
       html += `<div class="funnel-drop">↓ ${antes > 0 ? Math.round((nums[i] / antes) * 100) : 0}%</div>`;
@@ -1755,8 +1761,8 @@ function moverLeadParaEtapa(e, alvo) {
   } else {
     funilMsg(`<b>${esc(e.n)}</b> voltou para a faixa automática e o motor colocou em
       <b>${rot(c.prioridade)}</b>, não em ${rot(alvo)}. Hoje: fit ${c.fit}, intenção
-      ${c.intencao}, facilidade ${c.facil}. Premium pede fit ≥ 88, intenção ≥ 20 e
-      facilidade ≥ 55. Alta pede fit ≥ 72 com intenção ≥ 12.`);
+      ${c.intencao}, facilidade ${c.facil}. Alta pede fit ≥ 72 com intenção ≥ 12
+      (ou fit ≥ 88 com qualquer intenção).`);
   }
 }
 

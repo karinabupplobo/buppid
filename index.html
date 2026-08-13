@@ -397,26 +397,20 @@
 
   #leads-list { border: 1px solid var(--border); border-radius: 12px; background: var(--panel);
     overflow: hidden; }
-  .lead-row { border-bottom: 1px solid var(--border); border-left: 4px solid transparent; }
+  /* a faixa da esquerda usa exatamente a cor da etapa em que o lead está */
+  .lead-row { border-bottom: 1px solid var(--border); border-left: 5px solid #d9d6cc; }
   .lead-row:last-child { border-bottom: none; }
-  /* a prioridade saiu das tags do card e virou faixa: mesma informação, sem texto */
-  .lead-row.prio-premium   { border-left-color: #4a2f6b; }
-  .lead-row.prio-alto      { border-left-color: #1d3b2a; }
-  .lead-row.prio-medio     { border-left-color: #b9c4ac; }
-  .lead-row.prio-baixo     { border-left-color: #e6e4dc; }
-  .lead-row.prio-bloqueado { border-left-color: #8d4034; }
-  .lead-row > summary { list-style: none; cursor: pointer; padding: 10px 15px; display: flex;
-    align-items: center; gap: 12px; }
-  .lead-topo { flex: 1; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-  .lead-topo > .lead-meta { flex: 0 1 auto; min-width: 60px; margin: 0;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* o card não abre nada: quem abre são as tags. daí o cursor de arrastar. */
+  .lead-row > summary { list-style: none; cursor: grab; padding: 10px 15px; display: block; }
+  .lead-row > summary:active { cursor: grabbing; }
+  .lead-topo { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
   .lead-etapa { border: 1px solid var(--border); background: #fff; color: var(--text-muted);
     border-radius: 6px; padding: 2px 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .lead-row > summary::-webkit-details-marker { display: none; }
   .lead-row[open] > summary { background: var(--land-default); }
   .lead-row:hover > summary { background: #faf9f5; }
   .lead-name { font-size: 14px; font-weight: 600; white-space: nowrap; }
-  .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+  .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
   .lead-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
   .tag { display: inline-flex; align-items: center; gap: 4px; font: inherit;
     font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
@@ -442,13 +436,6 @@
   .tag-quente { background:#b5641f; color:#fff; border-color:#b5641f; }
   .tag-morno  { background:#f3e7d5; color:#8a6522; border-color:#e2cfab; }
   .tag-frio   { background:#fff; color:#a09e95; }
-  .lead-score { text-align: right; background: none; border: 1px solid transparent;
-    border-radius: 8px; padding: 3px 6px; cursor: pointer; color: var(--text); font: inherit; }
-  .lead-score:hover { border-color: var(--border); }
-  .lead-score.aberta { border-color: var(--text); }
-  .lead-score b { font-size: 19px; font-weight: 700; display: block; line-height: 1.1; }
-  .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
-
   .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9; }
   .lead-kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   .lead-kv td { padding: 4px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -728,7 +715,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2105</span>
+      <span id="build-tag">build 20260813-2135</span>
     </div>
   </div>
 
@@ -1400,7 +1387,10 @@ const LEAD_CAT_ICONS = {
 function leadTags(e, c) {
   const vivos = c.sinais.filter(s => s.vivo).length;
   const nCt = c.contatos.length, nCm = (e.cm || []).length;
+  const fitRot = c.nivel === "A" ? "Alta" : c.nivel === "B" ? "Média" : "Baixa";
   return [
+    { k: "fit", r: "Fit " + fitRot, cls: "tag-fit-" + c.nivel,
+      t: `Fit ${c.fit}/100 — nível ${c.nivel}: setor, vínculo, porte e região` },
     { k: "temperatura", r: c.temperatura.charAt(0).toUpperCase() + c.temperatura.slice(1),
       cls: "tag-" + c.temperatura, t: leadPorQue(e, c) },
     { k: "venda", r: "Venda " + LEAD_ROT_FACIL[c.facilNivel], cls: "tag-" + c.facilNivel,
@@ -1488,12 +1478,12 @@ function renderLeads() {
   const pct = v => v + "%";
 
   document.getElementById("leads-list").innerHTML = lista.length ? lista.map(({ e, c }, i) => `
-    <details class="lead-row prio-${c.prioridade}" data-lead-nome="${escAttr(e.n)}"
-      title="prioridade ${c.prioridade}"${leadsAbertos.has(e.n) ? " open" : ""}>
+    <details class="lead-row" data-lead-nome="${escAttr(e.n)}"
+      style="border-left-color:${corDaEtapa(etapaDoLead({ e, c }))}"
+      title="${escAttr(rotuloDaEtapa(etapaDoLead({ e, c })))}"${leadsAbertos.has(e.n) ? " open" : ""}>
       <summary draggable="true">
         <div class="lead-topo">
           <span class="lead-name">${i + 1}. ${e.n}</span>
-          <span class="lead-meta" title="${escAttr(`${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}`)}">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</span>
           ${leadTags(e, c).map(t => `<button type="button"
             class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
             data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
@@ -1504,16 +1494,14 @@ function renderLeads() {
               .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
           </select>
         </div>
-        <button type="button" class="lead-score${leadsCatAberta.get(e.n) === "pontuacao" ? " aberta" : ""}"
-          data-cat="pontuacao" data-cat-lead="${escAttr(e.n)}" title="como esses pontos foram somados">
-          <b>${c.total}</b><span>total</span></button>
+        <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
       </summary>
       <div class="lead-body">
         ${c.penalidades.length ? `<div class="lead-pen"><b>Freio ativo</b>${
           c.penalidades.map(p => `${p.rotulo} (${p.peso} pts, há ${p.dias} dias)${p.ds ? " — " + p.ds : ""}`).join("<br>")
         }</div>` : ""}
 
-        ${leadsCatAberta.get(e.n) === "pontuacao" ? `<div class="cat-det">
+        ${leadsCatAberta.get(e.n) === "fit" ? `<div class="cat-det">
           <table class="lead-kv">
             <tr><td>fit</td><td><b>${c.fit}</b>/100 — nível ${c.nivel}</td></tr>
             <tr><td>intenção</td><td>+${c.intencao} — ${c.temperatura}</td></tr>
@@ -1641,16 +1629,32 @@ function renderLeads() {
 // Funil único. As quatro primeiras etapas o motor calcula; as quatro últimas
 // você move. Assim que a empresa é contatada, ela sai da faixa de prioridade e
 // desce para a etapa de trabalho — nunca aparece em duas ao mesmo tempo.
+// O matiz de cada etapa é escrito à mão em vez de calculado: a rampa automática
+// de vermelho a verde gastava metade das faixas no verde. Agora passa por
+// vermelho, laranja, amarelo, azul e só então fecha no verde.
 const FUNIL = [
-  { k: "baixo",         r: "Prioridade baixa", d: "fica na base; só sobe se aparecer gatilho" },
-  { k: "medio",         r: "Prioridade média", d: "vale funil automatizado" },
-  { k: "alto",          r: "Prioridade alta",  d: "cadência personalizada" },
-  { k: "premium",       r: "Premium",          d: "trabalhar à mão, uma a uma" },
-  { k: "st:contatada",  r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
-  { k: "st:reuniao",    r: "Reunião",          d: "respondeu e marcou" },
-  { k: "st:proposta",   r: "Proposta",         d: "proposta na mesa" },
-  { k: "st:cliente",    r: "Cliente",          d: "fechou" }
+  { k: "baixo",         h: 4,   r: "Prioridade baixa", d: "fica na base; só sobe se aparecer gatilho" },
+  { k: "medio",         h: 26,  r: "Prioridade média", d: "vale funil automatizado" },
+  { k: "alto",          h: 44,  r: "Prioridade alta",  d: "cadência personalizada" },
+  { k: "premium",       h: 210, r: "Premium",          d: "trabalhar à mão, uma a uma" },
+  { k: "st:contatada",  h: 196, r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
+  { k: "st:reuniao",    h: 180, r: "Reunião",          d: "respondeu e marcou" },
+  { k: "st:proposta",   h: 160, r: "Proposta",         d: "proposta na mesa" },
+  { k: "st:cliente",    h: 140, r: "Cliente",          d: "fechou" }
 ];
+
+// Cor e rótulo da etapa, usados tanto na faixa do funil quanto na borda
+// esquerda de cada lead, para os dois nunca discordarem.
+function corDaEtapa(k) {
+  const i = FUNIL.findIndex(f => f.k === k);
+  if (i < 0) return k === "bloqueado" ? "#8d4034" : "#d9d6cc";
+  const luz = 48 + Math.round(Math.sin((i / (FUNIL.length - 1)) * Math.PI) * 4);
+  return `hsl(${FUNIL[i].h} 64% ${luz}%)`;
+}
+function rotuloDaEtapa(k) {
+  const f = FUNIL.find(x => x.k === k);
+  return f ? f.r : k === "bloqueado" ? "Bloqueado por penalidade" : "Fora do funil";
+}
 
 // Uma empresa mora em exatamente uma etapa.
 const ETAPAS_TRABALHO = ["contatada", "reuniao", "proposta", "cliente"];
@@ -1679,11 +1683,10 @@ function renderFunil(calc) {
   let html = "";
   FUNIL.forEach((e, i) => {
     const larg = Math.max(44, Math.round(100 - i * (56 / (FUNIL.length - 1))));
-    // matiz de 4 (vermelho) a 142 (verde), passando pelo amarelo no meio
     const t = i / (FUNIL.length - 1);
-    const hue = Math.round(4 + t * 138);
+    const hue = e.h;
     const luz = 48 + Math.round(Math.sin(t * Math.PI) * 4);
-    const cor = `hsl(${hue} 64% ${luz}%)`;
+    const cor = corDaEtapa(e.k);
     // amarelo e verde ficam claros demais para texto branco; escolhe o texto
     // pela luminância real da faixa em vez de fixar uma cor só
     const escuro = luminancia(hue, 64, luz) > 0.22;
@@ -1831,11 +1834,11 @@ document.getElementById("leads-list").addEventListener("click", ev => {
   }
 });
 
-// O seletor de etapa mora dentro do summary. Sem isto, clicar nele abriria e
-// fecharia a ficha junto. O menu do select abre no mousedown, então o
-// preventDefault do clique cancela só o toggle.
+// Clicar no card não abre nem fecha nada — quem abre são as tags. O toggle do
+// <details> é cancelado sempre; a abertura passa a ser controlada no render.
+// Isso também protege o seletor de etapa, que mora dentro do card.
 document.getElementById("leads-list").addEventListener("click", ev => {
-  if (ev.target.closest("[data-lead-status]")) ev.preventDefault();
+  if (ev.target.closest(".lead-row > summary")) ev.preventDefault();
 });
 
 // --- Contatos: abrir, salvar e remover ---
@@ -1848,7 +1851,7 @@ document.getElementById("leads-list").addEventListener("click", ev => {
   if (d.catLead) {
     ev.preventDefault();
     const atual = leadsCatAberta.get(d.catLead);
-    if (atual === d.cat) leadsCatAberta.delete(d.catLead);
+    if (atual === d.cat) { leadsCatAberta.delete(d.catLead); leadsAbertos.delete(d.catLead); }
     else { leadsCatAberta.set(d.catLead, d.cat); leadsAbertos.add(d.catLead); }
     renderLeads();
     return;
@@ -1909,13 +1912,6 @@ document.getElementById("leads-list").addEventListener("click", ev => {
     saveLeadsData(); renderLeads();
   }
 });
-
-// Guarda quais fichas estão abertas. O evento toggle não sobe, daí a captura.
-document.getElementById("leads-list").addEventListener("toggle", ev => {
-  const row = ev.target; if (!row.matches || !row.matches(".lead-row")) return;
-  const n = row.dataset.leadNome; if (!n) return;
-  if (row.open) leadsAbertos.add(n); else leadsAbertos.delete(n);
-}, true);
 
 // Recalcula sozinho a cada 15 minutos: o frescor cai mesmo com a aba aberta.
 // Não redesenha no meio do preenchimento de um contato, senão apaga o que foi digitado.

@@ -569,6 +569,7 @@
   .funnel-stage b { display: block; font-size: 17px; font-weight: 700; line-height: 1.15; }
   .funnel-stage span { font-size: 10.5px; font-weight: 600; opacity: .92; }
   .funnel-stage.vazio { filter: saturate(.3) opacity(.55); }
+  .funnel-stage[data-fs="inbound"].vazio { filter: none; opacity: 1; } /* Inbound nunca fica cinza */" 
   .funnel-drop { font-size: 10px; color: var(--text-muted); text-align: center; margin: -2px 0 4px; }
   /* arraste do lead até a etapa */
   .lead-row.arrastando { opacity: .45; }
@@ -719,7 +720,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2245</span>
+      <span id="build-tag">build 20260813-2250</span>
     </div>
   </div>
 

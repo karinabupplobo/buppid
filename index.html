@@ -405,16 +405,17 @@
   .lead-row.prio-medio     { border-left-color: #b9c4ac; }
   .lead-row.prio-baixo     { border-left-color: #e6e4dc; }
   .lead-row.prio-bloqueado { border-left-color: #8d4034; }
-  .lead-row > summary { list-style: none; cursor: pointer; padding: 11px 15px; display: grid;
-    grid-template-columns: 1fr auto; grid-template-areas: "topo score" "meta score";
-    column-gap: 12px; align-items: center; }
-  .lead-topo { grid-area: topo; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-  .lead-row > summary > .lead-meta { grid-area: meta; }
-  .lead-row > summary > .lead-score { grid-area: score; align-self: center; }
+  .lead-row > summary { list-style: none; cursor: pointer; padding: 10px 15px; display: flex;
+    align-items: center; gap: 12px; }
+  .lead-topo { flex: 1; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .lead-topo > .lead-meta { flex: 0 1 auto; min-width: 60px; margin: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lead-etapa { border: 1px solid var(--border); background: #fff; color: var(--text-muted);
+    border-radius: 6px; padding: 2px 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .lead-row > summary::-webkit-details-marker { display: none; }
   .lead-row[open] > summary { background: var(--land-default); }
   .lead-row:hover > summary { background: #faf9f5; }
-  .lead-name { font-size: 14px; font-weight: 600; }
+  .lead-name { font-size: 14px; font-weight: 600; white-space: nowrap; }
   .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
   .lead-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
   .tag { display: inline-flex; align-items: center; gap: 4px; font: inherit;
@@ -448,8 +449,7 @@
   .lead-score b { font-size: 19px; font-weight: 700; display: block; line-height: 1.1; }
   .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
 
-  .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9;
-    max-width: 820px; }
+  .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9; }
   .lead-kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   .lead-kv td { padding: 4px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
   .lead-kv td:first-child { color: var(--text-muted); white-space: nowrap; padding-right: 12px; width: 38%; }
@@ -728,7 +728,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2045</span>
+      <span id="build-tag">build 20260813-2105</span>
     </div>
   </div>
 
@@ -1401,7 +1401,8 @@ function leadTags(e, c) {
   const vivos = c.sinais.filter(s => s.vivo).length;
   const nCt = c.contatos.length, nCm = (e.cm || []).length;
   return [
-    { k: "temperatura", r: c.temperatura, cls: "tag-" + c.temperatura, t: leadPorQue(e, c) },
+    { k: "temperatura", r: c.temperatura.charAt(0).toUpperCase() + c.temperatura.slice(1),
+      cls: "tag-" + c.temperatura, t: leadPorQue(e, c) },
     { k: "venda", r: "Venda " + LEAD_ROT_FACIL[c.facilNivel], cls: "tag-" + c.facilNivel,
       t: `Facilidade ${c.facil}/100 — ciclo ${c.porte.ciclo}` },
     { k: "gatilho", r: "Gatilho", v: vivos, ico: "gatilho", cls: "saude-" + (vivos ? "quente" : c.sinais.length ? "med" : "neutro"),
@@ -1492,13 +1493,17 @@ function renderLeads() {
       <summary draggable="true">
         <div class="lead-topo">
           <span class="lead-name">${i + 1}. ${e.n}</span>
+          <span class="lead-meta" title="${escAttr(`${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}`)}">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</span>
           ${leadTags(e, c).map(t => `<button type="button"
             class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
             data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
             ${t.ico ? `<i class="tag-ico">${LEAD_CAT_ICONS[t.ico]}</i>` : ""}${t.r}${t.v !== undefined ? ` <b>${t.v}</b>` : ""}
           </button>`).join("")}
+          <select class="lead-etapa" data-lead-status="${e.n}" title="etapa do funil">
+            ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
+              .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
+          </select>
         </div>
-        <div class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.setor.d} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</div>
         <button type="button" class="lead-score${leadsCatAberta.get(e.n) === "pontuacao" ? " aberta" : ""}"
           data-cat="pontuacao" data-cat-lead="${escAttr(e.n)}" title="como esses pontos foram somados">
           <b>${c.total}</b><span>total</span></button>
@@ -1622,11 +1627,6 @@ function renderLeads() {
         </div>` : ""}
 
         <div class="lead-rodape">
-          <span class="la-rot">Etapa</span>
-          <select data-lead-status="${e.n}">
-            ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
-              .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
-          </select>
           ${e.d ? `<a href="https://${escAttr(e.d)}" target="_blank" rel="noopener">${esc(e.d)}</a>` : ""}
           <span class="lr-org">${e.h || "porte ?"} · origem: ${esc(e.o || "—")}</span>
         </div>
@@ -1829,6 +1829,13 @@ document.getElementById("leads-list").addEventListener("click", ev => {
     if (box.scrollIntoView) box.scrollIntoView({ block: "nearest" });
     const campo = box.querySelector("input"); if (campo) campo.focus();
   }
+});
+
+// O seletor de etapa mora dentro do summary. Sem isto, clicar nele abriria e
+// fecharia a ficha junto. O menu do select abre no mousedown, então o
+// preventDefault do clique cancela só o toggle.
+document.getElementById("leads-list").addEventListener("click", ev => {
+  if (ev.target.closest("[data-lead-status]")) ev.preventDefault();
 });
 
 // --- Contatos: abrir, salvar e remover ---

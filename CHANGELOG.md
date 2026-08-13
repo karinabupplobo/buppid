@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2220-fit-outbound-dropdown — 13/08/2026
+- O que mudou: a tag de fit virou "FIT Alta" (verde), "FIT Médio" (amarelo) e
+  "FIT Baixo" (vermelho), com "FIT" sempre maiúsculo. As três primeiras faixas
+  do funil viraram Outbound Fraco, Outbound Médio e Outbound Alto. O dropdown
+  de etapa passou a listar só Contatada, Reunião, Proposta e Cliente — se o
+  lead estiver em uma etapa automática (novo, qualificada) ou descartada, uma
+  opção desabilitada mostra o estado atual sem deixar escolher errado. Nome e
+  info voltaram a ficar empilhados à esquerda da linha, com as tags agrupadas
+  à direita e centralizadas verticalmente contra a altura da linha inteira.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: as tags apareciam grudadas no topo da linha, alinhadas só com o
+  nome, e ficavam visualmente descoladas da linha de baixo (a info).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2158-docs-inbound
+
 ## v-20260813-2155-inbound-tags-direita — 13/08/2026
 - O que mudou: a faixa "Premium" do funil virou "Inbound", com texto branco e
   vazia de propósito — decisão da Karina de deixar essa faixa sem uso por

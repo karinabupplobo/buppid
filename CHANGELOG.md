@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-1858-ficha-categorias — 13/08/2026
+- O que mudou: a ficha do lead virou quatro botões com ícone — Fit, Intenção,
+  Facilidade e Acesso — e a cor do ícone é a leitura da categoria (verde bom,
+  amarelo atenção, vermelho problema, cinza sem informação). Clicar abre o
+  detalhe daquela categoria, uma de cada vez. Abaixo ficam duas linhas fixas:
+  o gatilho mais forte com os pontos, e o contato com botão de adicionar.
+  Saíram a faixa TOTAL, as tags premium/Fit/ciclo e as duas colunas. Site,
+  origem e o que falta enriquecer viraram uma linha de rodapé.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a ficha aberta ocupava mais de uma tela e obrigava a varrer duas
+  colunas de tabela para achar quatro números.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1828-docs-leads
+
 ## v-20260813-1822-ficha-densa — 13/08/2026
 - O que mudou: a ficha do lead perdeu o texto corrido. Saiu o bloco "por quê" com
   a explicação da prioridade e da temperatura; entraram cinco métricas com barra

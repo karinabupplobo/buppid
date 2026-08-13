@@ -2,6 +2,15 @@
 
 ## Próximo
 
+- [ ] Decidir o "↓ 1050%" do funil: as quatro primeiras faixas são distribuição
+      de prioridade, não etapas em sequência, então a queda percentual entre
+      elas não quer dizer nada. Ou some da faixa automática, ou vira outra coisa.
+- [ ] Resolver a divergência do Acesso: a regra de premium (index.html, em
+      calcularLead) olha só fit, intenção, facilidade e penalidade — contato não
+      entra. Mas a ficha dizia que sem contato a empresa não sobe para premium,
+      e a Sertrading está premium com Acesso 0. Ou a regra passa a exigir
+      contato, ou o texto para de prometer isso.
+
 - [ ] Testar no navegador: arrastar lead até as etapas do funil (só desktop —
       no celular continua sendo o seletor de status dentro da ficha).
 - [ ] Decidir se a lista de leads deve ser AGRUPADA por etapa do funil, com

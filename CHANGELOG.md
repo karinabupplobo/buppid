@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2015-ficha-compacta — 13/08/2026
+- O que mudou: a ficha parou de esticar até a borda do monitor — o conteúdo
+  ficou travado em 820px. Os seis quadrados viraram pastilhas do tamanho do
+  conteúdo, e os comentários viraram a sétima pastilha (Notas), então a regra
+  passou a ser uma só: tudo é pastilha, uma abre por vez. A barra de ações
+  sumiu e o seletor de etapa desceu para um rodapé de uma linha, junto do site
+  e da origem. "Falta enriquecer" foi para dentro de Contato.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: seis caixas do mesmo tamanho, com números de escalas diferentes
+  (Fit é de 100, Intenção é pontuação, Gatilho é contagem), esticadas na tela
+  inteira, faziam o olho tentar comparar o que não é comparável.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1948-docs-build-tag
+
 ## v-20260813-1945-build-tag — 13/08/2026
 - O que mudou: marcador de versão no rodapé da página de leads, ao lado do
   "recalculado". Mostra o build publicado, para dar para saber de olho qual

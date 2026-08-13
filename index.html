@@ -430,7 +430,8 @@
   .lead-score b { font-size: 19px; font-weight: 700; display: block; line-height: 1.1; }
   .lead-score span { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
 
-  .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9; }
+  .lead-body { padding: 4px 15px 18px; border-top: 1px solid var(--border); background: #fdfcf9;
+    max-width: 820px; }
   .lead-kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   .lead-kv td { padding: 4px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
   .lead-kv td:first-child { color: var(--text-muted); white-space: nowrap; padding-right: 12px; width: 38%; }
@@ -463,17 +464,17 @@
     padding: 6px 8px; font-size: 11.5px; line-height: 1.45; background: #fff; }
 
   /* quatro categorias com ícone: a cor do ícone é a leitura da categoria */
-  .lead-cats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 12px 0 0; }
-  .cat { display: flex; align-items: center; gap: 7px; background: #fff; cursor: pointer;
-    border: 1px solid var(--border); border-radius: 9px; padding: 7px 8px; text-align: left;
+  .lead-cats { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0 0; }
+  .cat { display: inline-flex; align-items: center; gap: 6px; background: #fff; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px 4px 8px; text-align: left;
     color: var(--text); transition: border-color .12s, background .12s; }
   .cat:hover { background: var(--land-default); }
   .cat.aberta { border-color: var(--text); background: var(--land-default); }
-  .cat-ico { flex: none; width: 20px; height: 20px; display: block; }
+  .cat-ico { flex: none; width: 15px; height: 15px; display: block; }
   .cat-ico svg { width: 100%; height: 100%; display: block; }
-  .cat span { font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--text-muted); font-weight: 700; display: block; }
-  .cat b { font-size: 15px; font-weight: 700; line-height: 1.15; display: block; }
+  .cat span { font-size: 10px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
+  .cat b { font-size: 12.5px; font-weight: 700; margin-left: 1px; }
   .saude-ok     .cat-ico { color: #3d5b32; }
   .saude-quente .cat-ico { color: #b5641f; }
   .saude-med    .cat-ico { color: #b5872f; }
@@ -487,7 +488,7 @@
   .cat-nota { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 9px 0 0; }
 
   /* comentários da ficha */
-  .lead-coment { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .lead-coment h4:first-child { margin-top: 0; }
   .lead-coment h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
   .cm-lista { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
@@ -511,16 +512,18 @@
   .ll-add:hover { background: var(--land-default); }
   .la-rot { font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
-  .lead-rodape { font-size: 11px; color: var(--text-muted); padding: 8px 2px 0; }
+  .lead-rodape { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+    font-size: 11px; color: var(--text-muted); margin-top: 12px;
+    border-top: 1px solid var(--border); padding-top: 9px; }
+  .lead-rodape select { border: 1px solid var(--border); background: #fff; color: var(--text);
+    border-radius: 6px; padding: 3px 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+  .lr-org { margin-left: auto; }
 
   .lead-abertura { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
     padding: 9px 13px; margin-top: 12px; font-size: 13px; line-height: 1.55; }
   .lead-abertura > span { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
   .lead-abertura p { margin: 6px 0 0; }
-  .lead-actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
-  .lead-actions select { border: 1px solid var(--border); background: #fff;
-    color: var(--text); border-radius: 7px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .lead-falta { font-size: 11.5px; color: #a06a2c; }
 
   /* ---- contatos da ficha ---- */
@@ -605,7 +608,6 @@
      folga da esquerda e os campos sobem para 16px (abaixo disso o iPhone dá
      zoom ao focar). --- */
   @media (max-width: 720px) {
-    .lead-cats { grid-template-columns: repeat(3, 1fr); }
     #app { padding: 16px 12px 80px; }
     #app-header { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     #app-title { font-size: 17px; }
@@ -621,7 +623,6 @@
     #leads-footer button { width: 100%; }
     .lead-row > summary { padding: 11px 12px; }
     .lead-body { padding: 4px 12px 16px; }
-    .lead-actions select { flex: 1; }
   }
 
 </style>
@@ -726,7 +727,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-1945</span>
+      <span id="build-tag">build 20260813-2015</span>
     </div>
   </div>
 
@@ -1393,7 +1394,8 @@ const LEAD_CAT_ICONS = {
   facilidade: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M-14 8 A 14 14 0 1 1 14 8"/><path d="M0 8 L8 -5"/><circle cx="0" cy="8" r="2.2" fill="currentColor" stroke="none"/></svg>`,
   acesso: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="-6" r="6.5"/><path d="M-12 15 C -12 4, 12 4, 12 15"/></svg>`,
   gatilho: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 -15 L-10 2 L-1 2 L-3 15 L10 -2 L1 -2 Z"/></svg>`,
-  contato: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="-15" y="-12" width="30" height="24" rx="4"/><circle cx="-6" cy="-3" r="3.6"/><path d="M-12 7 C -12 2, 0 2, 0 7"/><path d="M5 -4 L11 -4"/><path d="M5 3 L11 3"/></svg>`
+  contato: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="-15" y="-12" width="30" height="24" rx="4"/><circle cx="-6" cy="-3" r="3.6"/><path d="M-12 7 C -12 2, 0 2, 0 7"/><path d="M5 -4 L11 -4"/><path d="M5 3 L11 3"/></svg>`,
+  notas: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-14 -11 L14 -11 L14 7 L-2 7 L-9 14 L-9 7 L-14 7 Z"/></svg>`
 };
 
 // A cor do ícone é a leitura da categoria: verde é bom, amarelo é atenção,
@@ -1411,7 +1413,9 @@ function leadCategorias(e, c) {
     { k: "facilidade", r: "Facilidade", v: c.facil, saude: facSaude, t: `Venda ${LEAD_ROT_FACIL[c.facilNivel]} — ciclo ${c.porte.ciclo}` },
     { k: "acesso", r: "Acesso", v: c.acesso, saude: aceSaude, t: `${c.acessoNivel} — ${c.contatos.length} contato(s)` },
     { k: "gatilho", r: "Gatilho", v: vivos, saude: gatSaude, t: vivos ? `${vivos} gatilho(s) ainda valendo pontos` : "nenhum gatilho vivo" },
-    { k: "contato", r: "Contato", v: c.contatos.length, saude: c.contatos.length ? "ok" : "ruim", t: c.contatos.length ? "quem já está mapeado dentro da empresa" : "ninguém mapeado" }
+    { k: "contato", r: "Contato", v: c.contatos.length, saude: c.contatos.length ? "ok" : "ruim", t: c.contatos.length ? "quem já está mapeado dentro da empresa" : "ninguém mapeado" },
+    // notas não é eixo de score: fica sempre em cinza para não competir com os outros
+    { k: "notas", r: "Notas", v: (e.cm || []).length, saude: "neutro", t: "comentários e abordagens registradas" }
   ];
 }
 
@@ -1595,6 +1599,7 @@ function renderLeads() {
           <table class="lead-kv">
             <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
             <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
+            <tr><td>falta enriquecer</td><td class="lead-falta">${esc((e.f || "—").split(",").join(" · "))}</td></tr>
           </table>
           <h4>Fontes varridas <span class="f">${(e.fo || []).length}/${LEAD_FONTES.length}</span></h4>
           <div class="fontes-chips">
@@ -1608,41 +1613,40 @@ function renderLeads() {
             }).join("")}
           </div></div>` : ""}
 
-        <div class="lead-coment">
-          <h4>Comentários <span class="f">${(e.cm || []).length}</span></h4>
-          ${(e.cm || []).length ? `<div class="cm-lista">${(e.cm || []).slice().reverse().map(m => `
-            <div class="cm-item">
-              <div class="cm-meta">${esc(m.quem || "—")} · ${m.dt}${m.ab
-                ? ` · <span class="cm-ab">abordagem: ${esc((LEAD_SINAIS[m.ab.gatilho] || { r: m.ab.gatilho }).r)} → ${esc(m.ab.resultado)}</span>` : ""}</div>
-              <p>${esc(m.t)}</p>
-            </div>`).join("")}</div>` : ""}
-          <textarea data-cm-txt="${escAttr(e.n)}" rows="2" placeholder="o que aconteceu com essa empresa…"></textarea>
-          <label class="cm-check"><input type="checkbox" data-cm-ab="${escAttr(e.n)}"> foi uma abordagem</label>
-          <div class="cm-abordagem">
-            <select data-cm-gat="${escAttr(e.n)}">
-              ${Object.entries(LEAD_SINAIS).map(([k, v]) =>
-                `<option value="${k}"${c.sinais.length && c.sinais[0].t === k ? " selected" : ""}>${v.r}</option>`).join("")}
-            </select>
-            <select data-cm-res="${escAttr(e.n)}">
-              <option value="sem_resposta">sem resposta</option>
-              <option value="positiva">positiva</option>
-              <option value="negativa">negativa</option>
-            </select>
+        ${leadsCatAberta.get(e.n) === "notas" ? `<div class="cat-det">
+          <div class="lead-coment">
+            <h4>Comentários <span class="f">${(e.cm || []).length}</span></h4>
+            ${(e.cm || []).length ? `<div class="cm-lista">${(e.cm || []).slice().reverse().map(m => `
+              <div class="cm-item">
+                <div class="cm-meta">${esc(m.quem || "—")} · ${m.dt}${m.ab
+                  ? ` · <span class="cm-ab">abordagem: ${esc((LEAD_SINAIS[m.ab.gatilho] || { r: m.ab.gatilho }).r)} → ${esc(m.ab.resultado)}</span>` : ""}</div>
+                <p>${esc(m.t)}</p>
+              </div>`).join("")}</div>` : ""}
+            <textarea data-cm-txt="${escAttr(e.n)}" rows="2" placeholder="o que aconteceu com essa empresa…"></textarea>
+            <label class="cm-check"><input type="checkbox" data-cm-ab="${escAttr(e.n)}"> foi uma abordagem</label>
+            <div class="cm-abordagem">
+              <select data-cm-gat="${escAttr(e.n)}">
+                ${Object.entries(LEAD_SINAIS).map(([k, v]) =>
+                  `<option value="${k}"${c.sinais.length && c.sinais[0].t === k ? " selected" : ""}>${v.r}</option>`).join("")}
+              </select>
+              <select data-cm-res="${escAttr(e.n)}">
+                <option value="sem_resposta">sem resposta</option>
+                <option value="positiva">positiva</option>
+                <option value="negativa">negativa</option>
+              </select>
+            </div>
+            <button type="button" data-cm-add="${escAttr(e.n)}">Adicionar</button>
           </div>
-          <button type="button" data-cm-add="${escAttr(e.n)}">Adicionar</button>
-        </div>
+        </div>` : ""}
 
         <div class="lead-rodape">
-          ${e.d ? `<a href="https://${escAttr(e.d)}" target="_blank" rel="noopener">${esc(e.d)}</a> · ` : ""}
-          origem: ${esc(e.o || "—")} · falta: ${esc((e.f || "—").split(",").join(", "))}
-        </div>
-
-        <div class="lead-actions">
           <span class="la-rot">Etapa</span>
           <select data-lead-status="${e.n}">
             ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
               .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
           </select>
+          ${e.d ? `<a href="https://${escAttr(e.d)}" target="_blank" rel="noopener">${esc(e.d)}</a>` : ""}
+          <span class="lr-org">origem: ${esc(e.o || "—")}</span>
         </div>
       </div>
     </details>`).join("") : `<div style="padding:22px;color:var(--text-muted);font-size:13px">Nada nesse filtro.</div>`;

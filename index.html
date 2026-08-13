@@ -719,7 +719,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260813-2220</span>
+      <span id="build-tag">build 20260813-2245</span>
     </div>
   </div>
 
@@ -1643,23 +1643,36 @@ function renderLeads() {
 // de vermelho a verde gastava metade das faixas no verde. Agora passa por
 // vermelho, laranja, amarelo, azul e só então fecha no verde.
 const FUNIL = [
-  { k: "baixo",         h: 4,   r: "Outbound Fraco",   d: "fica na base; só sobe se aparecer gatilho" },
-  { k: "medio",         h: 26,  r: "Outbound Médio",   d: "vale funil automatizado" },
-  { k: "alto",          h: 44,  r: "Outbound Alto",    d: "cadência personalizada" },
-  { k: "inbound",       h: 210, r: "Inbound",          d: "" }, // vazia por enquanto, de propósito
-  { k: "st:contatada",  h: 196, r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
-  { k: "st:reuniao",    h: 180, r: "Reunião",          d: "respondeu e marcou" },
-  { k: "st:proposta",   h: 160, r: "Proposta",         d: "proposta na mesa" },
-  { k: "st:cliente",    h: 140, r: "Cliente",          d: "fechou" }
+  { k: "baixo",         h: 4,                r: "Outbound Fraco",   d: "fica na base; só sobe se aparecer gatilho" },
+  { k: "medio",         h: 26,               r: "Outbound Médio",   d: "vale funil automatizado" },
+  { k: "alto",          h: 44,               r: "Outbound Alto",    d: "cadência personalizada" },
+  // mesmo amarelo do Alto, só que bem mais claro — herda a família de cor
+  // sem se confundir com a faixa de cima
+  { k: "inbound",       h: 44, s: 55, l: 84, r: "Inbound",          d: "" }, // vazia por enquanto, de propósito
+  // daqui até Cliente é uma rampa só, de azul a verde
+  { k: "st:contatada",  h: 210,              r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
+  { k: "st:reuniao",    h: 188,              r: "Reunião",          d: "respondeu e marcou" },
+  { k: "st:proposta",   h: 164,              r: "Proposta",         d: "proposta na mesa" },
+  { k: "st:cliente",    h: 140,              r: "Cliente",          d: "fechou" }
 ];
 
+// HSL de cada etapa: cor calculada pela posição no funil (rampa vermelho→verde),
+// exceto onde a própria etapa fixa s/l na mão (caso do Inbound, que quer o
+// mesmo amarelo do Alto só que bem mais claro).
+function hslDaEtapa(k) {
+  const i = FUNIL.findIndex(f => f.k === k);
+  if (i < 0) return null;
+  const f = FUNIL[i];
+  const s = f.s !== undefined ? f.s : 64;
+  const l = f.l !== undefined ? f.l : 48 + Math.round(Math.sin((i / (FUNIL.length - 1)) * Math.PI) * 4);
+  return { h: f.h, s, l };
+}
 // Cor e rótulo da etapa, usados tanto na faixa do funil quanto na borda
 // esquerda de cada lead, para os dois nunca discordarem.
 function corDaEtapa(k) {
-  const i = FUNIL.findIndex(f => f.k === k);
-  if (i < 0) return k === "bloqueado" ? "#8d4034" : "#d9d6cc";
-  const luz = 48 + Math.round(Math.sin((i / (FUNIL.length - 1)) * Math.PI) * 4);
-  return `hsl(${FUNIL[i].h} 64% ${luz}%)`;
+  const hsl = hslDaEtapa(k);
+  if (!hsl) return k === "bloqueado" ? "#8d4034" : "#d9d6cc";
+  return `hsl(${hsl.h} ${hsl.s}% ${hsl.l}%)`;
 }
 function rotuloDaEtapa(k) {
   const f = FUNIL.find(x => x.k === k);
@@ -1693,13 +1706,11 @@ function renderFunil(calc) {
   let html = "";
   FUNIL.forEach((e, i) => {
     const larg = Math.max(44, Math.round(100 - i * (56 / (FUNIL.length - 1))));
-    const t = i / (FUNIL.length - 1);
-    const hue = e.h;
-    const luz = 48 + Math.round(Math.sin(t * Math.PI) * 4);
-    const cor = corDaEtapa(e.k);
+    const hsl = hslDaEtapa(e.k);
+    const cor = `hsl(${hsl.h} ${hsl.s}% ${hsl.l}%)`;
     // amarelo e verde ficam claros demais para texto branco; escolhe o texto
     // pela luminância real da faixa em vez de fixar uma cor só
-    const escuro = luminancia(hue, 64, luz) > 0.23;
+    const escuro = luminancia(hsl.h, hsl.s, hsl.l) > 0.23;
     if (i > 0) {
       const antes = nums[i - 1];
       html += `<div class="funnel-drop">↓ ${antes > 0 ? Math.round((nums[i] / antes) * 100) : 0}%</div>`;

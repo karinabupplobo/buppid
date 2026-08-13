@@ -2,6 +2,10 @@
 
 ## Próximo
 
+- [ ] Sem os botões + Gatilho e + Freio, gatilho novo só entra por edição do
+      código na sessão diária. Se isso incomodar, decidir onde reabrir a
+      entrada de gatilho à mão.
+
 - [ ] Decidir o "↓ 1050%" do funil: as quatro primeiras faixas são distribuição
       de prioridade, não etapas em sequência, então a queda percentual entre
       elas não quer dizer nada. Ou some da faixa automática, ou vira outra coisa.

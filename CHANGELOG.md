@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-1930-cats-comentarios — 13/08/2026
+- O que mudou: a ficha passou a ter seis categorias na mesma linha — Fit,
+  Intenção, Facilidade, Acesso, Gatilho e Contato — cada uma com ícone colorido
+  pela saúde e abrindo uma de cada vez. Sumiram os botões + Gatilho, + Freio e
+  + Interação; no lugar entrou uma área de comentários com data e autor. O
+  comentário pode ser marcado como abordagem, e aí também grava em it[], que é
+  o que alimenta a calibração de peso dos gatilhos. O seletor de etapa ficou.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: a barra de quatro botões com prompt() encadeado era o jeito mais
+  ruim de registrar qualquer coisa, e a ficha ainda tinha duas linhas soltas
+  que agora viraram cards.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-1902-docs-categorias
+
 ## v-20260813-1858-ficha-categorias — 13/08/2026
 - O que mudou: a ficha do lead virou quatro botões com ícone — Fit, Intenção,
   Facilidade e Acesso — e a cor do ícone é a leitura da categoria (verde bom,

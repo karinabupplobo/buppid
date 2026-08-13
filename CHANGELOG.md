@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2155-inbound-tags-direita — 13/08/2026
+- O que mudou: a faixa "Premium" do funil virou "Inbound", com texto branco e
+  vazia de propósito — decisão da Karina de deixar essa faixa sem uso por
+  enquanto. O que o motor classificava como premium (fit ≥ 88, intenção ≥ 20,
+  facilidade ≥ 55) passou a cair em "Prioridade alta", já que a condição de
+  premium sempre satisfazia a de alta. As tags do card (Fit, Temperatura,
+  Venda, Gatilho, Contato, Notas, Etapa) saíram de perto do nome e foram para
+  a extrema direita da linha; o nome ficou sozinho e fixo à esquerda.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: pedido direto — zerar a faixa Premium por ora e separar visualmente
+  o nome do lead do bloco de controles.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2138-docs-fit-cores
+
 ## v-20260813-2135-fit-e-cores — 13/08/2026
 - O que mudou: entrou a tag Fit (Alta, Média, Baixa) antes da temperatura,
   abrindo a composição do score. A pontuação total saiu do card e a info da

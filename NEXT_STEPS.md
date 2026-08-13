@@ -2,6 +2,10 @@
 
 ## Próximo
 
+- [ ] Decidir o que a faixa Inbound do funil vai fazer. Hoje ela existe no
+      funil, mostra 0 sempre e não recebe nada — nem o motor classifica lead
+      nela, nem o arraste consegue soltar um lead lá dentro com sucesso.
+
 - [ ] Sem os botões + Gatilho e + Freio, gatilho novo só entra por edição do
       código na sessão diária. Se isso incomodar, decidir onde reabrir a
       entrada de gatilho à mão.

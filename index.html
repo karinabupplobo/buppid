@@ -463,9 +463,9 @@
     padding: 6px 8px; font-size: 11.5px; line-height: 1.45; background: #fff; }
 
   /* quatro categorias com ícone: a cor do ícone é a leitura da categoria */
-  .lead-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 12px 0 0; }
-  .cat { display: flex; align-items: center; gap: 8px; background: #fff; cursor: pointer;
-    border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; text-align: left;
+  .lead-cats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 12px 0 0; }
+  .cat { display: flex; align-items: center; gap: 7px; background: #fff; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 9px; padding: 7px 8px; text-align: left;
     color: var(--text); transition: border-color .12s, background .12s; }
   .cat:hover { background: var(--land-default); }
   .cat.aberta { border-color: var(--text); background: var(--land-default); }
@@ -473,7 +473,7 @@
   .cat-ico svg { width: 100%; height: 100%; display: block; }
   .cat span { font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; display: block; }
-  .cat b { font-size: 16px; font-weight: 700; line-height: 1.15; display: block; }
+  .cat b { font-size: 15px; font-weight: 700; line-height: 1.15; display: block; }
   .saude-ok     .cat-ico { color: #3d5b32; }
   .saude-quente .cat-ico { color: #b5641f; }
   .saude-med    .cat-ico { color: #b5872f; }
@@ -484,18 +484,33 @@
   .cat-det h4 { margin: 12px 0 7px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
 
-  /* linhas de resumo sempre visíveis: gatilho e contato */
-  .lead-linha { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
-    padding: 7px 2px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
-  .lead-linha:first-of-type { margin-top: 12px; border-top: 1px solid var(--border); }
-  .ll-rot { flex: none; width: 62px; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+  .cat-nota { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 9px 0 0; }
+
+  /* comentários da ficha */
+  .lead-coment { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .lead-coment h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
-  .ll-txt { flex: 1; min-width: 120px; }
-  .ll-txt.vazio { color: var(--text-muted); }
-  .ll-txt.morto { opacity: .45; }
-  .ll-mais, .ll-add { border: 1px solid var(--border); background: #fff; border-radius: 6px;
-    padding: 2px 8px; font-size: 11px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
-  .ll-mais:hover, .ll-add:hover { background: var(--land-default); }
+  .cm-lista { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
+  .cm-item { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; }
+  .cm-meta { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
+  .cm-ab { color: #8a6522; }
+  .cm-item p { margin: 3px 0 0; font-size: 12.5px; line-height: 1.5; }
+  .lead-coment textarea { width: 100%; border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 9px; font-size: 12.5px; font-family: inherit; color: var(--text); background: #fff;
+    resize: vertical; }
+  .cm-check { display: flex; align-items: center; gap: 6px; font-size: 11.5px; margin: 7px 0; }
+  .cm-abordagem { display: none; gap: 6px; margin-bottom: 8px; }
+  .lead-coment:has([data-cm-ab]:checked) .cm-abordagem { display: flex; }
+  .cm-abordagem select { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 7px; font-size: 12px; background: #fff; color: var(--text); }
+  .lead-coment > button { border: 1px solid var(--border); background: #fff; border-radius: 7px;
+    padding: 6px 13px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text); }
+  .lead-coment > button:hover { background: var(--land-default); }
+  .ll-add { border: 1px solid var(--border); background: #fff; border-radius: 6px;
+    padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+  .ll-add:hover { background: var(--land-default); }
+  .la-rot { font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700; }
   .lead-rodape { font-size: 11px; color: var(--text-muted); padding: 8px 2px 0; }
 
   .lead-abertura { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
@@ -503,10 +518,9 @@
   .lead-abertura > span { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
   .lead-abertura p { margin: 6px 0 0; }
-  .lead-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
-  .lead-actions button, .lead-actions select { border: 1px solid var(--border); background: #fff;
+  .lead-actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .lead-actions select { border: 1px solid var(--border); background: #fff;
     color: var(--text); border-radius: 7px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; }
-  .lead-actions button:hover { background: var(--land-default); }
   .lead-falta { font-size: 11.5px; color: #a06a2c; }
 
   /* ---- contatos da ficha ---- */
@@ -588,7 +602,7 @@
      folga da esquerda e os campos sobem para 16px (abaixo disso o iPhone dá
      zoom ao focar). --- */
   @media (max-width: 720px) {
-    .lead-cats { grid-template-columns: repeat(2, 1fr); }
+    .lead-cats { grid-template-columns: repeat(3, 1fr); }
     #app { padding: 16px 12px 80px; }
     #app-header { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     #app-title { font-size: 17px; }
@@ -604,7 +618,7 @@
     #leads-footer button { width: 100%; }
     .lead-row > summary { padding: 11px 12px; }
     .lead-body { padding: 4px 12px 16px; }
-    .lead-actions select, .lead-actions button { flex: 1 1 46%; }
+    .lead-actions select { flex: 1; }
   }
 
 </style>
@@ -1373,7 +1387,9 @@ const LEAD_CAT_ICONS = {
   fit: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="0" r="14"/><circle cx="0" cy="0" r="7.5"/><circle cx="0" cy="0" r="2.2" fill="currentColor" stroke="none"/></svg>`,
   intencao: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M0 15 C -10 10, -10 0, -2 -15 C -2 -6, 7 -6, 5 0 C 11 4, 9 12, 0 15 Z"/></svg>`,
   facilidade: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M-14 8 A 14 14 0 1 1 14 8"/><path d="M0 8 L8 -5"/><circle cx="0" cy="8" r="2.2" fill="currentColor" stroke="none"/></svg>`,
-  acesso: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="-6" r="6.5"/><path d="M-12 15 C -12 4, 12 4, 12 15"/></svg>`
+  acesso: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="0" cy="-6" r="6.5"/><path d="M-12 15 C -12 4, 12 4, 12 15"/></svg>`,
+  gatilho: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 -15 L-10 2 L-1 2 L-3 15 L10 -2 L1 -2 Z"/></svg>`,
+  contato: `<svg viewBox="-17 -17 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="-15" y="-12" width="30" height="24" rx="4"/><circle cx="-6" cy="-3" r="3.6"/><path d="M-12 7 C -12 2, 0 2, 0 7"/><path d="M5 -4 L11 -4"/><path d="M5 3 L11 3"/></svg>`
 };
 
 // A cor do ícone é a leitura da categoria: verde é bom, amarelo é atenção,
@@ -1383,11 +1399,15 @@ function leadCategorias(e, c) {
   const intSaude = c.temperatura === "quente" ? "quente" : c.temperatura === "morno" ? "med" : "neutro";
   const facSaude = c.facilNivel === "facil" ? "ok" : c.facilNivel === "media" ? "med" : "ruim";
   const aceSaude = c.acessoNivel === "mapeado" ? "ok" : c.acessoNivel === "parcial" ? "med" : "ruim";
+  const vivos = c.sinais.filter(s => s.vivo).length;
+  const gatSaude = vivos ? "quente" : c.sinais.length ? "med" : "neutro";
   return [
     { k: "fit", r: "Fit", v: c.fit, saude: fitSaude, t: `Nível ${c.nivel}: setor, vínculo, porte e região` },
     { k: "intencao", r: "Intenção", v: c.intencao, saude: intSaude, t: leadPorQue(e, c) },
     { k: "facilidade", r: "Facilidade", v: c.facil, saude: facSaude, t: `Venda ${LEAD_ROT_FACIL[c.facilNivel]} — ciclo ${c.porte.ciclo}` },
-    { k: "acesso", r: "Acesso", v: c.acesso, saude: aceSaude, t: `${c.acessoNivel} — ${c.contatos.length} contato(s)` }
+    { k: "acesso", r: "Acesso", v: c.acesso, saude: aceSaude, t: `${c.acessoNivel} — ${c.contatos.length} contato(s)` },
+    { k: "gatilho", r: "Gatilho", v: vivos, saude: gatSaude, t: vivos ? `${vivos} gatilho(s) ainda valendo pontos` : "nenhum gatilho vivo" },
+    { k: "contato", r: "Contato", v: c.contatos.length, saude: c.contatos.length ? "ok" : "ruim", t: c.contatos.length ? "quem já está mapeado dentro da empresa" : "ninguém mapeado" }
   ];
 }
 
@@ -1508,19 +1528,12 @@ function renderLeads() {
           </table></div>` : ""}
 
         ${leadsCatAberta.get(e.n) === "intencao" ? `<div class="cat-det">
-          ${c.sinais.length ? `<table class="lead-kv lead-sinais">
-            <tr><th>gatilho</th><th>quando</th><th>frescor</th><th>pts</th></tr>
-            ${c.sinais.map(s => `<tr class="${s.vivo ? "" : "morto"}" title="${escAttr(
-                `${s.ds || ""}\ncurva ${s.curva}, peso ${s.peso}, validade ${s.validade} dias` +
-                (s.cal.m !== 1 ? `, calibração ×${s.cal.m.toFixed(2)}` : "") +
-                (s.cal.taxa === null ? ` (${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios para calibrar)` : ""))}">
-              <td>${s.rotulo}${s.url ? ` <a href="${escAttr(s.url)}" target="_blank" rel="noopener">↗</a>` : ""}</td>
-              <td>${s.dt}<br><span class="f">há ${s.dias}d</span></td>
-              <td><i class="lm-bar"><u style="width:${Math.round(s.frescor * 100)}%;background:#b5641f"></u></i>
-                <span class="f">${Math.round(s.frescor * 100)}%</span></td>
-              <td><b>${s.efetivo}</b></td></tr>`).join("")}
-          </table>` : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
-          <div class="lead-abertura"><span>Primeira linha sugerida</span><p>${leadAbertura(e, c)}</p></div>
+          <table class="lead-kv">
+            <tr><td>soma dos gatilhos</td><td>${c.intencaoBruta}</td></tr>
+            <tr><td>mês</td><td>×${c.saz.m} — ${c.saz.n}</td></tr>
+            <tr><td>intenção final</td><td><b>${c.intencao}</b> — ${c.temperatura}</td></tr>
+          </table>
+          <p class="cat-nota">${leadPorQue(e, c)}</p>
         </div>` : ""}
 
         ${leadsCatAberta.get(e.n) === "facilidade" ? `<div class="cat-det">
@@ -1538,11 +1551,43 @@ function renderLeads() {
           </table></div>` : ""}
 
         ${leadsCatAberta.get(e.n) === "acesso" ? `<div class="cat-det">
+          <table class="lead-kv">
+            ${c.contatos.length ? c.contatos.map(ct => {
+              const p = LEAD_PERSONAS[ct.persona] || { r: ct.persona || "papel não definido", p: 5 };
+              return `<tr><td>${p.r}</td><td>+${p.p} — ${esc(ct.nome || "sem nome")}</td></tr>`;
+            }).join("") : `<tr><td colspan="2" class="lead-falta">Ninguém mapeado: o eixo Acesso fica em zero.</td></tr>`}
+            <tr><td>total</td><td><b>${c.acesso}</b>/100 — ${c.acessoNivel}</td></tr>
+          </table>
+          <p class="cat-nota">Cada papel vale um tanto: ${Object.values(LEAD_PERSONAS).map(p => `${p.r} +${p.p}`).join(" · ")}.
+            O total entra na nota final com peso de 20%.</p>
+        </div>` : ""}
+
+        ${leadsCatAberta.get(e.n) === "gatilho" ? `<div class="cat-det">
+          ${c.sinais.length ? `<table class="lead-kv lead-sinais">
+            <tr><th>gatilho</th><th>quando</th><th>frescor</th><th>pts</th></tr>
+            ${c.sinais.map(s => `<tr class="${s.vivo ? "" : "morto"}" title="${escAttr(
+                `${s.ds || ""}\ncurva ${s.curva}, peso ${s.peso}, validade ${s.validade} dias` +
+                (s.cal.m !== 1 ? `, calibração ×${s.cal.m.toFixed(2)}` : "") +
+                (s.cal.taxa === null ? ` (${s.cal.n}/${LEAD_CALIBRACAO_N_MIN} envios para calibrar)` : ""))}">
+              <td>${s.rotulo}${s.url ? ` <a href="${escAttr(s.url)}" target="_blank" rel="noopener">↗</a>` : ""}</td>
+              <td>${s.dt}<br><span class="f">há ${s.dias}d</span></td>
+              <td><i class="lm-bar"><u style="width:${Math.round(s.frescor * 100)}%;background:#b5641f"></u></i>
+                <span class="f">${Math.round(s.frescor * 100)}%</span></td>
+              <td><b>${s.efetivo}</b></td></tr>`).join("")}
+          </table>` : `<p class="lead-meta">Nenhum gatilho registrado.</p>`}
+          ${c.penalidades.length ? `<table class="lead-kv">
+            ${c.penalidades.map(p => `<tr><td>freio: ${p.rotulo}</td><td>${p.peso} pts, há ${p.dias} dias${p.ds ? " — " + p.ds : ""}</td></tr>`).join("")}
+          </table>` : ""}
+          <div class="lead-abertura"><span>Primeira linha sugerida</span><p>${leadAbertura(e, c)}</p></div>
+        </div>` : ""}
+
+        ${leadsCatAberta.get(e.n) === "contato" ? `<div class="cat-det">
           <div class="lead-contatos">
             ${c.contatos.length ? c.contatos.map((ct, ci) => contatoCardHTML(e.n, ct, ci)).join("")
               : `<p class="lead-falta ct-vazio">Nenhum contato mapeado.</p>`}
             <div class="ct-card ct-novo">${contatoFormHTML(e.n, null, -1)}</div>
           </div>
+          <button type="button" class="ll-add" data-lead-contato="${escAttr(e.n)}">+ contato</button>
           <table class="lead-kv">
             <tr><td>CNPJ</td><td>${e.cnpj || "—"}</td></tr>
             <tr><td>busca de contato</td><td>${e.bc ? `feita em ${e.bc}${e.bcr ? " — " + e.bcr : ""}` : "<span class='lead-falta'>nunca feita</span>"}</td></tr>
@@ -1559,23 +1604,28 @@ function renderLeads() {
             }).join("")}
           </div></div>` : ""}
 
-        <div class="lead-linha">
-          <span class="ll-rot">Gatilho</span>
-          ${c.sinais.length ? `<span class="ll-txt${c.sinais[0].vivo ? "" : " morto"}">${c.sinais[0].rotulo}
-              · há ${c.sinais[0].dias}d · <b>${c.sinais[0].efetivo} pts</b></span>
-            ${c.sinais.length > 1 ? `<button type="button" class="ll-mais" data-cat="intencao"
-              data-cat-lead="${escAttr(e.n)}">+${c.sinais.length - 1}</button>` : ""}`
-            : `<span class="ll-txt vazio">nenhum gatilho ativo</span>`}
-        </div>
-
-        <div class="lead-linha">
-          <span class="ll-rot">Contato</span>
-          ${c.contatos.length ? `<span class="ll-txt"><b>${esc(c.contatos[0].nome || "sem nome")}</b>
-              — ${esc(c.contatos[0].cargo || "cargo não informado")}</span>
-            ${c.contatos.length > 1 ? `<button type="button" class="ll-mais" data-cat="acesso"
-              data-cat-lead="${escAttr(e.n)}">+${c.contatos.length - 1}</button>` : ""}`
-            : `<span class="ll-txt vazio">nenhum contato mapeado</span>`}
-          <button type="button" class="ll-add" data-lead-contato="${escAttr(e.n)}">+ contato</button>
+        <div class="lead-coment">
+          <h4>Comentários <span class="f">${(e.cm || []).length}</span></h4>
+          ${(e.cm || []).length ? `<div class="cm-lista">${(e.cm || []).slice().reverse().map(m => `
+            <div class="cm-item">
+              <div class="cm-meta">${esc(m.quem || "—")} · ${m.dt}${m.ab
+                ? ` · <span class="cm-ab">abordagem: ${esc((LEAD_SINAIS[m.ab.gatilho] || { r: m.ab.gatilho }).r)} → ${esc(m.ab.resultado)}</span>` : ""}</div>
+              <p>${esc(m.t)}</p>
+            </div>`).join("")}</div>` : ""}
+          <textarea data-cm-txt="${escAttr(e.n)}" rows="2" placeholder="o que aconteceu com essa empresa…"></textarea>
+          <label class="cm-check"><input type="checkbox" data-cm-ab="${escAttr(e.n)}"> foi uma abordagem</label>
+          <div class="cm-abordagem">
+            <select data-cm-gat="${escAttr(e.n)}">
+              ${Object.entries(LEAD_SINAIS).map(([k, v]) =>
+                `<option value="${k}"${c.sinais.length && c.sinais[0].t === k ? " selected" : ""}>${v.r}</option>`).join("")}
+            </select>
+            <select data-cm-res="${escAttr(e.n)}">
+              <option value="sem_resposta">sem resposta</option>
+              <option value="positiva">positiva</option>
+              <option value="negativa">negativa</option>
+            </select>
+          </div>
+          <button type="button" data-cm-add="${escAttr(e.n)}">Adicionar</button>
         </div>
 
         <div class="lead-rodape">
@@ -1584,13 +1634,11 @@ function renderLeads() {
         </div>
 
         <div class="lead-actions">
+          <span class="la-rot">Etapa</span>
           <select data-lead-status="${e.n}">
             ${["novo","qualificada","contatada","reuniao","proposta","cliente","descartada"]
               .map(s => `<option value="${s}"${(e.st || "novo") === s ? " selected" : ""}>${s}</option>`).join("")}
           </select>
-          <button data-lead-sinal="${e.n}" type="button">+ Gatilho</button>
-          <button data-lead-penal="${e.n}" type="button">+ Freio</button>
-          <button data-lead-inter="${e.n}" type="button">+ Interação</button>
         </div>
       </div>
     </details>`).join("") : `<div style="padding:22px;color:var(--text-muted);font-size:13px">Nada nesse filtro.</div>`;
@@ -1777,40 +1825,20 @@ document.getElementById("leads-list").addEventListener("change", ev => {
   const e = leadsData.find(x => x.n === nome); if (!e) return;
   e.st = ev.target.value; saveLeadsData(); renderLeads();
 });
+// Abrir o formulário de contato em branco, a partir do botão "+ contato".
 document.getElementById("leads-list").addEventListener("click", ev => {
-  const d = ev.target.dataset;
-  const nome = d.leadSinal || d.leadPenal || d.leadContato || d.leadInter; if (!nome) return;
+  const nome = ev.target.dataset.leadContato; if (!nome) return;
   const e = leadsData.find(x => x.n === nome); if (!e) return;
-  const hoje = new Date().toISOString().slice(0, 10);
-
-  if (d.leadSinal) {
-    const t = prompt("Gatilho:\n" + Object.keys(LEAD_SINAIS).join("\n")); if (!t || !LEAD_SINAIS[t]) return;
-    (e.sg = e.sg || []).push({ t, ds: prompt("O que aconteceu:") || "", url: prompt("Link da evidência:") || "", dt: hoje });
+  leadsCatAberta.set(e.n, "contato");
+  renderLeads();
+  const linha = [...document.querySelectorAll("[data-lead-nome]")]
+    .find(x => x.dataset.leadNome === e.n);
+  const box = linha && linha.querySelector(".ct-novo");
+  if (box) {
+    box.classList.add("editando");
+    if (box.scrollIntoView) box.scrollIntoView({ block: "nearest" });
+    const campo = box.querySelector("input"); if (campo) campo.focus();
   }
-  if (d.leadPenal) {
-    const t = prompt("Freio:\n" + Object.keys(LEAD_PENALIDADES).join("\n")); if (!t || !LEAD_PENALIDADES[t]) return;
-    (e.pn = e.pn || []).push({ t, ds: prompt("Detalhe:") || "", dt: hoje });
-  }
-  if (d.leadContato) {
-    // não grava nada aqui: abre a categoria Acesso e o formulário em branco
-    leadsCatAberta.set(e.n, "acesso");
-    renderLeads();
-    const linha = [...document.querySelectorAll("[data-lead-nome]")]
-      .find(x => x.dataset.leadNome === e.n);
-    const box = linha && linha.querySelector(".ct-novo");
-    if (box) {
-      box.classList.add("editando");
-      if (box.scrollIntoView) box.scrollIntoView({ block: "nearest" });
-      const campo = box.querySelector("input"); if (campo) campo.focus();
-    }
-    return;
-  }
-  if (d.leadInter) {
-    const g = prompt("Qual gatilho você usou na abordagem?\n" + Object.keys(LEAD_SINAIS).join("\n")); if (!g) return;
-    const r = prompt("Resultado (positiva / negativa / sem_resposta):") || "sem_resposta";
-    (e.it = e.it || []).push({ gatilho: g, resultado: r, dt: hoje });
-  }
-  saveLeadsData(); renderLeads();
 });
 
 // --- Contatos: abrir, salvar e remover ---
@@ -1824,6 +1852,28 @@ document.getElementById("leads-list").addEventListener("click", ev => {
     if (atual === d.cat) leadsCatAberta.delete(d.catLead);
     else leadsCatAberta.set(d.catLead, d.cat);
     renderLeads();
+    return;
+  }
+
+  // comentário. Marcado como abordagem, também entra em it[], que é o que
+  // alimenta a calibração de peso dos gatilhos.
+  if (d.cmAdd !== undefined) {
+    const e = leadsData.find(x => x.n === d.cmAdd); if (!e) return;
+    const bloco = b.closest(".lead-coment");
+    const txt = bloco.querySelector("[data-cm-txt]").value.trim();
+    if (!txt) { alert("Escreva o comentário antes de adicionar."); return; }
+    const abordagem = bloco.querySelector("[data-cm-ab]").checked;
+    const hoje = todayISO();
+    const quem = (currentUser && (currentUser.name || currentUser.login)) || "—";
+    const m = { t: txt, dt: hoje, quem };
+    if (abordagem) {
+      const gatilho = bloco.querySelector("[data-cm-gat]").value;
+      const resultado = bloco.querySelector("[data-cm-res]").value;
+      m.ab = { gatilho, resultado };
+      (e.it = e.it || []).push({ gatilho, resultado, dt: hoje });
+    }
+    (e.cm = e.cm || []).push(m);
+    saveLeadsData(); renderLeads();
     return;
   }
 

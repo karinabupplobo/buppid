@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260813-2105-linha-unica — 13/08/2026
+- O que mudou: a linha do lead virou uma linha só de verdade — nome, info,
+  temperatura (com inicial maiúscula), venda, gatilho, contato, notas e o
+  seletor de etapa, tudo lado a lado, com a pontuação na direita. A info
+  encolhe com reticências antes de quebrar. O painel de detalhe deixou de ser
+  limitado a 820px e passou a ocupar a largura da tela.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: nome e info em duas alturas diferentes gastavam duas linhas por
+  empresa, e o detalhe aberto deixava metade da tela vazia à direita.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2048-docs-tags
+
 ## v-20260813-2045-tags-na-linha — 13/08/2026
 - O que mudou: as tags subiram para a mesma linha do nome da empresa e viraram
   os únicos controles: temperatura (sem número), venda, gatilho, contato e

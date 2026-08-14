@@ -2,6 +2,16 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2143-botoes-ativos-terracota — 14/08/2026
+- O que mudou: botões em estado ativo da sidebar (`.side-btn.active`) e da subnav de Tasks
+  (`.tasks-subnav-btn.active`) trocados de `var(--text)` para `var(--accent)` — passam do
+  cinza-escuro para o terracota escuro. Botões inativos seguem em branco com texto escuro.
+- Arquivos: index.html
+- Motivo: os dois usavam `--text` em vez de `--accent`, então tinham ficado de fora da
+  aplicação da identidade feita em v-20260814-2141.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-2141-cores-marca-na-dash
+
 ## v-20260814-2141-cores-marca-na-dash — 14/08/2026
 - O que mudou: fundo da dash trocado do cinza (`#f7f6f2`) para o creme da identidade
   (`#FAF3E8`), e a cor `--accent` trocada do quase-preto (`#1a1a18`) para o terracota

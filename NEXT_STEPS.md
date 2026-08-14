@@ -2,9 +2,9 @@
 
 ## Próximo
 
-- [ ] Atualizar os dados da aba Concorrência (index.html, #concorrencia-view e
-      docs/analise-concorrencia.md) sempre que a Karina validar/ajustar os
-      hex exatos dos concorrentes ou entrar um novo player relevante.
+- [ ] Atualizar os dados de concorrência (agora seção 7 dentro de #estudo-view,
+      em index.html, e docs/analise-concorrencia.md) sempre que a Karina validar/
+      ajustar os hex exatos dos concorrentes ou entrar um novo player relevante.
 - [ ] O conteúdo antigo da aba Mercado (modelos de aula x conclusão, horas guiadas
       CEFR, receita vencedora, requisitos do gerador) saiu da dash na v-20260814-1958.
       Continua preservado em docs/estudo-mercado-ingles-corporativo.md e no histórico

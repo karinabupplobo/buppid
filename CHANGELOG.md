@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2001-concorrencia-para-mercado — 14/08/2026
+- O que mudou: aba "Concorrência" removida da sidebar. Seu conteúdo (tabela
+  comparativa dos 6 players + card "seu território") virou a seção 7 dentro da aba
+  Mercado, logo antes do rodapé. Estilos `es-ctable`/`es-highlight`/`es-tag`, que
+  antes só existiam sob `#concorrencia-view`, agora também estão disponíveis sob
+  `#estudo-view`. Botão da sidebar, CSS e referências no `showView()` removidos.
+- Arquivos: index.html
+- Motivo: pedido direto da Karina — concorrência passa a ser mais uma seção do
+  material de vendas, não uma aba própria.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-1958-mercado-icp
+
 ## v-20260814-1958-mercado-icp — 14/08/2026
 - O que mudou: aba Mercado refeita do zero. Deixou de ser panorama geral do mercado
   (tamanho, fornecedores, modelos de aula, gerador) e passou a ser material de campo

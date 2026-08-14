@@ -175,6 +175,127 @@ em dezembro (agendar para fevereiro).
 
 ---
 
+## 8. O produto — formato do curso (definido em 14/08/2026)
+
+**Etapa 1 — Fechamento com o RH.** Reunião inicial para desenhar o programa antes de qualquer aula.
+
+**Etapa 2 — Divisão de turmas.** Em conjunto com o RH, por dois critérios simultâneos: objetivos do RH
+(o que aquela área precisa fazer em inglês) e níveis (para não misturar extremos na mesma turma).
+
+**Etapa 3 — Objetivo master de 6 meses.** Definido com o RH. É um resultado de negócio, não meta de
+idioma. Exemplo: "o time de vendas fechar vendas internacionais".
+
+**Etapa 4 — Seis marcos mensais.** O objetivo master é quebrado em um foco por mês, em sequência que
+constrói até o resultado. Exemplo para "fechar vendas internacionais":
+
+| Mês | Foco |
+|---|---|
+| 1 | Prospecção — primeira mensagem, primeiro contato escrito |
+| 2 | Desenvolvimento do kit |
+| 3 | Técnicas de negociação |
+| 4 | Redigir contrato |
+| 5 | Colocar tudo em prática de forma integrada |
+| 6 | Objetivo master concluído |
+
+**Etapa 5 — Material.** 100% desenvolvido sobre os objetivos traçados com o RH. Exclusivo por empresa,
+nunca reaproveitado entre clientes.
+
+**Etapa 6 — Aplicativo de apoio.** Situações reais do mundo corporativo e exercícios, sempre associados
+à aula da vez.
+
+### Por que esse formato vende
+- **Não é comparável por preço.** Concorrentes vendem idioma sem prazo e sem fim (níveis, horas,
+  fluência, CEFR). Commodity igual só se compara por preço. Resultado de negócio com data, não.
+- **Responde antes de ser perguntada a objeção que derruba fornecedor.** A pergunta decisiva do RH é
+  "quais dados vou ter em 6 meses para justificar a renovação?" (seção 5). O objetivo master com marcos
+  mensais *é* o relatório de justificativa, pronto desde a assinatura.
+- **Entra no topo do mercado em mensuração.** Só 11% dos projetos chegam ao nível 3 (aplicabilidade) da
+  pirâmide Kirkpatrick. Definir o critério de sucesso antes da venda coloca o produto acima de 89% do
+  mercado.
+
+---
+
+## 9. Slogan (fechado em 14/08/2026)
+
+> **Seu time negociando em inglês em 6 meses**
+
+**Por que funciona:** fala com o comprador certo ("seu time" = o RH se reconhece) · promete resultado de
+negócio, não idioma · tem prazo, logo é verificável e crível · já diz que é coletivo sem explicar a tese ·
+não usa nenhuma palavra saturada do setor (fluência, método, nativo, personalizado).
+
+**Verificação de mercado (14/08/2026):** frase livre. Nenhum concorrente combina os três elementos
+(time + resultado concreto + prazo). O mercado vende negociação como *conteúdo* (workshop, módulo),
+nunca como *resultado com data*; ninguém coloca prazo; e o padrão é falar com o indivíduo, não com o
+time, mesmo nas páginas B2B. Ressalva: cobre só o que está indexado publicamente — não substitui
+checagem no INPI.
+
+**Variações por setor** (campanha, não marca — a marca tem um slogan só):
+
+| Setor / área | Frase |
+|---|---|
+| Comercial | Seu time negociando em inglês em 6 meses |
+| Comex / exportação | Seu time comprando direto da fábrica em 6 meses |
+| Liderança / matriz | Sua liderança reportando pra matriz em 6 meses |
+| Regulatório (farma) | Seu time submetendo em inglês em 6 meses |
+
+**Pendências ligadas ao slogan:**
+- Definir o critério objetivo de "negociando" — o que conta como objetivo cumprido aos 6 meses. Precisa
+  estar fechado antes da primeira venda.
+- Calibrar o tamanho do objetivo master para que 6 meses seja confortável, não apertado. O prazo no
+  slogan vira compromisso moral em toda venda.
+
+---
+
+## 10. Paleta de cores (fechada em 14/08/2026)
+
+| Papel | Hex | Uso |
+|---|---|---|
+| **Terracota** (principal) | `#8F4426` | Cor de marca. Botões, faixas, blocos, logo, kickers |
+| **Terracota escuro** | `#5C2A16` | Fundos escuros — capa de proposta, hero, seções de destaque |
+| **Amarelo claro** (acento) | `#F5D98B` | Acentos, destaques, texto de realce sobre fundo escuro |
+| **Creme** | `#FAF3E8` | Fundo de página |
+| **Preto aquecido** | `#1A1310` | Texto corrido |
+
+Neutro de apoio: `#EDE0CC` (creme escurecido) para barras vazias, divisórias e estados neutros.
+
+### Regras de uso
+- **Terracota é a cor dominante**, mas quem faz o papel de "escuro sério" no texto é o preto
+  aquecido — terracota tem luminosidade média demais para servir de cor de texto sobre branco.
+- Preto puro (`#000000`) briga com paleta quente. Usar sempre o preto aquecido (`#1A1310`),
+  que assenta melhor ao lado do terracota — diferença sutil na tela, bem visível em impresso.
+- **Evitar o amarelo em área grande junto com o terracota.** Terracota + amarelo em volume é a
+  paleta clássica de sinalização e de comida (fast food, aviso de trânsito). Amarelo entra como
+  acento pontual, não como fundo dominante.
+- Priorizar combinações escuro-com-claro. A maior parte do material é proposta em PDF, slide e
+  e-mail — contraste alto é o que sobrevive à impressão e ao projetor de sala de reunião.
+- Elemento gráfico recorrente: **a barra de 6 meses parcialmente preenchida**. Nasce direto do
+  produto e comunica "progresso com fim" sem texto.
+
+### Por que terracota
+- **Foge do azul do setor.** Berlitz é azul; Wall Street English tem azul como primária
+  (`#003359`) com vermelho e ciano; o mercado de idiomas converge para azul/vermelho. Blue é
+  a cor mais usada entre as Fortune 500 (41% em 2026), o que torna difícil se destacar nela.
+- **A pesquisa apoia diferenciar aqui.** Seguir a norma de cor da categoria compensa quando há
+  um líder de mercado dominante; em categorias fragmentadas — que é o caso do inglês corporativo
+  no Brasil — a diferenciação visual funciona a favor. E 23% das Fortune 500 introduziram acento
+  em coral/âmbar/lima nos últimos 18 meses justamente para escapar do mar de azul.
+- **Lê corporativo por ser dessaturado e escurecido.** Laranja saturado grita promoção;
+  terracota tem carga de marrom e baixa saturação, então lê como material (barro, tijolo, couro)
+  — associado a durabilidade e ofício. Tendências de 2026 descrevem tons terrosos como criando
+  "proximidade instantânea", táteis e honestos.
+- **Sistema de cor única gera lembrança.** Marcas com sistema de cor única definida tiveram alta
+  média de 83% na lembrança espontânea. Por isso terracota manda sozinha, sem uma segunda cor
+  de marca competindo.
+
+### Descartadas e por quê
+- **Azul / petróleo + âmbar** — teal é a cor do ano de 2026 (WGSN) e a dupla teal + terroso é
+  descrita como uma das três direções dominantes do ano. Parece moderna hoje, datada em 3 anos.
+- **Verde + marrom** — lê como orgânico/eco. São literalmente as cores de terra e planta.
+- **Verde-lima dominante** — aproxima do território de app de idioma (Duolingo).
+- **Terracota + amarelo em área cheia** — sinalização/comida, associação já ocupada.
+
+---
+
 ## Fontes
 
 - Pesquisa Panorama do Treinamento no Brasil 2025/2026 — ABTD, 20ª edição, 443 empresas (resumo via Twygo)

@@ -618,6 +618,115 @@
     .lead-body { padding: 4px 12px 16px; }
   }
 
+  /* ================= Estudo — Inglês corporativo ================= */
+  #estudo-view.hidden { display: none !important; }
+  #estudo-view {
+    --e-green:#3f6f5b; --e-amber:#c8862a; --e-red:#a3312a;
+    --e-blue:#4a6b8a; --e-purple:#7d6a9c; --e-gray:#c3bdae;
+    max-width: 1180px;
+  }
+  #estudo-view .es-hero { margin: 2px 0 22px; }
+  #estudo-view .es-kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--e-green); margin: 0 0 8px; }
+  #estudo-view .es-hero h2 { font-size: 26px; font-weight: 700; margin: 0 0 8px; line-height: 1.2; }
+  #estudo-view .es-hero p { font-size: 14px; color: var(--text-muted); margin: 0; max-width: 720px; line-height: 1.55; }
+
+  #estudo-view .es-section { margin: 30px 0 0; }
+  #estudo-view .es-section > h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted); margin: 0 0 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  #estudo-view .es-card { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px; }
+  #estudo-view .es-card h4 { font-size: 14px; font-weight: 700; margin: 0 0 4px; }
+  #estudo-view .es-card .es-sub { font-size: 12px; color: var(--text-muted); margin: 0 0 16px; line-height: 1.5; }
+
+  #estudo-view .es-grid { display: grid; gap: 14px; }
+  #estudo-view .es-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  #estudo-view .es-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  /* KPI tiles */
+  #estudo-view .es-kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  #estudo-view .es-kpi { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 14px; }
+  #estudo-view .es-kpi .es-num { font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+  #estudo-view .es-kpi .es-lbl { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; line-height: 1.35; }
+  #estudo-view .es-kpi.accent-green .es-num { color: var(--e-green); }
+  #estudo-view .es-kpi.accent-amber .es-num { color: var(--e-amber); }
+  #estudo-view .es-kpi.accent-red .es-num { color: var(--e-red); }
+  #estudo-view .es-kpi.accent-blue .es-num { color: var(--e-blue); }
+
+  /* Horizontal bars */
+  #estudo-view .es-bars { display: flex; flex-direction: column; gap: 12px; }
+  #estudo-view .es-bar-row { display: grid; grid-template-columns: 140px 1fr 54px; align-items: center; gap: 10px; }
+  #estudo-view .es-bar-label { font-size: 12.5px; font-weight: 600; }
+  #estudo-view .es-bar-track { background: var(--land-default); border-radius: 6px; height: 22px; overflow: hidden; }
+  #estudo-view .es-bar-fill { height: 100%; border-radius: 6px; min-width: 2px;
+    display: flex; align-items: center; }
+  #estudo-view .es-bar-val { font-size: 12.5px; font-weight: 700; text-align: right; color: var(--text); }
+  #estudo-view .es-bar-note { font-size: 11px; color: var(--text-muted); grid-column: 2 / 3; margin-top: -6px; }
+
+  /* Split / stacked bar */
+  #estudo-view .es-split { display: flex; height: 30px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  #estudo-view .es-split > span { display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 700; color: #fff; }
+  #estudo-view .es-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  #estudo-view .es-legend .es-li { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); }
+  #estudo-view .es-legend .es-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Archetype / decision cards */
+  #estudo-view .es-mini { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 15px; }
+  #estudo-view .es-mini h5 { font-size: 13px; font-weight: 700; margin: 0 0 8px; }
+  #estudo-view .es-mini .es-tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 3px 8px; border-radius: 999px; display: inline-block; }
+  #estudo-view .es-mini ul { margin: 10px 0 0; padding-left: 16px; }
+  #estudo-view .es-mini li { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 3px; }
+  #estudo-view .es-brecha { font-size: 12px; color: var(--e-green); font-weight: 600; margin-top: 10px; line-height: 1.45; }
+
+  /* Pipeline flow */
+  #estudo-view .es-flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+  #estudo-view .es-step { flex: 1 1 0; min-width: 130px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; position: relative; }
+  #estudo-view .es-step + .es-step { margin-left: 22px; }
+  #estudo-view .es-step + .es-step::before { content: "→"; position: absolute; left: -19px; top: 50%;
+    transform: translateY(-50%); color: var(--e-green); font-weight: 700; font-size: 15px; }
+  #estudo-view .es-step .es-stepn { font-size: 10.5px; font-weight: 700; color: var(--e-green); letter-spacing: 0.06em; }
+  #estudo-view .es-step h5 { font-size: 13px; font-weight: 700; margin: 5px 0 4px; }
+  #estudo-view .es-step p { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.45; }
+
+  /* Bullet lists */
+  #estudo-view .es-list { margin: 0; padding: 0; list-style: none; }
+  #estudo-view .es-list li { font-size: 13px; line-height: 1.5; padding: 8px 0 8px 26px; position: relative;
+    border-bottom: 1px solid var(--border); }
+  #estudo-view .es-list li:last-child { border-bottom: none; }
+  #estudo-view .es-list li::before { content: ""; position: absolute; left: 4px; top: 15px;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--e-red); }
+  #estudo-view .es-list.good li::before { background: var(--e-green); }
+  #estudo-view .es-list li strong { font-weight: 700; }
+  #estudo-view .es-list.numbered { counter-reset: es; }
+  #estudo-view .es-list.numbered li::before { content: counter(es); counter-increment: es;
+    background: var(--e-green); color: #fff; width: 18px; height: 18px; border-radius: 50%;
+    font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    top: 9px; left: 0; }
+  #estudo-view .es-list.numbered li { padding-left: 30px; }
+
+  #estudo-view .es-foot { margin: 30px 0 0; font-size: 12px; color: var(--text-muted);
+    padding-top: 14px; border-top: 1px solid var(--border); line-height: 1.6; }
+  #estudo-view .es-foot code { background: var(--land-default); padding: 2px 6px; border-radius: 5px; font-size: 11.5px; }
+
+  @media (max-width: 900px) {
+    #estudo-view .es-kpis { grid-template-columns: repeat(3, 1fr); }
+    #estudo-view .es-grid.cols-2, #estudo-view .es-grid.cols-3 { grid-template-columns: 1fr; }
+    #estudo-view .es-step + .es-step { margin-left: 0; margin-top: 22px; }
+    #estudo-view .es-step + .es-step::before { content: "↓"; left: 50%; top: -19px; transform: translateX(-50%); }
+  }
+  @media (max-width: 720px) {
+    #estudo-view .es-kpis { grid-template-columns: repeat(2, 1fr); }
+    #estudo-view .es-bar-row { grid-template-columns: 108px 1fr 46px; }
+    #estudo-view .es-hero h2 { font-size: 21px; }
+  }
+
 </style>
 </head>
 <body>
@@ -661,6 +770,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
     <span id="sidebar-badge" class="hidden">0</span>
+  </button>
+  <button class="side-btn" id="side-estudo" type="button" data-label="Estudo" aria-label="Estudo de mercado">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
   </button>
 </nav>
 <div id="app" class="hidden">
@@ -721,6 +834,225 @@
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
       <span id="build-tag">build 20260813-2250</span>
+    </div>
+  </div>
+
+  <div id="estudo-view" class="hidden">
+    <div class="es-hero">
+      <p class="es-kicker">Estudo de mercado</p>
+      <h2>Inglês corporativo B2B no Brasil</h2>
+      <p>Mapa do mercado, do comprador e dos modelos de aula — a base para construir um gerador de aulas personalizável e escalável. Dados resumidos; estudo completo em <code>docs/estudo-mercado-ingles-corporativo.md</code>.</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="es-kpis">
+      <div class="es-kpi accent-green"><div class="es-num">89%</div><div class="es-lbl">das empresas têm orçamento anual de T&amp;D definido</div></div>
+      <div class="es-kpi"><div class="es-num">R$1,2k</div><div class="es-lbl">investidos por colaborador / ano em T&amp;D</div></div>
+      <div class="es-kpi accent-blue"><div class="es-num">18%</div><div class="es-lbl">do mercado digital de inglês é corporativo</div></div>
+      <div class="es-kpi accent-red"><div class="es-num">75º</div><div class="es-lbl">posição do Brasil no EF EPI 2025 (de 123)</div></div>
+      <div class="es-kpi accent-red"><div class="es-num">&lt;20%</div><div class="es-lbl">concluem um programa self-paced típico</div></div>
+      <div class="es-kpi accent-amber"><div class="es-num">~14m</div><div class="es-lbl">payback médio de ROI em programas enterprise</div></div>
+    </div>
+
+    <!-- Mercado -->
+    <div class="es-section">
+      <h3>1 · O mercado brasileiro</h3>
+      <div class="es-grid cols-2">
+        <div class="es-card">
+          <h4>Proficiência do Brasil: baixa e desigual</h4>
+          <p class="es-sub">A dor é estrutural — combustível da demanda.</p>
+          <ul class="es-list">
+            <li><strong>482 pontos</strong> no EF EPI 2025 → faixa de proficiência <strong>baixa</strong></li>
+            <li><strong>16º de 20</strong> países da América Latina</li>
+            <li><strong>169 pts</strong> de diferença entre capitais mais e menos proficientes</li>
+            <li><strong>Escrita −74 pts</strong> vs. leitura → maior fraqueza (e crítica no trabalho)</li>
+          </ul>
+        </div>
+        <div class="es-card">
+          <h4>Mercado digital de inglês — por segmento</h4>
+          <p class="es-sub">Corporativo é a menor fatia, mas a de maior ticket e recorrência.</p>
+          <div class="es-split">
+            <span style="width:54%;background:var(--e-gray)">54%</span>
+            <span style="width:28%;background:var(--e-blue)">28%</span>
+            <span style="width:18%;background:var(--e-green)">18%</span>
+          </div>
+          <div class="es-legend">
+            <span class="es-li"><span class="es-dot" style="background:var(--e-gray)"></span>Aprendizes individuais</span>
+            <span class="es-li"><span class="es-dot" style="background:var(--e-blue)"></span>Escolas</span>
+            <span class="es-li"><span class="es-dot" style="background:var(--e-green)"></span>Corporativo</span>
+          </div>
+          <p class="es-sub" style="margin:16px 0 0">Mercado global de ELT ≈ US$117 bi (2026), fragmentado: top-10 players somam só ~40% → espaço para nichos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fornecedores -->
+    <div class="es-section">
+      <h3>2 · Fornecedores — 5 arquétipos e a brecha</h3>
+      <div class="es-grid cols-3">
+        <div class="es-mini">
+          <h5>Escola tradicional</h5>
+          <span class="es-tag" style="background:#efe7d6;color:var(--e-amber)">Marca · presencial</span>
+          <ul><li>Credibilidade e marca</li><li>Pouca personalização real; caro</li></ul>
+        </div>
+        <div class="es-mini">
+          <h5>App self-paced</h5>
+          <span class="es-tag" style="background:#efe7d6;color:var(--e-amber)">Escala · preço baixo</span>
+          <ul><li>Barato e escalável</li><li>Adesão baixíssima; genérico</li></ul>
+        </div>
+        <div class="es-mini">
+          <h5>Plataforma adaptativa</h5>
+          <span class="es-tag" style="background:#efe7d6;color:var(--e-amber)">Dados · blended</span>
+          <ul><li>Analytics e conteúdo real</li><li>Personaliza por algoritmo, não por contrato</li></ul>
+        </div>
+        <div class="es-mini">
+          <h5>Provedor B2B nacional</h5>
+          <span class="es-tag" style="background:#efe7d6;color:var(--e-amber)">In-company · relação</span>
+          <ul><li>Próximo e sob medida</li><li>Operação artesanal → não escala</li></ul>
+        </div>
+        <div class="es-mini">
+          <h5>Freelancer / boutique</h5>
+          <span class="es-tag" style="background:#efe7d6;color:var(--e-amber)">Barato · flexível</span>
+          <ul><li>Personalizado</li><li>Sem estrutura, dados ou continuidade</li></ul>
+        </div>
+        <div class="es-mini" style="border-color:var(--e-green);background:#f2f6f3">
+          <h5 style="color:var(--e-green)">→ Onde o projeto entra</h5>
+          <span class="es-tag" style="background:var(--e-green);color:#fff">A brecha</span>
+          <p class="es-brecha">Personalização de boutique + material exclusivo, com a estrutura, escala e dados de uma plataforma. O <strong>gerador de aulas</strong> é o mecanismo que fecha essa lacuna.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comprador -->
+    <div class="es-section">
+      <h3>3 · Quem decide a compra (médio porte)</h3>
+      <div class="es-flow">
+        <div class="es-step"><div class="es-stepn">APONTA A DOR</div><h5>Gestor da área</h5><p>Define quem precisa e valida relevância</p></div>
+        <div class="es-step"><div class="es-stepn">OPERA</div><h5>Gerente de T&amp;D</h5><p>Mapeia necessidade e aloca orçamento</p></div>
+        <div class="es-step"><div class="es-stepn">APROVA</div><h5>Diretor T&amp;D / RH</h5><p>Alinha à estratégia e libera verba</p></div>
+        <div class="es-step"><div class="es-stepn">CONTRATA</div><h5>Compras / Financeiro</h5><p>Escopo, faturamento B2B</p></div>
+        <div class="es-step" style="border-color:var(--e-green);background:#f2f6f3"><div class="es-stepn">DECIDE O SUCESSO</div><h5>O colaborador-aluno</h5><p>Não compra, mas continua — ou abandona</p></div>
+      </div>
+      <div class="es-grid cols-2" style="margin-top:14px">
+        <div class="es-card">
+          <h4>Gatilhos de compra</h4>
+          <ul class="es-list good">
+            <li>Nova operação, cliente ou matriz internacional</li>
+            <li>Área/colaborador travando num processo crítico</li>
+            <li>Ciclo anual de orçamento de T&amp;D</li>
+            <li>Certificação exigida (cliente, licitação, compliance)</li>
+          </ul>
+        </div>
+        <div class="es-card">
+          <h4>Setores onde a dor é maior</h4>
+          <ul class="es-list good">
+            <li>Exportadoras / comércio exterior / agro</li>
+            <li>Tecnologia, SaaS e serviços globais</li>
+            <li>Serviços profissionais (jurídico, consultoria, financeiro)</li>
+            <li>Indústria com matriz ou joint venture estrangeira</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modelos de aula -->
+    <div class="es-section">
+      <h3>4 · Modelos de aula × nível de sucesso</h3>
+      <div class="es-grid cols-2">
+        <div class="es-card">
+          <h4>Conclusão típica por formato</h4>
+          <p class="es-sub">O campeão de retenção é o blended por coorte — não o self-paced.</p>
+          <div class="es-bars">
+            <div class="es-bar-row"><span class="es-bar-label">Self-paced (app)</span><div class="es-bar-track"><div class="es-bar-fill" style="width:25%;background:var(--e-red)"></div></div><span class="es-bar-val">~25%</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">Micro-grupo curto</span><div class="es-bar-track"><div class="es-bar-fill" style="width:55%;background:var(--e-amber)"></div></div><span class="es-bar-val">~55%</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">Turma in-company</span><div class="es-bar-track"><div class="es-bar-fill" style="width:60%;background:var(--e-amber)"></div></div><span class="es-bar-val">~60%</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">1:1 executivo</span><div class="es-bar-track"><div class="es-bar-fill" style="width:75%;background:var(--e-green)"></div></div><span class="es-bar-val">~75%</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">Blended coorte</span><div class="es-bar-track"><div class="es-bar-fill" style="width:85%;background:var(--e-green)"></div></div><span class="es-bar-val">~85%</span></div>
+          </div>
+          <p class="es-sub" style="margin:14px 0 0">Plataformas adaptativas superam currículo fixo em <strong>+37%</strong> de conclusão.</p>
+        </div>
+        <div class="es-card">
+          <h4>Horas guiadas por nível (CEFR)</h4>
+          <p class="es-sub">Acumulado desde o zero · ~200h por nível, subindo nos altos.</p>
+          <div class="es-bars">
+            <div class="es-bar-row"><span class="es-bar-label">A1</span><div class="es-bar-track"><div class="es-bar-fill" style="width:6%;background:var(--e-blue)"></div></div><span class="es-bar-val">~70h</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">A2</span><div class="es-bar-track"><div class="es-bar-fill" style="width:16%;background:var(--e-blue)"></div></div><span class="es-bar-val">~180h</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">B1</span><div class="es-bar-track"><div class="es-bar-fill" style="width:34%;background:var(--e-blue)"></div></div><span class="es-bar-val">~375h</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">B2 (alvo)</span><div class="es-bar-track"><div class="es-bar-fill" style="width:50%;background:var(--e-green)"></div></div><span class="es-bar-val">~550h</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">C1</span><div class="es-bar-track"><div class="es-bar-fill" style="width:68%;background:var(--e-blue)"></div></div><span class="es-bar-val">~750h</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">C2</span><div class="es-bar-track"><div class="es-bar-fill" style="width:100%;background:var(--e-blue)"></div></div><span class="es-bar-val">~1100h</span></div>
+          </div>
+          <p class="es-sub" style="margin:14px 0 0">A 2h/semana, subir 1 nível ≈ 2 anos → prometer <strong>tarefa</strong>, não "fluência rápida".</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receita vencedora -->
+    <div class="es-section">
+      <h3>5 · A receita vencedora (o molde a gerar)</h3>
+      <div class="es-flow">
+        <div class="es-step"><div class="es-stepn">01 · ESP</div><h5>Análise de necessidade</h5><p>Mapear as tarefas reais de inglês do cargo</p></div>
+        <div class="es-step"><div class="es-stepn">02 · TASK-BASED</div><h5>Syllabus por tarefas</h5><p>Sequência de "can-dos" do trabalho</p></div>
+        <div class="es-step"><div class="es-stepn">03 · COMUNICATIVO</div><h5>Aula ao vivo</h5><p>Ensaio da situação real</p></div>
+        <div class="es-step"><div class="es-stepn">04 · MICROLEARNING</div><h5>Reforço espaçado</h5><p>Pílulas distribuídas nos dias</p></div>
+        <div class="es-step"><div class="es-stepn">05 · MEDIÇÃO</div><h5>Checagem</h5><p>Progresso contra a tarefa-alvo</p></div>
+      </div>
+      <div class="es-grid cols-2" style="margin-top:14px">
+        <div class="es-card">
+          <h4>Por que os programas fracassam</h4>
+          <ul class="es-list">
+            <li><strong>Dropout</strong> — o aluno para de aparecer (causa nº 1)</li>
+            <li>Conteúdo genérico, sem relevância ao cargo</li>
+            <li>Turma heterogênea desengaja os dois extremos</li>
+            <li>Sem accountability nem progresso visível</li>
+            <li>Promessa irreal de prazo → frustração</li>
+          </ul>
+        </div>
+        <div class="es-card">
+          <h4>Retenção: reforço espaçado vs. sessão longa</h4>
+          <p class="es-sub">Por que a aula curta + revisão distribuída vence.</p>
+          <div class="es-bars">
+            <div class="es-bar-row"><span class="es-bar-label">Reforço espaçado</span><div class="es-bar-track"><div class="es-bar-fill" style="width:90%;background:var(--e-green)"></div></div><span class="es-bar-val">~90%</span></div>
+            <div class="es-bar-row"><span class="es-bar-label">Sessão longa</span><div class="es-bar-track"><div class="es-bar-fill" style="width:20%;background:var(--e-red)"></div></div><span class="es-bar-val">~20%</span></div>
+          </div>
+          <p class="es-sub" style="margin:14px 0 0">Reforço espaçado eleva a retenção em <strong>+145–150%</strong> em poucas semanas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gerador -->
+    <div class="es-section">
+      <h3>6 · O que o gerador de aulas precisa</h3>
+      <div class="es-grid cols-2">
+        <div class="es-card">
+          <h4>Eixos de personalização <span style="color:var(--text-muted);font-weight:500">(as entradas)</span></h4>
+          <ol class="es-list numbered">
+            <li>Nível de entrada (CEFR) por colaborador/turma</li>
+            <li>Objetivo-alvo: as tarefas reais de inglês do cargo</li>
+            <li>Setor / função (vocabulário e cenários ESP)</li>
+            <li>Competência-foco (fala, escrita, escuta, leitura)</li>
+            <li>Formato e cadência (1:1, grupo, frequência)</li>
+            <li>Restrições da empresa (agenda, KPIs de T&amp;D)</li>
+          </ol>
+        </div>
+        <div class="es-card">
+          <h4>Molde de aula <span style="color:var(--text-muted);font-weight:500">(a saída, 8 blocos)</span></h4>
+          <ol class="es-list numbered">
+            <li>Objetivo de tarefa (can-do mensurável)</li>
+            <li>Warm-up contextual do cargo</li>
+            <li>Input autêntico do domínio</li>
+            <li>Foco de linguagem a serviço da tarefa</li>
+            <li>Tarefa comunicativa (ensaio real)</li>
+            <li>Produção (o aluno executa)</li>
+            <li>Micro-reforço espaçado</li>
+            <li>Checagem → relatório para T&amp;D</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="es-foot">
+      Fontes: EF EPI 2025 · Pesquisa ABTD / Panorama do Treinamento 2025–26 · Business Research Insights (ELT) · Cambridge English (guided learning hours) · Talaera, Speexx, Bridge (ROI &amp; dropout) · eLearning Industry (microlearning). Referências completas em <code>docs/estudo-mercado-ingles-corporativo.md</code>.
     </div>
   </div>
 
@@ -1947,17 +2279,20 @@ setInterval(() => {
 function showView(name) {
   document.getElementById("tasks-view").classList.toggle("hidden", name !== "tasks");
   document.getElementById("leads-view").classList.toggle("hidden", name !== "leads");
+  document.getElementById("estudo-view").classList.toggle("hidden", name !== "estudo");
   document.getElementById("settings-view").classList.toggle("hidden", name !== "settings");
   document.getElementById("app-title").textContent =
-    name === "leads" ? "Leads" : name === "settings" ? "Settings" : "Tasks";
+    name === "leads" ? "Leads" : name === "estudo" ? "Estudo" : name === "settings" ? "Settings" : "Tasks";
   document.getElementById("side-tasks").classList.toggle("active", name === "tasks");
   document.getElementById("side-leads").classList.toggle("active", name === "leads");
+  document.getElementById("side-estudo").classList.toggle("active", name === "estudo");
   if (name === "leads") renderLeads();
 }
 document.getElementById("nav-settings-btn").addEventListener("click", () => showView("settings"));
 document.getElementById("settings-back-btn").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-tasks").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-leads").addEventListener("click", () => showView("leads"));
+document.getElementById("side-estudo").addEventListener("click", () => showView("estudo"));
 
 // --- Tasks: find/walk helpers ---
 function findTaskById(list, id) {

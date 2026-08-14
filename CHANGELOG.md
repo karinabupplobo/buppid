@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2141-cores-marca-na-dash — 14/08/2026
+- O que mudou: fundo da dash trocado do cinza (`#f7f6f2`) para o creme da identidade
+  (`#FAF3E8`), e a cor `--accent` trocada do quase-preto (`#1a1a18`) para o terracota
+  escuro (`#5C2A16`). Como as duas cores só existiam nas variáveis do `:root`, a troca
+  propaga sozinha para todas as abas e para os 13 pontos que usam `--accent` (botão de
+  login, botão primário de settings, botão de envio de e-mail, badges, checkboxes e
+  indicadores de arraste das tasks).
+- Arquivos: index.html
+- Motivo: aplicar a identidade visual definida na sessão de marca (docs/icp-comprador.md,
+  seção 10) na dash.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-2139-marca-slogan-cores
+
 ## v-20260814-2139-marca-slogan-cores — 14/08/2026
 - O que mudou: registradas as definições de produto e marca em docs/icp-comprador.md,
   como seções 8, 9 e 10. Seção 8: formato do curso (fechamento com RH, divisão de turmas

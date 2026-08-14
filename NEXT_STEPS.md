@@ -8,10 +8,11 @@
 - [ ] Calibrar o tamanho do objetivo master para que 6 meses seja confortável, não apertado.
       O prazo no slogan vira compromisso moral em toda venda.
 - [ ] Avaliar checagem da marca no INPI, se houver intenção de proteger o slogan.
-- [ ] Decidir se a paleta nova (terracota) deve ser aplicada também na dash. Hoje o
-      index.html usa bege/preto (--bg #f7f6f2, --accent #1a1a18) e a aba Mercado tem sua
-      própria escala (--e-green, --e-amber etc). Aplicar a identidade exigiria revisar
-      esses dois conjuntos.
+- [ ] A dash já usa o fundo creme e o accent terracota escuro da identidade
+      (v-20260814-2141). Falta decidir se a aba Mercado deve seguir a mesma paleta:
+      ela tem escala própria (`--e-green`, `--e-amber`, `--e-red`, `--e-blue`,
+      `--e-purple`, `--e-gray`), usada nos KPIs, barras e listas. Trocar exigiria
+      remapear essas seis variáveis sem perder a legibilidade dos gráficos.
 - [ ] Atualizar os dados de concorrência (agora seção 7 dentro de #estudo-view,
       em index.html, e docs/analise-concorrencia.md) sempre que a Karina validar/
       ajustar os hex exatos dos concorrentes ou entrar um novo player relevante.

@@ -771,7 +771,7 @@
       <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
     <span id="sidebar-badge" class="hidden">0</span>
   </button>
-  <button class="side-btn" id="side-estudo" type="button" data-label="Estudo" aria-label="Estudo de mercado">
+  <button class="side-btn" id="side-estudo" type="button" data-label="Mercado" aria-label="Mercado">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
   </button>
@@ -2282,7 +2282,7 @@ function showView(name) {
   document.getElementById("estudo-view").classList.toggle("hidden", name !== "estudo");
   document.getElementById("settings-view").classList.toggle("hidden", name !== "settings");
   document.getElementById("app-title").textContent =
-    name === "leads" ? "Leads" : name === "estudo" ? "Estudo" : name === "settings" ? "Settings" : "Tasks";
+    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "settings" ? "Settings" : "Tasks";
   document.getElementById("side-tasks").classList.toggle("active", name === "tasks");
   document.getElementById("side-leads").classList.toggle("active", name === "leads");
   document.getElementById("side-estudo").classList.toggle("active", name === "estudo");

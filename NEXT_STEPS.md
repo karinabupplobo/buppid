@@ -2,6 +2,16 @@
 
 ## Próximo
 
+- [ ] Definir o critério objetivo de "negociando" no slogan — o que exatamente conta como
+      objetivo cumprido aos 6 meses. Precisa estar fechado ANTES da primeira venda: no dia
+      em que um cliente perguntar "cumpriu?", tem que haver resposta objetiva, não conversa.
+- [ ] Calibrar o tamanho do objetivo master para que 6 meses seja confortável, não apertado.
+      O prazo no slogan vira compromisso moral em toda venda.
+- [ ] Avaliar checagem da marca no INPI, se houver intenção de proteger o slogan.
+- [ ] Decidir se a paleta nova (terracota) deve ser aplicada também na dash. Hoje o
+      index.html usa bege/preto (--bg #f7f6f2, --accent #1a1a18) e a aba Mercado tem sua
+      própria escala (--e-green, --e-amber etc). Aplicar a identidade exigiria revisar
+      esses dois conjuntos.
 - [ ] Atualizar os dados de concorrência (agora seção 7 dentro de #estudo-view,
       em index.html, e docs/analise-concorrencia.md) sempre que a Karina validar/
       ajustar os hex exatos dos concorrentes ou entrar um novo player relevante.

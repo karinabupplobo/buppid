@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2139-marca-slogan-cores — 14/08/2026
+- O que mudou: registradas as definições de produto e marca em docs/icp-comprador.md,
+  como seções 8, 9 e 10. Seção 8: formato do curso (fechamento com RH, divisão de turmas
+  por objetivo e nível, objetivo master de 6 meses, seis marcos mensais, material exclusivo
+  por empresa, app de apoio). Seção 9: slogan "Seu time negociando em inglês em 6 meses",
+  com as variações por setor e a verificação de que a frase está livre no mercado.
+  Seção 10: paleta de cores — terracota #8F4426 como cor principal, terracota escuro
+  #5C2A16 para fundos, amarelo #F5D98B como acento, creme #FAF3E8 de fundo e preto
+  aquecido #1A1310 no texto, com regras de uso, justificativa e o que foi descartado.
+- Arquivos: docs/icp-comprador.md
+- Motivo: consolidar as decisões de produto e marca tomadas na sessão de branding, para
+  não refazer a discussão depois. Nada disso aparece na dash — é documentação interna.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-2001-concorrencia-para-mercado
+
 ## v-20260814-2001-concorrencia-para-mercado — 14/08/2026
 - O que mudou: aba "Concorrência" removida da sidebar. Seu conteúdo (tabela
   comparativa dos 6 players + card "seu território") virou a seção 7 dentro da aba

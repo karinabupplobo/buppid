@@ -5,6 +5,14 @@
 - [ ] Atualizar os dados da aba Concorrência (index.html, #concorrencia-view e
       docs/analise-concorrencia.md) sempre que a Karina validar/ajustar os
       hex exatos dos concorrentes ou entrar um novo player relevante.
+- [ ] O conteúdo antigo da aba Mercado (modelos de aula x conclusão, horas guiadas
+      CEFR, receita vencedora, requisitos do gerador) saiu da dash na v-20260814-1958.
+      Continua preservado em docs/estudo-mercado-ingles-corporativo.md e no histórico
+      git. Decidir se ele vira uma aba própria ("Método"/"Gerador") quando o gerador
+      de aulas começar a ser construído.
+- [ ] Cruzar o calendário de vendas da aba Mercado (pico set–nov) com o multiplicador
+      sazonal do motor de leads, que hoje usa set–out como pico. Verificar se as duas
+      regras devem ficar iguais ou se são coisas diferentes de propósito.
 - [ ] Decidir o que a faixa Inbound do funil vai fazer. Hoje ela existe no
       funil, mostra 0 sempre e não recebe nada — nem o motor classifica lead
       nela, nem o arraste consegue soltar um lead lá dentro com sucesso.

@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-1958-mercado-icp — 14/08/2026
+- O que mudou: aba Mercado refeita do zero. Deixou de ser panorama geral do mercado
+  (tamanho, fornecedores, modelos de aula, gerador) e passou a ser material de campo
+  para Vendedor e Closer, focado só no cliente: 6 KPIs do comprador, ICP (setor, porte,
+  maturidade de T&D), gatilhos e critérios de desqualificação, comitê de compra com o
+  argumento por persona, calendário de vendas mês a mês, 4 objeções reais com resposta,
+  o que o RH mede (indicadores + pirâmide Kirkpatrick) e termômetro do lead.
+  Nenhum CSS novo — reaproveita as classes `es-*` existentes.
+- Arquivos: index.html, docs/icp-comprador.md (novo)
+- Motivo: a aba precisa servir para quem vende, não para quem estuda o mercado. O
+  conteúdo antigo sobre modelos de aula e gerador migra para o trabalho do gerador.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-1951-aba-concorrencia
+
 ## v-20260814-1951-aba-concorrencia — 14/08/2026
 - O que mudou: nova aba "Concorrência" na sidebar (ícone de barras), com gráfico de
   barras comparando grau de personalização (Dash Inglês x Lingualize, Berlitz Charters,
@@ -23,6 +37,18 @@ Entradas mais recentes no topo.
 - Motivo: pedido direto da Karina.
 - Reverter para o estado ANTERIOR a esta mudança:
   git checkout b63c998
+
+## b63c998 — 13/08/2026 (registro retroativo, feito via Claude Code)
+- O que mudou: criação da aba "Estudo" na dash (commits dee27cf, 78e869e, b63c998),
+  com estudo de mercado de inglês corporativo B2B: KPIs, mercado brasileiro,
+  5 arquétipos de fornecedor, comitê de compra, modelos de aula x conclusão, horas
+  guiadas por CEFR e requisitos do gerador de aulas.
+- Arquivos: index.html, docs/estudo-mercado-ingles-corporativo.md (novo)
+- Motivo: base de conhecimento para construir o gerador de aulas.
+- Observação: estes commits não passaram pelo protocolo de registro (sem tag, sem
+  entrada no CHANGELOG na época). Entrada criada retroativamente em 14/08/2026.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout 5953aea
 
 ## v-20260813-2250-inbound-sem-cinza — 13/08/2026
 - O que mudou: Inbound deixou de ficar cinza quando vazio. A regra CSS que

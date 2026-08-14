@@ -2,6 +2,15 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2145-fundo-creme-claro — 14/08/2026
+- O que mudou: fundo da dash (`--bg`) clareado de #FAF3E8 para #FDFAF4.
+- Arquivos: index.html
+- Motivo: o creme da identidade ficou pesado demais como fundo de tela cheia.
+  Observação: o #FDFAF4 fica mais próximo do branco dos cards (`--panel: #ffffff`),
+  então a separação visual entre fundo e card é mais sutil que antes.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-2144-botoes-terracota-principal
+
 ## v-20260814-2144-botoes-terracota-principal — 14/08/2026
 - O que mudou: botões ativos da sidebar e da subnav de Tasks trocados do terracota escuro
   (`var(--accent)`, #5C2A16) para o terracota principal (#8F4426), agora em hex direto.

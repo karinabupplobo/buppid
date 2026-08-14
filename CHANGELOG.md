@@ -2,6 +2,16 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2146-fundo-fefcf8 — 14/08/2026
+- O que mudou: fundo da dash (`--bg`) de #FDFAF4 para #FEFCF8 — quase branco, com um
+  toque residual de calor.
+- Arquivos: index.html
+- Motivo: preferência da Karina por um creme ainda mais claro.
+  Observação: nesse tom a diferença entre fundo e os cards brancos (`--panel: #ffffff`)
+  fica quase imperceptível — a hierarquia visual passa a depender só das bordas.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-2145-fundo-creme-claro
+
 ## v-20260814-2145-fundo-creme-claro — 14/08/2026
 - O que mudou: fundo da dash (`--bg`) clareado de #FAF3E8 para #FDFAF4.
 - Arquivos: index.html

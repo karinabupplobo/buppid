@@ -727,6 +727,58 @@
     #estudo-view .es-hero h2 { font-size: 21px; }
   }
 
+  /* ================= Concorrência ================= */
+  #concorrencia-view.hidden { display: none !important; }
+  #concorrencia-view {
+    --e-green:#3f6f5b; --e-amber:#c8862a; --e-red:#a3312a;
+    --e-blue:#4a6b8a; --e-purple:#7d6a9c; --e-gray:#c3bdae;
+    max-width: 1180px;
+  }
+  #concorrencia-view .es-hero { margin: 2px 0 22px; }
+  #concorrencia-view .es-kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--e-green); margin: 0 0 8px; }
+  #concorrencia-view .es-hero h2 { font-size: 26px; font-weight: 700; margin: 0 0 8px; line-height: 1.2; }
+  #concorrencia-view .es-hero p { font-size: 14px; color: var(--text-muted); margin: 0; max-width: 720px; line-height: 1.55; }
+
+  #concorrencia-view .es-section { margin: 30px 0 0; }
+  #concorrencia-view .es-section > h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted); margin: 0 0 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  #concorrencia-view .es-card { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px; }
+
+  #concorrencia-view .es-bars { display: flex; flex-direction: column; gap: 12px; }
+  #concorrencia-view .es-bar-row { display: grid; grid-template-columns: 150px 1fr 40px; align-items: center; gap: 10px; }
+  #concorrencia-view .es-bar-label { font-size: 12.5px; font-weight: 600; }
+  #concorrencia-view .es-bar-track { background: var(--land-default); border-radius: 6px; height: 22px; overflow: hidden; }
+  #concorrencia-view .es-bar-fill { height: 100%; border-radius: 6px; min-width: 2px; }
+  #concorrencia-view .es-bar-val { font-size: 12.5px; font-weight: 700; text-align: right; color: var(--text); }
+
+  #concorrencia-view .es-ctable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  #concorrencia-view .es-ctable th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--text-muted); padding: 0 10px 8px; border-bottom: 1px solid var(--border); }
+  #concorrencia-view .es-ctable td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
+  #concorrencia-view .es-ctable tr:last-child td { border-bottom: none; }
+  #concorrencia-view .es-ctable td:first-child { font-weight: 700; white-space: nowrap; }
+  #concorrencia-view .es-ctable .voce { color: var(--e-green); }
+  #concorrencia-view .es-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; display: inline-block; background: var(--land-default); color: var(--text-muted); }
+
+  #concorrencia-view .es-highlight { background: var(--panel); border: 1px solid var(--e-green);
+    border-radius: 14px; padding: 18px 20px; font-size: 13.5px; line-height: 1.6; }
+  #concorrencia-view .es-highlight strong { color: var(--e-green); }
+
+  #concorrencia-view .es-foot { margin: 30px 0 0; font-size: 12px; color: var(--text-muted);
+    padding-top: 14px; border-top: 1px solid var(--border); line-height: 1.6; }
+  #concorrencia-view .es-foot code { background: var(--land-default); padding: 2px 6px; border-radius: 5px; font-size: 11.5px; }
+
+  @media (max-width: 720px) {
+    #concorrencia-view .es-bar-row { grid-template-columns: 108px 1fr 36px; }
+    #concorrencia-view .es-hero h2 { font-size: 21px; }
+    #concorrencia-view .es-ctable { font-size: 11.5px; }
+  }
+
 </style>
 </head>
 <body>
@@ -774,6 +826,10 @@
   <button class="side-btn" id="side-estudo" type="button" data-label="Mercado" aria-label="Mercado">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+  </button>
+  <button class="side-btn" id="side-concorrencia" type="button" data-label="Concorrência" aria-label="Concorrência">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="12" width="4.5" height="9" rx="1"/><rect x="9.75" y="6" width="4.5" height="15" rx="1"/><rect x="16.5" y="9" width="4.5" height="12" rx="1"/></svg>
   </button>
 </nav>
 <div id="app" class="hidden">
@@ -1053,6 +1109,117 @@
 
     <div class="es-foot">
       Fontes: EF EPI 2025 · Pesquisa ABTD / Panorama do Treinamento 2025–26 · Business Research Insights (ELT) · Cambridge English (guided learning hours) · Talaera, Speexx, Bridge (ROI &amp; dropout) · eLearning Industry (microlearning). Referências completas em <code>docs/estudo-mercado-ingles-corporativo.md</code>.
+    </div>
+  </div>
+
+  <div id="concorrencia-view" class="hidden">
+    <div class="es-hero">
+      <p class="es-kicker">Concorrência</p>
+      <h2>Como o Dash Inglês se compara aos principais players</h2>
+      <p>Comparativo direto com quem disputa o mesmo cliente corporativo — formato, diferencial e onde cada um deixa espaço aberto. Estudo completo em <code>docs/analise-concorrencia.md</code>.</p>
+    </div>
+
+    <div class="es-section">
+      <h3>Grau de personalização (0–5)</h3>
+      <div class="es-card">
+        <div class="es-bars">
+          <div class="es-bar-row">
+            <div class="es-bar-label">Dash Inglês (você)</div>
+            <div class="es-bar-track"><div class="es-bar-fill" style="width:100%;background:var(--e-green);"></div></div>
+            <div class="es-bar-val">5,0</div>
+          </div>
+          <div class="es-bar-row">
+            <div class="es-bar-label">Lingualize</div>
+            <div class="es-bar-track"><div class="es-bar-fill" style="width:80%;background:var(--e-gray);"></div></div>
+            <div class="es-bar-val">4,0</div>
+          </div>
+          <div class="es-bar-row">
+            <div class="es-bar-label">English for Business</div>
+            <div class="es-bar-track"><div class="es-bar-fill" style="width:60%;background:var(--e-gray);"></div></div>
+            <div class="es-bar-val">3,0</div>
+          </div>
+          <div class="es-bar-row">
+            <div class="es-bar-label">Berlitz Charters</div>
+            <div class="es-bar-track"><div class="es-bar-fill" style="width:50%;background:var(--e-gray);"></div></div>
+            <div class="es-bar-val">2,5</div>
+          </div>
+          <div class="es-bar-row">
+            <div class="es-bar-label">IP School</div>
+            <div class="es-bar-track"><div class="es-bar-fill" style="width:50%;background:var(--e-gray);"></div></div>
+            <div class="es-bar-val">2,5</div>
+          </div>
+          <div class="es-bar-row">
+            <div class="es-bar-label">Cultura Inglesa</div>
+            <div class="es-bar-track"><div class="es-bar-fill" style="width:40%;background:var(--e-gray);"></div></div>
+            <div class="es-bar-val">2,0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="es-section">
+      <h3>Comparativo direto</h3>
+      <div class="es-card">
+        <table class="es-ctable">
+          <thead>
+            <tr><th>Concorrente</th><th>Formato principal</th><th>Diferencial</th><th>Ponto fraco / brecha</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="voce">Dash Inglês (você)</td>
+              <td><span class="es-tag">Grupo + projeto</span> 1:1 complementar</td>
+              <td>Time desenvolve algo em conjunto, 100% customizado, nunca reaproveitado</td>
+              <td>Marca nova, sem prova social ainda</td>
+            </tr>
+            <tr>
+              <td>Lingualize</td>
+              <td><span class="es-tag">1:1 exclusivo</span></td>
+              <td>Método próprio (ANLF), personal brand forte, garantia de dinheiro de volta</td>
+              <td>Recusa formato de grupo — não atende time que precisa colaborar</td>
+            </tr>
+            <tr>
+              <td>Berlitz Charters</td>
+              <td><span class="es-tag">Grupo</span></td>
+              <td>Marca global, 145+ anos, eficácia comprovada em pequenos grupos</td>
+              <td>Conteúdo mais padronizado, menos sob medida por time</td>
+            </tr>
+            <tr>
+              <td>English for Business</td>
+              <td><span class="es-tag">Individual ou grupo</span></td>
+              <td>Atua desde 2006, dashboard de acompanhamento pro RH</td>
+              <td>Diferencial metodológico pouco explícito publicamente</td>
+            </tr>
+            <tr>
+              <td>IP School</td>
+              <td><span class="es-tag">Individual ou grupo</span></td>
+              <td>Flexível, foco em situações reais do setor</td>
+              <td>Porte menor, pouca prova social pública</td>
+            </tr>
+            <tr>
+              <td>Cultura Inglesa</td>
+              <td><span class="es-tag">Grupo</span></td>
+              <td>90+ anos de marca, plataforma gamificada</td>
+              <td>Modelo mais tradicional/engessado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="es-section">
+      <h3>Seu território</h3>
+      <div class="es-highlight">
+        <strong>Projeto colaborativo customizado pro time</strong> — nenhum concorrente mapeado ocupa esse espaço hoje.
+        A Lingualize venceu o discurso "1:1 vs. grupo genérico" descartando grupo por completo; Berlitz e os demais
+        oferecem grupo, mas de forma padronizada. O problema real citado pelo mercado não é "grupo funciona ou não",
+        é turma com nível heterogêneo desmotivando quem está mais avançado — e é exatamente esse problema que um
+        projeto em equipe com objetivo comum resolve de um jeito que ninguém mais está fazendo.
+      </div>
+    </div>
+
+    <div class="es-foot">
+      Fontes: sites e páginas institucionais de Lingualize, Berlitz, English for Business, IP School e Cultura
+      Inglesa (ago/2026). Estudo completo em <code>docs/analise-concorrencia.md</code>.
     </div>
   </div>
 
@@ -2280,12 +2447,14 @@ function showView(name) {
   document.getElementById("tasks-view").classList.toggle("hidden", name !== "tasks");
   document.getElementById("leads-view").classList.toggle("hidden", name !== "leads");
   document.getElementById("estudo-view").classList.toggle("hidden", name !== "estudo");
+  document.getElementById("concorrencia-view").classList.toggle("hidden", name !== "concorrencia");
   document.getElementById("settings-view").classList.toggle("hidden", name !== "settings");
   document.getElementById("app-title").textContent =
-    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "settings" ? "Settings" : "Tasks";
+    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "concorrencia" ? "Concorrência" : name === "settings" ? "Settings" : "Tasks";
   document.getElementById("side-tasks").classList.toggle("active", name === "tasks");
   document.getElementById("side-leads").classList.toggle("active", name === "leads");
   document.getElementById("side-estudo").classList.toggle("active", name === "estudo");
+  document.getElementById("side-concorrencia").classList.toggle("active", name === "concorrencia");
   if (name === "leads") renderLeads();
 }
 document.getElementById("nav-settings-btn").addEventListener("click", () => showView("settings"));
@@ -2293,6 +2462,7 @@ document.getElementById("settings-back-btn").addEventListener("click", () => sho
 document.getElementById("side-tasks").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-leads").addEventListener("click", () => showView("leads"));
 document.getElementById("side-estudo").addEventListener("click", () => showView("estudo"));
+document.getElementById("side-concorrencia").addEventListener("click", () => showView("concorrencia"));
 
 // --- Tasks: find/walk helpers ---
 function findTaskById(list, id) {

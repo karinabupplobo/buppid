@@ -2,6 +2,9 @@
 
 ## Próximo
 
+- [ ] Atualizar os dados da aba Concorrência (index.html, #concorrencia-view e
+      docs/analise-concorrencia.md) sempre que a Karina validar/ajustar os
+      hex exatos dos concorrentes ou entrar um novo player relevante.
 - [ ] Decidir o que a faixa Inbound do funil vai fazer. Hoje ela existe no
       funil, mostra 0 sempre e não recebe nada — nem o motor classifica lead
       nela, nem o arraste consegue soltar um lead lá dentro com sucesso.

@@ -2,6 +2,28 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-1951-aba-concorrencia — 14/08/2026
+- O que mudou: nova aba "Concorrência" na sidebar (ícone de barras), com gráfico de
+  barras comparando grau de personalização (Dash Inglês x Lingualize, Berlitz Charters,
+  English for Business, IP School, Cultura Inglesa), tabela comparativa (formato,
+  diferencial, ponto fraco) e um card de destaque com o posicionamento de diferenciação
+  ("projeto colaborativo customizado pro time"). Reaproveita o padrão visual (classes
+  `es-*`) já usado na aba Mercado.
+- Arquivos: index.html, docs/analise-concorrencia.md (novo)
+- Motivo: consolidar a pesquisa de concorrência feita no chat direto na dash, em
+  formato visual e conciso, pra consulta rápida.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-1950-rename-estudo-mercado
+
+## v-20260814-1950-rename-estudo-mercado — 14/08/2026
+- O que mudou: label visível da aba "Estudo" trocado para "Mercado" (botão da sidebar
+  e título do header). Id interno `estudo-view`/`side-estudo` mantido sem alteração —
+  risco zero de quebrar referências internas.
+- Arquivos: index.html
+- Motivo: pedido direto da Karina.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout b63c998
+
 ## v-20260813-2250-inbound-sem-cinza — 13/08/2026
 - O que mudou: Inbound deixou de ficar cinza quando vazio. A regra CSS que
   dessaturava faixas vazias é agora exceção para Inbound, que mantém a cor

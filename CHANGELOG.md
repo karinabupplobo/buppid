@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260814-2144-botoes-terracota-principal — 14/08/2026
+- O que mudou: botões ativos da sidebar e da subnav de Tasks trocados do terracota escuro
+  (`var(--accent)`, #5C2A16) para o terracota principal (#8F4426), agora em hex direto.
+  A variável `--accent` segue em #5C2A16 e continua valendo para os demais elementos
+  (botão de login, botão primário de settings, envio de e-mail, badges, checkboxes).
+- Arquivos: index.html
+- Motivo: pedido direto da Karina — o terracota principal tem mais presença nos botões
+  de navegação que o escuro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260814-2143-botoes-ativos-terracota
+
 ## v-20260814-2143-botoes-ativos-terracota — 14/08/2026
 - O que mudou: botões em estado ativo da sidebar (`.side-btn.active`) e da subnav de Tasks
   (`.tasks-subnav-btn.active`) trocados de `var(--text)` para `var(--accent)` — passam do

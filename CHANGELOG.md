@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260815-verde-limao-titulos — 15/08/2026
+- O que mudou: os títulos numerados da aba Mercado ("1 · ICP — quem
+  qualificar" etc., 7 no total) passaram de cinza para verde-limão. O
+  cabeçalho de coluna da tabela de Tasks (Nome/Tipo/Status/Início/Fim/
+  Responsáveis) e o equivalente em Usuários (Configurações) passaram a usar
+  fundo verde-limão com texto escuro. No processo, achei e corrigi um bug que
+  eu tinha deixado passar na troca de paleta anterior: esses dois cabeçalhos
+  de tabela usavam `--land-default` como fundo, que virou um teal escuro na
+  troca — texto cinza sobre teal escuro tinha contraste 2.36, bem abaixo do
+  mínimo aceitável (4.5). Agora ambos usam fundo próprio (verde-limão), sem
+  depender de --land-default.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: pedido direto de Karina, mais correção de um bug de legibilidade
+  descoberto ao mexer nos mesmos elementos.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260815-paleta-teal-limao
+
 ## v-20260815-paleta-teal-limao — 15/08/2026
 - O que mudou: a marca trocou de paleta — terracota/creme (fechada em 14/08)
   para teal escuro `#0A1214` + verde-limão `#D9E28C` (acento) + azul

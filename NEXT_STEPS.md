@@ -2,6 +2,12 @@
 
 ## Próximo
 
+- [ ] Aplicar a nova paleta (teal/verde-limão/azul) nos materiais de venda e
+      propostas que já tinham sido feitos com a paleta terracota antiga.
+- [ ] Decidir se a escala de cor interna da aba Mercado (--e-green, --e-amber,
+      --e-red) também deve ser remapeada para a nova paleta, ou se continua
+      como está (ela não é cor de marca, é código de saúde de dado).
+
 - [ ] Definir o critério objetivo de "negociando" no slogan — o que exatamente conta como
       objetivo cumprido aos 6 meses. Precisa estar fechado ANTES da primeira venda: no dia
       em que um cliente perguntar "cumpriu?", tem que haver resposta objetiva, não conversa.

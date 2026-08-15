@@ -246,53 +246,32 @@ checagem no INPI.
 
 ---
 
-## 10. Paleta de cores (fechada em 14/08/2026)
+## 10. Paleta de cores (fechada em 15/08/2026 — substitui a versão de 14/08)
 
 | Papel | Hex | Uso |
 |---|---|---|
-| **Terracota** (principal) | `#8F4426` | Cor de marca. Botões, faixas, blocos, logo, kickers |
-| **Terracota escuro** | `#5C2A16` | Fundos escuros — capa de proposta, hero, seções de destaque |
-| **Amarelo claro** (acento) | `#F5D98B` | Acentos, destaques, texto de realce sobre fundo escuro |
-| **Creme** | `#FAF3E8` | Fundo de página |
-| **Preto aquecido** | `#1A1310` | Texto corrido |
-
-Neutro de apoio: `#EDE0CC` (creme escurecido) para barras vazias, divisórias e estados neutros.
+| **Teal escuro** | `#0A1214` | Fundo dominante — página, base de botões numerados |
+| **Verde-limão** (acento) | `#D9E28C` | Acento — títulos de tela, estado ativo/selecionado, destaques |
+| **Azul intermediário** | `#3C6E78` | Botão primário, elementos interativos, toque/foco |
+| **Branco** | `#FFFFFF` | Cards, superfícies, painéis de conteúdo |
+| **Preto** | `#000000` | Texto sobre branco |
 
 ### Regras de uso
-- **Terracota é a cor dominante**, mas quem faz o papel de "escuro sério" no texto é o preto
-  aquecido — terracota tem luminosidade média demais para servir de cor de texto sobre branco.
-- Preto puro (`#000000`) briga com paleta quente. Usar sempre o preto aquecido (`#1A1310`),
-  que assenta melhor ao lado do terracota — diferença sutil na tela, bem visível em impresso.
-- **Evitar o amarelo em área grande junto com o terracota.** Terracota + amarelo em volume é a
-  paleta clássica de sinalização e de comida (fast food, aviso de trânsito). Amarelo entra como
-  acento pontual, não como fundo dominante.
-- Priorizar combinações escuro-com-claro. A maior parte do material é proposta em PDF, slide e
-  e-mail — contraste alto é o que sobrevive à impressão e ao projetor de sala de reunião.
-- Elemento gráfico recorrente: **a barra de 6 meses parcialmente preenchida**. Nasce direto do
-  produto e comunica "progresso com fim" sem texto.
+- **Teal escuro é o fundo dominante.** Conteúdo (texto, tabelas, formulários) vive em cards
+  brancos por cima dele — o teal nunca recebe texto corrido direto, só título/acento em
+  verde-limão ou branco.
+- **Verde-limão é reservado para "isto está ativo/selecionado".** Título de tela, aba ativa,
+  estado marcado. Usá-lo em área grande apaga o efeito de destaque.
+- Texto sobre verde-limão é sempre escuro (preto), nunca branco — o verde-limão é claro
+  demais para servir de fundo com texto branco em cima.
+- Azul intermediário é o botão de ação primária — funciona com texto branco em cima.
 
-### Por que terracota
-- **Foge do azul do setor.** Berlitz é azul; Wall Street English tem azul como primária
-  (`#003359`) com vermelho e ciano; o mercado de idiomas converge para azul/vermelho. Blue é
-  a cor mais usada entre as Fortune 500 (41% em 2026), o que torna difícil se destacar nela.
-- **A pesquisa apoia diferenciar aqui.** Seguir a norma de cor da categoria compensa quando há
-  um líder de mercado dominante; em categorias fragmentadas — que é o caso do inglês corporativo
-  no Brasil — a diferenciação visual funciona a favor. E 23% das Fortune 500 introduziram acento
-  em coral/âmbar/lima nos últimos 18 meses justamente para escapar do mar de azul.
-- **Lê corporativo por ser dessaturado e escurecido.** Laranja saturado grita promoção;
-  terracota tem carga de marrom e baixa saturação, então lê como material (barro, tijolo, couro)
-  — associado a durabilidade e ofício. Tendências de 2026 descrevem tons terrosos como criando
-  "proximidade instantânea", táteis e honestos.
-- **Sistema de cor única gera lembrança.** Marcas com sistema de cor única definida tiveram alta
-  média de 83% na lembrança espontânea. Por isso terracota manda sozinha, sem uma segunda cor
-  de marca competindo.
-
-### Descartadas e por quê
-- **Azul / petróleo + âmbar** — teal é a cor do ano de 2026 (WGSN) e a dupla teal + terroso é
-  descrita como uma das três direções dominantes do ano. Parece moderna hoje, datada em 3 anos.
-- **Verde + marrom** — lê como orgânico/eco. São literalmente as cores de terra e planta.
-- **Verde-lima dominante** — aproxima do território de app de idioma (Duolingo).
-- **Terracota + amarelo em área cheia** — sinalização/comida, associação já ocupada.
+### Nota sobre a mudança de direção
+Este documento, na versão fechada em 14/08/2026, descartava explicitamente esta direção:
+"Azul/petróleo + âmbar" e "Verde-lima dominante" estavam na lista de paletas descartadas,
+com a justificativa de que verde-lima aproxima do território de apps de idioma como Duolingo,
+e teal soaria datado em poucos anos. A decisão de 15/08 reverte esse racional conscientemente
+— registrado aqui para histórico, não como contradição a esconder.
 
 ---
 

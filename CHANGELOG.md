@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260815-paleta-teal-limao — 15/08/2026
+- O que mudou: a marca trocou de paleta — terracota/creme (fechada em 14/08)
+  para teal escuro `#0A1214` + verde-limão `#D9E28C` (acento) + azul
+  intermediário `#3C6E78` (botão primário) + branco/preto. A decisão reverte
+  conscientemente o racional da versão anterior, que descartava essa direção
+  (ver nota no docs/icp-comprador.md §10). Aplicado na dash inteira: fundo,
+  botões primários, abas ativas do menu lateral e da subnav, bordas.
+  Corrigidos no processo: cinco estados de foco de campo de texto que reusavam
+  a variável de fundo (ficariam ilegíveis com o fundo escuro), e quatro blocos
+  de texto que ficam direto sobre o fundo da página em vez de dentro de um
+  card branco (título "Tasks"/"Leads", status de sincronização, o hero da aba
+  Mercado, o título "Usuários" em Configurações, e o rodapé da lista de leads)
+  — todos ganharam cor própria legível, checada por contraste WCAG.
+- Arquivos: index.html, docs/icp-comprador.md, CHANGELOG.md
+- Motivo: pedido direto de Karina — nova paleta oficial, a partir do template
+  do app de aula (template-aula.html).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260813-2253-docs-inbound-sem-cinza
+
 ## v-20260814-2146-fundo-fefcf8 — 14/08/2026
 - O que mudou: fundo da dash (`--bg`) de #FDFAF4 para #FEFCF8 — quase branco, com um
   toque residual de calor.

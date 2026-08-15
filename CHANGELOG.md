@@ -2,6 +2,26 @@
 
 Entradas mais recentes no topo.
 
+## v-20260815-hover-filtro — 15/08/2026
+- O que mudou: duas mudanças.
+  (1) Hover: 19 botões que escurecem ao passar o mouse (fundo teal via
+  --land-default) agora trocam o texto para verde-limão nesse momento — antes
+  ficavam escuros sobre escuro. No mesmo processo, achei e corrigi mais dois
+  casos da mesma classe de bug fora do hover: a linha de lead expandida
+  ([open]) e o `<code>` de rodapé da aba Mercado, ambos com texto escuro
+  sobre fundo escuro.
+  (2) Tasks ganhou filtro por coluna: clicar em Tipo, Status ou Responsáveis
+  abre um checklist das opções; Início e Fim abrem um filtro de período
+  (De/Até). Nome não tem filtro. Uma task só desaparece se nem ela nem
+  nenhum descendente bater no filtro; um pai que não bate mas tem filho que
+  bate continua visível, esmaecido, como contexto — e a árvore expande
+  sozinha até revelar quem bateu, mesmo em ramos que estavam colapsados.
+- Arquivos: index.html, CHANGELOG.md
+- Motivo: pedido direto de Karina; a correção do hover surgiu ao mexer nos
+  mesmos seletores dos botões.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260815-docs-verde-limao
+
 ## v-20260815-verde-limao-titulos — 15/08/2026
 - O que mudou: os títulos numerados da aba Mercado ("1 · ICP — quem
   qualificar" etc., 7 no total) passaram de cinza para verde-limão. O

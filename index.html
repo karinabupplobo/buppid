@@ -55,13 +55,13 @@
   .header-btn {
     border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 7px; padding: 7px 13px; font-size: 12.5px; font-weight: 600; cursor: pointer;
   }
-  .header-btn:hover { background: var(--land-default); }
+  .header-btn:hover { background: var(--land-default); color: var(--accent-lime); }
 
   #tasks-subnav { display: flex; gap: 6px; margin-bottom: 16px; }
   .tasks-subnav-btn {
     border: 1px solid var(--border); background: #fff; color: var(--text-muted); border-radius: 7px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer;
   }
-  .tasks-subnav-btn:hover { background: var(--land-default); color: var(--text); }
+  .tasks-subnav-btn:hover { background: var(--land-default); color: var(--accent-lime); }
   .tasks-subnav-btn.active { background: var(--accent-lime); border-color: var(--accent-lime); color: #000; }
 
   /* --- Tasks table --- */
@@ -115,6 +115,35 @@
     border-left: 3px solid transparent;
   }
   .tasks-header-row { background: var(--accent-lime); font-size: 11px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 0.03em; border-radius: 11px 11px 0 0; }
+  /* cabeçalhos filtráveis: mesmo texto do header, mas viram botão com dropdown */
+  .tasks-colfiltro { position: relative; }
+  .tasks-colfiltro-btn {
+    border: none; background: transparent; font: inherit; color: inherit; text-transform: inherit;
+    letter-spacing: inherit; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 4px;
+  }
+  .tasks-colfiltro-btn svg { width: 9px; height: 9px; flex: none; }
+  .tasks-colfiltro-btn.ativo::after {
+    content: ""; width: 5px; height: 5px; border-radius: 50%; background: #000; margin-left: 1px;
+  }
+  .tasks-colfiltro-menu {
+    display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; background: #fff;
+    border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+    z-index: 30; min-width: 190px; max-height: 260px; overflow-y: auto; padding: 8px;
+    text-transform: none; letter-spacing: normal; font-weight: 500; color: var(--text);
+  }
+  .tasks-colfiltro-menu.open { display: block; }
+  .tasks-colfiltro-opcao { display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+    border-radius: 6px; font-size: 12.5px; cursor: pointer; }
+  .tasks-colfiltro-opcao:hover { background: var(--land-default); color: var(--accent-lime); }
+  .tasks-colfiltro-opcao input { accent-color: var(--accent); }
+  .tasks-colfiltro-datas { display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+  .tasks-colfiltro-datas label { font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 3px; }
+  .tasks-colfiltro-datas input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 6px; font-size: 12.5px; }
+  .tasks-colfiltro-limpar { width: 100%; margin-top: 6px; border: 1px solid var(--border); background: #fff;
+    border-radius: 6px; padding: 5px; font-size: 11.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+  .tasks-colfiltro-limpar:hover { background: var(--land-default); color: var(--accent-lime); }
+  /* linha que só aparece como contexto do pai/filho filtrado — sem match próprio */
+  .tasks-row-contexto { opacity: .5; }
   #tasks-table-body .tasks-row:last-child { border-radius: 0 0 11px 11px; }
   .tasks-row:last-child { border-bottom: none; }
   .tasks-row:hover { background: #fbfaf7; }
@@ -161,13 +190,13 @@
   }
   .tasks-assignee-menu.open { display: block; }
   .tasks-assignee-option { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; font-size: 12.5px; cursor: pointer; }
-  .tasks-assignee-option:hover { background: var(--land-default); }
+  .tasks-assignee-option:hover { background: var(--land-default); color: var(--accent-lime); }
   .tasks-assignee-option input { accent-color: var(--accent); }
   .tasks-assignee-empty { font-size: 12px; color: var(--text-muted); padding: 6px 8px; }
   .tasks-rowtype-select { border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 5px 6px; font-size: 11.5px; width: 100%; }
   .tasks-row-actions { display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
   .tasks-row-actions button { border: none; background: transparent; cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 5px; color: var(--text-muted); }
-  .tasks-row-actions button:hover { background: var(--land-default); color: var(--text); }
+  .tasks-row-actions button:hover { background: var(--land-default); color: var(--accent-lime); }
   .tasks-row-actions .tasks-delete-btn:hover { background: #fcebeb; color: #a3312a; }
   /* Só aparecem no celular, onde arrastar não funciona. */
   .tasks-move-btn { display: none; }
@@ -185,7 +214,7 @@
 
   #tasks-footer { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
   #tasks-add-btn { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 7px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-  #tasks-add-btn:hover { background: var(--land-default); }
+  #tasks-add-btn:hover { background: var(--land-default); color: var(--accent-lime); }
   #tasks-bulk-bar { display: none; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-muted); }
   #tasks-bulk-bar.visible { display: flex; }
   #tasks-bulk-delete { border: 1px solid #a3312a; background: #fff; color: #a3312a; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -208,7 +237,7 @@
   #task-comments-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); gap: 12px; }
   #task-comments-modal-header h3 { margin: 0; font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #task-comments-modal-close { background: transparent; border: none; font-size: 15px; color: var(--text-muted); cursor: pointer; padding: 4px 6px; border-radius: 4px; flex-shrink: 0; }
-  #task-comments-modal-close:hover { background: var(--land-default); color: var(--text); }
+  #task-comments-modal-close:hover { background: var(--land-default); color: var(--accent-lime); }
   #task-comments-modal-body { padding: 16px 18px; overflow-y: auto; flex: 1 1 auto; min-height: 220px; max-height: 50vh; display: flex; flex-direction: column; gap: 12px; }
   .tc-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px 0; }
   .tc-block { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
@@ -228,12 +257,12 @@
   .tc-checklist-add-row { display: flex; gap: 6px; margin-top: 6px; }
   .tc-checklist-add-row input { flex: 1 1 0; border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; font-size: 12.5px; font-family: inherit; }
   .tc-checklist-add-row button { border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 6px 11px; font-size: 12px; cursor: pointer; flex-shrink: 0; }
-  .tc-checklist-add-row button:hover { background: var(--land-default); }
+  .tc-checklist-add-row button:hover { background: var(--land-default); color: var(--accent-lime); }
   #task-comments-composer { border-top: 1px solid var(--border); padding: 14px 18px 16px; flex-shrink: 0; }
   #tc-text-input { width: 100%; min-height: 60px; border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; font-size: 13.5px; font-family: inherit; resize: vertical; margin-bottom: 8px; }
   #task-comments-composer-actions { display: flex; gap: 8px; }
   #tc-add-text-btn, #tc-add-checklist-btn { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 7px; padding: 7px 13px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-  #tc-add-text-btn:hover, #tc-add-checklist-btn:hover { background: var(--land-default); }
+  #tc-add-text-btn:hover, #tc-add-checklist-btn:hover { background: var(--land-default); color: var(--accent-lime); }
 
   #email-preview-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 100; }
   #email-preview-modal-backdrop.hidden { display: none; }
@@ -241,7 +270,7 @@
   #email-preview-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); gap: 12px; }
   #email-preview-modal-header h3 { margin: 0; font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #email-preview-modal-close { background: transparent; border: none; font-size: 15px; color: var(--text-muted); cursor: pointer; padding: 4px 6px; border-radius: 4px; flex-shrink: 0; }
-  #email-preview-modal-close:hover { background: var(--land-default); color: var(--text); }
+  #email-preview-modal-close:hover { background: var(--land-default); color: var(--accent-lime); }
   #email-preview-modal-body { padding: 16px 18px; overflow-y: auto; flex: 1 1 auto; min-height: 160px; max-height: 50vh; }
   .ep-hint { font-size: 12px; color: var(--text-muted); margin: 0 0 12px; }
   .ep-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); margin: 14px 0 6px; }
@@ -254,7 +283,7 @@
   #email-preview-modal-msg { font-size: 12px; color: var(--text-muted); flex: 1 1 0; }
   #email-preview-modal-actions { display: flex; gap: 8px; flex-shrink: 0; }
   #email-preview-cancel-btn, #email-preview-send-btn { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 7px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-  #email-preview-cancel-btn:hover { background: var(--land-default); }
+  #email-preview-cancel-btn:hover { background: var(--land-default); color: var(--accent-lime); }
   #email-preview-send-btn { background: var(--accent); color: #fff; border-color: var(--accent); }
   #email-preview-send-btn:hover { background: #000000; }
   #email-preview-send-btn:disabled { opacity: 0.6; cursor: default; }
@@ -265,7 +294,7 @@
   .settings-field label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
   .settings-field input, .settings-field select { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 13px; font-family: inherit; }
   .settings-btn { border: 1px solid var(--border); background: #fff; border-radius: 7px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-  .settings-btn:hover { background: var(--land-default); }
+  .settings-btn:hover { background: var(--land-default); color: var(--accent-lime); }
   .settings-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .settings-btn.primary:hover { background: #000000; }
 
@@ -290,14 +319,14 @@
   .settings-user-row input:focus { background: var(--focus-bg); outline: 1px solid var(--border-strong); }
   .settings-user-actions { display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
   .settings-user-actions button { border: none; background: transparent; cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 5px; color: var(--text-muted); }
-  .settings-user-actions button:hover { background: var(--land-default); color: var(--text); }
+  .settings-user-actions button:hover { background: var(--land-default); color: var(--accent-lime); }
   .settings-user-actions .settings-user-delete:hover { background: #fcebeb; color: #a3312a; }
 
   .settings-email-dropdown { position: relative; }
   .settings-email-btn {
     border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; width: 100%; justify-content: center;
   }
-  .settings-email-btn:hover { background: var(--land-default); }
+  .settings-email-btn:hover { background: var(--land-default); color: var(--accent-lime); }
   .settings-email-menu {
     display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: #fff; border: 1px solid var(--border);
     border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); z-index: 20; min-width: 170px; overflow: hidden;
@@ -306,7 +335,7 @@
   .settings-email-menu button {
     display: block; width: 100%; text-align: left; border: none; background: #fff; color: var(--text); padding: 8px 12px; font-size: 12px; font-weight: 500; cursor: pointer;
   }
-  .settings-email-menu button:hover { background: var(--land-default); }
+  .settings-email-menu button:hover { background: var(--land-default); color: var(--accent-lime); }
   #settings-msg { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
 
   /* --- Telas estreitas: a grade de 7 colunas pede cerca de 1020px de largura
@@ -381,7 +410,7 @@
   .side-btn { width: 42px; height: 42px; border: 1px solid transparent; background: transparent;
     border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
     color: var(--text-muted); position: relative; }
-  .side-btn:hover { background: var(--land-default); color: var(--text); }
+  .side-btn:hover { background: var(--land-default); color: var(--accent-lime); }
   .side-btn.active { background: var(--accent-lime); border-color: var(--accent-lime); color: #000; }
   .side-btn svg { width: 19px; height: 19px; }
   .side-btn::after { content: attr(data-label); position: absolute; left: 52px; white-space: nowrap;
@@ -416,7 +445,7 @@
   .lead-etapa { border: 1px solid var(--border); background: #fff; color: var(--text-muted);
     border-radius: 6px; padding: 2px 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .lead-row > summary::-webkit-details-marker { display: none; }
-  .lead-row[open] > summary { background: var(--land-default); }
+  .lead-row[open] > summary { background: #faf9f5; }
   .lead-row:hover > summary { background: #faf9f5; }
   .lead-name { font-size: 14px; font-weight: 600; white-space: nowrap; }
   .lead-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
@@ -502,10 +531,10 @@
     padding: 5px 7px; font-size: 12px; background: #fff; color: var(--text); }
   .lead-coment > button { border: 1px solid var(--border); background: #fff; border-radius: 7px;
     padding: 6px 13px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text); }
-  .lead-coment > button:hover { background: var(--land-default); }
+  .lead-coment > button:hover { background: var(--land-default); color: var(--accent-lime); }
   .ll-add { border: 1px solid var(--border); background: #fff; border-radius: 6px;
     padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
-  .ll-add:hover { background: var(--land-default); }
+  .ll-add:hover { background: var(--land-default); color: var(--accent-lime); }
   .la-rot { font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
     color: var(--text-muted); font-weight: 700; }
   .lead-rodape { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
@@ -549,13 +578,13 @@
   .ct-botoes { display: flex; gap: 6px; }
   .ct-botoes button { border: 1px solid var(--border); background: #fff; border-radius: 6px;
     padding: 5px 11px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text); }
-  .ct-botoes button:hover { background: var(--land-default); }
+  .ct-botoes button:hover { background: var(--land-default); color: var(--accent-lime); }
   .ct-botoes .ct-del { margin-left: auto; color: #8d4034; border-color: #e5c9c3; }
   .ct-vazio { margin: 0; }
   #leads-footer { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   #leads-footer button { border: 1px solid var(--border); background: #fff; border-radius: 7px;
     padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--text); }
-  #leads-footer button:hover { background: var(--land-default); }
+  #leads-footer button:hover { background: var(--land-default); color: var(--accent-lime); }
   #leads-updated { font-size: 11.5px; color: #9aa39f; }
   /* marcador de versão publicada: serve para saber qual build o Pages está servindo */
   #build-tag { margin-left: auto; font-size: 10.5px; color: #9aa39f;
@@ -723,7 +752,7 @@
 
   #estudo-view .es-foot { margin: 30px 0 0; font-size: 12px; color: var(--text-muted);
     padding-top: 14px; border-top: 1px solid var(--border); line-height: 1.6; }
-  #estudo-view .es-foot code { background: var(--land-default); padding: 2px 6px; border-radius: 5px; font-size: 11.5px; }
+  #estudo-view .es-foot code { background: var(--land-default); color: var(--accent-lime); padding: 2px 6px; border-radius: 5px; font-size: 11.5px; }
 
   #estudo-view .es-ctable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   #estudo-view .es-ctable th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em;
@@ -814,15 +843,7 @@
     </div>
 
     <div id="tasks-table">
-      <div class="tasks-header-row">
-        <div>Nome</div>
-        <div>Tipo</div>
-        <div>Status</div>
-        <div>Início</div>
-        <div>Fim</div>
-        <div>Responsáveis</div>
-        <div></div>
-      </div>
+      <div class="tasks-header-row" id="tasks-header-row"></div>
       <div id="tasks-table-body"></div>
     </div>
 
@@ -854,7 +875,7 @@
       <button id="leads-add-btn" type="button">+ Nova empresa</button>
       <button id="leads-recalc-btn" type="button">Recalcular agora</button>
       <span id="leads-updated"></span>
-      <span id="build-tag">build 20260815-verde-limao-titulos</span>
+      <span id="build-tag">build 20260815-hover-lima-filtro-tasks</span>
     </div>
   </div>
 
@@ -1514,6 +1535,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 
 function afterLogin() {
   document.getElementById("settings-admin-section").classList.toggle("hidden", !isAdm());
+  renderTasksHeaderRow();
   renderTasksTable();
   renderSettingsUsersList();
   setTasksViewMode("list");
@@ -2402,6 +2424,13 @@ function autoSyncLateStatuses() {
 
 // --- Task tree rendering ---
 let tasksExpanded = new Set();
+// Filtro por coluna do cabeçalho de Tasks. Conjuntos vazios = sem filtro
+// naquela coluna. Datas vazias = sem limite naquele lado do período.
+let tasksColFiltro = {
+  tipo: new Set(), status: new Set(), responsaveis: new Set(),
+  inicioDe: "", inicioAte: "", fimDe: "", fimAte: ""
+};
+let tasksFiltroMenuAberto = null; // qual coluna está com o menu aberto agora
 let tasksSelected = new Set();
 // Nomes mostrados em várias linhas. Só vale para a sessão aberta — não vai
 // para o localStorage nem para a nuvem, é preferência de visualização.
@@ -2417,9 +2446,48 @@ function rowTypeOptionsMarkup(selected) {
   return ["project", "goal", "milestone", "task"].map(rt => `<option value="${rt}" ${rt === selected ? "selected" : ""}>${ROW_TYPE_LABELS[rt]}</option>`).join("");
 }
 
+// --- Filtro por coluna (cabeçalho de Tasks) ---
+function tasksFiltroAtivo() {
+  const f = tasksColFiltro;
+  return !!(f.tipo.size || f.status.size || f.responsaveis.size ||
+    f.inicioDe || f.inicioAte || f.fimDe || f.fimAte);
+}
+function taskBateFiltro(t) {
+  const f = tasksColFiltro;
+  if (f.tipo.size && !f.tipo.has(t.rowType)) return false;
+  if (f.status.size && !f.status.has(t.status)) return false;
+  if (f.responsaveis.size && !(t.assignees || []).some(a => f.responsaveis.has(a))) return false;
+  if (f.inicioDe || f.inicioAte) {
+    if (!t.startDate) return false;
+    if (f.inicioDe && t.startDate < f.inicioDe) return false;
+    if (f.inicioAte && t.startDate > f.inicioAte) return false;
+  }
+  if (f.fimDe || f.fimAte) {
+    if (!t.endDate) return false;
+    if (f.fimDe && t.endDate < f.fimDe) return false;
+    if (f.fimAte && t.endDate > f.fimAte) return false;
+  }
+  return true;
+}
+// Pai aparece se ele mesmo bate OU se algum descendente bate — senão a
+// hierarquia quebra e uma task filtrada fica sem contexto nenhum.
+function taskOuDescendenteBate(t) {
+  if (taskBateFiltro(t)) return true;
+  return (t.subtasks || []).some(taskOuDescendenteBate);
+}
+
 function renderTaskRow(t, depth) {
+  const filtroAtivo = tasksFiltroAtivo();
+  if (filtroAtivo && !taskOuDescendenteBate(t)) return "";
+  const proprioBate = !filtroAtivo || taskBateFiltro(t);
+  // linha aparece só como contexto (não bate, mas tem filho que bate):
+  // fica esmaecida. Independente disso, se existe QUALQUER descendente que
+  // bate no filtro, a linha precisa expandir — senão o filho que bateu fica
+  // escondido atrás do collapse mesmo quando o próprio pai já bateu também.
+  const contexto = filtroAtivo && !proprioBate;
+  const temDescendenteQueBate = filtroAtivo && (t.subtasks || []).some(taskOuDescendenteBate);
   const hasChildren = t.subtasks.length > 0;
-  const expanded = tasksExpanded.has(t.id);
+  const expanded = tasksExpanded.has(t.id) || temDescendenteQueBate;
   const colors = TASK_STATUS_COLORS[t.status] || TASK_STATUS_COLORS["Not Started"];
   const icon = ROW_TYPE_ICONS[t.rowType] || "";
   // Task pinta a linha inteira com a cor do status; goal e milestone só
@@ -2440,7 +2508,7 @@ function renderTaskRow(t, depth) {
     : `border-left-color:${colors.bar};color:${colors.text};--depth:${depth}`;
   const rows = [];
   rows.push(`
-    <div class="tasks-row ${cardOpen ? "tasks-mobile-open" : ""}" data-id="${t.id}" style="${rowStyle}">
+    <div class="tasks-row ${cardOpen ? "tasks-mobile-open" : ""} ${contexto ? "tasks-row-contexto" : ""}" data-id="${t.id}" style="${rowStyle}">
       <div class="tasks-col-name">
         <span class="tasks-drag-handle" data-id="${t.id}" title="Arraste para mover"><svg viewBox="0 0 10 16" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="7" cy="3" r="1.3"/><circle cx="3" cy="8" r="1.3"/><circle cx="7" cy="8" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="7" cy="13" r="1.3"/></svg></span>
         <input type="checkbox" class="tasks-select-checkbox" data-id="${t.id}" ${tasksSelected.has(t.id) ? "checked" : ""}>
@@ -2489,6 +2557,85 @@ function renderTaskRow(t, depth) {
     t.subtasks.forEach(sub => rows.push(renderTaskRow(sub, depth + 1)));
   }
   return rows.join("");
+}
+
+function tasksTodosResponsaveisUsados() {
+  // usuários cadastrados em Settings, na ordem em que existem — não só quem
+  // já tem task, senão o filtro não mostra gente recém-adicionada sem tasks ainda
+  return usersList;
+}
+function renderTasksHeaderRow() {
+  const el = document.getElementById("tasks-header-row");
+  const f = tasksColFiltro;
+  const chevron = `<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5 L5 6.5 L8 3.5"/></svg>`;
+
+  const opcoesTipo = Object.entries(ROW_TYPE_LABELS).map(([k, r]) =>
+    `<label class="tasks-colfiltro-opcao"><input type="checkbox" data-col="tipo" value="${k}" ${f.tipo.has(k) ? "checked" : ""}> ${esc(r)}</label>`).join("");
+  const opcoesStatus = TASK_STATUS_OPTIONS.map(s =>
+    `<label class="tasks-colfiltro-opcao"><input type="checkbox" data-col="status" value="${escAttr(s)}" ${f.status.has(s) ? "checked" : ""}> ${esc(s)}</label>`).join("");
+  const opcoesResp = tasksTodosResponsaveisUsados().map(u =>
+    `<label class="tasks-colfiltro-opcao"><input type="checkbox" data-col="responsaveis" value="${escAttr(u.username)}" ${f.responsaveis.has(u.username) ? "checked" : ""}> ${esc(u.name || u.login)}</label>`).join("")
+    || `<div class="tasks-colfiltro-opcao" style="cursor:default">Nenhum usuário ainda.</div>`;
+  const datasHtml = (deCampo, ateCampo) => `<div class="tasks-colfiltro-datas">
+    <label>De <input type="date" data-datacampo="${deCampo}" value="${f[deCampo] || ""}"></label>
+    <label>Até <input type="date" data-datacampo="${ateCampo}" value="${f[ateCampo] || ""}"></label>
+  </div>`;
+
+  const col = (chave, rotulo, conteudo, ativo) => `
+    <div class="tasks-colfiltro">
+      <button type="button" class="tasks-colfiltro-btn${ativo ? " ativo" : ""}" data-abrir="${chave}">${esc(rotulo)} ${chevron}</button>
+      <div class="tasks-colfiltro-menu${tasksFiltroMenuAberto === chave ? " open" : ""}" data-menu="${chave}">
+        ${conteudo}
+        <button type="button" class="tasks-colfiltro-limpar" data-limpar="${chave}">Limpar</button>
+      </div>
+    </div>`;
+
+  el.innerHTML = `
+    <div>Nome</div>
+    ${col("tipo", "Tipo", opcoesTipo, f.tipo.size > 0)}
+    ${col("status", "Status", opcoesStatus, f.status.size > 0)}
+    ${col("inicio", "Início", datasHtml("inicioDe", "inicioAte"), !!(f.inicioDe || f.inicioAte))}
+    ${col("fim", "Fim", datasHtml("fimDe", "fimAte"), !!(f.fimDe || f.fimAte))}
+    ${col("responsaveis", "Responsáveis", opcoesResp, f.responsaveis.size > 0)}
+    <div></div>
+  `;
+
+  el.querySelectorAll("[data-abrir]").forEach(btn => {
+    btn.addEventListener("click", ev => {
+      ev.stopPropagation();
+      const chave = btn.dataset.abrir;
+      tasksFiltroMenuAberto = (tasksFiltroMenuAberto === chave) ? null : chave;
+      renderTasksHeaderRow();
+    });
+  });
+  el.querySelectorAll("[data-menu]").forEach(menu => menu.addEventListener("click", ev => ev.stopPropagation()));
+  el.querySelectorAll("input[type=checkbox][data-col]").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const set = tasksColFiltro[cb.dataset.col];
+      if (cb.checked) set.add(cb.value); else set.delete(cb.value);
+      renderTasksHeaderRow();
+      renderTasksTable();
+    });
+  });
+  el.querySelectorAll("input[type=date][data-datacampo]").forEach(inp => {
+    inp.addEventListener("change", () => {
+      tasksColFiltro[inp.dataset.datacampo] = inp.value;
+      renderTasksHeaderRow();
+      renderTasksTable();
+    });
+  });
+  el.querySelectorAll("[data-limpar]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const chave = btn.dataset.limpar;
+      if (chave === "tipo") tasksColFiltro.tipo = new Set();
+      else if (chave === "status") tasksColFiltro.status = new Set();
+      else if (chave === "responsaveis") tasksColFiltro.responsaveis = new Set();
+      else if (chave === "inicio") { tasksColFiltro.inicioDe = ""; tasksColFiltro.inicioAte = ""; }
+      else if (chave === "fim") { tasksColFiltro.fimDe = ""; tasksColFiltro.fimAte = ""; }
+      renderTasksHeaderRow();
+      renderTasksTable();
+    });
+  });
 }
 
 function renderTasksTable() {
@@ -3264,6 +3411,7 @@ function renderSettingsUsersList() {
 document.addEventListener("click", () => {
   document.querySelectorAll(".settings-email-menu.open").forEach(m => m.classList.remove("open"));
   document.querySelectorAll(".tasks-assignee-menu.open").forEach(m => m.classList.remove("open"));
+  if (tasksFiltroMenuAberto !== null) { tasksFiltroMenuAberto = null; renderTasksHeaderRow(); }
 });
 document.getElementById("settings-add-user-btn").addEventListener("click", () => {
   const name = prompt("Nome da pessoa (igual ao que vai usar em Responsáveis nas tasks):");
@@ -3274,6 +3422,7 @@ document.getElementById("settings-add-user-btn").addEventListener("click", () =>
   usersList.push({ username, login: login.trim(), name: name.trim(), email: "", password: DEFAULT_PASSWORD, role: "adm", mustChangePassword: true });
   saveUsersList();
   renderSettingsUsersList();
+  renderTasksHeaderRow();
   settingsMsg(`Usuário criado. Senha provisória: "${DEFAULT_PASSWORD}" (vai pedir pra trocar no primeiro login).`);
 });
 

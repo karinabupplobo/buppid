@@ -6,7 +6,7 @@
 <title>Tasks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
     /* Paleta oficial (fechada em 15/08/2026): teal escuro, verde-limão,
@@ -57,6 +57,11 @@
   }
   .header-btn:hover { background: var(--land-default); color: var(--accent-lime); }
 
+  /* Logotipo bupp — versão principal (limão sobre teal escuro). O fundo teal
+     coincide com o --bg da dash, então lê como marca solta na página. */
+  #tasks-brand { font-weight: 900; font-size: 30px; letter-spacing: -0.045em;
+    color: var(--accent-lime); background: #0A1214; line-height: 1;
+    padding: 2px 0; margin-bottom: 18px; user-select: none; }
   #tasks-subnav { display: flex; gap: 6px; margin-bottom: 16px; }
   .tasks-subnav-btn {
     border: 1px solid var(--border); background: #fff; color: var(--text-muted); border-radius: 7px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer;
@@ -837,6 +842,7 @@
   </div>
 
   <div id="tasks-view">
+    <div id="tasks-brand">bupp.</div>
     <div id="tasks-subnav">
       <button class="tasks-subnav-btn active" id="tasks-nav-list" type="button">Lista</button>
       <button class="tasks-subnav-btn" id="tasks-nav-late" type="button">Atrasadas</button>

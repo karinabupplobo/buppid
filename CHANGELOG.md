@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260817-1150-logo-header — 17/08/2026
+- O que mudou: o logotipo "bupp." saiu de dentro do #tasks-view e passou para dentro do
+  #app-header, à esquerda do título da aba, num grupo novo (#app-header-left). Agora
+  aparece no mesmo lugar em Tasks, Leads e Mercado. Corpo reduzido de 30px para 26px para
+  conviver com o título sem competir. O id #tasks-brand deixou de existir.
+- Arquivos: index.html
+- Motivo: pedido da Karina — a marca é da dash inteira, não da aba Tasks. Ficar abaixo do
+  título de seção invertia a hierarquia (marca embaixo do nome da aba).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260817-1136-docs-logo-tasks
+
 ## v-20260817-1135-logo-tasks — 17/08/2026
 - O que mudou: logotipo "bupp." inserido acima da subnav (Lista / Atrasadas) na aba Tasks,
   na versão principal — verde-limão sobre teal escuro, Inter 900, tracking -0.045em. A URL

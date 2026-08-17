@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260817-1158-sem-titulo-aba — 17/08/2026
+- O que mudou: o título da aba (#app-title) ganhou `display: none`. O header passa a
+  mostrar só o logotipo "bupp." — sem "Tasks", "Leads" nem "Mercado".
+- Arquivos: index.html
+- Motivo: pedido da Karina. A aba ativa já é indicada pela sidebar, então o título era
+  redundante ao lado da marca.
+  Observação: o <h1> continua no DOM de propósito. O JS reescreve o texto dele a cada
+  troca de aba (linha ~2376); remover o elemento quebraria essa linha. Para voltar a
+  exibir, basta tirar o `display: none`.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260817-1151-docs-logo-header
+
 ## v-20260817-1150-logo-header — 17/08/2026
 - O que mudou: o logotipo "bupp." saiu de dentro do #tasks-view e passou para dentro do
   #app-header, à esquerda do título da aba, num grupo novo (#app-header-left). Agora

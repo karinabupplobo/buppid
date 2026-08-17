@@ -260,11 +260,41 @@ checagem no INPI.
 - **Teal escuro é o fundo dominante.** Conteúdo (texto, tabelas, formulários) vive em cards
   brancos por cima dele — o teal nunca recebe texto corrido direto, só título/acento em
   verde-limão ou branco.
-- **Verde-limão é reservado para "isto está ativo/selecionado".** Título de tela, aba ativa,
-  estado marcado. Usá-lo em área grande apaga o efeito de destaque.
-- Texto sobre verde-limão é sempre escuro (preto), nunca branco — o verde-limão é claro
-  demais para servir de fundo com texto branco em cima.
+- **Verde-limão tem dois usos, e são diferentes.** Dentro da interface, ele segue reservado
+  para "isto está ativo/selecionado" — título de tela, aba ativa, estado marcado; usá-lo em
+  área grande apaga o efeito de destaque. Na marca (logo, capa, avatar, peça isolada), ele
+  pode ocupar área cheia como cor de superfície. A regra de acento vale para produto, não
+  para identidade.
+- **Verde-limão em área cheia é a aplicação de maior risco.** É o que mais aproxima do
+  território de app de idioma (Duolingo). Usar em peça curta e isolada — avatar de rede,
+  adesivo, capa de slide. Evitar em site inteiro e em capa de proposta comercial.
+- Texto sobre verde-limão é sempre escuro (preto ou teal escuro), nunca branco — o
+  verde-limão é claro demais para servir de fundo com texto branco em cima. Esta regra não
+  tem exceção, nem no produto nem na marca.
 - Azul intermediário é o botão de ação primária — funciona com texto branco em cima.
+
+### Logo
+
+Logotipo puro, sem ícone. "bupp" em caixa baixa, grotesca neutra em peso alto (Black/
+ExtraBold), tracking fechado, seguido de ponto final. O ponto é parte do logotipo, não
+pontuação: é gesto de finalidade, ecoa "trato feito" sem precisar dizer.
+
+Sem símbolo, sem mascote, sem elemento gráfico acoplado. O nome tem quatro letras — já é
+compacto o bastante para funcionar sozinho, inclusive em tamanho pequeno. O padrão do
+mercado-alvo (consultoria) é nome sozinho; ícone puxa a leitura para escola/edtech.
+
+| Versão | Fundo | Palavra | Uso |
+|---|---|---|---|
+| **Principal** | Teal escuro `#0A1214` | Verde-limão `#D9E28C` | Aplicação padrão sobre fundo escuro |
+| **Sóbria** | Teal escuro `#0A1214` | Branco `#FFFFFF` | Quando o limão competiria com outro elemento na peça |
+| **Invertida** | Verde-limão `#D9E28C` | Teal escuro `#0A1214` | Peça curta e isolada — avatar, adesivo, capa de slide |
+| **Clara** | Branco `#FFFFFF` | Teal escuro `#0A1214` | Documento impresso, proposta em PDF, fundo claro |
+
+Reduzido (favicon, avatar, app): só o "b" em teal escuro sobre limão, ou limão sobre teal
+escuro. É derivação do logotipo, não marca gráfica nova.
+
+O elemento gráfico recorrente — a barra de 6 meses parcialmente preenchida — vive no sistema
+(capa de proposta, slide, rodapé, assinatura de e-mail) e nunca entra no logo.
 
 ### Nota sobre a mudança de direção
 Este documento, na versão fechada em 14/08/2026, descartava explicitamente esta direção:

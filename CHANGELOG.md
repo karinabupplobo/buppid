@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260817-1135-logo-tasks — 17/08/2026
+- O que mudou: logotipo "bupp." inserido acima da subnav (Lista / Atrasadas) na aba Tasks,
+  na versão principal — verde-limão sobre teal escuro, Inter 900, tracking -0.045em. A URL
+  do Google Fonts passou a carregar também os pesos 800 e 900, que antes não vinham.
+- Arquivos: index.html
+- Motivo: aplicar a marca na dash agora que o nome e o logo foram fechados.
+  Observação: o fundo teal do logo (#0A1214) é o mesmo --bg da dash, então o retângulo não
+  aparece — o logo lê como marca solta sobre a página. Decisão da Karina, aceita de
+  propósito. O logo é HTML/CSS, não arquivo de imagem: ainda não existe SVG do logotipo no
+  repositório.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260817-1121-docs-logo
+
 ## v-20260817-1120-derivacoes-logo — 17/08/2026
 - O que mudou: seção 10 do doc de marca ganhou uma subseção "Logo" (logotipo puro em caixa
   baixa com ponto final, sem ícone, com tabela das 4 derivações de cor) e a regra do

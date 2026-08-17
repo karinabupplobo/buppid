@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260817-1120-derivacoes-logo — 17/08/2026
+- O que mudou: seção 10 do doc de marca ganhou uma subseção "Logo" (logotipo puro em caixa
+  baixa com ponto final, sem ícone, com tabela das 4 derivações de cor) e a regra do
+  verde-limão foi reescrita — ele deixa de ser só acento e passa a poder ocupar área cheia
+  na marca, mantendo-se acento dentro do produto.
+- Arquivos: docs/icp-comprador.md
+- Motivo: nome da empresa fechado como "bupp" e logotipo aprovado em 4 versões de cor. A
+  versão com limão em fundo cheio contrariava a regra antiga, que dizia que o limão nunca
+  seria fundo — decisão da Karina de liberar esse uso na identidade, com a ressalva de que
+  é a aplicação de maior risco (proximidade com Duolingo) e fica restrita a peça curta e
+  isolada.
+  Observação: a regra de que texto sobre limão nunca é branco continua sem exceção.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260815-docs-hover-filtro
+
 ## v-20260815-hover-filtro — 15/08/2026
 - O que mudou: duas mudanças.
   (1) Hover: 19 botões que escurecem ao passar o mouse (fundo teal via

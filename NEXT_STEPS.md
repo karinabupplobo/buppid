@@ -8,15 +8,19 @@
       --e-red) também deve ser remapeada para a nova paleta, ou se continua
       como está (ela não é cor de marca, é código de saúde de dado).
 
+- [ ] Aplicar o logotipo bupp (4 derivações registradas na seção 10 do doc de marca)
+      nas peças comerciais e na dash. Hoje o logo existe só como imagem aprovada, não
+      está em nenhum arquivo do repositório.
+
 - [ ] Definir o critério objetivo de "negociando" no slogan — o que exatamente conta como
       objetivo cumprido aos 6 meses. Precisa estar fechado ANTES da primeira venda: no dia
       em que um cliente perguntar "cumpriu?", tem que haver resposta objetiva, não conversa.
 - [ ] Calibrar o tamanho do objetivo master para que 6 meses seja confortável, não apertado.
       O prazo no slogan vira compromisso moral em toda venda.
 - [ ] Avaliar checagem da marca no INPI, se houver intenção de proteger o slogan.
-- [ ] A dash já usa o fundo creme e o accent terracota escuro da identidade
-      (v-20260814-2141). Falta decidir se a aba Mercado deve seguir a mesma paleta:
-      ela tem escala própria (`--e-green`, `--e-amber`, `--e-red`, `--e-blue`,
+- [ ] A dash já usa o fundo teal escuro e o verde-limão da identidade
+      (v-20260815-paleta-teal-limao). Falta decidir se a aba Mercado deve seguir a mesma
+      paleta: ela tem escala própria (`--e-green`, `--e-amber`, `--e-red`, `--e-blue`,
       `--e-purple`, `--e-gray`), usada nos KPIs, barras e listas. Trocar exigiria
       remapear essas seis variáveis sem perder a legibilidade dos gráficos.
 - [ ] Atualizar os dados de concorrência (agora seção 7 dentro de #estudo-view,

@@ -783,7 +783,6 @@
   /* ================= Gerador de Aulas ================= */
   #gerador-view.hidden { display: none !important; }
   #gerador-view { max-width: 980px; margin: 0 auto; }
-  #gerador-subnav { display: flex; gap: 6px; margin-bottom: 16px; }
   .ga-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
     padding: 20px 22px; overflow: hidden; }
   .ga-panel.hidden { display: none !important; }
@@ -1236,15 +1235,15 @@
   </div>
 
   <div id="gerador-view" class="hidden">
-    <div id="gerador-subnav">
-      <button class="tasks-subnav-btn active" id="gerador-nav-silabo" type="button">Sílabo</button>
-      <button class="tasks-subnav-btn" id="gerador-nav-aulas" type="button">Aulas</button>
+    <div id="ga-step-indicator" style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#cfd6d3;margin-bottom:12px;">
+      Etapa 1 de 2 · Mapa Pedagógico
     </div>
 
-    <div id="gerador-silabo-view" class="ga-panel">
+    <!-- ETAPA 1: MAPA PEDAGÓGICO -->
+    <div id="ga-etapa-mapa" class="ga-panel">
       <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
-        Preencha os parâmetros do curso e gere o sílabo (Estágio 1 — o mapa de aulas).
-        <span id="ga-silabo-status" class="ga-status rascunho">rascunho</span>
+        Preencha os parâmetros do curso e gere o mapa pedagógico (Estágio 1) — a
+        distribuição de gramática e tema ao longo de todas as aulas do curso.
       </p>
 
       <div class="ga-form-grid">
@@ -1288,9 +1287,8 @@
       </div>
 
       <div class="ga-gerar-row">
-        <button class="ga-btn" id="ga-silabo-gerar-btn" type="button">Gerar Sílabo</button>
-        <button class="ga-btn secondary" id="ga-silabo-aprovar-btn" type="button" disabled>Aprovar Sílabo</button>
-        <button class="ga-btn secondary" id="ga-silabo-limpar-btn" type="button">Limpar tudo</button>
+        <button class="ga-btn" id="ga-mapa-gerar-btn" type="button">Gerar Mapa Pedagógico</button>
+        <button class="ga-btn secondary" id="ga-mapa-limpar-btn" type="button">Limpar tudo</button>
       </div>
 
       <div id="ga-gerar-msg" class="ga-info-msg hidden"></div>
@@ -1306,10 +1304,26 @@
         </div>
       </details>
 
-      <div id="ga-silabo-table-wrap"></div>
+      <div id="ga-mapa-table-wrap"></div>
+
+      <div id="ga-mapa-actions" class="hidden" style="margin-top:18px;border-top:1px solid var(--border);padding-top:16px;">
+        <div class="ga-field" style="max-width:520px;">
+          <label for="ga-sugestao">Sugestão de melhoria (opcional)</label>
+          <textarea id="ga-sugestao" rows="2" placeholder="ex: módulo 2 devia focar em objeções de preço, não de prazo"></textarea>
+        </div>
+        <div class="ga-gerar-row">
+          <button class="ga-btn secondary" id="ga-mapa-refazer-btn" type="button">Refazer com sugestão</button>
+          <button class="ga-btn" id="ga-mapa-aprovar-btn" type="button">Aprovar Mapa Pedagógico</button>
+        </div>
+      </div>
     </div>
 
-    <div id="gerador-aulas-view" class="hidden ga-panel">
+    <!-- ETAPA 2: FILA DE PRODUÇÃO -->
+    <div id="ga-etapa-fila" class="hidden ga-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <p style="margin:0;font-size:12.5px;color:var(--text-muted);">Mapa aprovado — fila de produção das aulas deste curso.</p>
+        <button class="ga-btn secondary" id="ga-voltar-mapa-btn" type="button">← Editar mapa</button>
+      </div>
       <div id="ga-aulas-list"></div>
     </div>
   </div>
@@ -2548,7 +2562,7 @@ function showView(name) {
   document.getElementById("side-estudo").classList.toggle("active", name === "estudo");
   document.getElementById("side-gerador").classList.toggle("active", name === "gerador");
   if (name === "leads") renderLeads();
-  if (name === "gerador") { gaRenderSilaboTable(); gaRenderAulasList(); }
+  if (name === "gerador") { gaRenderMapaTable(); gaRenderStep(); }
 }
 document.getElementById("nav-settings-btn").addEventListener("click", () => showView("settings"));
 document.getElementById("settings-back-btn").addEventListener("click", () => showView("tasks"));
@@ -2558,9 +2572,11 @@ document.getElementById("side-estudo").addEventListener("click", () => showView(
 document.getElementById("side-gerador").addEventListener("click", () => showView("gerador"));
 
 // --- Gerador de Aulas (Opção B: geração fora do dash, importação de JSON) ---
-// Contrato de dados em docs/pedagogico.md §6. Estágio 1 = sílabo (mapa do curso),
-// Estágio 2 = aula individual (8 telas). Nenhuma chamada de IA acontece aqui —
-// o conteúdo é gerado em chat e colado nos campos abaixo.
+// Contrato de dados em docs/pedagogico.md §6. Estágio 1 = mapa pedagógico (mapa do
+// curso), Estágio 2 = fila de produção das aulas individuais (8 telas cada).
+// Fluxo em duas etapas na MESMA tela: gera/edita/aprova o mapa -> entra na fila.
+// Nenhuma chamada de IA acontece aqui ainda — o conteúdo é gerado em chat e colado
+// nos campos abaixo.
 
 const GA_STORAGE_KEY = "geradorAulasState_v1";
 
@@ -2591,28 +2607,24 @@ function gaSaveState() {
 
 let gaState = gaLoadState();
 
-function gaSetSilaboSubnav(mode) {
-  document.getElementById("gerador-silabo-view").classList.toggle("hidden", mode !== "silabo");
-  document.getElementById("gerador-aulas-view").classList.toggle("hidden", mode !== "aulas");
-  document.getElementById("gerador-nav-silabo").classList.toggle("active", mode === "silabo");
-  document.getElementById("gerador-nav-aulas").classList.toggle("active", mode === "aulas");
-  if (mode === "aulas") gaRenderAulasList();
+// Alterna entre Etapa 1 (mapa) e Etapa 2 (fila de produção) na mesma tela,
+// conforme o mapa está aprovado ou não.
+function gaRenderStep() {
+  const aprovado = gaState.silaboAprovado && gaState.silabo.length > 0;
+  document.getElementById("ga-etapa-mapa").classList.toggle("hidden", aprovado);
+  document.getElementById("ga-etapa-fila").classList.toggle("hidden", !aprovado);
+  document.getElementById("ga-step-indicator").textContent = aprovado
+    ? "Etapa 2 de 2 · Fila de Produção"
+    : "Etapa 1 de 2 · Mapa Pedagógico";
+  if (aprovado) gaRenderAulasList();
 }
-document.getElementById("gerador-nav-silabo").addEventListener("click", () => gaSetSilaboSubnav("silabo"));
-document.getElementById("gerador-nav-aulas").addEventListener("click", () => gaSetSilaboSubnav("aulas"));
 
-function gaRenderSilaboTable() {
-  const wrap = document.getElementById("ga-silabo-table-wrap");
-  const statusEl = document.getElementById("ga-silabo-status");
-  const aprovarBtn = document.getElementById("ga-silabo-aprovar-btn");
+function gaRenderMapaTable() {
+  const wrap = document.getElementById("ga-mapa-table-wrap");
+  const actions = document.getElementById("ga-mapa-actions");
 
-  statusEl.textContent = gaState.silaboAprovado ? "aprovado" : "rascunho";
-  statusEl.classList.toggle("aprovado", gaState.silaboAprovado);
-  statusEl.classList.toggle("rascunho", !gaState.silaboAprovado);
-  aprovarBtn.disabled = gaState.silabo.length === 0 || gaState.silaboAprovado;
-  aprovarBtn.textContent = gaState.silaboAprovado ? "Sílabo aprovado ✓" : "Aprovar Sílabo";
-
-  if (gaState.silabo.length === 0) { wrap.innerHTML = ""; return; }
+  if (gaState.silabo.length === 0) { wrap.innerHTML = ""; actions.classList.add("hidden"); return; }
+  actions.classList.remove("hidden");
 
   const disabledAttr = gaState.silaboAprovado ? "disabled" : "";
   const rows = gaState.silabo.map((f, i) => `
@@ -2639,8 +2651,7 @@ function gaRenderSilaboTable() {
   });
 }
 
-document.getElementById("ga-silabo-gerar-btn").addEventListener("click", () => {
-  const btn = document.getElementById("ga-silabo-gerar-btn");
+function gaGerarStub(btn, mensagemExtra) {
   const msg = document.getElementById("ga-gerar-msg");
   const detalhes = document.getElementById("ga-manual-details");
   const original = btn.textContent;
@@ -2651,19 +2662,29 @@ document.getElementById("ga-silabo-gerar-btn").addEventListener("click", () => {
     btn.textContent = original;
     msg.classList.remove("hidden");
     msg.innerHTML = "<strong>Geração automática ainda não conectada.</strong> " +
-      "O motor de IA (Edge Function) está pendente — ver NEXT_STEPS.md. " +
-      "Por enquanto, gere o sílabo em chat com os parâmetros acima e cole o " +
-      "resultado na seção \"Colar manualmente\" abaixo.";
+      "O motor de IA (Edge Function) está pendente — ver NEXT_STEPS.md. " + mensagemExtra;
     detalhes.open = true;
     document.getElementById("ga-silabo-input").focus();
   }, 700);
+}
+
+document.getElementById("ga-mapa-gerar-btn").addEventListener("click", (e) => {
+  gaGerarStub(e.currentTarget, "Gere o mapa em chat com os parâmetros acima e cole o resultado na seção \"Colar manualmente\" abaixo.");
+});
+
+document.getElementById("ga-mapa-refazer-btn").addEventListener("click", (e) => {
+  const sugestao = document.getElementById("ga-sugestao").value.trim();
+  const trecho = sugestao
+    ? `Peça a regeneração em chat citando esta sugestão: "${sugestao}" — e cole o novo resultado na seção "Colar manualmente" abaixo.`
+    : "Peça a regeneração em chat e cole o novo resultado na seção \"Colar manualmente\" abaixo.";
+  gaGerarStub(e.currentTarget, trecho);
 });
 
 document.getElementById("ga-silabo-carregar-btn").addEventListener("click", () => {
   const errEl = document.getElementById("ga-silabo-error");
   errEl.textContent = "";
   const raw = document.getElementById("ga-silabo-input").value.trim();
-  if (!raw) { errEl.textContent = "Cole o JSON do sílabo antes de carregar."; return; }
+  if (!raw) { errEl.textContent = "Cole o JSON do mapa pedagógico antes de carregar."; return; }
   let parsed;
   try { parsed = JSON.parse(raw); }
   catch (e) { errEl.textContent = "JSON inválido: " + e.message; return; }
@@ -2672,24 +2693,34 @@ document.getElementById("ga-silabo-carregar-btn").addEventListener("click", () =
   gaState.silabo = lista;
   gaState.silaboAprovado = false;
   gaSaveState();
-  gaRenderSilaboTable();
+  gaRenderMapaTable();
+  gaRenderStep();
 });
 
-document.getElementById("ga-silabo-aprovar-btn").addEventListener("click", () => {
+document.getElementById("ga-mapa-aprovar-btn").addEventListener("click", () => {
   if (gaState.silabo.length === 0) return;
   gaState.silaboAprovado = true;
   gaSaveState();
-  gaRenderSilaboTable();
+  gaRenderStep();
 });
 
-document.getElementById("ga-silabo-limpar-btn").addEventListener("click", () => {
-  if (!confirm("Limpar o sílabo e todas as aulas já coladas? Essa ação não pode ser desfeita.")) return;
+document.getElementById("ga-voltar-mapa-btn").addEventListener("click", () => {
+  gaState.silaboAprovado = false;
+  gaSaveState();
+  gaRenderMapaTable();
+  gaRenderStep();
+});
+
+document.getElementById("ga-mapa-limpar-btn").addEventListener("click", () => {
+  if (!confirm("Limpar o mapa pedagógico e todas as aulas já coladas? Essa ação não pode ser desfeita.")) return;
   gaState = { silabo: [], silaboAprovado: false, aulas: {} };
   gaSaveState();
   document.getElementById("ga-silabo-input").value = "";
   document.getElementById("ga-silabo-error").textContent = "";
-  gaRenderSilaboTable();
-  gaRenderAulasList();
+  document.getElementById("ga-sugestao").value = "";
+  document.getElementById("ga-gerar-msg").classList.add("hidden");
+  gaRenderMapaTable();
+  gaRenderStep();
 });
 
 function gaRenderAulaPreview(conteudo) {
@@ -2738,7 +2769,7 @@ function gaRenderAulasList() {
   const container = document.getElementById("ga-aulas-list");
   if (!gaState.silaboAprovado || gaState.silabo.length === 0) {
     container.innerHTML = `<p style="font-size:12.5px;color:var(--text-muted);">
-      Aprove o sílabo na sub-aba "Sílabo" antes de colar as aulas individuais.</p>`;
+      Aprove o mapa pedagógico antes de colar as aulas individuais.</p>`;
     return;
   }
 

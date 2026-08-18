@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2400-fluxo-duas-etapas — 18/08/2026
+- O que mudou: o Gerador de Aulas deixou de ter duas abas separadas (Sílabo/Aulas) e
+  virou um **fluxo de duas etapas na mesma tela**. "Sílabo" foi renomeado para "Mapa
+  Pedagógico" na interface (a chave JSON `silabo` no schema não mudou, pra não quebrar
+  o contrato já documentado). Um indicador no topo mostra "Etapa 1 de 2 · Mapa
+  Pedagógico" ou "Etapa 2 de 2 · Fila de Produção". Na Etapa 1, depois de carregar o
+  mapa, apareceram dois caminhos novos: um campo de **"Sugestão de melhoria"** com
+  botão "Refazer com sugestão" (pede pra regenerar o mapa incorporando o feedback), e
+  o botão "Aprovar Mapa Pedagógico" — que agora troca automaticamente pra Etapa 2
+  (Fila de Produção), sem precisar clicar em aba nenhuma. Um botão "← Editar mapa" na
+  Etapa 2 permite voltar e reabrir a edição.
+- Arquivos: index.html
+- Motivo: pedido da Karina — o fluxo real é sequencial (gera mapa → aprova ou pede
+  ajuste → só depois produz aulas), então duas abas independentes passavam a
+  impressão errada de que são seções paralelas, não passos de um processo.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2341-docs-modulos
+
 ## v-20260818-2340-modulos-aulas-por-modulo — 18/08/2026
 - O que mudou: o campo único "Quantidade de aulas" no formulário do Sílabo virou dois
   campos — "Quantidade de módulos" e "Aulas por módulo". O schema de entrada do

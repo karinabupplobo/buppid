@@ -41,10 +41,14 @@
       manual de JSON, sem chamada de IA no dash — ver decisão abaixo). UI depois
       reestruturada na v-20260818-2245 pra simular o Modelo A (formulário + botão
       "Gerar"), com o fluxo manual escondido em "Colar manualmente" por baixo.
-- [ ] Testar o fluxo ponta a ponta da aba Gerador de Aulas: gerar um sílabo real em
-      chat, colar na sub-aba Sílabo, aprovar, colar pelo menos uma aula na sub-aba
-      Aulas e conferir se a prévia renderiza corretamente com conteúdo real (o schema
-      só foi testado com dados de exemplo até agora).
+      v-20260818-2400: as duas abas (Sílabo/Aulas) viraram um fluxo de duas etapas
+      na mesma tela — Mapa Pedagógico (com opção de sugestão de melhoria + refazer)
+      → aprovação → Fila de Produção — em vez de seções paralelas.
+- [ ] Testar o fluxo ponta a ponta do Gerador de Aulas: gerar um mapa pedagógico
+      real em chat, colar na Etapa 1, testar "Refazer com sugestão", aprovar, colar
+      pelo menos uma aula na Etapa 2 (Fila de Produção) e conferir se a prévia
+      renderiza corretamente com conteúdo real (o schema só foi testado com dados
+      de exemplo até agora).
 - [ ] Decidir quando migrar o Gerador de Aulas da Opção B (importação manual) pra
       Opção A (Edge Function no Supabase chamando a API da Anthropic direto do dash).
       Custo de API é irrisório (~R$0,11 por aula gerada com Sonnet 5) — o critério pra

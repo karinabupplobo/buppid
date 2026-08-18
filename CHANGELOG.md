@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2430-doc-pedagogico-sync — 18/08/2026
+- O que mudou: `docs/pedagogico.md` sincronizado com a nomenclatura da dash — "Sílabo"
+  virou "Mapa Pedagógico" e "Aula" (Estágio 2) virou "Fila de Produção" na seção 8
+  (a chave JSON `silabo` foi mantida, com nota explicando o porquê). Documentado o
+  fluxo de "sugestão de melhoria + refazer" antes da aprovação. Nova seção 9 "Estado
+  atual da implementação (dash)" registra, no próprio doc de referência do gerador,
+  que a aba existe de verdade, o que já funciona e a decisão de arquitetura (Opção B)
+  — informação que só estava no CHANGELOG até agora.
+- Arquivos: docs/pedagogico.md
+- Motivo: manter o doc de referência (a base que vai alimentar o motor de geração)
+  alinhado com o que a dash realmente chama as coisas, evitando que texto colado do
+  chat use "Sílabo" enquanto a tela mostra "Mapa Pedagógico".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2411-docs-fix-logo
+
 ## v-20260818-2410-fix-fundo-logo — 18/08/2026
 - O que mudou: `#app-brand` (fundo atrás do logotipo "bupp.") estava com `background:
   #0A1214` fixo no código — o tom antigo, de antes dos testes de paleta. Como o

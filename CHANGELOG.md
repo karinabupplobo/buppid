@@ -2,6 +2,27 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2340-modulos-aulas-por-modulo — 18/08/2026
+- O que mudou: o campo único "Quantidade de aulas" no formulário do Sílabo virou dois
+  campos — "Quantidade de módulos" e "Aulas por módulo". O schema de entrada do
+  Estágio 1 em docs/pedagogico.md §8 foi atualizado (`quantidade_modulos` +
+  `aulas_por_modulo` no lugar de `quantidade_aulas`), com a regra de que a
+  progressão de gramática deve avançar em blocos coerentes por módulo, não numa
+  lista corrida de aulas soltas.
+- Arquivos: index.html, docs/pedagogico.md
+- Motivo: pedido da Karina — pensar em módulos desde a entrada reflete melhor como
+  o curso é vendido e estruturado (blocos temáticos), em vez de só um número total
+  de aulas sem estrutura.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2330-fundo-petroleo-claro
+
+## v-20260818-2330-fundo-petroleo-claro — 18/08/2026
+- O que mudou: `--bg` trocado de `#1B282B` para `#26393E` — um passo mais claro.
+- Arquivos: index.html
+- Motivo: teste a pedido da Karina, comparando tons de petróleo pro fundo da dash.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2321-docs-card-branco
+
 ## v-20260818-2320-card-branco-padrao — 18/08/2026
 - O que mudou: **Gerador de Aulas** — sub-abas Sílabo e Aulas agora vivem dentro de um
   painel branco único (`.ga-panel`), o mesmo padrão de `#tasks-table`/`#leads-list`,

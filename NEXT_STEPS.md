@@ -2,8 +2,8 @@
 
 ## Próximo
 
-- [ ] Decidir entre `--bg: #0A1214` (quase preto) e `--bg: #1B282B` (teal chumbado
-      intermediário, em teste desde v-20260818-2310). Karina está comparando os dois.
+- [ ] Decidir o tom final de `--bg` entre `#0A1214`, `#1B282B` e `#26393E` (teste em
+      andamento desde v-20260818-2310, mais um passo claro em v-20260818-2330).
 - [ ] Aplicar a nova paleta (teal/verde-limão/azul) nos materiais de venda e
       propostas que já tinham sido feitos com a paleta terracota antiga.
 - [ ] Decidir se a escala de cor interna da aba Mercado (--e-green, --e-amber,

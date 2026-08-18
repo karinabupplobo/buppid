@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2245-gerador-ui-modelo-a — 18/08/2026
+- O que mudou: a sub-aba Sílabo do Gerador de Aulas ganhou um formulário (nível CEFR,
+  quantidade de aulas, até 2 objetivos, contexto da empresa, nomes de módulos) com
+  botão "Gerar Sílabo" — a UI agora simula visualmente como vai funcionar quando a
+  Opção A (Edge Function) estiver pronta, mesmo sem chamada de IA real ainda. Clicar
+  em "Gerar Sílabo" mostra um estado de carregamento e depois uma mensagem explicando
+  que o motor não está conectado, abrindo a seção "Colar manualmente" (o fluxo que
+  já funciona hoje, Opção B). Mesmo padrão aplicado por ficha na sub-aba Aulas: botão
+  "Gerar Aula" ao lado do "Colar aula" já existente.
+- Arquivos: index.html
+- Motivo: pedido da Karina — visualizar a experiência final da aba antes de conectar
+  o backend de verdade, sem perder a funcionalidade manual que já está de pé.
+  Observação: nenhuma mudança no schema de dados nem na lógica de parse/validação
+  de JSON — só a camada de interação.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2231-docs-gerador-aulas
+
 ## v-20260818-2230-gerador-aulas-b — 18/08/2026
 - O que mudou: nova aba "Gerador de Aulas" na sidebar, seguindo a Opção B (geração fora
   do dash, importação manual de JSON) — decidida em vez da Opção A (Edge Function) por

@@ -36,7 +36,9 @@
       templateaula.html. Fluxo em dois estágios: Sílabo do curso (aprovado pela
       Karina) → geração de cada aula individual.
       ATUALIZAÇÃO 18/08: aba criada na v-20260818-2230, versão Opção B (importação
-      manual de JSON, sem chamada de IA no dash — ver decisão abaixo).
+      manual de JSON, sem chamada de IA no dash — ver decisão abaixo). UI depois
+      reestruturada na v-20260818-2245 pra simular o Modelo A (formulário + botão
+      "Gerar"), com o fluxo manual escondido em "Colar manualmente" por baixo.
 - [ ] Testar o fluxo ponta a ponta da aba Gerador de Aulas: gerar um sílabo real em
       chat, colar na sub-aba Sílabo, aprovar, colar pelo menos uma aula na sub-aba
       Aulas e conferir se a prévia renderiza corretamente com conteúdo real (o schema

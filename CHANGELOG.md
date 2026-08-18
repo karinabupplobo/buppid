@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2300-gerador-contraste-largura — 18/08/2026
+- O que mudou: `#gerador-view` ganhou `max-width: 980px` + `margin: 0 auto` — antes
+  ficava grudado à esquerda, deixando muito espaço vazio à direita em telas largas.
+  Labels do formulário, o texto de instrução acima dele e o aviso "aprove o sílabo"
+  estavam em `var(--text-muted)` (#5c5c59), cinza escuro demais sobre o fundo
+  quase-preto da dash (`--bg: #0A1214`) — trocados para `#cfd6d3`, o mesmo tom já
+  usado em `#estudo-view` pra texto solto sobre esse fundo.
+- Arquivos: index.html
+- Motivo: reportado pela Karina — conteúdo não ocupava a tela direito e parte do
+  texto estava ilegível.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2246-docs-gerador-ui
+
 ## v-20260818-2245-gerador-ui-modelo-a — 18/08/2026
 - O que mudou: a sub-aba Sílabo do Gerador de Aulas ganhou um formulário (nível CEFR,
   quantidade de aulas, até 2 objetivos, contexto da empresa, nomes de módulos) com

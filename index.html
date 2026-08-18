@@ -844,6 +844,30 @@
   .ga-ex-item { border-left: 3px solid var(--accent-lime); padding-left: 8px; margin-bottom: 8px; font-size: 12px; }
   .ga-ex-item:last-child { margin-bottom: 0; }
   .ga-ex-item .resp { color: var(--text-muted); margin-top: 2px; }
+
+  .ga-form-grid { display: grid; grid-template-columns: repeat(2, minmax(200px,1fr)); gap: 12px 16px;
+    max-width: 720px; margin-top: 4px; }
+  .ga-field-wide { grid-column: 1 / -1; }
+  .ga-field label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+  .ga-field select, .ga-field input, .ga-field textarea {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    font-size: 12.5px; font-family: inherit; background: #fff; color: var(--text); }
+  .ga-field select:focus, .ga-field input:focus, .ga-field textarea:focus { border-color: var(--border-strong); outline: none; }
+  .ga-field textarea { resize: vertical; }
+
+  .ga-info-msg { max-width: 720px; margin-top: 12px; background: var(--focus-bg); border: 1px dashed var(--border-strong);
+    border-radius: 8px; padding: 10px 12px; font-size: 12px; line-height: 1.5; color: var(--text-muted); }
+  .ga-info-msg.hidden { display: none; }
+  .ga-info-msg strong { color: var(--text); }
+
+  .ga-manual-details { max-width: 720px; margin-top: 18px; }
+  .ga-manual-summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted);
+    padding: 6px 0; list-style: none; }
+  .ga-manual-summary::-webkit-details-marker { display: none; }
+  .ga-manual-summary::before { content: "▸ "; }
+  details[open] > .ga-manual-summary::before { content: "▾ "; }
+
+  .ga-gerar-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -1220,18 +1244,65 @@
 
     <div id="gerador-silabo-view">
       <p style="font-size:12.5px;color:var(--text-muted);max-width:640px;line-height:1.5;">
-        Cole aqui o JSON do sílabo gerado (Estágio 1) — a lista de fichas de aula do curso.
-        Depois de carregar, revise/edite os campos direto na tabela e aprove pra liberar a
-        geração das aulas individuais.
+        Preencha os parâmetros do curso e gere o sílabo (Estágio 1 — o mapa de aulas).
         <span id="ga-silabo-status" class="ga-status rascunho">rascunho</span>
       </p>
-      <textarea id="ga-silabo-input" class="ga-textarea" placeholder='{"silabo": [{"aula": 1, "nome_modulo": "Negotiation Basics", "gramatica": "second conditional", "tema": "vendas B2B", "objetivo_master": "negociar prazo de pagamento"}]}'></textarea>
-      <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <button class="ga-btn" id="ga-silabo-carregar-btn" type="button">Carregar</button>
+
+      <div class="ga-form-grid">
+        <div class="ga-field">
+          <label for="ga-form-nivel">Nível (CEFR)</label>
+          <select id="ga-form-nivel">
+            <option value="Pre-A1">Pre-A1</option>
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B1+">B1+</option>
+            <option value="B2" selected>B2</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
+          </select>
+        </div>
+        <div class="ga-field">
+          <label for="ga-form-qtd">Quantidade de aulas</label>
+          <input type="number" id="ga-form-qtd" min="1" value="12">
+        </div>
+        <div class="ga-field">
+          <label for="ga-form-obj1">Objetivo 1</label>
+          <input type="text" id="ga-form-obj1" placeholder="ex: negociar prazo de pagamento">
+        </div>
+        <div class="ga-field">
+          <label for="ga-form-obj2">Objetivo 2 (opcional)</label>
+          <input type="text" id="ga-form-obj2">
+        </div>
+        <div class="ga-field ga-field-wide">
+          <label for="ga-form-contexto">Contexto da empresa</label>
+          <textarea id="ga-form-contexto" rows="3" placeholder="setor, porte, situação de negócio, o que já entra em qualquer proposta comercial..."></textarea>
+        </div>
+        <div class="ga-field ga-field-wide">
+          <label for="ga-form-modulos">Nomes dos módulos (opcional, um por linha)</label>
+          <textarea id="ga-form-modulos" rows="2" placeholder="Negotiation Basics&#10;Handling Objections&#10;..."></textarea>
+        </div>
+      </div>
+
+      <div class="ga-gerar-row">
+        <button class="ga-btn" id="ga-silabo-gerar-btn" type="button">Gerar Sílabo</button>
         <button class="ga-btn secondary" id="ga-silabo-aprovar-btn" type="button" disabled>Aprovar Sílabo</button>
         <button class="ga-btn secondary" id="ga-silabo-limpar-btn" type="button">Limpar tudo</button>
       </div>
-      <div id="ga-silabo-error" class="ga-error"></div>
+
+      <div id="ga-gerar-msg" class="ga-info-msg hidden"></div>
+
+      <details id="ga-manual-details" class="ga-manual-details">
+        <summary class="ga-manual-summary">Colar manualmente (modo atual, enquanto a geração automática não está conectada)</summary>
+        <div style="margin-top:10px;">
+          <textarea id="ga-silabo-input" class="ga-textarea" placeholder='{"silabo": [{"aula": 1, "nome_modulo": "Negotiation Basics", "gramatica": "second conditional", "tema": "vendas B2B", "objetivo_master": "negociar prazo de pagamento"}]}'></textarea>
+          <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="ga-btn secondary" id="ga-silabo-carregar-btn" type="button">Carregar</button>
+          </div>
+          <div id="ga-silabo-error" class="ga-error"></div>
+        </div>
+      </details>
+
       <div id="ga-silabo-table-wrap"></div>
     </div>
 
@@ -2565,6 +2636,26 @@ function gaRenderSilaboTable() {
   });
 }
 
+document.getElementById("ga-silabo-gerar-btn").addEventListener("click", () => {
+  const btn = document.getElementById("ga-silabo-gerar-btn");
+  const msg = document.getElementById("ga-gerar-msg");
+  const detalhes = document.getElementById("ga-manual-details");
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Gerando...";
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = original;
+    msg.classList.remove("hidden");
+    msg.innerHTML = "<strong>Geração automática ainda não conectada.</strong> " +
+      "O motor de IA (Edge Function) está pendente — ver NEXT_STEPS.md. " +
+      "Por enquanto, gere o sílabo em chat com os parâmetros acima e cole o " +
+      "resultado na seção \"Colar manualmente\" abaixo.";
+    detalhes.open = true;
+    document.getElementById("ga-silabo-input").focus();
+  }, 700);
+});
+
 document.getElementById("ga-silabo-carregar-btn").addEventListener("click", () => {
   const errEl = document.getElementById("ga-silabo-error");
   errEl.textContent = "";
@@ -2660,9 +2751,11 @@ function gaRenderAulasList() {
           </div>
           <div>
             <span class="ga-ficha-badge ${gerada ? "gerada" : "pendente"}">${gerada ? "Gerada" : "Pendente"}</span>
+            <button class="ga-btn" type="button" data-gerar-key="${key}" style="margin-left:8px;">Gerar Aula</button>
             <button class="ga-btn secondary" type="button" data-toggle-key="${key}" style="margin-left:8px;">${gerada ? "Recolar aula" : "Colar aula"}</button>
           </div>
         </div>
+        <div class="ga-info-msg hidden" id="ga-gerar-msg-${key}"></div>
         <div class="ga-ficha-paste hidden" id="ga-paste-${key}">
           <textarea class="ga-textarea" id="ga-paste-input-${key}" style="min-height:110px;margin-top:10px;" placeholder='JSON da aula (schema em docs/pedagogico.md §6.2)'></textarea>
           <div style="margin-top:8px;"><button class="ga-btn" type="button" data-load-key="${key}">Carregar aula</button></div>
@@ -2671,6 +2764,24 @@ function gaRenderAulasList() {
         <div id="ga-preview-${key}">${gerada ? gaRenderAulaPreview(gaState.aulas[key]) : ""}</div>
       </div>`;
   }).join("");
+
+  container.querySelectorAll("[data-gerar-key]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.gerarKey;
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Gerando...";
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = original;
+        const msg = document.getElementById("ga-gerar-msg-" + key);
+        msg.classList.remove("hidden");
+        msg.innerHTML = "<strong>Geração automática ainda não conectada.</strong> " +
+          "Gere o JSON desta aula em chat e use \"Colar aula\" ao lado.";
+        document.getElementById("ga-paste-" + key).classList.remove("hidden");
+      }, 700);
+    });
+  });
 
   container.querySelectorAll("[data-toggle-key]").forEach((btn) => {
     btn.addEventListener("click", () => {

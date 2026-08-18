@@ -667,16 +667,10 @@
     max-width: 1180px;
   }
   #estudo-view .es-hero { margin: 2px 0 22px; }
-  /* dentro do hero o fundo é o teal escuro da página, não um card branco —
-     por isso essas três regras precisam de cor própria, diferente do resto
-     da aba (que fica sobre cards brancos e usa --e-green/--text-muted normal) */
-  #estudo-view .es-hero .es-kicker { color: var(--accent-lime); }
-  #estudo-view .es-hero h2 { color: #fff; }
-  #estudo-view .es-hero p { color: #cfd6d3; }
   #estudo-view .es-kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--e-green); margin: 0 0 8px; }
   #estudo-view .es-hero h2 { font-size: 26px; font-weight: 700; margin: 0 0 8px; line-height: 1.2; }
-  #estudo-view .es-hero p { font-size: 14px; margin: 0; max-width: 720px; line-height: 1.55; }
+  #estudo-view .es-hero p { font-size: 14px; margin: 0; max-width: 720px; line-height: 1.55; color: var(--text-muted); }
 
   #estudo-view .es-section { margin: 30px 0 0; }
   #estudo-view .es-section > h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
@@ -790,6 +784,9 @@
   #gerador-view.hidden { display: none !important; }
   #gerador-view { max-width: 980px; margin: 0 auto; }
   #gerador-subnav { display: flex; gap: 6px; margin-bottom: 16px; }
+  .ga-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 22px; overflow: hidden; }
+  .ga-panel.hidden { display: none !important; }
 
   .ga-textarea { width: 100%; min-height: 150px; border: 1px solid var(--border); border-radius: 8px;
     padding: 10px 12px; font-size: 12px; font-family: "SFMono-Regular", Consolas, monospace; resize: vertical; }
@@ -820,8 +817,9 @@
   .ga-table input:disabled { color: var(--text); background: transparent; }
   .ga-table td.ga-num { width: 32px; font-weight: 700; color: var(--text-muted); text-align: center; }
 
-  .ga-ficha-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 16px; margin-bottom: 12px; }
+  .ga-ficha-card { border-bottom: 1px solid var(--border); padding: 14px 0; margin-bottom: 0; }
+  .ga-ficha-card:last-child { border-bottom: none; padding-bottom: 4px; }
+  .ga-ficha-card:first-child { padding-top: 4px; }
   .ga-ficha-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .ga-ficha-title { font-size: 13.5px; font-weight: 700; }
   .ga-ficha-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
@@ -849,7 +847,7 @@
   .ga-form-grid { display: grid; grid-template-columns: repeat(2, minmax(200px,1fr)); gap: 12px 16px;
     width: 100%; margin-top: 4px; }
   .ga-field-wide { grid-column: 1 / -1; }
-  .ga-field label { display: block; font-size: 11.5px; font-weight: 600; color: #cfd6d3; margin-bottom: 5px; }
+  .ga-field label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
   .ga-field select, .ga-field input, .ga-field textarea {
     width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
     font-size: 12.5px; font-family: inherit; background: #fff; color: var(--text); }
@@ -862,7 +860,7 @@
   .ga-info-msg strong { color: var(--text); }
 
   .ga-manual-details { max-width: 100%; margin-top: 18px; }
-  .ga-manual-summary { cursor: pointer; font-size: 12px; font-weight: 600; color: #cfd6d3;
+  .ga-manual-summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted);
     padding: 6px 0; list-style: none; }
   .ga-manual-summary::-webkit-details-marker { display: none; }
   .ga-manual-summary::before { content: "▸ "; }
@@ -979,7 +977,7 @@
   </div>
 
   <div id="estudo-view" class="hidden">
-    <div class="es-hero">
+    <div class="es-hero es-card">
       <p class="es-kicker">ICP &middot; Perfil de cliente ideal</p>
       <h2>Quem compra, como decide e quando</h2>
       <p>Material de campo para o Vendedor e o Closer: quem qualificar, quem senta na mesa de decis&atilde;o, o que cada um precisa ouvir, em que m&ecirc;s abordar e como responder as obje&ccedil;&otilde;es reais. Refer&ecirc;ncias em <code>docs/icp-comprador.md</code>.</p>
@@ -1243,8 +1241,8 @@
       <button class="tasks-subnav-btn" id="gerador-nav-aulas" type="button">Aulas</button>
     </div>
 
-    <div id="gerador-silabo-view">
-      <p style="font-size:12.5px;color:#cfd6d3;line-height:1.5;">
+    <div id="gerador-silabo-view" class="ga-panel">
+      <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
         Preencha os parâmetros do curso e gere o sílabo (Estágio 1 — o mapa de aulas).
         <span id="ga-silabo-status" class="ga-status rascunho">rascunho</span>
       </p>
@@ -1307,7 +1305,7 @@
       <div id="ga-silabo-table-wrap"></div>
     </div>
 
-    <div id="gerador-aulas-view" class="hidden">
+    <div id="gerador-aulas-view" class="hidden ga-panel">
       <div id="ga-aulas-list"></div>
     </div>
   </div>
@@ -2735,7 +2733,7 @@ function gaRenderAulaPreview(conteudo) {
 function gaRenderAulasList() {
   const container = document.getElementById("ga-aulas-list");
   if (!gaState.silaboAprovado || gaState.silabo.length === 0) {
-    container.innerHTML = `<p style="font-size:12.5px;color:#cfd6d3;">
+    container.innerHTML = `<p style="font-size:12.5px;color:var(--text-muted);">
       Aprove o sílabo na sub-aba "Sílabo" antes de colar as aulas individuais.</p>`;
     return;
   }

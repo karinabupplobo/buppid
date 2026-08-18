@@ -263,9 +263,14 @@ A2 ~1000-2000 · B1 ~2000-3000 · B2 ~4000-5000 · C1 ~8000 · C2 ~16000+.
 
 O gerador não cria aula por aula isoladamente — isso arrisca repetir
 gramática entre aulas ou pular de dificuldade sem critério. O fluxo tem
-dois estágios:
+dois estágios, apresentados como **duas etapas na mesma tela** (não abas
+separadas — ver seção 9):
 
-### Estágio 1 — Sílabo (roda 1x por curso/nível)
+### Estágio 1 — Mapa Pedagógico (roda 1x por curso/nível)
+
+*Nome de exibição na dash: "Mapa Pedagógico". A chave JSON continua sendo
+`silabo`, por compatibilidade com o schema abaixo — não é o mesmo
+`silabo` usado em outros contextos educacionais, é só o nome do campo.*
 
 **Entra (o que a Karina fornece):**
 ```json
@@ -285,7 +290,7 @@ complexidade dentro do banco CEFR do nível pedido, sem repetir — e qual
 sub-tema/vocabulário cada aula foca, amarrado ao `contexto_empresa` e aos
 objetivos. A gramática avança em blocos por módulo (cada módulo cobre um
 grupo coerente de estruturas, não uma mistura aleatória), e cada aula do
-sílabo é vinculada a um dos até 2 objetivos.
+mapa é vinculada a um dos até 2 objetivos.
 
 **Sai:** uma lista de fichas de aula (`quantidade_modulos × aulas_por_modulo`
 no total):
@@ -304,14 +309,21 @@ no total):
 }
 ```
 
-Esse sílabo é um **checkpoint de revisão** — a Karina confere o mapa do
+Esse mapa é um **checkpoint de revisão** — a Karina confere o mapa do
 curso inteiro (progressão de gramática, distribuição de temas, vínculo
-com os objetivos) antes de qualquer aula ser gerada. Revisar N linhas de
-sílabo é muito mais rápido que revisar N aulas completas depois.
+com os objetivos) antes de qualquer aula ser gerada. Revisar N linhas do
+mapa é muito mais rápido que revisar N aulas completas depois.
 
-### Estágio 2 — Aula (roda 1x por ficha do sílabo, já aprovado)
+Na dash, depois do mapa carregado, a Karina tem duas saídas: **aprovar**
+(avança pra Etapa 2) ou escrever uma **sugestão de melhoria** e pedir pra
+refazer o mapa incorporando esse feedback (o mapa é regenerado do zero
+com a sugestão como contexto extra, não editado ponto a ponto).
 
-Cada ficha do sílabo (Estágio 1) vira o input do schema já fechado na
+### Estágio 2 — Fila de Produção (roda 1x por ficha do mapa, já aprovado)
+
+*Nome de exibição na dash: "Fila de Produção".*
+
+Cada ficha do mapa (Estágio 1) vira o input do schema já fechado na
 seção 6 — `nivel`, `tema`, `gramatica`, `objetivo_master`, `nome_modulo` —
 e gera o JSON completo das 8 telas.
 
@@ -319,19 +331,70 @@ e gera o JSON completo das 8 telas.
 ```
 Karina fornece: nível + qtd. de módulos + aulas por módulo + objetivos (+ nomes de módulo)
         ↓
-Estágio 1 — gera o sílabo do curso (N fichas de aula)
+Etapa 1 — gera o Mapa Pedagógico do curso (N fichas de aula)
         ↓
-Karina revisa/aprova o sílabo
+Karina aprova OU escreve sugestão de melhoria → mapa é refeito
         ↓
-Estágio 2 — gera cada aula individual (8 telas) a partir de cada ficha
+Etapa 2 — Fila de Produção: gera cada aula individual (8 telas) a partir de cada ficha
 ```
 
 ---
 
-## 9. Histórico de decisões
+## 9. Estado atual da implementação (dash)
+
+A aba "Gerador de Aulas" existe no `index.html` da dash (sidebar, ícone de
+livro). Implementada como fluxo de duas etapas **na mesma tela** (sem
+abas separadas), com indicador "Etapa 1 de 2" / "Etapa 2 de 2" no topo.
+
+**O que já funciona:**
+- Formulário de entrada da Etapa 1 (nível, quantidade de módulos, aulas
+  por módulo, até 2 objetivos, contexto da empresa, nomes de módulos)
+- Botões "Gerar Mapa Pedagógico" e "Refazer com sugestão" — presentes na
+  UI, mas ainda **sem chamada de IA real** (ver limitação abaixo)
+- Tabela editável do mapa carregado, com aprovação que trava a edição e
+  avança pra Etapa 2 automaticamente
+- Botão "← Editar mapa" pra voltar e reabrir a edição depois de aprovado
+- Etapa 2 lista as fichas do mapa aprovado, cada uma com botão "Gerar
+  Aula" / "Colar aula", e renderiza uma prévia das 8 telas ao carregar o
+  JSON de uma aula
+- Estado salvo em `localStorage`, sobrevive a refresh
+
+**Limitação atual (Opção B, decisão registrada em 18/08/2026):** nenhuma
+chamada de IA acontece dentro do dash ainda. Os botões "Gerar Mapa
+Pedagógico", "Refazer com sugestão" e "Gerar Aula" simulam visualmente
+como vai funcionar quando o motor estiver conectado (Modelo A — Edge
+Function no Supabase guardando a chave de API com segurança), mas hoje
+só mostram um aviso e abrem a seção "Colar manualmente", onde o
+conteúdo gerado em chat é colado como JSON. Motivo da escolha: validar o
+schema com uso real antes de investir em infraestrutura — custo de API
+é irrisório (~R$0,11 por aula com Sonnet 5), então o critério pra migrar
+pra Opção A é o schema estar validado, não custo.
+
+**Pendências:** testar o fluxo ponta a ponta com conteúdo real (só foi
+testado com dados de exemplo até agora); decidir quando construir a Edge
+Function. Detalhes completos de cada mudança de UI estão no
+`CHANGELOG.md` do repositório.
+
+---
+
+## 10. Histórico de decisões
 
 *(mais recente no topo — cada rodada de ajuste vira uma entrada aqui)*
 
+- **Aba "Gerador de Aulas" implementada na dash (18/08/2026)** — construída
+  em `index.html` como fluxo de duas etapas na mesma tela: Mapa Pedagógico
+  (Etapa 1, renomeado de "Sílabo" na UI) → Fila de Produção (Etapa 2).
+  Campos de entrada trocados de "quantidade de aulas" solta para
+  "quantidade de módulos" + "aulas por módulo". Adicionado fluxo de
+  "Sugestão de melhoria" + "Refazer" antes da aprovação. Decisão de
+  arquitetura: Opção B (importação manual de JSON, sem IA real no dash
+  ainda) por enquanto — UI simula visualmente a Opção A (Edge Function)
+  pra já validar a experiência, mas migração real fica condicionada ao
+  schema estar testado com conteúdo real, não a custo (irrisório, ~R$0,11
+  por aula com Sonnet 5). Todo o conteúdo (fundo escuro + cards brancos,
+  contraste, largura) segue o mesmo padrão visual de Tasks/Leads. Detalhes
+  completos de cada mudança de UI: `CHANGELOG.md` do repositório, tags
+  `v-20260818-2230` a `v-20260818-2410`.
 - **Banco de referência CEFR (Pre-A1 a C2) + fluxo de dois estágios** —
   registrada a tabela fixa de gramática/função por nível (o gerador nunca
   escolhe fora dela) e o fluxo Sílabo (Estágio 1, gera o mapa do curso a

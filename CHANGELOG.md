@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2230-gerador-aulas-b — 18/08/2026
+- O que mudou: nova aba "Gerador de Aulas" na sidebar, seguindo a Opção B (geração fora
+  do dash, importação manual de JSON) — decidida em vez da Opção A (Edge Function) por
+  ora, já que o schema de conteúdo ainda não foi testado com aulas reais.
+  Sub-aba **Sílabo**: cola o JSON do Estágio 1 (lista de fichas de aula), vira tabela
+  editável (módulo, gramática, tema, objetivo), botão "Aprovar Sílabo" trava a edição.
+  Sub-aba **Aulas**: lista as fichas do sílabo aprovado, cada uma com "Colar aula" pra
+  carregar o JSON do Estágio 2 e renderizar uma prévia das 8 telas, nas cores da marca.
+  Estado salvo em `localStorage` (`geradorAulasState_v1`), sobrevive a refresh.
+- Arquivos: index.html
+- Motivo: primeiro passo pra construir o gerador de aulas, seguindo o schema fechado em
+  docs/pedagogico.md §6. Começar em B valida o formato de dados antes de investir em
+  infraestrutura de API (Edge Function do Supabase), que fica pra quando o schema
+  estiver estável.
+  Observação: nenhuma chamada de IA acontece dentro do dash ainda — o JSON de cada
+  aula é gerado em chat e colado manualmente.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2202-changelog-pedagogico
+
 ## v-20260818-2201-templateaula — 18/08/2026
 - O que mudou: `templateaula.html` salvo no repositório pela primeira vez — o arquivo
   só existia fora do git até agora.

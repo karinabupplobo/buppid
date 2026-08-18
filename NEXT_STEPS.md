@@ -35,6 +35,16 @@
       master, nome do módulo) → chamada à API da Anthropic → JSON de saída populando
       templateaula.html. Fluxo em dois estágios: Sílabo do curso (aprovado pela
       Karina) → geração de cada aula individual.
+      ATUALIZAÇÃO 18/08: aba criada na v-20260818-2230, versão Opção B (importação
+      manual de JSON, sem chamada de IA no dash — ver decisão abaixo).
+- [ ] Testar o fluxo ponta a ponta da aba Gerador de Aulas: gerar um sílabo real em
+      chat, colar na sub-aba Sílabo, aprovar, colar pelo menos uma aula na sub-aba
+      Aulas e conferir se a prévia renderiza corretamente com conteúdo real (o schema
+      só foi testado com dados de exemplo até agora).
+- [ ] Decidir quando migrar o Gerador de Aulas da Opção B (importação manual) pra
+      Opção A (Edge Function no Supabase chamando a API da Anthropic direto do dash).
+      Custo de API é irrisório (~R$0,11 por aula gerada com Sonnet 5) — o critério pra
+      migrar é o schema estar validado com uso real, não custo.
 - [ ] Cruzar o calendário de vendas da aba Mercado (pico set–nov) com o multiplicador
       sazonal do motor de leads, que hoje usa set–out como pico. Verificar se as duas
       regras devem ficar iguais ou se são coisas diferentes de propósito.

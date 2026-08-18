@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2410-fix-fundo-logo — 18/08/2026
+- O que mudou: `#app-brand` (fundo atrás do logotipo "bupp.") estava com `background:
+  #0A1214` fixo no código — o tom antigo, de antes dos testes de paleta. Como o
+  `--bg` real da dash mudou pra `#26393E`, o logo ficou com um retângulo mais escuro
+  que o resto do fundo. Trocado pra `background: var(--bg)`, que agora acompanha
+  qualquer mudança de fundo automaticamente.
+- Arquivos: index.html
+- Motivo: reportado pela Karina.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2401-docs-fluxo-duas-etapas
+
 ## v-20260818-2400-fluxo-duas-etapas — 18/08/2026
 - O que mudou: o Gerador de Aulas deixou de ter duas abas separadas (Sílabo/Aulas) e
   virou um **fluxo de duas etapas na mesma tela**. "Sílabo" foi renomeado para "Mapa

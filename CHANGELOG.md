@@ -2,6 +2,29 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2201-templateaula — 18/08/2026
+- O que mudou: `templateaula.html` salvo no repositório pela primeira vez — o arquivo
+  só existia fora do git até agora.
+- Arquivos: templateaula.html (novo)
+- Motivo: é a origem da paleta oficial da marca (teal chumbado `#0A1214` + verde-limão
+  `#D9E28C`) e da estrutura de aula em 8 telas (carrossel por swipe: abertura, Vocab,
+  What would you do?, Grammar, Practice, Situational, Debate, encerramento). Se o
+  arquivo sumisse de fora do git, a referência ia junto — resolve pendência antiga do
+  NEXT_STEPS.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2200-doc-pedagogico
+
+## v-20260818-2200-doc-pedagogico — 18/08/2026
+- O que mudou: novo `docs/pedagogico.md` — estudo completo da base pedagógica que vai
+  alimentar a futura aba "Gerador de Aulas": schema de entrada/saída por tela, regras
+  de dependência de conteúdo entre telas, banco de referência CEFR (Pre-A1 a C2) e o
+  fluxo de geração em dois estágios (Sílabo do curso → Aula individual).
+- Arquivos: docs/pedagogico.md (novo)
+- Motivo: registrar o estudo pedagógico antes de começar a construir a aba geradora,
+  pra servir de contrato entre o que a IA vai gerar e o que o template renderiza.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260817-1159-docs-sem-titulo
+
 ## v-20260817-1158-sem-titulo-aba — 17/08/2026
 - O que mudou: o título da aba (#app-title) ganhou `display: none`. O header passa a
   mostrar só o logotipo "bupp." — sem "Tasks", "Leads" nem "Mercado".

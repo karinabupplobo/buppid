@@ -271,20 +271,24 @@ dois estágios:
 ```json
 {
   "nivel": "CEFR do grupo/turma",
-  "quantidade_aulas": "N aulas para fechar o nível",
+  "quantidade_modulos": "quantos módulos o curso terá",
+  "aulas_por_modulo": "quantas aulas cada módulo terá",
   "objetivos": ["objetivo 1", "objetivo 2 (opcional, máx. 2)"],
   "contexto_empresa": "o mesmo contexto que já entra em qualquer proposta",
   "nomes_modulos": "opcional — se a Karina já tiver definido"
 }
 ```
 
-**O que a IA faz:** distribui, ao longo das N aulas, qual gramática cada
-uma ensina — em ordem crescente de complexidade dentro do banco CEFR do
-nível pedido, sem repetir — e qual sub-tema/vocabulário cada aula foca,
-amarrado ao `contexto_empresa` e aos objetivos. Cada aula do sílabo é
-vinculada a um dos até 2 objetivos.
+**O que a IA faz:** distribui, ao longo de `quantidade_modulos × aulas_por_modulo`
+aulas no total, qual gramática cada uma ensina — em ordem crescente de
+complexidade dentro do banco CEFR do nível pedido, sem repetir — e qual
+sub-tema/vocabulário cada aula foca, amarrado ao `contexto_empresa` e aos
+objetivos. A gramática avança em blocos por módulo (cada módulo cobre um
+grupo coerente de estruturas, não uma mistura aleatória), e cada aula do
+sílabo é vinculada a um dos até 2 objetivos.
 
-**Sai:** uma lista de N "fichas de aula":
+**Sai:** uma lista de fichas de aula (`quantidade_modulos × aulas_por_modulo`
+no total):
 ```json
 {
   "silabo": [
@@ -313,7 +317,7 @@ e gera o JSON completo das 8 telas.
 
 **Resumo do fluxo:**
 ```
-Karina fornece: nível + qtd. de aulas + objetivos (+ nomes de módulo)
+Karina fornece: nível + qtd. de módulos + aulas por módulo + objetivos (+ nomes de módulo)
         ↓
 Estágio 1 — gera o sílabo do curso (N fichas de aula)
         ↓
@@ -331,7 +335,7 @@ Estágio 2 — gera cada aula individual (8 telas) a partir de cada ficha
 - **Banco de referência CEFR (Pre-A1 a C2) + fluxo de dois estágios** —
   registrada a tabela fixa de gramática/função por nível (o gerador nunca
   escolhe fora dela) e o fluxo Sílabo (Estágio 1, gera o mapa do curso a
-  partir de nível + qtd. de aulas + objetivos) → Aula (Estágio 2, gera as
+  partir de nível + qtd. de módulos + aulas por módulo + objetivos) → Aula (Estágio 2, gera as
   8 telas por ficha do sílabo aprovado). O sílabo funciona como checkpoint
   de revisão antes de gerar aula por aula.
 - **Schema completo de geração fechado** — estudo tela por tela concluído:

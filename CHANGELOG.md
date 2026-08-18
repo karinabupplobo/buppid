@@ -2,6 +2,28 @@
 
 Entradas mais recentes no topo.
 
+## v-20260818-2320-card-branco-padrao — 18/08/2026
+- O que mudou: **Gerador de Aulas** — sub-abas Sílabo e Aulas agora vivem dentro de um
+  painel branco único (`.ga-panel`), o mesmo padrão de `#tasks-table`/`#leads-list`,
+  em vez de formulário e texto soltos direto sobre o fundo escuro. `ga-ficha-card`
+  virou linha dentro desse painel (separador, sem fundo/borda próprios) em vez de
+  card duplicado dentro de outro card. **Mercado** — o hero do topo (título + texto de
+  abertura) virou card branco como o resto da página, removendo as regras de cor
+  especiais que existiam só pra ele ficar legível sobre o fundo escuro.
+- Arquivos: index.html
+- Motivo: pedido da Karina — replicar em todas as abas o padrão que ela gosta em
+  Tasks/Leads: fundo escuro na página, conteúdo sempre em cima de card branco.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2310-teste-fundo-chumbado
+
+## v-20260818-2310-teste-fundo-chumbado — 18/08/2026
+- O que mudou: `--bg` trocado de `#0A1214` (quase preto) para `#1B282B` (teal chumbado
+  intermediário, já testado antes no template de aula).
+- Arquivos: index.html
+- Motivo: teste a pedido da Karina, pra comparar contra o tom mais escuro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2301-docs-fix-gerador
+
 ## v-20260818-2300-gerador-contraste-largura — 18/08/2026
 - O que mudou: `#gerador-view` ganhou `max-width: 980px` + `margin: 0 auto` — antes
   ficava grudado à esquerda, deixando muito espaço vazio à direita em telas largas.

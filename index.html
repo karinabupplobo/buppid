@@ -785,6 +785,65 @@
     #estudo-view .es-hero h2 { font-size: 21px; }
   }
 
+
+  /* ================= Gerador de Aulas ================= */
+  #gerador-view.hidden { display: none !important; }
+  #gerador-subnav { display: flex; gap: 6px; margin-bottom: 16px; }
+
+  .ga-textarea { width: 100%; min-height: 150px; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; font-family: "SFMono-Regular", Consolas, monospace; resize: vertical; }
+  .ga-btn { border: none; background: var(--accent); color: #fff; border-radius: 8px; padding: 9px 16px;
+    font-size: 12.5px; font-weight: 700; cursor: pointer; }
+  .ga-btn:hover { background: #000000; }
+  .ga-btn.secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+  .ga-btn.secondary:hover { background: var(--land-default); color: var(--accent-lime); }
+  .ga-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ga-btn:disabled:hover { background: var(--accent); }
+  .ga-btn.secondary:disabled:hover { background: #fff; color: var(--text); }
+  .ga-error { color: #a3312a; font-size: 12.5px; margin-top: 8px; min-height: 16px; }
+
+  .ga-status { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+  .ga-status.rascunho { background: var(--focus-bg); color: var(--text-muted); }
+  .ga-status.aprovado { background: var(--accent-lime); color: #000; }
+
+  .ga-table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin-top: 14px; }
+  .ga-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-muted); padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--focus-bg); }
+  .ga-table td { padding: 4px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ga-table tr:last-child td { border-bottom: none; }
+  .ga-table input { width: 100%; border: 1px solid transparent; border-radius: 5px; padding: 6px 7px;
+    font-size: 12.5px; font-family: inherit; background: transparent; }
+  .ga-table input:focus { border-color: var(--border-strong); background: #fff; outline: none; }
+  .ga-table input:disabled { color: var(--text); background: transparent; }
+  .ga-table td.ga-num { width: 32px; font-weight: 700; color: var(--text-muted); text-align: center; }
+
+  .ga-ficha-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 12px; }
+  .ga-ficha-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .ga-ficha-title { font-size: 13.5px; font-weight: 700; }
+  .ga-ficha-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+  .ga-ficha-badge { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+  .ga-ficha-badge.pendente { background: var(--focus-bg); color: var(--text-muted); }
+  .ga-ficha-badge.gerada { background: var(--accent-lime); color: #000; }
+  .ga-ficha-paste { margin-top: 10px; }
+  .ga-ficha-paste.hidden { display: none; }
+
+  .ga-preview { margin-top: 14px; background: var(--bg); border-radius: 12px; padding: 16px; }
+  .ga-tela { background: #fff; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .ga-tela:last-child { margin-bottom: 0; }
+  .ga-tela-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent-lime); background: var(--bg); display: inline-block; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+  .ga-tela p { margin: 0 0 6px; font-size: 12.5px; line-height: 1.5; color: #000; }
+  .ga-tela p:last-child { margin-bottom: 0; }
+  .ga-vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 8px; }
+  .ga-vocab-item { border: 1px solid var(--border); border-radius: 6px; padding: 8px; font-size: 11.5px; }
+  .ga-vocab-item .en { font-weight: 700; }
+  .ga-vocab-item .pt { color: var(--text-muted); margin-top: 2px; }
+  .ga-ex-item { border-left: 3px solid var(--accent-lime); padding-left: 8px; margin-bottom: 8px; font-size: 12px; }
+  .ga-ex-item:last-child { margin-bottom: 0; }
+  .ga-ex-item .resp { color: var(--text-muted); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -832,6 +891,10 @@
   <button class="side-btn" id="side-estudo" type="button" data-label="Mercado" aria-label="Mercado">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+  </button>
+  <button class="side-btn" id="side-gerador" type="button" data-label="Gerador de Aulas" aria-label="Gerador de Aulas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
   </button>
 </nav>
 <div id="app" class="hidden">
@@ -1146,6 +1209,34 @@
 
     <div class="es-foot">
       Fontes: Pesquisa Panorama do Treinamento no Brasil 2025/2026 &mdash; ABTD, 20&ordf; edi&ccedil;&atilde;o, 443 empresas (via Twygo) &middot; Lingopass, sobre decis&atilde;o de compra de idiomas corporativos (mai/2026) &middot; oHub, sazonalidade em vendas B2B &middot; EmpresAqui e Serasa Experian, calend&aacute;rio comercial B2B &middot; EF EPI 2025. Refer&ecirc;ncias completas em <code>docs/icp-comprador.md</code>.
+    </div>
+  </div>
+
+  <div id="gerador-view" class="hidden">
+    <div id="gerador-subnav">
+      <button class="tasks-subnav-btn active" id="gerador-nav-silabo" type="button">Sílabo</button>
+      <button class="tasks-subnav-btn" id="gerador-nav-aulas" type="button">Aulas</button>
+    </div>
+
+    <div id="gerador-silabo-view">
+      <p style="font-size:12.5px;color:var(--text-muted);max-width:640px;line-height:1.5;">
+        Cole aqui o JSON do sílabo gerado (Estágio 1) — a lista de fichas de aula do curso.
+        Depois de carregar, revise/edite os campos direto na tabela e aprove pra liberar a
+        geração das aulas individuais.
+        <span id="ga-silabo-status" class="ga-status rascunho">rascunho</span>
+      </p>
+      <textarea id="ga-silabo-input" class="ga-textarea" placeholder='{"silabo": [{"aula": 1, "nome_modulo": "Negotiation Basics", "gramatica": "second conditional", "tema": "vendas B2B", "objetivo_master": "negociar prazo de pagamento"}]}'></textarea>
+      <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="ga-btn" id="ga-silabo-carregar-btn" type="button">Carregar</button>
+        <button class="ga-btn secondary" id="ga-silabo-aprovar-btn" type="button" disabled>Aprovar Sílabo</button>
+        <button class="ga-btn secondary" id="ga-silabo-limpar-btn" type="button">Limpar tudo</button>
+      </div>
+      <div id="ga-silabo-error" class="ga-error"></div>
+      <div id="ga-silabo-table-wrap"></div>
+    </div>
+
+    <div id="gerador-aulas-view" class="hidden">
+      <div id="ga-aulas-list"></div>
     </div>
   </div>
 
@@ -2374,19 +2465,235 @@ function showView(name) {
   document.getElementById("tasks-view").classList.toggle("hidden", name !== "tasks");
   document.getElementById("leads-view").classList.toggle("hidden", name !== "leads");
   document.getElementById("estudo-view").classList.toggle("hidden", name !== "estudo");
+  document.getElementById("gerador-view").classList.toggle("hidden", name !== "gerador");
   document.getElementById("settings-view").classList.toggle("hidden", name !== "settings");
   document.getElementById("app-title").textContent =
-    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "settings" ? "Settings" : "Tasks";
+    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "gerador" ? "Gerador de Aulas" : name === "settings" ? "Settings" : "Tasks";
   document.getElementById("side-tasks").classList.toggle("active", name === "tasks");
   document.getElementById("side-leads").classList.toggle("active", name === "leads");
   document.getElementById("side-estudo").classList.toggle("active", name === "estudo");
+  document.getElementById("side-gerador").classList.toggle("active", name === "gerador");
   if (name === "leads") renderLeads();
+  if (name === "gerador") { gaRenderSilaboTable(); gaRenderAulasList(); }
 }
 document.getElementById("nav-settings-btn").addEventListener("click", () => showView("settings"));
 document.getElementById("settings-back-btn").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-tasks").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-leads").addEventListener("click", () => showView("leads"));
 document.getElementById("side-estudo").addEventListener("click", () => showView("estudo"));
+document.getElementById("side-gerador").addEventListener("click", () => showView("gerador"));
+
+// --- Gerador de Aulas (Opção B: geração fora do dash, importação de JSON) ---
+// Contrato de dados em docs/pedagogico.md §6. Estágio 1 = sílabo (mapa do curso),
+// Estágio 2 = aula individual (8 telas). Nenhuma chamada de IA acontece aqui —
+// o conteúdo é gerado em chat e colado nos campos abaixo.
+
+const GA_STORAGE_KEY = "geradorAulasState_v1";
+
+function gaEscapeHtml(str) {
+  return String(str ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function gaLoadState() {
+  try {
+    const raw = localStorage.getItem(GA_STORAGE_KEY);
+    if (!raw) return { silabo: [], silaboAprovado: false, aulas: {} };
+    const parsed = JSON.parse(raw);
+    return {
+      silabo: Array.isArray(parsed.silabo) ? parsed.silabo : [],
+      silaboAprovado: !!parsed.silaboAprovado,
+      aulas: parsed.aulas && typeof parsed.aulas === "object" ? parsed.aulas : {}
+    };
+  } catch (e) {
+    return { silabo: [], silaboAprovado: false, aulas: {} };
+  }
+}
+
+function gaSaveState() {
+  localStorage.setItem(GA_STORAGE_KEY, JSON.stringify(gaState));
+}
+
+let gaState = gaLoadState();
+
+function gaSetSilaboSubnav(mode) {
+  document.getElementById("gerador-silabo-view").classList.toggle("hidden", mode !== "silabo");
+  document.getElementById("gerador-aulas-view").classList.toggle("hidden", mode !== "aulas");
+  document.getElementById("gerador-nav-silabo").classList.toggle("active", mode === "silabo");
+  document.getElementById("gerador-nav-aulas").classList.toggle("active", mode === "aulas");
+  if (mode === "aulas") gaRenderAulasList();
+}
+document.getElementById("gerador-nav-silabo").addEventListener("click", () => gaSetSilaboSubnav("silabo"));
+document.getElementById("gerador-nav-aulas").addEventListener("click", () => gaSetSilaboSubnav("aulas"));
+
+function gaRenderSilaboTable() {
+  const wrap = document.getElementById("ga-silabo-table-wrap");
+  const statusEl = document.getElementById("ga-silabo-status");
+  const aprovarBtn = document.getElementById("ga-silabo-aprovar-btn");
+
+  statusEl.textContent = gaState.silaboAprovado ? "aprovado" : "rascunho";
+  statusEl.classList.toggle("aprovado", gaState.silaboAprovado);
+  statusEl.classList.toggle("rascunho", !gaState.silaboAprovado);
+  aprovarBtn.disabled = gaState.silabo.length === 0 || gaState.silaboAprovado;
+  aprovarBtn.textContent = gaState.silaboAprovado ? "Sílabo aprovado ✓" : "Aprovar Sílabo";
+
+  if (gaState.silabo.length === 0) { wrap.innerHTML = ""; return; }
+
+  const disabledAttr = gaState.silaboAprovado ? "disabled" : "";
+  const rows = gaState.silabo.map((f, i) => `
+    <tr>
+      <td class="ga-num">${gaEscapeHtml(f.aula ?? (i + 1))}</td>
+      <td><input type="text" value="${gaEscapeHtml(f.nome_modulo)}" data-i="${i}" data-field="nome_modulo" ${disabledAttr}></td>
+      <td><input type="text" value="${gaEscapeHtml(f.gramatica)}" data-i="${i}" data-field="gramatica" ${disabledAttr}></td>
+      <td><input type="text" value="${gaEscapeHtml(f.tema)}" data-i="${i}" data-field="tema" ${disabledAttr}></td>
+      <td><input type="text" value="${gaEscapeHtml(f.objetivo_master)}" data-i="${i}" data-field="objetivo_master" ${disabledAttr}></td>
+    </tr>`).join("");
+
+  wrap.innerHTML = `
+    <table class="ga-table">
+      <thead><tr><th>#</th><th>Módulo</th><th>Gramática</th><th>Tema</th><th>Objetivo</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  wrap.querySelectorAll("input[data-field]").forEach((inp) => {
+    inp.addEventListener("input", () => {
+      const i = Number(inp.dataset.i);
+      gaState.silabo[i][inp.dataset.field] = inp.value;
+      gaSaveState();
+    });
+  });
+}
+
+document.getElementById("ga-silabo-carregar-btn").addEventListener("click", () => {
+  const errEl = document.getElementById("ga-silabo-error");
+  errEl.textContent = "";
+  const raw = document.getElementById("ga-silabo-input").value.trim();
+  if (!raw) { errEl.textContent = "Cole o JSON do sílabo antes de carregar."; return; }
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch (e) { errEl.textContent = "JSON inválido: " + e.message; return; }
+  const lista = Array.isArray(parsed.silabo) ? parsed.silabo : Array.isArray(parsed) ? parsed : null;
+  if (!lista) { errEl.textContent = 'Formato inesperado — esperado {"silabo": [...]}.'; return; }
+  gaState.silabo = lista;
+  gaState.silaboAprovado = false;
+  gaSaveState();
+  gaRenderSilaboTable();
+});
+
+document.getElementById("ga-silabo-aprovar-btn").addEventListener("click", () => {
+  if (gaState.silabo.length === 0) return;
+  gaState.silaboAprovado = true;
+  gaSaveState();
+  gaRenderSilaboTable();
+});
+
+document.getElementById("ga-silabo-limpar-btn").addEventListener("click", () => {
+  if (!confirm("Limpar o sílabo e todas as aulas já coladas? Essa ação não pode ser desfeita.")) return;
+  gaState = { silabo: [], silaboAprovado: false, aulas: {} };
+  gaSaveState();
+  document.getElementById("ga-silabo-input").value = "";
+  document.getElementById("ga-silabo-error").textContent = "";
+  gaRenderSilaboTable();
+  gaRenderAulasList();
+});
+
+function gaRenderAulaPreview(conteudo) {
+  const vocabItens = conteudo?.vocab?.itens || [];
+  const respostas = conteudo?.what_would_you_do?.respostas || [];
+  const exercicios = conteudo?.practice?.exercicios || [];
+
+  return `
+    <div class="ga-preview">
+      <div class="ga-tela"><span class="ga-tela-label">Abertura</span>
+        <p><strong>${gaEscapeHtml(conteudo?.abertura?.titulo || "—")}</strong></p></div>
+
+      <div class="ga-tela"><span class="ga-tela-label">Vocab</span>
+        <div class="ga-vocab-grid">${vocabItens.map(v => `
+          <div class="ga-vocab-item"><div class="en">${gaEscapeHtml(v.front_en)}</div><div class="pt">${gaEscapeHtml(v.back_pt)}</div></div>
+        `).join("") || "<p>—</p>"}</div></div>
+
+      <div class="ga-tela"><span class="ga-tela-label">What would you do?</span>
+        <p>${gaEscapeHtml(conteudo?.what_would_you_do?.leitura || "—")}</p>
+        <p><strong>${gaEscapeHtml(conteudo?.what_would_you_do?.pergunta || "")}</strong></p>
+        ${respostas.map((r, i) => `<p>${i + 1}. ${gaEscapeHtml(r)}</p>`).join("")}</div>
+
+      <div class="ga-tela"><span class="ga-tela-label">Grammar</span>
+        <p><strong>${gaEscapeHtml(conteudo?.grammar?.regra || "—")}</strong></p>
+        <p>${gaEscapeHtml(conteudo?.grammar?.explicacao || "")}</p>
+        <p><em>${gaEscapeHtml(conteudo?.grammar?.exemplo || "")}</em></p></div>
+
+      <div class="ga-tela"><span class="ga-tela-label">Practice</span>
+        ${exercicios.map(ex => `
+          <div class="ga-ex-item"><div>${gaEscapeHtml(ex.enunciado)}</div><div class="resp">${gaEscapeHtml(ex.resposta)}</div></div>
+        `).join("") || "<p>—</p>"}</div>
+
+      <div class="ga-tela"><span class="ga-tela-label">Situational</span>
+        <p>${gaEscapeHtml(conteudo?.situational?.fala_personagem_1 || "—")}</p>
+        <p class="resp">${gaEscapeHtml(conteudo?.situational?.resposta_possivel || "")}</p></div>
+
+      <div class="ga-tela"><span class="ga-tela-label">Debate</span>
+        <p>${gaEscapeHtml(conteudo?.debate?.mocao || "—")}</p></div>
+
+      <div class="ga-tela"><span class="ga-tela-label">Encerramento</span>
+        <p><strong>${gaEscapeHtml(conteudo?.encerramento?.titulo || "Fim")}</strong></p></div>
+    </div>`;
+}
+
+function gaRenderAulasList() {
+  const container = document.getElementById("ga-aulas-list");
+  if (!gaState.silaboAprovado || gaState.silabo.length === 0) {
+    container.innerHTML = `<p style="font-size:12.5px;color:var(--text-muted);">
+      Aprove o sílabo na sub-aba "Sílabo" antes de colar as aulas individuais.</p>`;
+    return;
+  }
+
+  container.innerHTML = gaState.silabo.map((f, i) => {
+    const key = String(f.aula ?? (i + 1));
+    const gerada = !!gaState.aulas[key];
+    return `
+      <div class="ga-ficha-card">
+        <div class="ga-ficha-head">
+          <div>
+            <div class="ga-ficha-title">Aula ${gaEscapeHtml(f.aula ?? (i + 1))} — ${gaEscapeHtml(f.nome_modulo)}</div>
+            <div class="ga-ficha-meta">${gaEscapeHtml(f.gramatica)} · ${gaEscapeHtml(f.tema)}</div>
+          </div>
+          <div>
+            <span class="ga-ficha-badge ${gerada ? "gerada" : "pendente"}">${gerada ? "Gerada" : "Pendente"}</span>
+            <button class="ga-btn secondary" type="button" data-toggle-key="${key}" style="margin-left:8px;">${gerada ? "Recolar aula" : "Colar aula"}</button>
+          </div>
+        </div>
+        <div class="ga-ficha-paste hidden" id="ga-paste-${key}">
+          <textarea class="ga-textarea" id="ga-paste-input-${key}" style="min-height:110px;margin-top:10px;" placeholder='JSON da aula (schema em docs/pedagogico.md §6.2)'></textarea>
+          <div style="margin-top:8px;"><button class="ga-btn" type="button" data-load-key="${key}">Carregar aula</button></div>
+          <div class="ga-error" id="ga-paste-error-${key}"></div>
+        </div>
+        <div id="ga-preview-${key}">${gerada ? gaRenderAulaPreview(gaState.aulas[key]) : ""}</div>
+      </div>`;
+  }).join("");
+
+  container.querySelectorAll("[data-toggle-key]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.getElementById("ga-paste-" + btn.dataset.toggleKey).classList.toggle("hidden");
+    });
+  });
+
+  container.querySelectorAll("[data-load-key]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.loadKey;
+      const errEl = document.getElementById("ga-paste-error-" + key);
+      errEl.textContent = "";
+      const raw = document.getElementById("ga-paste-input-" + key).value.trim();
+      if (!raw) { errEl.textContent = "Cole o JSON da aula antes de carregar."; return; }
+      let parsed;
+      try { parsed = JSON.parse(raw); }
+      catch (e) { errEl.textContent = "JSON inválido: " + e.message; return; }
+      gaState.aulas[key] = parsed;
+      gaSaveState();
+      gaRenderAulasList();
+    });
+  });
+}
 
 // --- Tasks: find/walk helpers ---
 function findTaskById(list, id) {

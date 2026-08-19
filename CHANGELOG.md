@@ -2,6 +2,44 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-1401 a v-20260819-1408 — pasta `pedagogico/` — 19/08/2026
+- O que mudou: criada a pasta `pedagogico/`, referência de níveis do currículo.
+  Um arquivo por nível CEFR, todos com a mesma estrutura de 6 seções: descrição
+  geral, habilidades (can-do por competência + funções de negócio), inventário
+  gramatical criterial, inventário lexical (núcleo geral + campos de negócio),
+  matriz de combinações gramática × vocabulário, e critério de saída verificável.
+  Totais: 287 estruturas gramaticais, 89 campos lexicais, 148 combinações de aula.
+  Todo item tem ID estável (`B1-G-014`, `B1-V-06`, `B1-C-09`) para o Mapa
+  Pedagógico referenciar código em vez de texto — é o que permite verificar
+  "sem repetir" de verdade e rastrear o que o curso já cobriu.
+  O nível B1+ foi REMOVIDO: não é nível oficial do CEFR, não tem inventário
+  próprio em nenhuma referência de corpus, e seu conteúdo era "o mesmo do B1 com
+  mais precisão" — o que não vira aula.
+- Arquivos (um commit e uma tag por arquivo):
+  - v-20260819-1401-pedagogico-readme  → pedagogico/README.md
+  - v-20260819-1402-nivel-pre-a1       → pedagogico/00-pre-a1.md
+  - v-20260819-1403-nivel-a1           → pedagogico/01-a1.md
+  - v-20260819-1404-nivel-a2           → pedagogico/02-a2.md
+  - v-20260819-1405-nivel-b1           → pedagogico/03-b1.md
+  - v-20260819-1406-nivel-b2           → pedagogico/04-b2.md
+  - v-20260819-1407-nivel-c1           → pedagogico/05-c1.md
+  - v-20260819-1408-nivel-c2           → pedagogico/06-c2.md
+- Motivo: a seção 7 do `docs/pedagogico.md` prometia que duas aulas do mesmo
+  nível teriam dificuldade equivalente, mas listava só ~10 estruturas por nível
+  e nenhum vocabulário. Com esse inventário, o gerador ficava sem material antes
+  de terminar um curso e inventava a combinação gramática × vocabulário sozinho
+  — que é a causa de aulas desiguais.
+  Fontes usadas só como CALIBRAGEM (nada foi copiado; são obras de terceiros
+  protegidas): English Grammar Profile e English Vocabulary Profile (Cambridge),
+  Oxford 3000/5000, CEFR Companion Volume 2020.
+- Pendências conhecidas, registradas no NEXT_STEPS: Pre-A1 e C2 são os arquivos
+  mais autorais (fontes cobrem mal as duas pontas); 19 itens gramaticais não
+  aparecem em nenhuma combinação; `docs/pedagogico.md` §7 ainda tem a tabela
+  antiga e não aponta para a pasta nova; B1+ segue no `index.html` e no
+  `docs/pedagogico.md`.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260818-2431-docs-final-sessao
+
 ## v-20260818-2430-doc-pedagogico-sync — 18/08/2026
 - O que mudou: `docs/pedagogico.md` sincronizado com a nomenclatura da dash — "Sílabo"
   virou "Mapa Pedagógico" e "Aula" (Estágio 2) virou "Fila de Produção" na seção 8

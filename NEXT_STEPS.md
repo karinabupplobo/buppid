@@ -2,6 +2,29 @@
 
 ## Próximo
 
+- [ ] Revisar `pedagogico/00-pre-a1.md` e `pedagogico/06-c2.md`. São os dois
+      arquivos mais autorais da pasta: as referências de corpus (EGP, EVP,
+      Oxford) cobrem mal as duas pontas da escala, então esses inventários
+      dependem mais de julgamento e menos de fonte externa.
+- [ ] Decidir o que fazer com os 19 itens gramaticais que não entram em nenhuma
+      combinação da seção 5 (8 no A1, 9 no A2, 1 em Pre-A1/B1/C1). São itens de
+      apoio que aparecem dentro de outras aulas — mas se o gerador só ler a
+      matriz, eles nunca serão ensinados explicitamente. Ou criar combinações
+      para eles, ou marcá-los como "apoio" e assumir que não viram aula.
+- [ ] Verificar a capacidade da matriz antes de vender turma longa: o B1 tem 26
+      combinações, então um curso de 24 aulas cabe com folga de 2. Curso maior
+      que isso precisa de combinações novas antes de começar.
+- [ ] Apontar `docs/pedagogico.md` §7 para a pasta `pedagogico/`. Hoje ele ainda
+      tem a tabela CEFR antiga (~10 itens por nível), que virou fonte duplicada e
+      desatualizada da mesma informação. NÃO FEITO nesta sessão por decisão da
+      Karina ("por agora apenas salva essa base pedagógica").
+- [ ] Remover o B1+ do resto do projeto. Ele saiu da referência de níveis em
+      19/08 mas continua em `index.html:1257` (opção do seletor do Gerador de
+      Aulas) e em 3 pontos do `docs/pedagogico.md` (linhas 142, 220, 255).
+      Enquanto estiver lá, a dash oferece um nível que não tem arquivo de
+      referência correspondente. NÃO FEITO nesta sessão: a Karina pediu para não
+      mexer na dash por enquanto.
+
 - [ ] Decidir o tom final de `--bg` entre `#0A1214`, `#1B282B` e `#26393E` (teste em
       andamento desde v-20260818-2310, mais um passo claro em v-20260818-2330).
 - [ ] Aplicar a nova paleta (teal/verde-limão/azul) nos materiais de venda e

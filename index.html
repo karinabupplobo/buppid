@@ -2590,10 +2590,19 @@ function abrirAula(numero) {
   const frame = document.getElementById("aula-viewer-frame");
   frame.onload = () => {
     frame.contentWindow.postMessage({ type: "bupp:aula", aula: aula.conteudo }, "*");
+    // Sem foco no iframe, as setas do teclado continuariam sendo ouvidas pela
+    // dash e a aula não responderia. Tem que ser depois do load.
+    try { frame.contentWindow.focus(); } catch (e) {}
   };
   frame.src = "templateaula.html?v=" + Date.now();
   viewer.classList.remove("hidden");
 }
+
+// Com o foco dentro do iframe, o Esc não chega ao listener da dash. O template
+// avisa por postMessage e o fechamento acontece aqui.
+window.addEventListener("message", (ev) => {
+  if (ev.data && ev.data.type === "bupp:fechar-aula") fecharAula();
+});
 
 function fecharAula() {
   const frame = document.getElementById("aula-viewer-frame");

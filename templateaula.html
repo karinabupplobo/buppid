@@ -315,6 +315,27 @@
 
   .answers{ display: flex; flex-direction: column; gap: 8px; }
 
+  /* Card de resposta ABERTA (What would you do?) — mesma casca visual do
+     answer-item, mas sem cabeçalho/corpo separados e sem interação de clique. */
+  .answer-item-aberto{
+    background: var(--branco);
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .answer-item-aberto p{
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--texto);
+    font-weight: 500;
+    padding-top: 2px;
+  }
+
   .answer-item{
     background: var(--branco);
     border-radius: 10px;
@@ -379,6 +400,7 @@
 
   @media (orientation: portrait){
     .reading-card, .question-card{ padding: 14px 16px; }
+    .answer-item-aberto{ padding: 12px 14px; }
   }
 
   @media (orientation: landscape) and (max-height: 600px){
@@ -387,6 +409,8 @@
     .question-card p{ font-size: clamp(12px, 2.2vh, 15px); }
     .answer-head p{ font-size: clamp(11px, 1.8vh, 13px); }
     .num-btn{ width: 24px; height: 24px; font-size: 11px; }
+    .answer-item-aberto{ padding: 0.6vh 12px; gap: 8px; }
+    .answer-item-aberto p{ font-size: clamp(11px, 1.8vh, 13px); }
     /* A tela inteira já era ocupada sem a cena; ela entra pequena, só como
        apoio visual, senão o conteúdo estoura a altura disponível. */
     .s2-wrap .cena{ padding: 4px; }
@@ -507,6 +531,8 @@
     .answer-body p{ font-size: 16px; padding: 0 18px 18px 62px; }
     .answer-item.open .answer-body{ max-height: 200px; }
     .num-btn{ width: 34px; height: 34px; font-size: 15px; }
+    .answer-item-aberto{ padding: 16px 20px; gap: 16px; }
+    .answer-item-aberto p{ font-size: 16px; padding-top: 4px; }
 
     /* --- Grammar, Situational, Debate: card grande de verdade --- */
     .big-card{ max-width: 900px; padding: 40px 44px; border-radius: 18px; }
@@ -807,9 +833,17 @@
       + '<div class="answer-body"><p>' + esc(corpo) + '</p></div></div>';
   }
 
+  // "What would you do?" não tem gabarito — são possibilidades para reflexão,
+  // não uma resposta certa escondida atrás de um clique. Por isso aqui o texto
+  // aparece direto, sem toggle.
+  function itemAberto(n, texto) {
+    return '<div class="answer-item-aberto">'
+      + '<span class="num-btn">' + n + '</span><p>' + esc(texto) + '</p></div>';
+  }
+
   function telaWwyd(w) {
     const respostas = (w && w.respostas) || [];
-    const itens = respostas.map((r, i) => itemExpansivel(i + 1, "Tap to reveal", r)).join("");
+    const itens = respostas.map((r, i) => itemAberto(i + 1, r)).join("");
     const cena = (w && w.cena) ? '<div class="cena">' + w.cena + '</div>' : '';
     return '<section class="screen"><h1 class="screen-title">What would you do?</h1>'
       + '<div class="s2-wrap' + (cena ? ' tem-cena' : '') + '">'

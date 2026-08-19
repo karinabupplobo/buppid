@@ -2,6 +2,37 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-2135-fotos-safety-rules — 19/08/2026
+- O que mudou: as 8 ilustrações em SVG da aula Safety Rules (curso Metalúrgica
+  Horizonte) foram trocadas por fotos reais do Pexels (CC0). Os 6 flashcards de
+  vocabulário (helmet, gloves, safety goggles, safety boots, emergency exit,
+  warning sign) usam foto de objeto isolado. As 2 cenas (What would you do? e
+  Situational) usam foto real de ambiente industrial genérico (chão de fábrica
+  com máquinas; portas de aço de galpão) — SEM tentar reproduzir os dois
+  personagens da narrativa original (visitante sem EPI barrado por
+  supervisor), porque banco de imagem não tem foto de infração de segurança
+  encenada.
+- Arquivos: index.html
+- Motivo: pedido da Karina — desbloqueou o item do NEXT_STEPS sobre trocar SVG
+  por foto, que estava pendente desde a liberação de unsplash.com/pexels.com
+  nas configurações de rede do projeto.
+  Convenção criada para aulas futuras: vocabulário = foto de objeto isolado;
+  cenas = foto real de ambiente genérico sem personagens, quando a narrativa
+  específica não tiver equivalente em banco de imagem.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2130-vocab-img-css
+
+## v-20260819-2130-vocab-img-css — 19/08/2026
+- O que mudou: nova regra `.vocab-img img` no templateaula.html (object-fit:
+  cover, mesma lógica do `.cena img` já existente), para o card de
+  vocabulário aceitar foto real além de SVG.
+- Arquivos: templateaula.html
+- Motivo: pré-requisito técnico para o commit seguinte (fotos reais no
+  vocabulário da aula Safety Rules) — sem essa regra a foto apareceria no
+  tamanho nativo, estourando o card.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2102-docs-wwyd
+
 ## v-20260819-2101-wwyd-sem-reveal — 19/08/2026
 - O que mudou: as respostas da tela "What would you do?" deixaram de ficar
   escondidas atrás de "Tap to reveal" — agora aparecem diretas, todas visíveis

@@ -15,19 +15,25 @@
       domínio *.github.io nas configurações de rede do projeto, junto com o
       pedido já feito de Unsplash/Pexels.
 
-- [ ] Liberar `unsplash.com`, `images.unsplash.com`, `pexels.com` e
-      `images.pexels.com` nas configurações de rede do projeto (Settings >
-      Network > domínios permitidos), para eu poder buscar e baixar fotos reais
-      para as cenas. Sem isso o bash_tool recebe `host_not_allowed`.
-- [ ] Depois de liberado: buscar fotos com licença gratuita (atenção — o site
-      mistura licença gratuita com Unsplash+/Getty, que é paga; filtrar por
-      "Free to use under the Unsplash License") e trocar o campo `cena` de SVG
-      para `<img src="assets/fotos/...">`. O CSS já suporta os dois formatos
-      (v-20260819-1901).
-- [ ] Avaliar fotos do PRÓPRIO CLIENTE em vez de banco de imagens — banco de
-      imagens quase não tem foto de infração de segurança (visitante sem EPI),
-      só uso correto. Fica melhor pedir no onboarding do contrato, com cuidado
-      de autorização de uso de imagem de pessoas identificáveis.
+- [x] Liberar `unsplash.com`, `images.unsplash.com`, `pexels.com` e
+      `images.pexels.com` nas configurações de rede do projeto — feito, e as
+      8 ilustrações SVG da aula Safety Rules já foram trocadas por foto real
+      do Pexels (v-20260819-2135). Convenção criada para aulas futuras:
+      vocabulário = foto de objeto isolado; cenas = foto real de ambiente
+      genérico sem personagens (banco de imagem não tem foto de infração de
+      segurança encenada — visitante sem EPI barrado por supervisor — só uso
+      correto isolado).
+- [ ] Avaliar fotos do PRÓPRIO CLIENTE em vez de banco de imagens para as
+      cenas narrativas específicas (ex.: a infração de segurança da Safety
+      Rules), já que banco de imagem não cobre esse tipo de cena. Fica melhor
+      pedir no onboarding do contrato, com cuidado de autorização de uso de
+      imagem de pessoas identificáveis.
+- [ ] Ao usar imagens do Pexels, atenção ao padrão de URL: fotos com ID baixo
+      (catálogo antigo, ex. 4341) usam `images.pexels.com/photos/{id}/{slug}.jpg`
+      em vez do padrão atual `images.pexels.com/photos/{id}/pexels-photo-{id}.jpeg`.
+      Sempre conferir o `meta-og:image` da página da foto ou testar a URL com
+      curl antes de gravar no código — descoberto porque a URL do warning
+      sign (ID 4341) deu 404 no padrão novo.
 
 - [ ] Testar a aba Cursos no navegador e NO CELULAR EM PAISAGEM: abrir o curso
       falso, entrar na aula, conferir se as 8 telas renderizam, se o swipe

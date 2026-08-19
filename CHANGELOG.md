@@ -2,6 +2,41 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-1502-protocolo-gerador — 19/08/2026
+- O que mudou: criado `pedagogico/GERADOR.md`, o protocolo do gerador de aulas
+  conduzido por chat. Gatilho "iniciar gerador de aulas": leitura obrigatória dos
+  7 arquivos de nível + docs/pedagogico.md §1-6 → levantamento com a Karina
+  (turma, curso, cliente, e o campo de restrições "o que NÃO pode aparecer") →
+  checagem de capacidade (módulos × aulas contra as combinações disponíveis do
+  nível) → Mapa Pedagógico com IDs reais → aprovação → produção em QUATRO
+  PORTÕES: 1 aula, 20%, 60%, 100%, acumulados, cada um aprovado antes do
+  seguinte, com ajuste valendo para trás em caso de reprovação.
+- Arquivos: pedagogico/GERADOR.md
+- Motivo: com a aba removida da dash, o gerador precisa de um protocolo escrito
+  — senão cada sessão reinventa o fluxo e o resultado sai inconsistente.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1501-remover-gerador-dash
+
+## v-20260819-1501-remover-gerador-dash — 19/08/2026
+- O que mudou: a aba "Gerador de Aulas" foi REMOVIDA do index.html — 458 linhas
+  em quatro blocos: CSS (regras .ga-*), botão #side-gerador da sidebar, HTML do
+  #gerador-view, e o JS inteiro (estado, localStorage GA_STORAGE_KEY, render das
+  etapas, prévia da aula). As referências em showView() saíram junto e o ramo do
+  ternário do app-title foi editado. Sidebar volta a ter três botões: Tasks,
+  Leads, Mercado.
+- Arquivos: index.html
+- Motivo: decisão da Karina — a geração de aulas passa a ser feita no chat, e a
+  dash só voltará a ter interface de aulas ao fim, quando receber o material
+  pronto. A aba existente simulava um motor que não existia (Opção B), o que era
+  custo de manutenção sem retorno.
+  Observação: quem já usou a aba tem lixo no localStorage sob a chave
+  "geradorAulasState_v1". Inofensivo, mas nunca mais será lido.
+  Observação 2: a seção 9 do docs/pedagogico.md ("Estado atual da implementação")
+  descreve em detalhe uma aba que não existe mais e ficou factualmente errada.
+  Não corrigida a pedido da Karina — registrada no NEXT_STEPS.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1409-docs-pedagogico
+
 ## v-20260819-1401 a v-20260819-1408 — pasta `pedagogico/` — 19/08/2026
 - O que mudou: criada a pasta `pedagogico/`, referência de níveis do currículo.
   Um arquivo por nível CEFR, todos com a mesma estrutura de 6 seções: descrição

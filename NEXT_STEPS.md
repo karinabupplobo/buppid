@@ -2,6 +2,21 @@
 
 ## Próximo
 
+- [ ] Construir a interface da dash que RECEBE as aulas prontas. A aba antiga foi
+      removida em v-20260819-1501; a nova só entra no fim, quando o formato do
+      material estiver estável. Definir o que ela precisa: listar cursos, abrir
+      uma aula, renderizar as 8 telas, exportar.
+- [ ] Corrigir a seção 9 do `docs/pedagogico.md` ("Estado atual da implementação
+      (dash)"). Ela descreve em detalhe a aba Gerador de Aulas, que não existe
+      mais desde v-20260819-1501. Também restam 3 pontos com B1+ (linhas 142,
+      220, 255) e a seção 7 com a tabela CEFR antiga, que virou fonte duplicada
+      da pasta `pedagogico/`.
+- [ ] Trabalhar a estrutura das aulas (as 8 telas) — próximo assunto combinado
+      com a Karina depois de fechar o protocolo do gerador.
+- [ ] Remover o B1+ do `index.html:1257`... VERIFICAR: essa linha pode ter saído
+      junto com a aba do Gerador em v-20260819-1501, já que o seletor de nível
+      ficava dentro do #gerador-view. Conferir antes de tratar como pendência.
+
 - [ ] Revisar `pedagogico/00-pre-a1.md` e `pedagogico/06-c2.md`. São os dois
       arquivos mais autorais da pasta: as referências de corpus (EGP, EVP,
       Oxford) cobrem mal as duas pontas da escala, então esses inventários

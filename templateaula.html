@@ -239,6 +239,16 @@
 
   .vocab-img svg{ width: 100%; height: 100%; display: block; }
 
+  /* Foto real, quando existir: preenche o mesmo espaço do SVG, mas cortada
+     (object-fit: cover) em vez de esticada — mesma lógica do .cena img. */
+  .vocab-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+  }
+
   /* Cena ilustrada das telas de leitura e situational */
   .cena{
     width: 100%;

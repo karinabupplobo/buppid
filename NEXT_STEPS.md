@@ -22,7 +22,13 @@
       vocabulário = foto de objeto isolado; cenas = foto real de ambiente
       genérico sem personagens (banco de imagem não tem foto de infração de
       segurança encenada — visitante sem EPI barrado por supervisor — só uso
-      correto isolado).
+      correto isolado). Tamanho do `.vocab-img` corrigido em seguida
+      (v-20260819-2200) por ficar pequeno demais na primeira versão.
+- [x] Situational sem contexto — resolvido com o campo opcional `contexto`
+      (v-20260819-2210), documentado no docs/pedagogico.md. Usar esse campo
+      sempre que a cena real (foto ou SVG) sozinha não deixar claro o que
+      está acontecendo — típico quando a foto é de ambiente genérico e não
+      reproduz os personagens da narrativa.
 - [ ] Avaliar fotos do PRÓPRIO CLIENTE em vez de banco de imagens para as
       cenas narrativas específicas (ex.: a infração de segurança da Safety
       Rules), já que banco de imagem não cobre esse tipo de cena. Fica melhor

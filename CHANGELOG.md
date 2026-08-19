@@ -2,6 +2,45 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-2210-contexto-situational — 19/08/2026
+- O que mudou: novo campo opcional `contexto` no schema da tela Situational —
+  uma linha de rubrica (itálico, discreto, estilo didascália de teatro) exibida
+  antes da fala do personagem, situando o que está acontecendo na cena. Campo
+  opcional: aulas sem ele continuam renderizando normalmente. Na aula Safety
+  Rules, adicionado o contexto "A visitor is about to walk onto the factory
+  floor without a helmet or goggles. The supervisor stops him at the
+  industrial door." — a foto real do galpão (v-20260819-2135) não deixava
+  claro sozinha o que estava acontecendo na cena, já que ela não reproduz os
+  dois personagens da narrativa original.
+- Arquivos: templateaula.html, index.html, docs/pedagogico.md
+- Motivo: pedido da Karina — o Situational "estava sem contexto, precisa
+  contextualizar a situação pra fazer sentido". Documentado no
+  docs/pedagogico.md como parte do schema oficial, pra valer em aulas
+  futuras também.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2200-vocab-img-maior
+
+## v-20260819-2200-vocab-img-maior — 19/08/2026
+- O que mudou: `.vocab-img` aumentado em todos os breakpoints — base de 56px
+  para 84px, retrato de 52px para 70px, paisagem baixa de até 76px para até
+  108px, desktop de 104px para 150px. `.card-slot` também cresceu um pouco no
+  retrato (130→140px) e no desktop (240→270px) pra caber a imagem maior com
+  folga.
+- Arquivos: templateaula.html
+- Motivo: pedido da Karina — as fotos reais do vocabulário (v-20260819-2135)
+  estavam aparecendo pequenas demais dentro do card.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2140-docs-fotos
+
+## v-20260819-2140-docs-fotos — 19/08/2026
+- O que mudou: atualização do NEXT_STEPS.md registrando a conclusão da troca
+  de fotos da Safety Rules e a convenção criada para aulas futuras. Sem
+  mudança de código.
+- Arquivos: NEXT_STEPS.md, CHANGELOG.md
+- Motivo: fechamento do registro do commit v-20260819-2135-fotos-safety-rules.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2135-fotos-safety-rules
+
 ## v-20260819-2135-fotos-safety-rules — 19/08/2026
 - O que mudou: as 8 ilustrações em SVG da aula Safety Rules (curso Metalúrgica
   Horizonte) foram trocadas por fotos reais do Pexels (CC0). Os 6 flashcards de

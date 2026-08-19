@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-2101-wwyd-sem-reveal — 19/08/2026
+- O que mudou: as respostas da tela "What would you do?" deixaram de ficar
+  escondidas atrás de "Tap to reveal" — agora aparecem diretas, todas visíveis
+  de cara, cada uma com seu número. Criada `itemAberto()`, card sem interação de
+  clique nem estado aberto/fechado, escalado nos três breakpoints (retrato,
+  paisagem baixa, desktop) junto com o resto da tela 2.
+  A tela Practice NÃO mudou — continua com clique para revelar a resposta, que
+  ali faz sentido (é gabarito de exercício).
+- Arquivos: templateaula.html
+- Motivo: pedido da Karina, e também corrige uma inconsistência com a própria
+  regra do docs/pedagogico.md §6.3: "nenhuma resposta é certa — são
+  possibilidades plausíveis para reflexão, não múltipla escolha com gabarito".
+  Esconder atrás de um clique passava a impressão de gabarito que a regra
+  explicitamente nega.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2034-docs-rebuild
+
 ## v-20260819-2033-forcar-rebuild-pages — 19/08/2026
 - O que mudou: a fila de build do GitHub Pages travou depois do commit das setas
   laterais/teclado (20:06) e não pegou os 5 commits seguintes — layout desktop,

@@ -6,7 +6,9 @@
       falso, entrar na aula, conferir se as 8 telas renderizam, se o swipe
       funciona dentro do iframe, se os flashcards viram e se as respostas
       expandem. O iframe é o ponto de risco — o swipe é por touch e nunca foi
-      testado dentro de um iframe.
+      testado dentro de um iframe. Testar também as SETAS LATERAIS e o TECLADO
+      (← → Home End) e o Esc a partir de dentro da aula (v-20260819-1701): o
+      foco do iframe é o ponto frágil desse trio.
 - [ ] Decidir de onde a aba Cursos vai ler os dados de verdade. Hoje é a
       constante CURSOS_SEED no código: cada curso novo exige um commit. O
       caminho natural é o Supabase, que a dash já usa para Tasks.

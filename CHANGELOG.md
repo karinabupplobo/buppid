@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-1701-setas-teclado — 19/08/2026
+- O que mudou: a navegação entre as 8 telas da aula deixou de ser só por swipe.
+  No `templateaula.html`: duas SETAS LATERAIS (‹ ›) em círculo discreto,
+  translúcidas, que acendem em verde-limão no hover e SOMEM na primeira e na
+  última tela em vez de virarem botão morto; em paisagem com altura ≤480px elas
+  encolhem e chegam mais perto da borda, para não cobrirem o card. TECLADO: ← →
+  navegam, Home e End vão para as pontas.
+  Dois ajustes que o iframe exigiu: (1) ao abrir a aula, a dash agora chama
+  `frame.contentWindow.focus()` depois do load — sem isso as setas do teclado
+  continuariam sendo ouvidas pela dash e a aula não responderia; (2) o Esc
+  pressionado dentro do iframe não chegava ao listener da dash, então o template
+  emite `{ type: "bupp:fechar-aula" }` por postMessage e a dash escuta e fecha.
+- Arquivos: templateaula.html, index.html
+- Motivo: pedido da Karina — swipe continua, mas a aula também precisa navegar
+  por clique e por teclado. O foco e o Esc não foram pedidos: sem eles, o teclado
+  não funcionaria e o Esc quebraria assim que o foco entrasse na aula.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1603-docs-cursos
+
 ## v-20260819-1602-aba-cursos — 19/08/2026
 - O que mudou: nova aba **Cursos** na dash (quarto botão da sidebar). Lista com
   uma linha por material produzido — badge do nível + empresa + turma + contagem

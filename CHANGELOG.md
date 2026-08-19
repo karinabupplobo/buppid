@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-2033-forcar-rebuild-pages — 19/08/2026
+- O que mudou: a fila de build do GitHub Pages travou depois do commit das setas
+  laterais/teclado (20:06) e não pegou os 5 commits seguintes — layout desktop,
+  vocabulário ilustrado, material A2, cenas elaboradas. Ficaram no repositório
+  mas nunca foram ao ar. Detectado ao checar a API do Pages
+  (`/repos/.../pages/builds/latest`): o build publicado apontava pro commit
+  errado. Forçado com um commit vazio; o rebuild pegou o commit certo
+  (8cd3a60) e terminou com status "built", sem erro.
+- Arquivos: nenhum (commit vazio, só para re-disparar o build)
+- Motivo: falha de infraestrutura do Pages, não do código. Já estava registrado
+  como padrão conhecido nas notas do projeto ("a fila stalla silenciosamente e
+  não retenta sozinha"), mas eu não tinha checado a API antes de dizer "no ar"
+  nos commits anteriores desta sessão — a Karina que percebeu a divergência.
+- Reverter para o estado ANTERIOR a esta mudança: não aplicável (commit vazio).
+
 ## v-20260819-1901-cenas-elaboradas-e-foto — 19/08/2026
 - O que mudou: as duas cenas (What would you do? e Situational) do material de
   teste foram refeitas — de boneco-palito simples para ilustração com ambiente:

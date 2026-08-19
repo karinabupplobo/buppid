@@ -2,6 +2,19 @@
 
 ## Próximo
 
+- [ ] MUDAR A ROTINA: depois de qualquer push que altere algo visual (index.html,
+      templateaula.html), checar a API do Pages antes de dizer "no ar" —
+      `curl -H "Authorization: Bearer $TOKEN" https://api.github.com/repos/karinabupplobo/ingles/pages/builds/latest`
+      e conferir se o `commit` bate com o último commit local. Nesta sessão
+      (19/08 20h) a fila travou por 5 commits e só foi percebida porque a
+      Karina perguntou "isso já está no ar?".
+- [ ] karinabupplobo.github.io não está na lista de domínios liberados do
+      bash_tool (só github.com está) e o web_fetch exige um hit de busca prévio
+      pra aceitar a URL — não tenho hoje um jeito direto de abrir e inspecionar
+      o site publicado, só a API de status de build. Avaliar se vale liberar o
+      domínio *.github.io nas configurações de rede do projeto, junto com o
+      pedido já feito de Unsplash/Pexels.
+
 - [ ] Liberar `unsplash.com`, `images.unsplash.com`, `pexels.com` e
       `images.pexels.com` nas configurações de rede do projeto (Settings >
       Network > domínios permitidos), para eu poder buscar e baixar fotos reais

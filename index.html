@@ -430,6 +430,55 @@
     line-height: 15px; text-align: center; padding: 0 3px; }
   .side-btn.active #sidebar-badge { background: #e08a3c; }
 
+  /* ================= Cursos ================= */
+  #cursos-view.hidden { display: none !important; }
+  #cursos-view { max-width: 980px; margin: 0 auto; }
+  #cursos-lista { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); overflow: hidden; }
+  .curso-linha { display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer;
+    border-bottom: 1px solid var(--border); }
+  .curso-linha:last-child { border-bottom: none; }
+  .curso-linha:hover { background: var(--focus-bg); }
+  .curso-empresa { font-size: 14.5px; font-weight: 700; color: var(--text); }
+  .curso-meta { font-size: 12.5px; color: var(--text-muted); }
+  .curso-nivel { background: var(--accent); color: #fff; border-radius: 6px; padding: 3px 9px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; flex-shrink: 0; }
+  .curso-contagem { margin-left: auto; font-size: 12.5px; color: var(--text-muted); flex-shrink: 0; }
+  #cursos-vazio { padding: 28px 18px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+  /* modal com a lista de aulas do curso */
+  #aulas-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex;
+    align-items: center; justify-content: center; z-index: 100; }
+  #aulas-modal-backdrop.hidden { display: none !important; }
+  #aulas-modal { background: #fff; border-radius: 12px; width: 560px; max-width: 92vw; max-height: 84vh;
+    display: flex; flex-direction: column; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+  #aulas-modal-header { display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px; border-bottom: 1px solid var(--border); gap: 12px; }
+  #aulas-modal-header h3 { margin: 0; font-size: 15px; font-weight: 600; }
+  #aulas-modal-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  #aulas-modal-close { background: transparent; border: none; font-size: 15px; color: var(--text-muted);
+    cursor: pointer; padding: 4px 6px; border-radius: 4px; flex-shrink: 0; }
+  #aulas-modal-close:hover { background: var(--land-default); color: var(--accent-lime); }
+  #aulas-modal-body { overflow-y: auto; padding: 6px 0; }
+  .aula-linha { display: flex; align-items: center; gap: 12px; padding: 12px 18px; cursor: pointer;
+    border-bottom: 1px solid var(--border); }
+  .aula-linha:last-child { border-bottom: none; }
+  .aula-linha:hover { background: var(--focus-bg); }
+  .aula-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-lime);
+    color: #0A1214; font-size: 12px; font-weight: 700; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; }
+  .aula-nome { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .aula-meta { font-size: 12px; color: var(--text-muted); }
+
+  /* visualizador da aula em tela cheia */
+  #aula-viewer { position: fixed; inset: 0; z-index: 300; background: #0A1214; display: flex;
+    flex-direction: column; }
+  #aula-viewer.hidden { display: none !important; }
+  #aula-viewer-close { position: absolute; top: 10px; right: 12px; z-index: 310; width: 34px; height: 34px;
+    border-radius: 50%; border: none; background: rgba(255,255,255,0.14); color: #fff; font-size: 15px;
+    cursor: pointer; line-height: 34px; text-align: center; padding: 0; }
+  #aula-viewer-close:hover { background: var(--accent-lime); color: #0A1214; }
+  #aula-viewer-frame { flex: 1; width: 100%; border: none; display: block; }
+
   /* ================= Leads ================= */
   #leads-view.hidden { display: none !important; }
   #leads-search { width: 100%; border: 1px solid var(--border); border-radius: 7px;
@@ -828,6 +877,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
   </button>
+  <button class="side-btn" id="side-cursos" type="button" data-label="Cursos" aria-label="Cursos">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+  </button>
 </nav>
 <div id="app" class="hidden">
   <div id="app-header">
@@ -1144,6 +1197,10 @@
     </div>
   </div>
 
+  <div id="cursos-view" class="hidden">
+    <div id="cursos-lista"></div>
+  </div>
+
   <div id="settings-view" class="hidden">
     <div id="settings-panel">
       <button class="header-btn" id="settings-back-btn" type="button" style="margin-bottom:16px;">← Voltar</button>
@@ -1166,6 +1223,24 @@
       <div id="settings-msg"></div>
     </div>
   </div>
+</div>
+
+<div id="aulas-modal-backdrop" class="hidden">
+  <div id="aulas-modal">
+    <div id="aulas-modal-header">
+      <div>
+        <h3 id="aulas-modal-title"></h3>
+        <div id="aulas-modal-sub"></div>
+      </div>
+      <button id="aulas-modal-close" type="button">&#10005;</button>
+    </div>
+    <div id="aulas-modal-body"></div>
+  </div>
+</div>
+
+<div id="aula-viewer" class="hidden">
+  <button id="aula-viewer-close" type="button">&#10005;</button>
+  <iframe id="aula-viewer-frame" title="Aula"></iframe>
 </div>
 
 <div id="task-comments-modal-backdrop" class="hidden">
@@ -2369,19 +2444,174 @@ function showView(name) {
   document.getElementById("tasks-view").classList.toggle("hidden", name !== "tasks");
   document.getElementById("leads-view").classList.toggle("hidden", name !== "leads");
   document.getElementById("estudo-view").classList.toggle("hidden", name !== "estudo");
+  document.getElementById("cursos-view").classList.toggle("hidden", name !== "cursos");
   document.getElementById("settings-view").classList.toggle("hidden", name !== "settings");
   document.getElementById("app-title").textContent =
-    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "settings" ? "Settings" : "Tasks";
+    name === "leads" ? "Leads" : name === "estudo" ? "Mercado" : name === "cursos" ? "Cursos" : name === "settings" ? "Settings" : "Tasks";
   document.getElementById("side-tasks").classList.toggle("active", name === "tasks");
   document.getElementById("side-leads").classList.toggle("active", name === "leads");
   document.getElementById("side-estudo").classList.toggle("active", name === "estudo");
+  document.getElementById("side-cursos").classList.toggle("active", name === "cursos");
   if (name === "leads") renderLeads();
+  if (name === "cursos") renderCursos();
 }
 document.getElementById("nav-settings-btn").addEventListener("click", () => showView("settings"));
 document.getElementById("settings-back-btn").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-tasks").addEventListener("click", () => showView("tasks"));
 document.getElementById("side-leads").addEventListener("click", () => showView("leads"));
 document.getElementById("side-estudo").addEventListener("click", () => showView("estudo"));
+document.getElementById("side-cursos").addEventListener("click", () => showView("cursos"));
+
+
+// ===================== CURSOS =====================
+// Materiais já produzidos. A geração acontece no chat (ver pedagogico/GERADOR.md);
+// esta aba só EXIBE o que já foi gerado. Cada curso é uma empresa + nível + turma,
+// e cada aula segue o schema de docs/pedagogico.md §6.2.
+// Por enquanto os dados vivem nesta constante: nada de localStorage, para o material
+// no código ser sempre o que aparece na tela. O destino é o Supabase.
+const CURSOS_SEED = [
+  {
+    id: "curso-demo-1",
+    empresa: "Metalúrgica Horizonte",
+    nivel: "B1",
+    turma: "Comercial — Exportação",
+    aulas: [
+      {
+        aula: 1,
+        combinacao_id: "B1-C-01",
+        gramatica_id: "B1-G-006",
+        vocab_id: "B1-V-01",
+        conteudo: {
+          abertura: { titulo: "Trading Terms" },
+          vocab: {
+            tipo: "frase",
+            itens: [
+              { front_en: "\"Would you consider a longer payment term?\"", back_pt: "\"Você consideraria um prazo de pagamento maior?\"" },
+              { front_en: "\"That would put pressure on our margin.\"", back_pt: "\"Isso pressionaria nossa margem.\"" },
+              { front_en: "\"If we did that, what would we get in return?\"", back_pt: "\"Se fizéssemos isso, o que receberíamos em troca?\"" },
+              { front_en: "\"We'd need something on volume.\"", back_pt: "\"Precisaríamos de algo no volume.\"" },
+              { front_en: "\"Let me see what I can do.\"", back_pt: "\"Deixe-me ver o que consigo fazer.\"" },
+              { front_en: "\"That's not something we could commit to today.\"", back_pt: "\"Isso não é algo que poderíamos garantir hoje.\"" }
+            ]
+          },
+          what_would_you_do: {
+            leitura: "A German distributor asks Horizonte to move from 30 to 60 days of payment terms. The volume they buy is stable, and they are the third largest account. Margin on their line is already thin.",
+            pergunta: "If you were the export manager, what would you put on the table?",
+            respostas: [
+              "\"If we extended the terms to 60 days, would you commit to a higher annual volume?\"",
+              "\"We'd need something in return — perhaps a longer contract.\"",
+              "\"That's not something we could commit to today, but let me see what I can do.\"",
+              "\"If we did that with you, every other distributor would ask for the same.\""
+            ]
+          },
+          grammar: {
+            regra: "Second Conditional — hypothetical situations",
+            explicacao: "If + past simple, ... would + base verb. Use it to put an idea on the table without committing to it. In a negotiation this is how you test a concession before you offer it — the past tense signals that nothing has been agreed yet.",
+            exemplo: "Example: \"If we extended the payment terms, would you increase the annual volume?\""
+          },
+          practice: {
+            exercicios: [
+              { tipo: "completar", enunciado: "If we ___ (offer) 60 days, they would sign this quarter.", resposta: "offered" },
+              { tipo: "completar", enunciado: "They would commit to more volume if we ___ (be) flexible on terms.", resposta: "were" },
+              { tipo: "completar", enunciado: "If the margin ___ (not be) so thin, we would agree today.", resposta: "weren't" },
+              { tipo: "transformar", enunciado: "Transforme em hipótese: \"We can't extend the terms, so they won't raise the volume.\"", resposta: "If we could extend the terms, they would raise the volume." },
+              { tipo: "completar", enunciado: "What ___ (you / do) if they asked for 90 days?", resposta: "would you do" }
+            ]
+          },
+          situational: {
+            fala_personagem_1: "\"Your competitor gives us 60 days. If you can't match that, we'll have to move part of the volume.\"",
+            resposta_possivel: "\"I understand. If we matched those terms, we'd need to look at the volume commitment as well — would you be open to discussing an annual figure?\""
+          },
+          debate: {
+            mocao: "\"Payment terms should never be used as a negotiation tool — price is the only thing that should move.\""
+          },
+          encerramento: { titulo: "Fim" }
+        }
+      }
+    ]
+  }
+];
+
+let cursoAberto = null;
+
+function renderCursos() {
+  const box = document.getElementById("cursos-lista");
+  if (!CURSOS_SEED.length) {
+    box.innerHTML = '<div id="cursos-vazio">Nenhum material produzido ainda.</div>';
+    return;
+  }
+  box.innerHTML = CURSOS_SEED.map(c => {
+    const n = c.aulas.length;
+    return '<div class="curso-linha" data-curso="' + escAttr(c.id) + '">'
+      + '<span class="curso-nivel">' + esc(c.nivel) + '</span>'
+      + '<div><div class="curso-empresa">' + esc(c.empresa) + '</div>'
+      + '<div class="curso-meta">' + esc(c.turma) + '</div></div>'
+      + '<span class="curso-contagem">' + n + (n === 1 ? " aula" : " aulas") + '</span>'
+      + '</div>';
+  }).join("");
+  box.querySelectorAll(".curso-linha").forEach(el => {
+    el.addEventListener("click", () => abrirCurso(el.dataset.curso));
+  });
+}
+
+function abrirCurso(id) {
+  const curso = CURSOS_SEED.find(c => c.id === id);
+  if (!curso) return;
+  cursoAberto = curso;
+  document.getElementById("aulas-modal-title").textContent = curso.empresa;
+  document.getElementById("aulas-modal-sub").textContent = curso.nivel + " · " + curso.turma;
+  document.getElementById("aulas-modal-body").innerHTML = curso.aulas.map(a => {
+    const t = (a.conteudo && a.conteudo.abertura && a.conteudo.abertura.titulo) || ("Aula " + a.aula);
+    const g = (a.conteudo && a.conteudo.grammar && a.conteudo.grammar.regra) || "";
+    return '<div class="aula-linha" data-aula="' + a.aula + '">'
+      + '<span class="aula-num">' + a.aula + '</span>'
+      + '<div><div class="aula-nome">' + esc(t) + '</div>'
+      + '<div class="aula-meta">' + esc(g) + '</div></div></div>';
+  }).join("");
+  document.getElementById("aulas-modal-body").querySelectorAll(".aula-linha").forEach(el => {
+    el.addEventListener("click", () => abrirAula(parseInt(el.dataset.aula, 10)));
+  });
+  document.getElementById("aulas-modal-backdrop").classList.remove("hidden");
+}
+
+function fecharCurso() {
+  document.getElementById("aulas-modal-backdrop").classList.add("hidden");
+  cursoAberto = null;
+}
+
+// O iframe carrega o templateaula.html e recebe a aula por postMessage. O template
+// tem CSS de tela cheia (fundo, viewport, tap-highlight) que quebraria a dash se
+// fosse embutido direto — o iframe isola isso.
+function abrirAula(numero) {
+  if (!cursoAberto) return;
+  const aula = cursoAberto.aulas.find(a => a.aula === numero);
+  if (!aula) return;
+  const viewer = document.getElementById("aula-viewer");
+  const frame = document.getElementById("aula-viewer-frame");
+  frame.onload = () => {
+    frame.contentWindow.postMessage({ type: "bupp:aula", aula: aula.conteudo }, "*");
+  };
+  frame.src = "templateaula.html?v=" + Date.now();
+  viewer.classList.remove("hidden");
+}
+
+function fecharAula() {
+  const frame = document.getElementById("aula-viewer-frame");
+  frame.onload = null;
+  frame.src = "about:blank";
+  document.getElementById("aula-viewer").classList.add("hidden");
+}
+
+document.getElementById("aulas-modal-close").addEventListener("click", fecharCurso);
+document.getElementById("aulas-modal-backdrop").addEventListener("click", (e) => {
+  if (e.target.id === "aulas-modal-backdrop") fecharCurso();
+});
+document.getElementById("aula-viewer-close").addEventListener("click", fecharAula);
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!document.getElementById("aula-viewer").classList.contains("hidden")) fecharAula();
+  else if (!document.getElementById("aulas-modal-backdrop").classList.contains("hidden")) fecharCurso();
+});
 
 // --- Tasks: find/walk helpers ---
 function findTaskById(list, id) {

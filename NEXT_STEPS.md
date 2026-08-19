@@ -2,6 +2,20 @@
 
 ## Próximo
 
+- [ ] Liberar `unsplash.com`, `images.unsplash.com`, `pexels.com` e
+      `images.pexels.com` nas configurações de rede do projeto (Settings >
+      Network > domínios permitidos), para eu poder buscar e baixar fotos reais
+      para as cenas. Sem isso o bash_tool recebe `host_not_allowed`.
+- [ ] Depois de liberado: buscar fotos com licença gratuita (atenção — o site
+      mistura licença gratuita com Unsplash+/Getty, que é paga; filtrar por
+      "Free to use under the Unsplash License") e trocar o campo `cena` de SVG
+      para `<img src="assets/fotos/...">`. O CSS já suporta os dois formatos
+      (v-20260819-1901).
+- [ ] Avaliar fotos do PRÓPRIO CLIENTE em vez de banco de imagens — banco de
+      imagens quase não tem foto de infração de segurança (visitante sem EPI),
+      só uso correto. Fica melhor pedir no onboarding do contrato, com cuidado
+      de autorização de uso de imagem de pessoas identificáveis.
+
 - [ ] Testar a aba Cursos no navegador e NO CELULAR EM PAISAGEM: abrir o curso
       falso, entrar na aula, conferir se as 8 telas renderizam, se o swipe
       funciona dentro do iframe, se os flashcards viram e se as respostas

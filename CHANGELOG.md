@@ -2,6 +2,35 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-1901-cenas-elaboradas-e-foto — 19/08/2026
+- O que mudou: as duas cenas (What would you do? e Situational) do material de
+  teste foram refeitas — de boneco-palito simples para ilustração com ambiente:
+  chão de fábrica com prateleira de pallets, máquina industrial com painel,
+  faixa de isolamento, placa "PPE REQUIRED", porta industrial, cone de
+  sinalização e luminárias de teto. Personagens com capacete, colete e gesto
+  reconhecível (mão levantada em "pare").
+  O template ganhou suporte a FOTO REAL: `.cena` agora aceita tanto `<svg>`
+  quanto `<img>`, com `object-fit: cover` para a foto preencher o mesmo espaço
+  do SVG sem distorcer. O campo `cena` no schema já era genérico o bastante —
+  só faltava o CSS do lado da imagem.
+  Corrigido no processo: a cena nova, em PAISAGEM NO CELULAR (844×390), estourava
+  a altura disponível e cortava a última resposta da lista. Ajustado com uma
+  regra específica desse breakpoint: cena menor (9vh), gaps e paddings mais
+  compactos. Retrato e desktop não precisaram de ajuste.
+- Arquivos: templateaula.html, index.html
+- Motivo: pedido da Karina — fallback de ilustração mais elaborado que os
+  primeiros bonecos-palito, para quando não houver foto disponível.
+  Sobre foto: tentei buscar candidatas em bancos de imagem (Unsplash/Pexels)
+  para o material de teste, mas os domínios estão fora da lista de rede
+  permitida desta sessão (retorno `host_not_allowed`) — fica pendente até a
+  Karina liberar o acesso nas configurações de rede do projeto.
+  Nota de conteúdo: bancos de imagem raramente têm foto de INFRAÇÃO de segurança
+  (visitante sem EPI sendo barrado) — a maioria mostra uso correto de EPI. Foto
+  do próprio cliente tende a servir melhor que banco de imagens para este tipo
+  de cena específica.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1803-schema-imagem
+
 ## v-20260819-1801 e 1802 — aula ilustrada e layout desktop — 19/08/2026
 - O que mudou:
   **Vocabulário ilustrado.** O item de Vocab aceita um campo novo e OPCIONAL,

@@ -13,9 +13,10 @@
       da pasta `pedagogico/`.
 - [ ] Trabalhar a estrutura das aulas (as 8 telas) — próximo assunto combinado
       com a Karina depois de fechar o protocolo do gerador.
-- [ ] Remover o B1+ do `index.html:1257`... VERIFICAR: essa linha pode ter saído
-      junto com a aba do Gerador em v-20260819-1501, já que o seletor de nível
-      ficava dentro do #gerador-view. Conferir antes de tratar como pendência.
+- [ ] B1+ no index.html: RESOLVIDO por efeito colateral. O `<option value="B1+">`
+      ficava dentro do #gerador-view e saiu junto na v-20260819-1501. Confirmado:
+      não há mais nenhuma ocorrência de B1+ no index.html. Restam só os 3 pontos
+      do docs/pedagogico.md (linhas 142, 220, 255).
 
 - [ ] Revisar `pedagogico/00-pre-a1.md` e `pedagogico/06-c2.md`. São os dois
       arquivos mais autorais da pasta: as referências de corpus (EGP, EVP,

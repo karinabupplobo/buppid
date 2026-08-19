@@ -2471,61 +2471,111 @@ document.getElementById("side-cursos").addEventListener("click", () => showView(
 // no código ser sempre o que aparece na tela. O destino é o Supabase.
 const CURSOS_SEED = [
   {
-    id: "curso-demo-1",
-    empresa: "Metalúrgica Horizonte",
-    nivel: "B1",
-    turma: "Comercial — Exportação",
-    aulas: [
+    "id": "curso-demo-1",
+    "empresa": "Metalúrgica Horizonte",
+    "nivel": "A2",
+    "turma": "Produção — Segurança",
+    "aulas": [
       {
-        aula: 1,
-        combinacao_id: "B1-C-01",
-        gramatica_id: "B1-G-006",
-        vocab_id: "B1-V-01",
-        conteudo: {
-          abertura: { titulo: "Trading Terms" },
-          vocab: {
-            tipo: "frase",
-            itens: [
-              { front_en: "\"Would you consider a longer payment term?\"", back_pt: "\"Você consideraria um prazo de pagamento maior?\"" },
-              { front_en: "\"That would put pressure on our margin.\"", back_pt: "\"Isso pressionaria nossa margem.\"" },
-              { front_en: "\"If we did that, what would we get in return?\"", back_pt: "\"Se fizéssemos isso, o que receberíamos em troca?\"" },
-              { front_en: "\"We'd need something on volume.\"", back_pt: "\"Precisaríamos de algo no volume.\"" },
-              { front_en: "\"Let me see what I can do.\"", back_pt: "\"Deixe-me ver o que consigo fazer.\"" },
-              { front_en: "\"That's not something we could commit to today.\"", back_pt: "\"Isso não é algo que poderíamos garantir hoje.\"" }
+        "aula": 1,
+        "combinacao_id": "A2-C-08",
+        "gramatica_id": "A2-G-012, A2-G-013",
+        "vocab_id": "A2-V-14",
+        "conteudo": {
+          "abertura": {
+            "titulo": "Safety Rules"
+          },
+          "vocab": {
+            "tipo": "termo",
+            "itens": [
+              {
+                "front_en": "helmet",
+                "back_pt": "capacete",
+                "imagem": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M8 42c0-13 11-23 24-23s24 10 24 23\" fill=\"#D9E28C\"/> <path d=\"M8 42c0-13 11-23 24-23s24 10 24 23\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M25 20V9h14v11\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <rect x=\"5\" y=\"42\" width=\"54\" height=\"8\" rx=\"4\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> </svg>"
+              },
+              {
+                "front_en": "gloves",
+                "back_pt": "luvas",
+                "imagem": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M18 30V16a3 3 0 0 1 6 0v12V12a3 3 0 0 1 6 0v16V14a3 3 0 0 1 6 0v14V18a3 3 0 0 1 6 0v22a14 14 0 0 1-14 14h-4a10 10 0 0 1-10-10z\" fill=\"#D9E28C\"/> <path d=\"M18 30V16a3 3 0 0 1 6 0v12V12a3 3 0 0 1 6 0v16V14a3 3 0 0 1 6 0v14V18a3 3 0 0 1 6 0v22a14 14 0 0 1-14 14h-4a10 10 0 0 1-10-10z\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M18 34l-6 6a5 5 0 0 0 7 7l4-4\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <line x1=\"20\" y1=\"54\" x2=\"42\" y2=\"54\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> </svg>"
+              },
+              {
+                "front_en": "safety goggles",
+                "back_pt": "óculos de proteção",
+                "imagem": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\"> <rect x=\"8\" y=\"22\" width=\"21\" height=\"19\" rx=\"8\" fill=\"#D9E28C\"/> <rect x=\"8\" y=\"22\" width=\"21\" height=\"19\" rx=\"8\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <rect x=\"35\" y=\"22\" width=\"21\" height=\"19\" rx=\"8\" fill=\"#D9E28C\"/> <rect x=\"35\" y=\"22\" width=\"21\" height=\"19\" rx=\"8\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M29 31h6\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M8 28C4 28 2 30 2 34M56 28c4 0 6 2 6 6\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> </svg>"
+              },
+              {
+                "front_en": "safety boots",
+                "back_pt": "botas de segurança",
+                "imagem": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M20 10h14v26c0 4 3 6 8 8l8 4c3 1 4 3 4 6H20z\" fill=\"#D9E28C\"/> <path d=\"M20 10h14v26c0 4 3 6 8 8l8 4c3 1 4 3 4 6H20z\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <line x1=\"14\" y1=\"54\" x2=\"58\" y2=\"54\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M22 18h11M22 26h11\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> </svg>"
+              },
+              {
+                "front_en": "emergency exit",
+                "back_pt": "saída de emergência",
+                "imagem": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\"> <rect x=\"6\" y=\"8\" width=\"34\" height=\"48\" rx=\"3\" fill=\"#D9E28C\"/> <rect x=\"6\" y=\"8\" width=\"34\" height=\"48\" rx=\"3\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"32\" cy=\"32\" r=\"2.5\" fill=\"#0A1214\"/> <path d=\"M44 32h16M52 24l8 8-8 8\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> </svg>"
+              },
+              {
+                "front_en": "warning sign",
+                "back_pt": "placa de aviso",
+                "imagem": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M32 8 60 54H4z\" fill=\"#D9E28C\"/> <path d=\"M32 8 60 54H4z\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <line x1=\"32\" y1=\"24\" x2=\"32\" y2=\"38\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"32\" cy=\"46\" r=\"2.5\" fill=\"#0A1214\"/> </svg>"
+              }
             ]
           },
-          what_would_you_do: {
-            leitura: "A German distributor asks Horizonte to move from 30 to 60 days of payment terms. The volume they buy is stable, and they are the third largest account. Margin on their line is already thin.",
-            pergunta: "If you were the export manager, what would you put on the table?",
-            respostas: [
-              "\"If we extended the terms to 60 days, would you commit to a higher annual volume?\"",
-              "\"We'd need something in return — perhaps a longer contract.\"",
-              "\"That's not something we could commit to today, but let me see what I can do.\"",
-              "\"If we did that with you, every other distributor would ask for the same.\""
+          "what_would_you_do": {
+            "cena": "<svg viewBox=\"0 0 200 130\" xmlns=\"http://www.w3.org/2000/svg\"> <line x1=\"6\" y1=\"112\" x2=\"194\" y2=\"112\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <rect x=\"14\" y=\"62\" width=\"52\" height=\"50\" rx=\"3\" fill=\"#D9E28C\"/> <rect x=\"14\" y=\"62\" width=\"52\" height=\"50\" rx=\"3\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"34\" cy=\"86\" r=\"10\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"34\" cy=\"86\" r=\"3\" fill=\"#0A1214\"/> <path d=\"M66 70h16a8 8 0 0 1 8 8v34\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"120\" cy=\"52\" r=\"9\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M110 46a10 10 0 0 1 20 0z\" fill=\"#D9E28C\"/> <path d=\"M110 46a10 10 0 0 1 20 0z\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M120 61v28M120 70l-11 9M120 70l11 9M120 89l-8 23M120 89l8 23\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"165\" cy=\"55\" r=\"9\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M165 64v26M165 72l-10 8M165 72l10 8M165 90l-7 22M165 90l7 22\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> </svg>",
+            "leitura": "A supplier arrives for a visit. He walks onto the production floor with no helmet and no safety goggles. The line is running.",
+            "pergunta": "You see him. What do you do?",
+            "respostas": [
+              "\"Stop, please. You must wear a helmet here.\"",
+              "\"You have to put on safety goggles before you go in.\"",
+              "\"Wait here. I have to call your contact first.\"",
+              "\"Look at the warning sign. You mustn't walk past this line.\""
             ]
           },
-          grammar: {
-            regra: "Second Conditional — hypothetical situations",
-            explicacao: "If + past simple, ... would + base verb. Use it to put an idea on the table without committing to it. In a negotiation this is how you test a concession before you offer it — the past tense signals that nothing has been agreed yet.",
-            exemplo: "Example: \"If we extended the payment terms, would you increase the annual volume?\""
+          "grammar": {
+            "regra": "must · mustn't · have to · don't have to",
+            "explicacao": "Use must for a strong rule and mustn't for something forbidden. Use have to for a rule that comes from outside — the company, the law. Careful: mustn't and don't have to are not the same. Mustn't means it is forbidden. Don't have to means it is not necessary.",
+            "exemplo": "You must wear a helmet. You mustn't open the emergency exit. Visitors don't have to wear gloves."
           },
-          practice: {
-            exercicios: [
-              { tipo: "completar", enunciado: "If we ___ (offer) 60 days, they would sign this quarter.", resposta: "offered" },
-              { tipo: "completar", enunciado: "They would commit to more volume if we ___ (be) flexible on terms.", resposta: "were" },
-              { tipo: "completar", enunciado: "If the margin ___ (not be) so thin, we would agree today.", resposta: "weren't" },
-              { tipo: "transformar", enunciado: "Transforme em hipótese: \"We can't extend the terms, so they won't raise the volume.\"", resposta: "If we could extend the terms, they would raise the volume." },
-              { tipo: "completar", enunciado: "What ___ (you / do) if they asked for 90 days?", resposta: "would you do" }
+          "practice": {
+            "exercicios": [
+              {
+                "tipo": "completar",
+                "enunciado": "You ___ wear a helmet on the production floor.",
+                "resposta": "must"
+              },
+              {
+                "tipo": "completar",
+                "enunciado": "Visitors ___ wear gloves — only the operators do.",
+                "resposta": "don't have to"
+              },
+              {
+                "tipo": "completar",
+                "enunciado": "You ___ open that door. It is the emergency exit.",
+                "resposta": "mustn't"
+              },
+              {
+                "tipo": "completar",
+                "enunciado": "We ___ check the warning signs every morning.",
+                "resposta": "have to"
+              },
+              {
+                "tipo": "completar",
+                "enunciado": "She ___ use safety goggles when she cuts metal.",
+                "resposta": "has to"
+              }
             ]
           },
-          situational: {
-            fala_personagem_1: "\"Your competitor gives us 60 days. If you can't match that, we'll have to move part of the volume.\"",
-            resposta_possivel: "\"I understand. If we matched those terms, we'd need to look at the volume commitment as well — would you be open to discussing an annual figure?\""
+          "situational": {
+            "cena": "<svg viewBox=\"0 0 200 130\" xmlns=\"http://www.w3.org/2000/svg\"> <line x1=\"6\" y1=\"112\" x2=\"194\" y2=\"112\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <rect x=\"88\" y=\"14\" width=\"24\" height=\"98\" rx=\"2\" fill=\"#D9E28C\"/> <rect x=\"88\" y=\"14\" width=\"24\" height=\"98\" rx=\"2\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"46\" cy=\"46\" r=\"10\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M35 40a11 11 0 0 1 22 0z\" fill=\"#D9E28C\"/> <path d=\"M35 40a11 11 0 0 1 22 0z\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M46 56v30M46 66l-12 10M46 66l24 4M46 86l-8 26M46 86l8 26\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"154\" cy=\"50\" r=\"10\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M154 60v28M154 70l12 9M154 70l-14 6M154 88l-8 24M154 88l8 24\" stroke=\"#0A1214\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <circle cx=\"130\" cy=\"70\" r=\"11\" fill=\"none\" stroke=\"#0A1214\" stroke-width=\"3\"/> <line x1=\"123\" y1=\"63\" x2=\"137\" y2=\"77\" stroke=\"#0A1214\" stroke-width=\"3\" stroke-linecap=\"round\"/> </svg>",
+            "fala_personagem_1": "\"I'm only going in for two minutes. Do I really have to wear all of this?\"",
+            "resposta_possivel": "\"Yes, you do. You must wear a helmet and safety goggles — everyone has to, even for two minutes.\""
           },
-          debate: {
-            mocao: "\"Payment terms should never be used as a negotiation tool — price is the only thing that should move.\""
+          "debate": {
+            "mocao": "\"Visitors must follow the same safety rules as workers — no exceptions, not even for two minutes.\""
           },
-          encerramento: { titulo: "Fim" }
+          "encerramento": {
+            "titulo": "Fim"
+          }
         }
       }
     ]

@@ -141,6 +141,14 @@
     #arrow-next{ right: 6px; }
   }
 
+  /* Em retrato a coluna é estreita e as setas no meio da altura ficavam por cima
+     dos cards. Descem para a faixa das bolinhas, onde não disputam espaço. */
+  @media (orientation: portrait){
+    .nav-arrow{ top: auto; bottom: 8px; transform: none; width: 34px; height: 34px; font-size: 17px; }
+    #arrow-prev{ left: 14px; }
+    #arrow-next{ right: 14px; }
+  }
+
   /* ===== Tela 1: Step (texto central) ===== */
 
   .step-title{
@@ -252,8 +260,8 @@
     .card-slot{ height: 130px; }
     .face{ padding: 8px; }
     .face p{ font-size: 12px; }
-    .vocab-img{ width: 40px; height: 40px; }
-    .face-front.tem-img{ gap: 5px; }
+    .vocab-img{ width: 52px; height: 52px; }
+    .face-front.tem-img{ gap: 6px; }
   }
 
   @media (orientation: landscape) and (max-height: 600px){
@@ -262,7 +270,7 @@
     .card-slot{ height: 100%; }
     .face{ padding: 2vh 1.5vw; border-radius: 12px; }
     .face p{ font-size: clamp(14px, 3.2vh, 24px); }
-    .vocab-img{ width: clamp(30px, 7vh, 58px); height: clamp(30px, 7vh, 58px); }
+    .vocab-img{ width: clamp(38px, 13vh, 76px); height: clamp(38px, 13vh, 76px); }
     .face-front.tem-img{ gap: 1vh; }
     .cena svg{ max-height: 30vh; }
   }

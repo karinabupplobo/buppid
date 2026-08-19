@@ -573,19 +573,123 @@
 </div>
 
 <script>
-  // ---- Flip dos flashcards (tela 1) ----
-  document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', () => card.classList.toggle('flipped'));
+  // ---- Modo dados: a aula pode ser injetada de fora via postMessage ----
+  // Aberto direto no navegador, o template mantém o conteúdo estático de exemplo
+  // que já está no HTML. Embutido num iframe (a aba Cursos da dash), recebe uma
+  // mensagem { type: "bupp:aula", aula: {...} } no schema de docs/pedagogico.md §6.2
+  // e reconstrói as 8 telas a partir dela.
+
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function telaMarcador(titulo) {
+    return '<section class="screen"><h1 class="screen-title step-title">'
+      + esc(titulo) + '</h1></section>';
+  }
+
+  function telaVocab(vocab) {
+    const itens = (vocab && vocab.itens) || [];
+    const cards = itens.map(it =>
+      '<div class="card-slot"><div class="card">'
+      + '<div class="face face-front"><p>' + esc(it.front_en) + '</p></div>'
+      + '<div class="face face-back"><p>' + esc(it.back_pt) + '</p></div>'
+      + '</div></div>').join("");
+    return '<section class="screen"><h1 class="screen-title">Vocab</h1>'
+      + '<div class="wrap"><div class="grid">' + cards + '</div></div></section>';
+  }
+
+  // O mesmo componente de resposta expansível serve a duas telas: as respostas
+  // de leitura (What would you do?) e os exercícios de Practice. Muda só o que
+  // vai no cabeçalho e no corpo.
+  function itemExpansivel(n, cabecalho, corpo) {
+    return '<div class="answer-item"><div class="answer-head">'
+      + '<span class="num-btn">' + n + '</span><p>' + esc(cabecalho) + '</p></div>'
+      + '<div class="answer-body"><p>' + esc(corpo) + '</p></div></div>';
+  }
+
+  function telaWwyd(w) {
+    const respostas = (w && w.respostas) || [];
+    const itens = respostas.map((r, i) => itemExpansivel(i + 1, "Tap to reveal", r)).join("");
+    return '<section class="screen"><h1 class="screen-title">What would you do?</h1>'
+      + '<div class="s2-wrap">'
+      + '<div class="reading-card"><p>' + esc(w && w.leitura) + '</p></div>'
+      + '<div class="question-card"><p>' + esc(w && w.pergunta) + '</p></div>'
+      + '<div class="answers">' + itens + '</div>'
+      + '</div></section>';
+  }
+
+  function telaGrammar(g) {
+    return '<section class="screen"><h1 class="screen-title">Grammar</h1>'
+      + '<div class="big-card">'
+      + '<h2>' + esc(g && g.regra) + '</h2>'
+      + '<p>' + esc(g && g.explicacao) + '</p>'
+      + '<p class="prompt">' + esc(g && g.exemplo) + '</p>'
+      + '</div></section>';
+  }
+
+  function telaPractice(p) {
+    const ex = (p && p.exercicios) || [];
+    const itens = ex.map((e, i) => itemExpansivel(i + 1, e.enunciado, e.resposta)).join("");
+    return '<section class="screen"><h1 class="screen-title">Practice</h1>'
+      + '<div class="s4-wrap">' + itens + '</div></section>';
+  }
+
+  function telaSituational(s) {
+    return '<section class="screen"><h1 class="screen-title">Situational</h1>'
+      + '<div class="big-card">'
+      + '<p><strong>Character 1:</strong> ' + esc(s && s.fala_personagem_1) + '</p>'
+      + '<div class="answers">'
+      + itemExpansivel(1, "Ver uma resposta possível", (s && s.resposta_possivel) || "")
+      + '</div></div></section>';
+  }
+
+  function telaDebate(d) {
+    return '<section class="screen"><h1 class="screen-title">Debate</h1>'
+      + '<div class="big-card">'
+      + '<p><strong>Motion:</strong> ' + esc(d && d.mocao) + '</p>'
+      + '<p class="prompt">Take a side. Prepare two arguments to defend your position.</p>'
+      + '</div></section>';
+  }
+
+  function renderAula(aula) {
+    if (!aula) return;
+    const html = [
+      telaMarcador((aula.abertura && aula.abertura.titulo) || "Step 1"),
+      telaVocab(aula.vocab),
+      telaWwyd(aula.what_would_you_do),
+      telaGrammar(aula.grammar),
+      telaPractice(aula.practice),
+      telaSituational(aula.situational),
+      telaDebate(aula.debate),
+      telaMarcador((aula.encerramento && aula.encerramento.titulo) || "Fim")
+    ].join("");
+    document.getElementById('screens').innerHTML = html;
+    ligarInteracoes();
+    goTo(0);
+  }
+
+  window.addEventListener('message', (ev) => {
+    const d = ev.data;
+    if (d && d.type === "bupp:aula") renderAula(d.aula);
   });
 
-  // ---- Toggle das respostas (telas 2 e 4) ----
-  document.querySelectorAll('.answer-head').forEach(head => {
-    head.addEventListener('click', () => {
-      head.closest('.answer-item').classList.toggle('open');
+  // ---- Interações: religadas toda vez que as telas são reconstruídas ----
+  function ligarInteracoes() {
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => card.classList.toggle('flipped'));
     });
-  });
+    document.querySelectorAll('.answer-head').forEach(head => {
+      head.addEventListener('click', () => {
+        head.closest('.answer-item').classList.toggle('open');
+      });
+    });
+  }
+  ligarInteracoes();
 
-  // ---- Navegação por swipe entre as 6 telas ----
+  // ---- Navegação por swipe entre as 8 telas ----
   const screens = document.getElementById('screens');
   const dots = document.querySelectorAll('.dot');
   const total = 8;

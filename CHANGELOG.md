@@ -2,6 +2,49 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-1801 e 1802 — aula ilustrada e layout desktop — 19/08/2026
+- O que mudou:
+  **Vocabulário ilustrado.** O item de Vocab aceita um campo novo e OPCIONAL,
+  `imagem`, com SVG inline. Card com imagem vira coluna (ilustração em cima,
+  palavra embaixo); card sem imagem continua exatamente como era. O campo é
+  opcional de propósito: termo solto (Pre-A1 a A2) costuma ser ilustrável, frase
+  pronta em contexto (B1+) não é — e forçar imagem em frase daria ilustração
+  genérica e decorativa.
+  **Cenas.** `what_would_you_do` e `situational` aceitam um campo `cena`, também
+  SVG inline e também opcional.
+  **Layout desktop (novo).** Até aqui o template era desenhado só para o celular:
+  numa tela larga ficava uma coluna estreita e centrada, com as laterais vazias.
+  A partir de 900px de largura com altura ≥620px: Vocab com cards de 240px e
+  ilustração de 104px; What would you do? em duas colunas (cena à esquerda,
+  leitura/pergunta/respostas à direita, e sem cena volta a coluna única);
+  Situational com o personagem ao lado da fala; Practice em duas colunas em vez
+  de lista longa; big-card maior e tipografia proporcional. Acima de 1600px o
+  padding cresce e a largura trava, para a linha não ficar longa demais.
+  O CELULAR NÃO MUDOU DE LAYOUT — as media queries de portrait e de landscape
+  baixo continuam mandando.
+  **Ajustes de celular que os testes acusaram:** a ilustração ficava pequena
+  demais no card (paisagem passou para clamp(38px,13vh,76px), retrato para 52px)
+  e, em RETRATO, as setas laterais ficavam por cima dos cards — desceram para a
+  faixa das bolinhas.
+  **Material de teste trocado.** Saiu o curso B1 (frases de negociação, que não
+  são ilustráveis) e entrou Metalúrgica Horizonte · A2 · Produção-Segurança, com
+  a aula "Safety Rules": combinação A2-C-08, gramática A2-G-012/013
+  (must, mustn't, have to, don't have to), campo A2-V-14 (segurança e
+  conformidade). Seis termos ilustrados (helmet, gloves, safety goggles, safety
+  boots, emergency exit, warning sign) e duas cenas. A regra de dependência foi
+  respeitada: Practice, Situational, Debate e What would you do? só reciclam o
+  vocabulário e a gramática das telas Vocab e Grammar.
+- Arquivos: templateaula.html, index.html
+- Motivo: pedido da Karina — Vocab ilustrado quando o termo for ilustrável, e
+  desktop ocupando a tela em vez de repetir o layout de celular.
+  Nota de segurança: os campos `imagem` e `cena` entram SEM escapar, porque
+  contêm SVG escrito por nós no JSON da aula. Se um dia esse conteúdo vier de
+  fora, tem que passar a ser sanitizado.
+  Nota de teste: as 8 telas foram renderizadas em 1440x900, 844x390 e 390x844 e
+  inspecionadas uma a uma antes do commit.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1702-docs-setas
+
 ## v-20260819-1701-setas-teclado — 19/08/2026
 - O que mudou: a navegação entre as 8 telas da aula deixou de ser só por swipe.
   No `templateaula.html`: duas SETAS LATERAIS (‹ ›) em círculo discreto,

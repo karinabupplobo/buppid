@@ -158,11 +158,12 @@ ensinada.
   "vocab": {
     "tipo": "termo | frase",
     "itens": [
-      { "front_en": "...", "back_pt": "..." }
+      { "front_en": "...", "back_pt": "...", "imagem": "<svg>...</svg>" }
     ]
   },
 
   "what_would_you_do": {
+    "cena": "<svg>...</svg>",
     "leitura": "...",
     "pergunta": "...",
     "respostas": ["...", "..."]
@@ -184,6 +185,7 @@ ensinada.
   },
 
   "situational": {
+    "cena": "<svg>...</svg>",
     "fala_personagem_1": "...",
     "resposta_possivel": "..."
   },
@@ -203,8 +205,19 @@ ensinada.
 - **Vocab**
   - Quantidade de itens: **variável**, o grid se adapta ao número (a IA decide com base na densidade de vocabulário do tema).
   - Conteúdo por nível: **A1–A2** → termo/expressão solta + tradução (ex: "deadline" → "prazo final"). **B1 em diante** → frase pronta de uso em contexto.
+  - **`imagem` (opcional).** SVG inline, em `viewBox="0 0 64 64"`, traço petróleo
+    `#0A1214` com preenchimento de acento limão `#D9E28C` — o card é branco, então
+    a ilustração precisa ler bem em traço escuro. Só entra quando o item é
+    **ilustrável**: objeto concreto ou ação visível. Na prática isso quer dizer
+    Pre-A1, A1 e A2, onde o Vocab é termo solto. Frase pronta de B1 em diante
+    quase nunca é ilustrável — e imagem genérica em frase vira enfeite, não
+    apoio de memória. Item sem o campo renderiza como sempre: só texto.
 
 - **What would you do?**
+  - **`cena` (opcional).** SVG inline em `viewBox="0 0 200 130"`, mesma paleta.
+    Ilustra a situação da leitura. No desktop a cena ocupa uma coluna inteira ao
+    lado do texto; sem ela, o conteúdo volta a coluna única. No celular entra
+    acima da leitura.
   - Quantidade de respostas: **variável, 2 a 4**.
   - Nenhuma resposta é "certa" — são possibilidades plausíveis para reflexão, não múltipla escolha com gabarito.
   - Deve reaproveitar termos do `vocab` gerado na tela anterior.
@@ -222,6 +235,8 @@ ensinada.
   - Sempre treina exatamente a regra gerada em `grammar`.
 
 - **Situational**
+  - **`cena` (opcional).** SVG inline em `viewBox="0 0 200 130"`. No desktop o
+    personagem aparece ao lado da fala.
   - A IA escolhe se usa gramática, vocabulário, ou os dois — não é obrigatório usar ambos.
   - Tem um botão opcional "Ver uma resposta possível" (reaproveita a mecânica de número expansível, com 1 item).
   - Personagem 2 responde de cabeça — não há campo de escrita.

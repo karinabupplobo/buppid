@@ -2,6 +2,48 @@
 
 Entradas mais recentes no topo.
 
+## v-20260819-1602-aba-cursos — 19/08/2026
+- O que mudou: nova aba **Cursos** na dash (quarto botão da sidebar). Lista com
+  uma linha por material produzido — badge do nível + empresa + turma + contagem
+  de aulas. Clique na linha abre um modal com as aulas daquele curso; clique na
+  aula abre o visualizador em TELA CHEIA, que é um iframe carregando o
+  `templateaula.html` e injetando o JSON da aula por postMessage. Fecha por ✕ ou
+  Esc (Esc fecha primeiro o visualizador, depois o modal).
+  Incluída a constante `CURSOS_SEED` com um material falso para teste:
+  Metalúrgica Horizonte · B1 · Comercial-Exportação, com 1 aula completa
+  ("Trading Terms", second conditional / B1-C-01) com as 8 telas preenchidas.
+- Arquivos: index.html
+- Motivo: a geração de aulas passou a acontecer no chat (v-20260819-1502); a dash
+  precisa de onde EXIBIR o material pronto. Esta aba é só de leitura — não gera
+  nada.
+  Decisão: os dados ficam numa constante no código, sem localStorage. Com
+  localStorage, mudar o material no código e recarregar mostraria a versão velha
+  guardada no navegador — armadilha clássica de teste. Além disso localStorage é
+  por navegador, e a aula precisa ser testada no celular. O destino real é o
+  Supabase.
+  Decisão 2: iframe em vez de renderizar inline. O CSS do templateaula.html
+  define background no body, telas de viewport inteira e override de
+  tap-highlight — embutido direto, vazaria na dash. O iframe isola e mantém o
+  template como fonte única do formato de aula.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1601-template-datadriven
+
+## v-20260819-1601-template-datadriven — 19/08/2026
+- O que mudou: `templateaula.html` passou a aceitar a aula de fora. Recebe
+  `{ type: "bupp:aula", aula: {...} }` por postMessage, no schema de
+  docs/pedagogico.md §6.2, e reconstrói as 8 telas a partir do JSON. Aberto
+  direto no navegador, mantém o conteúdo estático de exemplo que já existia —
+  continua servindo como referência autônoma do formato.
+  As interações (flip dos flashcards, respostas expansíveis) foram extraídas para
+  `ligarInteracoes()`, chamada no carregamento e de novo a cada renderização —
+  sem isso os handlers morreriam ao trocar o innerHTML.
+- Arquivos: templateaula.html
+- Motivo: pré-requisito da aba Cursos. Sem isso, o formato de aula existiria em
+  dois lugares (template + dash) e sairia de sincronia na primeira mudança de
+  layout.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-1504-b1mais-resolvido
+
 ## v-20260819-1502-protocolo-gerador — 19/08/2026
 - O que mudou: criado `pedagogico/GERADOR.md`, o protocolo do gerador de aulas
   conduzido por chat. Gatilho "iniciar gerador de aulas": leitura obrigatória dos

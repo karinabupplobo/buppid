@@ -2,10 +2,19 @@
 
 ## Próximo
 
-- [ ] Construir a interface da dash que RECEBE as aulas prontas. A aba antiga foi
-      removida em v-20260819-1501; a nova só entra no fim, quando o formato do
-      material estiver estável. Definir o que ela precisa: listar cursos, abrir
-      uma aula, renderizar as 8 telas, exportar.
+- [ ] Testar a aba Cursos no navegador e NO CELULAR EM PAISAGEM: abrir o curso
+      falso, entrar na aula, conferir se as 8 telas renderizam, se o swipe
+      funciona dentro do iframe, se os flashcards viram e se as respostas
+      expandem. O iframe é o ponto de risco — o swipe é por touch e nunca foi
+      testado dentro de um iframe.
+- [ ] Decidir de onde a aba Cursos vai ler os dados de verdade. Hoje é a
+      constante CURSOS_SEED no código: cada curso novo exige um commit. O
+      caminho natural é o Supabase, que a dash já usa para Tasks.
+- [ ] Definir como o material gerado no chat CHEGA na dash. Hoje é colar JSON
+      dentro da constante à mão. Precisa de um caminho menos manual antes do
+      primeiro curso real.
+- [ ] Avaliar se a aba Cursos precisa de exportação (PDF da aula, link para o
+      aluno). Hoje só exibe.
 - [ ] Corrigir a seção 9 do `docs/pedagogico.md` ("Estado atual da implementação
       (dash)"). Ela descreve em detalhe a aba Gerador de Aulas, que não existe
       mais desde v-20260819-1501. Também restam 3 pontos com B1+ (linhas 142,

@@ -211,6 +211,40 @@
     background: var(--amarelo-neon);
   }
 
+  /* Vocabulário ilustrado: só existe quando o item traz o campo "imagem".
+     Termo solto (Pre-A1 a A2) costuma ser ilustrável; frase pronta (B1+) não —
+     por isso o campo é opcional e o card sem imagem continua como era. */
+  .face-front.tem-img{
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .vocab-img{
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vocab-img svg{ width: 100%; height: 100%; display: block; }
+
+  /* Cena ilustrada das telas de leitura e situational */
+  .cena{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--branco);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  .cena svg{ width: 100%; height: auto; max-height: 190px; display: block; }
+
   .face-back p{ font-weight: 500; }
 
   @media (orientation: portrait){
@@ -218,6 +252,8 @@
     .card-slot{ height: 130px; }
     .face{ padding: 8px; }
     .face p{ font-size: 12px; }
+    .vocab-img{ width: 40px; height: 40px; }
+    .face-front.tem-img{ gap: 5px; }
   }
 
   @media (orientation: landscape) and (max-height: 600px){
@@ -226,6 +262,9 @@
     .card-slot{ height: 100%; }
     .face{ padding: 2vh 1.5vw; border-radius: 12px; }
     .face p{ font-size: clamp(14px, 3.2vh, 24px); }
+    .vocab-img{ width: clamp(30px, 7vh, 58px); height: clamp(30px, 7vh, 58px); }
+    .face-front.tem-img{ gap: 1vh; }
+    .cena svg{ max-height: 30vh; }
   }
 
   /* ===== Tela 2: What would you do? (leitura + Q&A) ===== */
@@ -391,6 +430,92 @@
   @media (prefers-reduced-motion: reduce){
     .card, .screens{ transition: none; }
   }
+
+  /* ==========================================================================
+     DESKTOP — a partir de 900px de largura com altura folgada.
+     Até aqui o template era desenhado só para o celular: uma coluna estreita,
+     centrada, com muito vazio nas laterais quando aberto num monitor. As regras
+     abaixo NÃO tocam no celular (as media queries de portrait e de landscape
+     baixo continuam mandando); elas só entram quando há espaço de sobra.
+     ========================================================================== */
+
+  @media (min-width: 900px) and (min-height: 620px){
+
+    .screen{ padding: 48px 88px; }
+
+    .step-title{ font-size: 34px; }
+
+    /* --- Vocab: cards maiores, imagem com destaque --- */
+    .wrap{ max-width: 1180px; }
+    .grid{ gap: 26px; }
+    .card-slot{ height: 240px; }
+    .face{ padding: 22px; border-radius: 14px; }
+    .face p{ font-size: 20px; }
+    .vocab-img{ width: 104px; height: 104px; }
+    .face-front.tem-img{ gap: 16px; }
+
+    /* --- What would you do?: cena à esquerda, conteúdo à direita --- */
+    .s2-wrap{
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto 1fr;
+      gap: 16px 28px;
+      align-items: start;
+    }
+    /* Sem cena, a coluna some e o conteúdo volta a ocupar a largura toda. */
+    .s2-wrap:not(.tem-cena){ grid-template-columns: 1fr; max-width: 820px; }
+    .s2-wrap .cena{ grid-column: 1; grid-row: 1 / span 3; align-self: stretch; }
+    .s2-wrap .cena svg{ max-height: 62vh; }
+    .s2-wrap .reading-card{ grid-column: 2; }
+    .s2-wrap .question-card{ grid-column: 2; }
+    .s2-wrap .answers{ grid-column: 2; }
+    .s2-wrap:not(.tem-cena) .reading-card,
+    .s2-wrap:not(.tem-cena) .question-card,
+    .s2-wrap:not(.tem-cena) .answers{ grid-column: 1; }
+
+    .reading-card, .question-card{ padding: 24px 26px; }
+    .reading-card p{ font-size: 17px; }
+    .question-card p{ font-size: 18px; }
+    .answer-head{ padding: 14px 18px; }
+    .answer-head p{ font-size: 16px; }
+    .answer-body p{ font-size: 16px; padding: 0 18px 18px 62px; }
+    .answer-item.open .answer-body{ max-height: 200px; }
+    .num-btn{ width: 34px; height: 34px; font-size: 15px; }
+
+    /* --- Grammar, Situational, Debate: card grande de verdade --- */
+    .big-card{ max-width: 900px; padding: 40px 44px; border-radius: 18px; }
+    .big-card h2{ font-size: 26px; margin-bottom: 20px; }
+    .big-card p{ font-size: 18px; line-height: 1.7; margin-bottom: 14px; }
+
+    /* Situational com personagem ilustrado ao lado da fala */
+    .big-card.com-cena{
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 34px;
+      align-items: center;
+    }
+    .big-card.com-cena .cena{ box-shadow: none; padding: 0; }
+    .big-card.com-cena .cena svg{ max-height: 52vh; }
+    .big-card.com-cena > .conteudo > :last-child{ margin-bottom: 0; }
+
+    /* --- Practice: duas colunas em vez de lista longa --- */
+    .s4-wrap{
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 28px;
+      align-content: start;
+    }
+  }
+
+  /* Telas muito largas: segura a leitura, senão a linha fica longa demais. */
+  @media (min-width: 1600px) and (min-height: 620px){
+    .screen{ padding: 56px 140px; }
+    .wrap, .s2-wrap, .s4-wrap, .big-card.com-cena{ max-width: 1320px; }
+  }
+
 </style>
 </head>
 <body>
@@ -631,13 +756,19 @@
       + esc(titulo) + '</h1></section>';
   }
 
+  // O campo "imagem" traz SVG cru, escrito por nós no JSON da aula — por isso
+  // entra sem escapar. Não é entrada de usuário; se um dia for, tem que escapar.
   function telaVocab(vocab) {
     const itens = (vocab && vocab.itens) || [];
-    const cards = itens.map(it =>
-      '<div class="card-slot"><div class="card">'
-      + '<div class="face face-front"><p>' + esc(it.front_en) + '</p></div>'
-      + '<div class="face face-back"><p>' + esc(it.back_pt) + '</p></div>'
-      + '</div></div>').join("");
+    const cards = itens.map(it => {
+      const img = it.imagem
+        ? '<div class="vocab-img">' + it.imagem + '</div>' : '';
+      return '<div class="card-slot"><div class="card">'
+        + '<div class="face face-front' + (it.imagem ? ' tem-img' : '') + '">'
+        + img + '<p>' + esc(it.front_en) + '</p></div>'
+        + '<div class="face face-back"><p>' + esc(it.back_pt) + '</p></div>'
+        + '</div></div>';
+    }).join("");
     return '<section class="screen"><h1 class="screen-title">Vocab</h1>'
       + '<div class="wrap"><div class="grid">' + cards + '</div></div></section>';
   }
@@ -654,8 +785,10 @@
   function telaWwyd(w) {
     const respostas = (w && w.respostas) || [];
     const itens = respostas.map((r, i) => itemExpansivel(i + 1, "Tap to reveal", r)).join("");
+    const cena = (w && w.cena) ? '<div class="cena">' + w.cena + '</div>' : '';
     return '<section class="screen"><h1 class="screen-title">What would you do?</h1>'
-      + '<div class="s2-wrap">'
+      + '<div class="s2-wrap' + (cena ? ' tem-cena' : '') + '">'
+      + cena
       + '<div class="reading-card"><p>' + esc(w && w.leitura) + '</p></div>'
       + '<div class="question-card"><p>' + esc(w && w.pergunta) + '</p></div>'
       + '<div class="answers">' + itens + '</div>'
@@ -679,12 +812,15 @@
   }
 
   function telaSituational(s) {
-    return '<section class="screen"><h1 class="screen-title">Situational</h1>'
-      + '<div class="big-card">'
+    const cena = (s && s.cena) ? '<div class="cena">' + s.cena + '</div>' : '';
+    const conteudo = '<div class="conteudo">'
       + '<p><strong>Character 1:</strong> ' + esc(s && s.fala_personagem_1) + '</p>'
       + '<div class="answers">'
       + itemExpansivel(1, "Ver uma resposta possível", (s && s.resposta_possivel) || "")
-      + '</div></div></section>';
+      + '</div></div>';
+    return '<section class="screen"><h1 class="screen-title">Situational</h1>'
+      + '<div class="big-card' + (cena ? ' com-cena' : '') + '">'
+      + cena + conteudo + '</div></section>';
   }
 
   function telaDebate(d) {

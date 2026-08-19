@@ -185,7 +185,8 @@ ensinada.
   },
 
   "situational": {
-    "cena": "<svg>...</svg>",
+    "cena": "<svg>...</svg> ou <img>...</img>",
+    "contexto": "(opcional) uma frase de rubrica, situando a cena antes da fala — necessário quando a foto real (ou o SVG) sozinha não deixa claro o que está acontecendo, ex.: cena genérica de ambiente sem os personagens da narrativa. Campo opcional: aulas sem ele continuam renderizando normalmente.",
     "fala_personagem_1": "...",
     "resposta_possivel": "..."
   },

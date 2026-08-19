@@ -466,10 +466,23 @@
     border-radius: 6px;
   }
 
+  /* Rubrica de contexto da tela Situational: situa a cena antes da fala,
+     como uma didascália de teatro — itálico, discreto, sem caixa. Campo
+     opcional no schema; telas antigas sem "contexto" continuam iguais. */
+  .situational-contexto{
+    font-style: italic;
+    color: var(--texto);
+    opacity: 0.72;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+  }
+
   @media (orientation: landscape) and (max-height: 600px){
     .big-card{ max-width: 560px; padding: 3vh 3vw; max-height: 78vh; overflow-y: auto; }
     .big-card h2{ font-size: clamp(14px, 2.6vh, 19px); }
     .big-card p{ font-size: clamp(11px, 2vh, 14px); }
+    .situational-contexto{ font-size: clamp(10px, 1.8vh, 13px); margin-bottom: 1.5vh; }
   }
 
   /* ===== Tela 4: Practice (exercícios de gramática) ===== */
@@ -548,6 +561,7 @@
     .big-card{ max-width: 900px; padding: 40px 44px; border-radius: 18px; }
     .big-card h2{ font-size: 26px; margin-bottom: 20px; }
     .big-card p{ font-size: 18px; line-height: 1.7; margin-bottom: 14px; }
+    .situational-contexto{ font-size: 16px; margin-bottom: 18px; }
 
     /* Situational com personagem ilustrado ao lado da fala */
     .big-card.com-cena{
@@ -882,7 +896,10 @@
 
   function telaSituational(s) {
     const cena = (s && s.cena) ? '<div class="cena">' + s.cena + '</div>' : '';
+    const contexto = (s && s.contexto)
+      ? '<p class="situational-contexto">' + esc(s.contexto) + '</p>' : '';
     const conteudo = '<div class="conteudo">'
+      + contexto
       + '<p><strong>Character 1:</strong> ' + esc(s && s.fala_personagem_1) + '</p>'
       + '<div class="answers">'
       + itemExpansivel(1, "Ver uma resposta possível", (s && s.resposta_possivel) || "")

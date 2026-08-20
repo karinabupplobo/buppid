@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!--
+  TEMPLATE DE TRILHA — ESTRUTURA EM BRANCO
+  =======================================
+  Irmão do templateaula.html: mesma lógica de carrossel horizontal, mesma
+  paleta, mesmo comportamento de swipe/setas/teclado.
+
+  DIFERENÇA: o templateaula é EXPOSIÇÃO (aluno lê/vira card).
+  A trilha é EXERCÍCIO — cada card espera uma resposta e devolve
+  acerto/erro. Ao fim, calcula a nota da trilha.
+
+  ESTADO: estrutura pronta, CONTEÚDO EM BRANCO de propósito.
+  Os exercícios entram depois (decisão da Karina, 20/08/2026).
+
+  Para preencher, editar a constante TRILHA lá embaixo. Cada item:
+    {
+      tipo: "multipla" | "completar" | "ordenar",
+      enunciado: "",
+      opcoes: [],          // multipla
+      resposta: null,      // índice (multipla) ou string (completar)
+      explicacao: ""       // aparece depois de responder
+    }
+
+  REGRA HERDADA DA AULA: a trilha só recicla vocabulário e gramática que
+  já apareceram na aula correspondente. Nada de conteúdo novo aqui.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Trilha</title>
+<style>
+  :root{
+    --teal-escuro: #0A1214;
+    --amarelo-neon: #D9E28C;
+    --azul-intermediario: #3C6E78;
+    --branco: #FFFFFF;
+    --texto: #000000;
+    --verde-ok: #3f6b45;
+    --verde-ok-bg: #dff0d8;
+    --vermelho-err: #a3312a;
+    --vermelho-err-bg: #fbe0de;
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: rgba(60,110,120,0.45); }
+
+  html, body{
+    margin: 0; padding: 0; height: 100%;
+    background: var(--teal-escuro);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    overflow: hidden; overscroll-behavior: none;
+  }
+
+  .app{ position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+  .screens{
+    display: flex; height: 100%;
+    transition: transform 0.45s cubic-bezier(0.4, 0.1, 0.2, 1);
+    will-change: transform;
+  }
+
+  .screen{
+    height: 100%; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+
+  .screen-title{
+    color: var(--amarelo-neon); font-size: 13px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    text-align: center; margin: 0 0 16px 0;
+  }
+
+  /* ===== Card de exercício ===== */
+  .card{
+    background: var(--branco); border-radius: 16px;
+    width: 100%; max-width: 520px; padding: 26px 22px;
+    color: var(--texto);
+  }
+
+  .enunciado{
+    font-size: 17px; font-weight: 600; line-height: 1.45;
+    margin: 0 0 18px; text-align: center; min-height: 24px;
+  }
+
+  .opcoes{ display: flex; flex-direction: column; gap: 9px; }
+
+  .opcao{
+    border: 1.5px solid #e3e6e0; background: #fff; border-radius: 10px;
+    padding: 13px 15px; font-family: inherit; font-size: 15px;
+    text-align: left; cursor: pointer; color: var(--texto);
+    transition: border-color .15s, background .15s;
+  }
+  .opcao:hover:not(:disabled){ border-color: var(--azul-intermediario); }
+  .opcao.certa{ background: var(--verde-ok-bg); border-color: var(--verde-ok); color: var(--verde-ok); font-weight: 700; }
+  .opcao.errada{ background: var(--vermelho-err-bg); border-color: var(--vermelho-err); color: var(--vermelho-err); font-weight: 700; }
+  .opcao:disabled{ cursor: default; }
+
+  .input-resposta{
+    width: 100%; border: 1.5px solid #e3e6e0; border-radius: 10px;
+    padding: 13px 15px; font-family: inherit; font-size: 16px;
+    color: var(--texto); outline: none;
+  }
+  .input-resposta:focus{ border-color: var(--azul-intermediario); }
+  .input-resposta.certa{ background: var(--verde-ok-bg); border-color: var(--verde-ok); }
+  .input-resposta.errada{ background: var(--vermelho-err-bg); border-color: var(--vermelho-err); }
+
+  .btn-conferir{
+    width: 100%; margin-top: 14px; border: none; border-radius: 10px;
+    background: var(--teal-escuro); color: #fff; font-family: inherit;
+    font-size: 15px; font-weight: 700; padding: 13px; cursor: pointer;
+  }
+  .btn-conferir:disabled{ opacity: .4; cursor: default; }
+
+  .feedback{
+    margin-top: 14px; padding: 12px 14px; border-radius: 10px;
+    font-size: 14px; line-height: 1.45; display: none;
+  }
+  .feedback.show{ display: block; }
+  .feedback.ok{ background: var(--verde-ok-bg); color: var(--verde-ok); }
+  .feedback.err{ background: var(--vermelho-err-bg); color: var(--vermelho-err); }
+  .feedback b{ display: block; margin-bottom: 3px; }
+
+  /* ===== Abertura e fim ===== */
+  .capa{ text-align: center; color: var(--branco); }
+  .capa h1{
+    font-size: 30px; font-weight: 800; margin: 0 0 10px;
+    letter-spacing: -0.02em; color: var(--amarelo-neon);
+  }
+  .capa p{ font-size: 15px; margin: 0; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
+  .nota-final{
+    font-size: 58px; font-weight: 800; color: var(--amarelo-neon);
+    margin: 6px 0 4px; line-height: 1;
+  }
+  .nota-label{ font-size: 14px; color: rgba(255,255,255,0.65); }
+
+  /* ===== Barra de progresso ===== */
+  .progresso{
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: rgba(255,255,255,0.1); z-index: 5;
+  }
+  .progresso i{
+    display: block; height: 100%; background: var(--amarelo-neon);
+    width: 0%; transition: width .35s ease;
+  }
+
+  .dots{
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 7px; z-index: 5;
+  }
+  .dot{
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.25); transition: background .3s ease;
+  }
+  .dot.active{ background: var(--amarelo-neon); }
+  .dot.ok{ background: var(--verde-ok); }
+  .dot.err{ background: var(--vermelho-err); }
+
+  /* ===== Setas ===== */
+  .nav-arrow{
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.12); color: #fff; font-size: 20px;
+    line-height: 1; cursor: pointer; z-index: 6;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; transition: background .2s, opacity .2s;
+  }
+  .nav-arrow:hover{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .nav-arrow.hidden{ opacity: 0; pointer-events: none; }
+  #arrow-prev{ left: 12px; }
+  #arrow-next{ right: 12px; }
+
+  @media (max-height: 480px){
+    .nav-arrow{ width: 32px; height: 32px; font-size: 16px; }
+    #arrow-prev{ left: 6px; }
+    #arrow-next{ right: 6px; }
+    .card{ padding: 18px; }
+    .enunciado{ font-size: 15px; margin-bottom: 12px; }
+    .opcao{ padding: 10px 13px; font-size: 14px; }
+    .capa h1{ font-size: 24px; }
+    .nota-final{ font-size: 44px; }
+  }
+
+  /* Aviso de estrutura vazia — sai quando a trilha for preenchida */
+  .vazio-aviso{
+    max-width: 460px; text-align: center; color: rgba(255,255,255,0.55);
+    font-size: 13.5px; line-height: 1.6;
+    border: 1px dashed rgba(217,226,140,0.35); border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .vazio-aviso b{ color: var(--amarelo-neon); display: block; margin-bottom: 6px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="progresso"><i id="progresso-barra"></i></div>
+  <div class="screens" id="screens"></div>
+  <button class="nav-arrow hidden" id="arrow-prev" aria-label="Anterior">‹</button>
+  <button class="nav-arrow" id="arrow-next" aria-label="Próximo">›</button>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONTEÚDO DA TRILHA — EM BRANCO DE PROPÓSITO
+//  Preencher depois, seguindo a regra: só recicla vocabulário e
+//  gramática que já apareceram na aula correspondente.
+//
+//  Exemplo de item (deixado comentado como referência de formato):
+//
+//  {
+//    tipo: "multipla",
+//    enunciado: "____ we discuss the price?",
+//    opcoes: ["Could", "Are", "Does"],
+//    resposta: 0,
+//    explicacao: "'Could' abre a negociação de forma educada."
+//  },
+//  {
+//    tipo: "completar",
+//    enunciado: "Complete: \"Let's ____ a deal.\"",
+//    resposta: "make",
+//    explicacao: "A expressão fixa é 'make a deal'."
+//  }
+// ══════════════════════════════════════════════════════════
+const TRILHA = {
+  titulo: "",        // ex.: "Negotiation Phrases"
+  subtitulo: "",     // ex.: "Trilha da aula de 20/08"
+  exercicios: []     // vazio por enquanto
+};
+
+const respostas = [];   // "ok" | "err" por exercício
+let indice = 0;
+let totalTelas = 0;
+
+function montar(){
+  const screens = document.getElementById("screens");
+  const dots = document.getElementById("dots");
+  const ex = TRILHA.exercicios;
+  screens.innerHTML = "";
+  dots.innerHTML = "";
+
+  // ---- Tela de abertura ----
+  const abertura = document.createElement("div");
+  abertura.className = "screen";
+  if (ex.length === 0){
+    abertura.innerHTML = `
+      <div class="vazio-aviso">
+        <b>Estrutura da trilha pronta</b>
+        O esqueleto de navegação, cards, correção e nota já funciona.
+        O conteúdo dos exercícios ainda não foi montado — preencher a
+        constante <code>TRILHA</code> neste arquivo.
+      </div>`;
+  } else {
+    abertura.innerHTML = `
+      <div class="capa">
+        <h1>${TRILHA.titulo}</h1>
+        <p>${TRILHA.subtitulo}</p>
+        <p style="margin-top:14px;font-size:13px;">${ex.length} exercícios</p>
+      </div>`;
+  }
+  screens.appendChild(abertura);
+
+  // ---- Telas de exercício ----
+  ex.forEach((e, i) => {
+    const s = document.createElement("div");
+    s.className = "screen";
+    let corpo = "";
+
+    if (e.tipo === "multipla"){
+      corpo = `<div class="opcoes">` +
+        e.opcoes.map((o, j) =>
+          `<button class="opcao" data-i="${i}" data-j="${j}">${o}</button>`).join("") +
+        `</div>`;
+    } else {
+      corpo = `
+        <input class="input-resposta" data-i="${i}" placeholder="Sua resposta">
+        <button class="btn-conferir" data-i="${i}">Conferir</button>`;
+    }
+
+    s.innerHTML = `
+      <div class="screen-title">Exercício ${i + 1} de ${ex.length}</div>
+      <div class="card">
+        <p class="enunciado">${e.enunciado}</p>
+        ${corpo}
+        <div class="feedback" id="fb-${i}"></div>
+      </div>`;
+    screens.appendChild(s);
+  });
+
+  // ---- Tela final ----
+  if (ex.length){
+    const fim = document.createElement("div");
+    fim.className = "screen";
+    fim.innerHTML = `
+      <div class="capa">
+        <div class="screen-title">Fim da trilha</div>
+        <div class="nota-final" id="nota-final">–</div>
+        <div class="nota-label" id="nota-detalhe">Responda os exercícios</div>
+      </div>`;
+    screens.appendChild(fim);
+  }
+
+  totalTelas = screens.children.length;
+  screens.style.width = (totalTelas * 100) + "%";
+  Array.from(screens.children).forEach(c => c.style.width = (100 / totalTelas) + "%");
+
+  for (let i = 0; i < totalTelas; i++){
+    const d = document.createElement("div");
+    d.className = "dot" + (i === 0 ? " active" : "");
+    dots.appendChild(d);
+  }
+
+  ligarInteracoes();
+  ir(0);
+}
+
+function ligarInteracoes(){
+  document.querySelectorAll(".opcao").forEach(b => {
+    b.onclick = () => {
+      const i = +b.dataset.i, j = +b.dataset.j;
+      if (respostas[i]) return;
+      const e = TRILHA.exercicios[i];
+      const certo = j === e.resposta;
+      respostas[i] = certo ? "ok" : "err";
+
+      document.querySelectorAll(`.opcao[data-i="${i}"]`).forEach((o, k) => {
+        o.disabled = true;
+        if (k === e.resposta) o.classList.add("certa");
+        else if (k === j) o.classList.add("errada");
+      });
+      mostrarFeedback(i, certo, e.explicacao);
+      atualizarDots();
+      calcularNota();
+    };
+  });
+
+  document.querySelectorAll(".btn-conferir").forEach(b => {
+    b.onclick = () => {
+      const i = +b.dataset.i;
+      if (respostas[i]) return;
+      const inp = document.querySelector(`.input-resposta[data-i="${i}"]`);
+      const e = TRILHA.exercicios[i];
+      const certo = inp.value.trim().toLowerCase() === String(e.resposta).toLowerCase();
+      respostas[i] = certo ? "ok" : "err";
+      inp.disabled = true;
+      inp.classList.add(certo ? "certa" : "errada");
+      b.disabled = true;
+      mostrarFeedback(i, certo, e.explicacao);
+      atualizarDots();
+      calcularNota();
+    };
+  });
+}
+
+function mostrarFeedback(i, certo, explicacao){
+  const fb = document.getElementById("fb-" + i);
+  fb.className = "feedback show " + (certo ? "ok" : "err");
+  fb.innerHTML = `<b>${certo ? "Certo." : "Não é essa."}</b>${explicacao || ""}`;
+}
+
+function calcularNota(){
+  const total = TRILHA.exercicios.length;
+  if (!total) return;
+  const feitas = respostas.filter(Boolean).length;
+  const acertos = respostas.filter(r => r === "ok").length;
+  const el = document.getElementById("nota-final");
+  const det = document.getElementById("nota-detalhe");
+  if (!el) return;
+  const pct = Math.round((acertos / total) * 100);
+  el.textContent = pct + "%";
+  det.textContent = feitas < total
+    ? `${feitas} de ${total} respondidos`
+    : `${acertos} acertos de ${total}`;
+}
+
+function atualizarDots(){
+  const dots = document.querySelectorAll(".dot");
+  respostas.forEach((r, i) => {
+    const d = dots[i + 1];
+    if (d && r) d.classList.add(r === "ok" ? "ok" : "err");
+  });
+}
+
+function ir(n){
+  indice = Math.max(0, Math.min(n, totalTelas - 1));
+  document.getElementById("screens").style.transform =
+    `translateX(-${indice * (100 / totalTelas)}%)`;
+  document.querySelectorAll(".dot").forEach((d, i) => {
+    d.classList.toggle("active", i === indice);
+  });
+  document.getElementById("progresso-barra").style.width =
+    ((indice / Math.max(1, totalTelas - 1)) * 100) + "%";
+  document.getElementById("arrow-prev").classList.toggle("hidden", indice === 0);
+  document.getElementById("arrow-next").classList.toggle("hidden", indice === totalTelas - 1);
+}
+
+document.getElementById("arrow-prev").onclick = () => ir(indice - 1);
+document.getElementById("arrow-next").onclick = () => ir(indice + 1);
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") ir(indice + 1);
+  if (e.key === "ArrowLeft")  ir(indice - 1);
+  if (e.key === "Home")       ir(0);
+  if (e.key === "End")        ir(totalTelas - 1);
+});
+
+// Swipe
+let x0 = null;
+const app = document.querySelector(".app");
+app.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+app.addEventListener("touchend", e => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 55) ir(indice + (dx < 0 ? 1 : -1));
+  x0 = null;
+}, { passive: true });
+
+montar();
+</script>
+</body>
+</html>

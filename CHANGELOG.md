@@ -2,6 +2,33 @@
 
 Entradas mais recentes no topo.
 
+## v-20260820-1954-plataforma-fundacao — 20/08/2026
+- O que mudou: novo doc `docs/plataforma.md` registrando a fundação da
+  plataforma externa de professor/aluno/RH — decidida em conversa nesta
+  sessão, sem código ainda. Cobre: por que fica em arquivo separado
+  (`plataforma.html`) da dash interna (`index.html`) — segurança (token/
+  lógica interna não deve chegar ao navegador de cliente) e auth diferente
+  (Supabase Auth de verdade vs. senha legado da dash); schema proposto de
+  10 tabelas (`empresas_cliente`, `turmas`, `alunos`, `professores`,
+  `aulas_assigned`, `anotacoes_aula`, `trilha_licoes`, `progresso_aluno`,
+  `presenca`, `profiles`); regra de visibilidade por role via RLS; e as
+  telas de cada papel (Professor: turma → aula do dia → abrir
+  templateaula.html → anotação → liberar trilha → grid de progresso →
+  presença → histórico; Aluno: aula recebida + anotação → trilha →
+  histórico; RH: agregado por padrão com drill-down turma → pessoa).
+- Arquivos: docs/plataforma.md
+- Motivo: a Karina pediu para iniciar a estrutura da plataforma prof/
+  aluno/RH, como próxima peça depois do gerador de leads e do gerador de
+  aulas. Decisões fechadas na conversa: 1 turma = 1 empresa (mas uma
+  empresa pode ter N turmas); aluno particular cabe em `turmas` com
+  `empresa_cliente_id` nullable, sem tabela nova; RH vê dado individual só
+  via drill-down, agregado é a entrada padrão; "material da aula" é o
+  `templateaula.html` que já existe, não um .pptx literal. Nenhuma tabela
+  criada no Supabase ainda — este doc é o schema proposto, pendente de
+  revisão da Karina antes de virar banco de verdade.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260819-2215-docs-ajustes
+
 ## v-20260819-2210-contexto-situational — 19/08/2026
 - O que mudou: novo campo opcional `contexto` no schema da tela Situational —
   uma linha de rubrica (itálico, discreto, estilo didascália de teatro) exibida

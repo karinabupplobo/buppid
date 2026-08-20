@@ -2,6 +2,22 @@
 
 ## Próximo
 
+- [ ] Karina revisar o schema proposto em `docs/plataforma.md` (fundação
+      da plataforma prof/aluno/RH, v-20260820-1954). Nenhuma tabela criada
+      no Supabase ainda — está tudo em doc, esperando OK antes de virar
+      banco de verdade.
+- [ ] Depois do OK do schema: criar as 10 tabelas no Supabase (projeto
+      novo ou o mesmo da dash — decidir, já que o projeto atual
+      `ersknlnoeixddjczqlki` retorna "permission denied" em queries via
+      MCP) com RLS por role desde o início.
+- [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead
+      vira "Cliente" no funil (manual vs. automático) — pendência aberta
+      registrada em `docs/plataforma.md` §5.
+- [ ] Decidir nome definitivo da view nova na dash interna que vai ler os
+      dados da plataforma sem restrição de RLS (hoje provisório:
+      "Turmas").
+- [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional
+      da tela Aluno) entra na primeira versão do `plataforma.html`.
 - [ ] MUDAR A ROTINA: depois de qualquer push que altere algo visual (index.html,
       templateaula.html), checar a API do Pages antes de dizer "no ar" —
       `curl -H "Authorization: Bearer $TOKEN" https://api.github.com/repos/karinabupplobo/ingles/pages/builds/latest`

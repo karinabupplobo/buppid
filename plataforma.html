@@ -56,22 +56,51 @@
   .whoami{ font-size: 11.5px; color: rgba(255,255,255,0.55); font-weight: 500; text-align: right; line-height: 1.35; }
   .whoami strong{ color: #fff; display: block; font-weight: 600; font-size: 12.5px; }
 
-  /* ===== Seletor de turma (dropdown) ===== */
-  .turma-bar{ padding: 14px 18px 0; }
-  #turma-select{
-    width: 100%; appearance: none; -webkit-appearance: none;
-    background: rgba(255,255,255,0.07) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23D9E28C' stroke-width='3' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 16px center;
-    border: 1px solid rgba(255,255,255,0.18); border-radius: 12px;
-    color: #fff; font-family: inherit; font-size: 15px; font-weight: 600;
-    padding: 14px 42px 14px 16px; cursor: pointer; outline: none;
+  /* ===== Seletor de turma (dropdown custom) ===== */
+  .turma-bar{ padding: 0; position: relative; }
+
+  .dd{ position: relative; width: 100%; }
+  .dd-trigger{
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 12px;
+    color: #fff; font-family: inherit; padding: 13px 16px;
+    cursor: pointer; text-align: left; transition: border-color .15s, background .15s;
   }
-  #turma-select:focus{ border-color: var(--amarelo-neon); }
-  #turma-select optgroup{ color: var(--amarelo-neon); font-size: 12px; }
-  #turma-select option{ background: var(--teal-escuro); color: #fff; font-weight: 500; }
-  .turma-meta{
-    padding: 8px 18px 0; font-size: 11.5px; color: rgba(255,255,255,0.45);
-    font-weight: 500;
+  .dd-trigger:hover{ background: rgba(255,255,255,0.09); }
+  .dd.open .dd-trigger{ border-color: var(--amarelo-neon); background: rgba(255,255,255,0.09); }
+  .dd-trigger .nome{ font-size: 15px; font-weight: 700; letter-spacing: -0.01em; display: block; }
+  .dd-trigger .sub{ font-size: 11.5px; color: rgba(255,255,255,0.45); font-weight: 500; margin-top: 2px; display: block; }
+  .dd-caret{
+    flex-shrink: 0; width: 11px; height: 11px; border-right: 2px solid var(--amarelo-neon);
+    border-bottom: 2px solid var(--amarelo-neon); transform: rotate(45deg) translate(-2px,-2px);
+    transition: transform .2s;
   }
+  .dd.open .dd-caret{ transform: rotate(-135deg) translate(-3px,-3px); }
+
+  .dd-panel{
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 40;
+    background: #142023; border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px; padding: 6px; overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    display: none; max-height: 60vh; overflow-y: auto;
+  }
+  .dd.open .dd-panel{ display: block; }
+  .dd-group{
+    font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--amarelo-neon); padding: 10px 12px 6px;
+  }
+  .dd-opt{
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    width: 100%; background: none; border: none; cursor: pointer; text-align: left;
+    font-family: inherit; color: rgba(255,255,255,0.82); padding: 10px 12px;
+    border-radius: 8px; transition: background .12s, color .12s;
+  }
+  .dd-opt:hover{ background: rgba(255,255,255,0.07); color: #fff; }
+  .dd-opt.sel{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .dd-opt .t{ font-size: 14px; font-weight: 600; }
+  .dd-opt .m{ font-size: 11px; opacity: .6; font-weight: 500; flex-shrink: 0; }
+  .dd-opt.sel .m{ opacity: .75; }
 
   /* ===== Abas ===== */
   .tabs{
@@ -286,35 +315,105 @@
     font-size: 12px; color: var(--amarelo-neon); line-height: 1.5; font-weight: 500;
   }
 
-  @media (min-width: 720px){
-    main{ max-width: 760px; margin: 0 auto; }
-    .turma-bar, .tabs, .topbar{ max-width: 760px; margin-left: auto; margin-right: auto; }
+  /* ===== Desktop: sidebar fixa + conteúdo largo ===== */
+  @media (min-width: 900px){
+    body{ display: grid; grid-template-columns: 290px 1fr; min-height: 100vh; }
+
+    .sidebar{
+      grid-column: 1; grid-row: 1;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding: 22px 20px; position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .topbar{
+      position: static; padding: 0; border: none; background: none;
+      flex-direction: column; align-items: flex-start; gap: 14px;
+    }
+    .logo{ font-size: 26px; }
+    .whoami{ text-align: left; }
+
+    .tabs{
+      flex-direction: column; gap: 2px; padding: 0; overflow: visible;
+      border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;
+    }
+    .tab{
+      width: 100%; text-align: left; padding: 11px 13px; border-bottom: none;
+      border-radius: 9px; letter-spacing: .04em; font-size: 12.5px;
+    }
+    .tab.active{ background: rgba(217,226,140,0.12); border-bottom: none; }
+
+    main{
+      grid-column: 2; grid-row: 1;
+      padding: 30px 34px 60px; max-width: 1180px; width: 100%;
+    }
+
+    /* Aula do dia + lousas lado a lado */
+    .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
     .lousa-grid{ grid-template-columns: repeat(3,1fr); }
+
+    /* Listas em duas colunas para não deixar metade da tela vazia */
+    .aluno-lista, #presenca-lista, #historico-lista{
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 12px;
+    }
+    .aluno-lista .card, .presenca-item, .hist-item{ margin-bottom: 0; }
+
+    .switch{ max-width: 380px; }
+    table{ font-size: 13.5px; }
+    th, td{ padding: 13px 12px; }
+
+    #trilha-detalhe .det-cols{
+      display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start;
+    }
+    #trilha-detalhe .det-cols .card{ margin-bottom: 0; }
+
+    .aviso{ max-width: 100%; }
+  }
+
+  @media (min-width: 1280px){
+    main{ padding: 34px 46px 70px; }
+    .lousa-grid{ grid-template-columns: repeat(4,1fr); }
+  }
+
+  /* Mobile: mantém empilhado */
+  @media (max-width: 899px){
+    .sidebar{ padding: 0 18px 14px; }
+    .topbar{ margin: 0 -18px; }
+    .lousa-grid{ grid-template-columns: repeat(2,1fr); }
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="logo">bupp.</div>
-  <div class="whoami">
-    <strong>Prof. Ana Ribeiro</strong>
-    professor
+<aside class="sidebar">
+  <div class="topbar">
+    <div class="logo">bupp.</div>
+    <div class="whoami">
+      <strong>Prof. Ana Ribeiro</strong>
+      professor
+    </div>
   </div>
-</div>
 
-<div class="turma-bar">
-  <select id="turma-select"></select>
-</div>
-<div class="turma-meta" id="turma-meta"></div>
+  <div class="turma-bar">
+    <div class="dd" id="dd-turma">
+      <button class="dd-trigger" id="dd-trigger">
+        <span>
+          <span class="nome" id="dd-nome"></span>
+          <span class="sub" id="dd-sub"></span>
+        </span>
+        <span class="dd-caret"></span>
+      </button>
+      <div class="dd-panel" id="dd-panel"></div>
+    </div>
+  </div>
 
-<div class="tabs">
+  <div class="tabs">
   <button class="tab active" data-pane="aula">Aula do dia</button>
   <button class="tab" data-pane="lousa">Lousas</button>
   <button class="tab" data-pane="trilha">Trilha</button>
   <button class="tab" data-pane="presenca">Presença</button>
-  <button class="tab" data-pane="historico">Histórico</button>
-</div>
+    <button class="tab" data-pane="historico">Histórico</button>
+  </div>
+</aside>
 
 <main>
   <div class="aviso">
@@ -324,7 +423,13 @@
 
   <!-- ============ AULA DO DIA ============ -->
   <section class="pane active" id="pane-aula">
-    <div class="card" id="card-aula"></div>
+    <div class="cols">
+      <div class="card" id="card-aula"></div>
+      <div>
+        <div class="section-title">Resumo da turma</div>
+        <div class="card" id="card-resumo"></div>
+      </div>
+    </div>
   </section>
 
   <!-- ============ LOUSAS ============ -->
@@ -490,39 +595,54 @@ let turmaAtual = TURMAS[0];
 // ══════════════════════════════════════════════════════════
 //  Seletor de turma
 // ══════════════════════════════════════════════════════════
-function renderTurmas(){
-  const sel = document.getElementById("turma-select");
-  sel.innerHTML = "";
-
-  const corp = TURMAS.filter(t => t.tipo === "corporativa");
-  const part = TURMAS.filter(t => t.tipo === "particular");
-
-  const addGrupo = (label, lista) => {
-    if (!lista.length) return;
-    const g = document.createElement("optgroup");
-    g.label = label;
-    lista.forEach(t => {
-      const o = document.createElement("option");
-      o.value = t.id;
-      o.textContent = t.nome;
-      if (t.id === turmaAtual.id) o.selected = true;
-      g.appendChild(o);
-    });
-    sel.appendChild(g);
-  };
-
-  addGrupo("Turmas", corp);
-  addGrupo("Alunos particulares", part);
-
-  sel.onchange = () => {
-    turmaAtual = TURMAS.find(t => t.id === sel.value);
-    renderTudo();
-  };
-
-  const tipo = turmaAtual.tipo === "particular" ? "Particular" : "Corporativa";
-  document.getElementById("turma-meta").textContent =
-    `${tipo} · Nível ${turmaAtual.nivel} · ${turmaAtual.modulo} · ${turmaAtual.alunos.length} aluno${turmaAtual.alunos.length>1?"s":""}`;
+function metaTurma(t){
+  const tipo = t.tipo === "particular" ? "Particular" : "Corporativa";
+  return `${tipo} · ${t.nivel} · ${t.modulo} · ${t.alunos.length} aluno${t.alunos.length>1?"s":""}`;
 }
+
+function renderTurmas(){
+  document.getElementById("dd-nome").textContent = turmaAtual.nome;
+  document.getElementById("dd-sub").textContent  = metaTurma(turmaAtual);
+
+  const panel = document.getElementById("dd-panel");
+  panel.innerHTML = "";
+
+  const grupos = [
+    ["Turmas",             TURMAS.filter(t => t.tipo === "corporativa")],
+    ["Alunos particulares", TURMAS.filter(t => t.tipo === "particular")]
+  ];
+
+  grupos.forEach(([label, lista]) => {
+    if (!lista.length) return;
+    const g = document.createElement("div");
+    g.className = "dd-group";
+    g.textContent = label;
+    panel.appendChild(g);
+
+    lista.forEach(t => {
+      const b = document.createElement("button");
+      b.className = "dd-opt" + (t.id === turmaAtual.id ? " sel" : "");
+      b.innerHTML = `<span class="t">${t.nome}</span><span class="m">${t.nivel} · ${t.alunos.length}</span>`;
+      b.onclick = () => {
+        turmaAtual = t;
+        document.getElementById("dd-turma").classList.remove("open");
+        renderTudo();
+      };
+      panel.appendChild(b);
+    });
+  });
+}
+
+document.getElementById("dd-trigger").onclick = e => {
+  e.stopPropagation();
+  document.getElementById("dd-turma").classList.toggle("open");
+};
+document.addEventListener("click", () =>
+  document.getElementById("dd-turma").classList.remove("open"));
+document.getElementById("dd-panel").onclick = e => e.stopPropagation();
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") document.getElementById("dd-turma").classList.remove("open");
+});
 
 // ══════════════════════════════════════════════════════════
 //  Aula do dia
@@ -537,6 +657,32 @@ function renderAula(){
     <p>${a.resumo}</p>
     <a class="btn" href="templateaula.html" target="_blank">Abrir material da aula →</a>
     <button class="btn ghost" onclick="irPara('lousa')">Abrir lousa</button>
+  `;
+  renderResumo();
+}
+
+function renderResumo(){
+  const box = document.getElementById("card-resumo");
+  if (!box) return;
+  const t = turmaAtual;
+
+  // média da trilha da turma
+  const notas = t.alunos.map(a => notaDe(t.progresso[a.id] || [])).filter(n => n !== null);
+  const media = notas.length ? Math.round(notas.reduce((x,y)=>x+y,0) / notas.length) : null;
+
+  // quantos concluíram a trilha inteira
+  const concluiram = t.alunos.filter(a =>
+    (t.progresso[a.id] || []).every(s => s !== "pend")).length;
+
+  const lousas = (LOUSAS[t.id] || []).length;
+  const marcados = Object.keys(PRESENCA[t.id] || {}).length;
+
+  box.innerHTML = `
+    <div class="kv"><span>Alunos</span><span>${t.alunos.length}</span></div>
+    <div class="kv"><span>Média da trilha</span><span class="nota ${classeNota(media)}">${media === null ? "–" : media + "%"}</span></div>
+    <div class="kv"><span>Concluíram a trilha</span><span>${concluiram} de ${t.alunos.length}</span></div>
+    <div class="kv"><span>Lousas desta aula</span><span>${lousas}</span></div>
+    <div class="kv"><span>Presença</span><span>${marcados ? marcados + " de " + t.alunos.length + " marcados" : "não marcada"}</span></div>
   `;
 }
 
@@ -753,6 +899,7 @@ function verAluno(id){
   });
 
   document.getElementById("detalhe-conteudo").innerHTML = `
+    <div class="det-cols">
     <div class="card">
       <div class="card-kicker">${a.cargo}</div>
       <h2>${a.nome}</h2>
@@ -766,6 +913,7 @@ function verAluno(id){
     <div class="card">
       <div class="card-kicker">Lição a lição</div>
       ${licoes}
+    </div>
     </div>
   `;
 }
@@ -867,6 +1015,7 @@ function renderTudo(){
   renderAlunoLista();
   renderPresenca();
   renderHistorico();
+  renderResumo();
   document.getElementById("trilha-detalhe").style.display = "none";
   document.querySelector(".switch").style.display = "flex";
 }

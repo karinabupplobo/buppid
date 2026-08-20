@@ -291,15 +291,6 @@
   .kv:last-child{ border-bottom: none; }
   .kv span:first-child{ color: var(--cinza-texto); }
   .kv span:last-child{ font-weight: 700; }
-  .kv-click{ cursor: pointer; margin: 0 -6px; padding-left: 6px; padding-right: 6px; border-radius: 7px; transition: background .13s; }
-  .kv-click:hover{ background: #f6f8f3; }
-  .ver-trilha{
-    font-style: normal; font-size: 10.5px; font-weight: 800;
-    letter-spacing: .05em; text-transform: uppercase;
-    color: var(--azul-intermediario); margin-left: 7px; opacity: 0; transition: opacity .13s;
-  }
-  .kv-click:hover .ver-trilha{ opacity: 1; }
-  @media (hover: none){ .ver-trilha{ opacity: 1; } }
 
   /* ===== Presença + anotações ===== */
   .privado{
@@ -1020,12 +1011,19 @@ function verAluno(id){
   let licoes = "";
   st.forEach((s, i) => {
     const txt = s === "ok" ? "Acertou" : s === "err" ? "Errou" : "Não fez";
-    const url = `templatetrilha.html?modo=gabarito&licao=${i+1}&aluno=${encodeURIComponent(a.nome)}&status=${s}`;
-    licoes += `<div class="kv kv-click" onclick="window.open('${url}','_blank')">
-        <span>${t.licoes[i]} <em class="ver-trilha">ver trilha ›</em></span>
+    licoes += `<div class="kv">
+        <span>${t.licoes[i]}</span>
         <span><span class="st ${s}" style="margin-right:6px;">${s==="ok"?"✓":s==="err"?"✕":"–"}</span>${txt}</span>
       </div>`;
   });
+
+  // 1 aula = 1 trilha = N lições. O gabarito é da trilha inteira, não de
+  // uma lição isolada — por isso um botão só.
+  const urlTrilha = `templatetrilha.html?modo=gabarito`
+    + `&aluno=${encodeURIComponent(a.nome)}`
+    + `&turma=${encodeURIComponent(t.nome)}`
+    + `&aula=${encodeURIComponent(t.aula.titulo)}`
+    + `&nota=${n === null ? "" : n}`;
 
   document.getElementById("detalhe-conteudo").innerHTML = `
     <div class="det-cols">
@@ -1042,6 +1040,7 @@ function verAluno(id){
     <div class="card">
       <div class="card-kicker">Lição a lição</div>
       ${licoes}
+      <a class="btn" href="${urlTrilha}" target="_blank">Ver trilha completa →</a>
     </div>
     </div>
   `;

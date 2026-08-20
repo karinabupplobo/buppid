@@ -58,7 +58,7 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | `aulas_assigned` | Uma aula do Gerador de Aulas atribuída a uma turma numa data. Abre no `templateaula.html` (o "material da aula" É o carrossel de 8 telas — não existe .pptx literal). Status: agendada / dada. | N:1 `turmas` |
 | `lousas_aula` | Lousas de uma aula: imagem (PNG/base64 ou storage), título, ordem e `criada_em`. Várias por aula. **Cada lousa é carimbada com turma, data e nome da aula** — sem isso não há como saber depois de qual aula ela veio. Substituiu a antiga `anotacoes_aula` em texto. | N:1 `aulas_assigned` · N:1 `turmas` |
 | `anotacoes_aluno` | **Anotação INTERNA** do professor sobre um aluno específico numa aula. **Visível só para a Bupp (role `interno`)** — nunca para o aluno, nunca para o RH do cliente. | N:1 `alunos` · N:1 `aulas_assigned` |
-| `trilha_licoes` | Lista de exercícios liberados pra turma depois de uma aula. | N:1 `aulas_assigned` |
+| `trilha_licoes` | As **lições (exercícios)** de uma trilha. **Modelo: 1 aula → 1 trilha → N lições** — a lição é o exercício dentro da trilha, não uma trilha própria. Liberada automaticamente após a aula. | N:1 `aulas_assigned` |
 | `progresso_aluno` | Por aluno, por lição da trilha: status (não iniciado / em progresso / feito), timestamp. | N:1 `alunos` · N:1 `trilha_licoes` |
 | `presenca` | Por aluno, por aula: presente / ausente. | N:1 `alunos` · N:1 `aulas_assigned` |
 | `profiles` | Liga `auth.users` a um `role` (`professor` \| `aluno` \| `rh` \| `interno`) e ao registro correspondente (`professor_id` \| `aluno_id` \| `empresa_cliente_id`). | 1:1 `auth.users` |
@@ -100,9 +100,10 @@ versão inicial desta seção)*
 4. **Trilha & performance** — a trilha é liberada **automaticamente**; o
    professor não libera nem edita, só visualiza. Dois modos: visão da turma
    (grid aluno × lição com acerto/erro/pendente + nota) e por aluno (perfil
-   com barra de progresso e detalhe lição a lição). Cada lição no detalhe é
-   clicável e abre o `templatetrilha.html` em **modo gabarito**
-   (`?modo=gabarito`), com as respostas certas já marcadas.
+   com barra de progresso e detalhe lição a lição). No detalhe há **um botão
+   "Ver trilha completa"** que abre o `templatetrilha.html` em **modo
+   gabarito** (`?modo=gabarito`), com todas as respostas certas já marcadas.
+   O gabarito é sempre da trilha inteira — não se abre uma lição isolada.
 5. **Fim da aula** — presença (presente/faltou) **e anotação interna por
    aluno**, marcadas ao fim da aula.
 6. **Histórico** — aulas anteriores da turma.
@@ -158,6 +159,11 @@ decidido** — não o contrário. Este doc é adaptado a cada rodada.
   `interno`. É o dado mais sensível da plataforma: se vazar para o RH do
   cliente, vira avaliação de desempenho de funcionário sem consentimento.
 - **Professor vê apenas as próprias turmas**, nunca as de outro professor.
+- **Hierarquia fechada: 1 aula → 1 trilha → N lições.** A lição é o
+  exercício dentro da trilha, não uma trilha por si só. Consequência
+  prática: o detalhe do aluno tem **um** botão "Ver trilha completa", em vez
+  de um link por lição. A primeira versão tinha link por lição, que
+  prometia uma navegação inexistente — corrigido na mesma sessão.
 - Lições no detalhe do aluno abrem o `templatetrilha.html` em modo
   gabarito, com as respostas visíveis para o professor conferir.
 - Seletor de turma é dropdown agrupado (Turmas / Alunos particulares), não

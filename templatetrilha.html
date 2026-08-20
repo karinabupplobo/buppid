@@ -9,6 +9,12 @@
   A trilha é EXERCÍCIO — cada card espera uma resposta e devolve
   acerto/erro. Ao fim, calcula a nota da trilha.
 
+  MODELO (fechado em 20/08/2026):
+      1 aula  →  1 trilha  →  N lições
+  A LIÇÃO É O EXERCÍCIO DENTRO DA TRILHA, não uma trilha por si só.
+  Por isso o gabarito é sempre da trilha inteira — não existe abrir
+  "a trilha da lição 3".
+
   ESTADO: estrutura pronta, CONTEÚDO EM BRANCO de propósito.
   Os exercícios entram depois (decisão da Karina, 20/08/2026).
 
@@ -262,9 +268,10 @@ const TRILHA = {
 const params    = new URLSearchParams(location.search);
 const GABARITO  = params.get("modo") === "gabarito";
 const CTX = {
-  licao:  params.get("licao"),
-  aluno:  params.get("aluno"),
-  status: params.get("status")
+  aluno: params.get("aluno"),
+  turma: params.get("turma"),
+  aula:  params.get("aula"),
+  nota:  params.get("nota")
 };
 
 const respostas = [];   // "ok" | "err" por exercício
@@ -372,11 +379,11 @@ function montar(){
 function montarBarraGabarito(){
   if (!GABARITO) return;
   const bar = document.getElementById("gab-bar");
-  const rot = { ok: "Acertou", err: "Errou", pend: "Não fez" };
   let txt = `<span class="tag">Gabarito</span>`;
-  if (CTX.aluno)  txt += `<span>${CTX.aluno}</span>`;
-  if (CTX.licao)  txt += `<span>· Lição ${CTX.licao}</span>`;
-  if (CTX.status && rot[CTX.status]) txt += `<span class="tag">${rot[CTX.status]}</span>`;
+  if (CTX.aluno) txt += `<span>${CTX.aluno}</span>`;
+  if (CTX.turma) txt += `<span>· ${CTX.turma}</span>`;
+  if (CTX.aula)  txt += `<span>· ${CTX.aula}</span>`;
+  if (CTX.nota)  txt += `<span class="tag">Nota ${CTX.nota}%</span>`;
   bar.innerHTML = txt;
   bar.classList.add("show");
 }

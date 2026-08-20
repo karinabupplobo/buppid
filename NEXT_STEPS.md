@@ -2,14 +2,17 @@
 
 ## Próximo
 
+- [ ] TESTAR a migração do Supabase (v-20260820-2105) no navegador: abrir
+      a dash, fazer login, confirmar que tasks/leads/users aparecem vindos
+      do projeto novo "Bupp Idiomas" (`gajvcgrfljyxgahzfjfp`), não só que
+      o deploy subiu. Só depois disso considerar a migração encerrada.
 - [ ] Karina revisar o schema proposto em `docs/plataforma.md` (fundação
       da plataforma prof/aluno/RH, v-20260820-1954). Nenhuma tabela criada
       no Supabase ainda — está tudo em doc, esperando OK antes de virar
       banco de verdade.
-- [ ] Depois do OK do schema: criar as 10 tabelas no Supabase (projeto
-      novo ou o mesmo da dash — decidir, já que o projeto atual
-      `ersknlnoeixddjczqlki` retorna "permission denied" em queries via
-      MCP) com RLS por role desde o início.
+- [ ] Depois do OK do schema: criar as 10 tabelas no projeto Supabase
+      "Bupp Idiomas" (`gajvcgrfljyxgahzfjfp` — já é o projeto usado pela
+      dash desde v-20260820-2105) com RLS por role desde o início.
 - [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead
       vira "Cliente" no funil (manual vs. automático) — pendência aberta
       registrada em `docs/plataforma.md` §5.

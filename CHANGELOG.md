@@ -2,6 +2,29 @@
 
 Entradas mais recentes no topo.
 
+## v-20260820-2105-migracao-supabase-bupp-idiomas — 20/08/2026
+- O que mudou: `SUPABASE_URL`, `SUPABASE_ANON_KEY` e o nome da tabela em
+  `SUPABASE_TABLE_URL` trocados do projeto antigo (`ersknlnoeixddjczqlki`)
+  para o projeto novo dedicado "Bupp Idiomas" (`gajvcgrfljyxgahzfjfp`,
+  região `sa-east-1`). A tabela mudou de `wpf_dashboard_data` para
+  `bupp_dashboard_data` — nome antigo era resquício de versão anterior do
+  projeto, sem relação com a marca Bupp.
+- Arquivos: index.html
+- Motivo: migração completa para um projeto Supabase próprio, decidida
+  porque o projeto antigo retorna "permission denied" em toda query via
+  MCP (só REST direto com a anon key funcionava). Passos anteriores desta
+  migração: tabela `bupp_dashboard_data` criada no projeto novo com RLS +
+  policy permissiva para `anon` (replicando o comportamento atual);
+  76 leads, 5 tasks e 2 users lidos do projeto antigo via REST e
+  importados no projeto novo, com contagens conferidas batendo. Senhas
+  continuam em texto puro nos dados migrados — decisão da Karina de
+  manter assim por ora, com plano de reforçar depois.
+- Testar antes de considerar concluído: abrir a dash no navegador,
+  fazer login e confirmar que tasks/leads/users aparecem vindos do
+  projeto novo (não só que o deploy subiu).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260820-1954-docs-plataforma
+
 ## v-20260820-1954-plataforma-fundacao — 20/08/2026
 - O que mudou: novo doc `docs/plataforma.md` registrando a fundação da
   plataforma externa de professor/aluno/RH — decidida em conversa nesta

@@ -137,6 +137,25 @@
   }
   .nota-label{ font-size: 14px; color: rgba(255,255,255,0.65); }
 
+  /* ===== Faixa de contexto do modo gabarito ===== */
+  .gab-bar{
+    display: none; position: absolute; top: 0; left: 0; right: 0; z-index: 8;
+    background: var(--amarelo-neon); color: var(--teal-escuro);
+    padding: 8px 14px; font-size: 12px; font-weight: 700;
+    align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  }
+  .gab-bar.show{ display: flex; }
+  .gab-bar .tag{
+    background: rgba(10,18,20,0.14); border-radius: 6px;
+    padding: 2px 8px; font-size: 11px; font-weight: 800;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .gab-bar.show ~ .screens .screen{ padding-top: 52px; }
+  @media (max-height: 480px){
+    .gab-bar{ padding: 5px 12px; font-size: 11px; }
+    .gab-bar.show ~ .screens .screen{ padding-top: 38px; }
+  }
+
   /* ===== Barra de progresso ===== */
   .progresso{
     position: absolute; top: 0; left: 0; right: 0; height: 3px;
@@ -197,6 +216,7 @@
 <body>
 
 <div class="app">
+  <div class="gab-bar" id="gab-bar"></div>
   <div class="progresso"><i id="progresso-barra"></i></div>
   <div class="screens" id="screens"></div>
   <button class="nav-arrow hidden" id="arrow-prev" aria-label="Anterior">‹</button>
@@ -232,6 +252,21 @@ const TRILHA = {
   exercicios: []     // vazio por enquanto
 };
 
+// ══════════════════════════════════════════════════════════
+//  MODO GABARITO (visão do professor)
+//  Aberto a partir da plataforma com ?modo=gabarito — mostra as
+//  respostas certas já marcadas, sem esperar interação. Serve pro
+//  professor conferir o que o aluno viu e qual era a resposta.
+//  Params opcionais: &licao=N &aluno=Nome &status=ok|err|pend
+// ══════════════════════════════════════════════════════════
+const params    = new URLSearchParams(location.search);
+const GABARITO  = params.get("modo") === "gabarito";
+const CTX = {
+  licao:  params.get("licao"),
+  aluno:  params.get("aluno"),
+  status: params.get("status")
+};
+
 const respostas = [];   // "ok" | "err" por exercício
 let indice = 0;
 let totalTelas = 0;
@@ -249,10 +284,13 @@ function montar(){
   if (ex.length === 0){
     abertura.innerHTML = `
       <div class="vazio-aviso">
-        <b>Estrutura da trilha pronta</b>
+        <b>${GABARITO ? "Modo gabarito — estrutura pronta" : "Estrutura da trilha pronta"}</b>
         O esqueleto de navegação, cards, correção e nota já funciona.
         O conteúdo dos exercícios ainda não foi montado — preencher a
         constante <code>TRILHA</code> neste arquivo.
+        ${GABARITO ? `<span style="display:block;margin-top:10px;font-size:12.5px;opacity:.8;">
+          Quando houver exercícios, esta visão mostrará cada resposta certa
+          já marcada, sem precisar responder.</span>` : ""}
       </div>`;
   } else {
     abertura.innerHTML = `
@@ -272,21 +310,29 @@ function montar(){
 
     if (e.tipo === "multipla"){
       corpo = `<div class="opcoes">` +
-        e.opcoes.map((o, j) =>
-          `<button class="opcao" data-i="${i}" data-j="${j}">${o}</button>`).join("") +
+        e.opcoes.map((o, j) => {
+          const cls = GABARITO && j === e.resposta ? " certa" : "";
+          const dis = GABARITO ? " disabled" : "";
+          return `<button class="opcao${cls}" data-i="${i}" data-j="${j}"${dis}>${o}</button>`;
+        }).join("") +
         `</div>`;
     } else {
-      corpo = `
-        <input class="input-resposta" data-i="${i}" placeholder="Sua resposta">
-        <button class="btn-conferir" data-i="${i}">Conferir</button>`;
+      corpo = GABARITO
+        ? `<input class="input-resposta certa" value="${e.resposta}" disabled>`
+        : `<input class="input-resposta" data-i="${i}" placeholder="Sua resposta">
+           <button class="btn-conferir" data-i="${i}">Conferir</button>`;
     }
+
+    const fbGab = GABARITO && e.explicacao
+      ? `<div class="feedback show ok"><b>Resposta correta</b>${e.explicacao}</div>`
+      : `<div class="feedback" id="fb-${i}"></div>`;
 
     s.innerHTML = `
       <div class="screen-title">Exercício ${i + 1} de ${ex.length}</div>
       <div class="card">
         <p class="enunciado">${e.enunciado}</p>
         ${corpo}
-        <div class="feedback" id="fb-${i}"></div>
+        ${fbGab}
       </div>`;
     screens.appendChild(s);
   });
@@ -295,12 +341,16 @@ function montar(){
   if (ex.length){
     const fim = document.createElement("div");
     fim.className = "screen";
-    fim.innerHTML = `
-      <div class="capa">
-        <div class="screen-title">Fim da trilha</div>
-        <div class="nota-final" id="nota-final">–</div>
-        <div class="nota-label" id="nota-detalhe">Responda os exercícios</div>
-      </div>`;
+    fim.innerHTML = GABARITO
+      ? `<div class="capa">
+           <div class="screen-title">Fim do gabarito</div>
+           <p>${ex.length} exercícios · todas as respostas exibidas</p>
+         </div>`
+      : `<div class="capa">
+           <div class="screen-title">Fim da trilha</div>
+           <div class="nota-final" id="nota-final">–</div>
+           <div class="nota-label" id="nota-detalhe">Responda os exercícios</div>
+         </div>`;
     screens.appendChild(fim);
   }
 
@@ -315,10 +365,24 @@ function montar(){
   }
 
   ligarInteracoes();
+  montarBarraGabarito();
   ir(0);
 }
 
+function montarBarraGabarito(){
+  if (!GABARITO) return;
+  const bar = document.getElementById("gab-bar");
+  const rot = { ok: "Acertou", err: "Errou", pend: "Não fez" };
+  let txt = `<span class="tag">Gabarito</span>`;
+  if (CTX.aluno)  txt += `<span>${CTX.aluno}</span>`;
+  if (CTX.licao)  txt += `<span>· Lição ${CTX.licao}</span>`;
+  if (CTX.status && rot[CTX.status]) txt += `<span class="tag">${rot[CTX.status]}</span>`;
+  bar.innerHTML = txt;
+  bar.classList.add("show");
+}
+
 function ligarInteracoes(){
+  if (GABARITO) return;   // gabarito é só leitura
   document.querySelectorAll(".opcao").forEach(b => {
     b.onclick = () => {
       const i = +b.dataset.i, j = +b.dataset.j;

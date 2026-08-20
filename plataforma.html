@@ -56,25 +56,20 @@
   .whoami{ font-size: 11.5px; color: rgba(255,255,255,0.55); font-weight: 500; text-align: right; line-height: 1.35; }
   .whoami strong{ color: #fff; display: block; font-weight: 600; font-size: 12.5px; }
 
-  /* ===== Seletor de turma ===== */
-  .turma-bar{
-    display: flex; gap: 8px; overflow-x: auto; padding: 12px 18px 4px;
-    scrollbar-width: none;
+  /* ===== Seletor de turma (dropdown) ===== */
+  .turma-bar{ padding: 14px 18px 0; }
+  #turma-select{
+    width: 100%; appearance: none; -webkit-appearance: none;
+    background: rgba(255,255,255,0.07) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23D9E28C' stroke-width='3' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 16px center;
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 12px;
+    color: #fff; font-family: inherit; font-size: 15px; font-weight: 600;
+    padding: 14px 42px 14px 16px; cursor: pointer; outline: none;
   }
-  .turma-bar::-webkit-scrollbar{ display: none; }
-  .turma-chip{
-    flex-shrink: 0; border: 1px solid rgba(255,255,255,0.18);
-    background: transparent; color: rgba(255,255,255,0.7);
-    border-radius: 999px; padding: 8px 15px; font-size: 12.5px;
-    font-weight: 600; cursor: pointer; font-family: inherit;
-    transition: background .15s, color .15s, border-color .15s;
-  }
-  .turma-chip.active{
-    background: var(--amarelo-neon); border-color: var(--amarelo-neon);
-    color: var(--teal-escuro);
-  }
+  #turma-select:focus{ border-color: var(--amarelo-neon); }
+  #turma-select optgroup{ color: var(--amarelo-neon); font-size: 12px; }
+  #turma-select option{ background: var(--teal-escuro); color: #fff; font-weight: 500; }
   .turma-meta{
-    padding: 6px 18px 0; font-size: 11.5px; color: rgba(255,255,255,0.45);
+    padding: 8px 18px 0; font-size: 11.5px; color: rgba(255,255,255,0.45);
     font-weight: 500;
   }
 
@@ -249,6 +244,15 @@
   .kv:last-child{ border-bottom: none; }
   .kv span:first-child{ color: var(--cinza-texto); }
   .kv span:last-child{ font-weight: 700; }
+  .kv-click{ cursor: pointer; margin: 0 -6px; padding-left: 6px; padding-right: 6px; border-radius: 7px; transition: background .13s; }
+  .kv-click:hover{ background: #f6f8f3; }
+  .ver-trilha{
+    font-style: normal; font-size: 10.5px; font-weight: 800;
+    letter-spacing: .05em; text-transform: uppercase;
+    color: var(--azul-intermediario); margin-left: 7px; opacity: 0; transition: opacity .13s;
+  }
+  .kv-click:hover .ver-trilha{ opacity: 1; }
+  @media (hover: none){ .ver-trilha{ opacity: 1; } }
 
   /* ===== Presença ===== */
   .presenca-item{
@@ -299,7 +303,9 @@
   </div>
 </div>
 
-<div class="turma-bar" id="turma-bar"></div>
+<div class="turma-bar">
+  <select id="turma-select"></select>
+</div>
 <div class="turma-meta" id="turma-meta"></div>
 
 <div class="tabs">
@@ -485,15 +491,34 @@ let turmaAtual = TURMAS[0];
 //  Seletor de turma
 // ══════════════════════════════════════════════════════════
 function renderTurmas(){
-  const bar = document.getElementById("turma-bar");
-  bar.innerHTML = "";
-  TURMAS.forEach(t => {
-    const b = document.createElement("button");
-    b.className = "turma-chip" + (t.id === turmaAtual.id ? " active" : "");
-    b.textContent = t.nome;
-    b.onclick = () => { turmaAtual = t; renderTudo(); };
-    bar.appendChild(b);
-  });
+  const sel = document.getElementById("turma-select");
+  sel.innerHTML = "";
+
+  const corp = TURMAS.filter(t => t.tipo === "corporativa");
+  const part = TURMAS.filter(t => t.tipo === "particular");
+
+  const addGrupo = (label, lista) => {
+    if (!lista.length) return;
+    const g = document.createElement("optgroup");
+    g.label = label;
+    lista.forEach(t => {
+      const o = document.createElement("option");
+      o.value = t.id;
+      o.textContent = t.nome;
+      if (t.id === turmaAtual.id) o.selected = true;
+      g.appendChild(o);
+    });
+    sel.appendChild(g);
+  };
+
+  addGrupo("Turmas", corp);
+  addGrupo("Alunos particulares", part);
+
+  sel.onchange = () => {
+    turmaAtual = TURMAS.find(t => t.id === sel.value);
+    renderTudo();
+  };
+
   const tipo = turmaAtual.tipo === "particular" ? "Particular" : "Corporativa";
   document.getElementById("turma-meta").textContent =
     `${tipo} · Nível ${turmaAtual.nivel} · ${turmaAtual.modulo} · ${turmaAtual.alunos.length} aluno${turmaAtual.alunos.length>1?"s":""}`;
@@ -720,7 +745,11 @@ function verAluno(id){
   let licoes = "";
   st.forEach((s, i) => {
     const txt = s === "ok" ? "Acertou" : s === "err" ? "Errou" : "Não fez";
-    licoes += `<div class="kv"><span>${t.licoes[i]}</span><span><span class="st ${s}" style="margin-right:6px;">${s==="ok"?"✓":s==="err"?"✕":"–"}</span>${txt}</span></div>`;
+    const url = `templatetrilha.html?modo=gabarito&licao=${i+1}&aluno=${encodeURIComponent(a.nome)}&status=${s}`;
+    licoes += `<div class="kv kv-click" onclick="window.open('${url}','_blank')">
+        <span>${t.licoes[i]} <em class="ver-trilha">ver trilha ›</em></span>
+        <span><span class="st ${s}" style="margin-right:6px;">${s==="ok"?"✓":s==="err"?"✕":"–"}</span>${txt}</span>
+      </div>`;
   });
 
   document.getElementById("detalhe-conteudo").innerHTML = `

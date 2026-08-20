@@ -56,7 +56,8 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | `alunos` | Aluno (nome, cargo). | N:1 `turmas` |
 | `professores` | Professor (nome). | N:M `turmas` |
 | `aulas_assigned` | Uma aula do Gerador de Aulas atribuída a uma turma numa data. Abre no `templateaula.html` (o "material da aula" É o carrossel de 8 telas — não existe .pptx literal). Status: agendada / dada. | N:1 `turmas` |
-| `anotacoes_aula` | Anotação do professor pós-aula, ligada a uma `aula_assigned` específica. | N:1 `aulas_assigned` |
+| `lousas_aula` | Lousas de uma aula: imagem (PNG/base64 ou storage), ordem, título. Várias por aula. Substituiu a antiga `anotacoes_aula` em texto. | N:1 `aulas_assigned` |
+| `anotacoes_aluno` | **Anotação INTERNA** do professor sobre um aluno específico numa aula. **Visível só para a Bupp (role `interno`)** — nunca para o aluno, nunca para o RH do cliente. | N:1 `alunos` · N:1 `aulas_assigned` |
 | `trilha_licoes` | Lista de exercícios liberados pra turma depois de uma aula. | N:1 `aulas_assigned` |
 | `progresso_aluno` | Por aluno, por lição da trilha: status (não iniciado / em progresso / feito), timestamp. | N:1 `alunos` · N:1 `trilha_licoes` |
 | `presenca` | Por aluno, por aula: presente / ausente. | N:1 `alunos` · N:1 `aulas_assigned` |
@@ -64,12 +65,16 @@ por role — evita o aluno precisar saber "qual link é o meu".
 
 ### Regra de visibilidade por role (RLS)
 
-- **Aluno**: só a própria turma — aulas recebidas, anotações do professor
-  daquelas aulas, a própria trilha, o próprio progresso.
-- **Professor**: as turmas que leciona — aula do dia, progresso de todos
-  os alunos daquelas turmas em tempo real, presença. Escreve anotações e
-  libera trilha.
-- **RH**: só a própria empresa — visão **agregada por padrão** (médias de
+- **Aluno**: só a própria turma — aulas recebidas, **lousas** daquelas
+  aulas, a própria trilha, o próprio progresso. **Nunca** vê as anotações
+  internas que o professor escreveu sobre ele.
+- **Professor**: **apenas as turmas que ele leciona** — nunca as de outro
+  professor (confirmado em 20/08). Vê aula do dia, progresso de todos os
+  alunos daquelas turmas em tempo real, presença e gabarito da trilha.
+  Escreve lousas e anotações internas por aluno. **Não** libera trilha — ela
+  é automática.
+- **RH**: só a própria empresa, e **nunca** as anotações internas por
+  aluno — visão **agregada por padrão** (médias de
   presença/engajamento por turma). Drill-down progressivo: clica na turma
   → vê a turma; clica na pessoa → vê o indivíduo. Nunca abre exposto no
   nível de pessoa de cara.
@@ -81,17 +86,29 @@ por role — evita o aluno precisar saber "qual link é o meu".
 ## 4. Telas por role
 
 ### Professor
-1. Seletor de turma (turmas dele, corporativas + particulares)
-2. Aula do dia da turma selecionada — status, botão pra abrir o
-   `templateaula.html`
-3. Pós-aula: anotação ligada àquela `aula_assigned`
-4. Liberar/editar a trilha de lições daquela aula
-5. Grid de progresso da turma: aluno × lição × status, ao vivo
-6. Marcar presença da turma naquele dia
-7. Histórico de aulas anteriores da turma
+*(revisado em 20/08 durante a construção do `plataforma.html` — substitui a
+versão inicial desta seção)*
+
+1. **Seletor de turma** — dropdown agrupado em "Turmas" (corporativas) e
+   "Alunos particulares". Só as turmas do professor logado.
+2. **Aula do dia** — card com a aula da turma selecionada + botão que abre o
+   `templateaula.html`. Ao lado, resumo da turma (média da trilha, quantos
+   concluíram, lousas, status da presença).
+3. **Lousas** — canvas de desenho/escrita à mão, salvo como imagem. Várias
+   lousas por aula, reabríveis para editar. Substituiu a "anotação pós-aula"
+   em texto da versão inicial.
+4. **Trilha & performance** — a trilha é liberada **automaticamente**; o
+   professor não libera nem edita, só visualiza. Dois modos: visão da turma
+   (grid aluno × lição com acerto/erro/pendente + nota) e por aluno (perfil
+   com barra de progresso e detalhe lição a lição). Cada lição no detalhe é
+   clicável e abre o `templatetrilha.html` em **modo gabarito**
+   (`?modo=gabarito`), com as respostas certas já marcadas.
+5. **Fim da aula** — presença (presente/faltou) **e anotação interna por
+   aluno**, marcadas ao fim da aula.
+6. **Histórico** — aulas anteriores da turma.
 
 ### Aluno
-1. Aula mais recente recebida: material + anotação do professor
+1. Aula mais recente recebida: material + lousas da aula
 2. Trilha de lições daquela aula (lista, status a fazer/feito, abre pra
    fazer)
 3. Histórico de aulas anteriores
@@ -117,6 +134,32 @@ por role — evita o aluno precisar saber "qual link é o meu".
 ---
 
 ## Histórico de decisões
+
+### 20/08/2026 (noite) — Construção da tela do Professor
+Decisões tomadas enquanto o `plataforma.html` era construído. Método
+combinado com a Karina: **define-se a visualização primeiro, constrói-se a
+tela, e só então o back no Supabase é criado para suportar o que ficou
+decidido** — não o contrário. Este doc é adaptado a cada rodada.
+
+- **Trilha é liberada automaticamente**, não pelo professor. Ele só
+  visualiza: quem fez, até onde foi, acertos, erros e nota total.
+- **Lousa no lugar de anotação em texto**: tela de desenho/escrita salva
+  como "lousa" ou "lousas" da aula. Motivou trocar `anotacoes_aula` por
+  `lousas_aula` no schema.
+- **Presença é marcada no fim da aula** (não é chamada no início).
+- **Anotação interna por aluno**: no fim da aula o professor escreve sobre
+  cada aluno. **Não vai para o aluno nem para o RH** — só para a dash
+  interna da Bupp. Nova tabela `anotacoes_aluno`, com RLS restrita ao role
+  `interno`. É o dado mais sensível da plataforma: se vazar para o RH do
+  cliente, vira avaliação de desempenho de funcionário sem consentimento.
+- **Professor vê apenas as próprias turmas**, nunca as de outro professor.
+- Lições no detalhe do aluno abrem o `templatetrilha.html` em modo
+  gabarito, com as respostas visíveis para o professor conferir.
+- Seletor de turma é dropdown agrupado (Turmas / Alunos particulares), não
+  botões — decidido por layout depois de testar com chips.
+- `templatetrilha.html` criado como irmão do `templateaula.html`: mesma
+  navegação e paleta, mas cada card é exercício com correção e nota.
+  **Estrutura pronta, conteúdo em branco** — os exercícios entram depois.
 
 ### 20/08/2026 — Fundação da plataforma
 - Separação `index.html` (interno) vs. `plataforma.html` (externo, único

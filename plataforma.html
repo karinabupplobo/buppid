@@ -283,11 +283,18 @@
   .kv-click:hover .ver-trilha{ opacity: 1; }
   @media (hover: none){ .ver-trilha{ opacity: 1; } }
 
-  /* ===== Presença ===== */
+  /* ===== Presença + anotações ===== */
+  .privado{
+    background: rgba(60,110,120,0.16); border: 1px solid rgba(60,110,120,0.4);
+    border-radius: 10px; padding: 11px 14px; margin-bottom: 14px;
+    font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.7); font-weight: 500;
+  }
+  .privado b{ display: block; color: var(--amarelo-neon); font-weight: 700; margin-bottom: 2px; }
+
   .presenca-item{
-    display: flex; align-items: center; justify-content: space-between;
     background: var(--branco); border-radius: 12px; padding: 14px 16px; margin-bottom: 9px;
   }
+  .presenca-topo{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .presenca-item .nome{ font-size: 14.5px; font-weight: 600; color: var(--texto); }
   .toggle{ display: flex; gap: 6px; }
   .toggle button{
@@ -297,6 +304,26 @@
   }
   .toggle button.on-p{ background: #dff0d8; border-color: #b6d7ac; color: #3f6b45; }
   .toggle button.on-a{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
+
+  .nota-toggle{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario);
+    padding: 9px 0 0; display: flex; align-items: center; gap: 5px;
+  }
+  .nota-toggle .dot-nota{
+    width: 6px; height: 6px; border-radius: 50%; background: var(--azul-intermediario);
+    display: none;
+  }
+  .nota-toggle.tem .dot-nota{ display: block; }
+  .nota-box{ display: none; margin-top: 9px; }
+  .nota-box.open{ display: block; }
+  .nota-box textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 11px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 74px; outline: none; line-height: 1.45;
+  }
+  .nota-box textarea:focus{ border-color: var(--azul-intermediario); }
+  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 5px; font-weight: 600; }
 
   /* ===== Histórico ===== */
   .hist-item{
@@ -410,7 +437,7 @@
   <button class="tab active" data-pane="aula">Aula do dia</button>
   <button class="tab" data-pane="lousa">Lousas</button>
   <button class="tab" data-pane="trilha">Trilha</button>
-  <button class="tab" data-pane="presenca">Presença</button>
+  <button class="tab" data-pane="presenca">Fim da aula</button>
     <button class="tab" data-pane="historico">Histórico</button>
   </div>
 </aside>
@@ -467,9 +494,14 @@
 
   <!-- ============ PRESENÇA ============ -->
   <section class="pane" id="pane-presenca">
-    <div class="section-title">Presença — marcar ao fim da aula</div>
+    <div class="section-title">Fechar a aula — presença e anotações</div>
+    <div class="privado">
+      <b>As anotações por aluno são internas.</b>
+      Ficam visíveis só para a Bupp, na dash interna. O aluno não vê, o RH do
+      cliente não vê.
+    </div>
     <div id="presenca-lista"></div>
-    <button class="btn lime" id="btn-salvar-presenca">Salvar presença</button>
+    <button class="btn lime" id="btn-salvar-presenca">Salvar presença e anotações</button>
   </section>
 
   <!-- ============ HISTÓRICO ============ -->
@@ -589,6 +621,9 @@ const TURMAS = [
 const LOUSAS = { t1: [], t2: [], t3: [] };
 // Presença em memória: { turmaId: { alunoId: "p"|"a" } }
 const PRESENCA = { t1:{}, t2:{}, t3:{} };
+// Anotações INTERNAS por aluno: { turmaId: { alunoId: "texto" } }
+// Visíveis só na dash interna da Bupp — nunca para o aluno nem para o RH.
+const NOTAS_ALUNO = { t1:{}, t2:{}, t3:{} };
 
 let turmaAtual = TURMAS[0];
 
@@ -944,21 +979,48 @@ function renderPresenca(){
   box.innerHTML = "";
   turmaAtual.alunos.forEach(a => {
     const atual = PRESENCA[turmaAtual.id][a.id];
+    const nota  = NOTAS_ALUNO[turmaAtual.id][a.id] || "";
     const d = document.createElement("div");
     d.className = "presenca-item";
     d.innerHTML = `
-      <span class="nome">${a.nome}</span>
-      <span class="toggle">
-        <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
-        <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
-      </span>
+      <div class="presenca-topo">
+        <span class="nome">${a.nome}</span>
+        <span class="toggle">
+          <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
+          <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
+        </span>
+      </div>
+      <button class="nota-toggle${nota ? " tem" : ""}">
+        <span class="dot-nota"></span>
+        ${nota ? "Anotação escrita" : "Anotar sobre este aluno"} ›
+      </button>
+      <div class="nota-box">
+        <textarea placeholder="Como foi a participação, o que travou, o que reforçar na próxima…">${nota}</textarea>
+        <div class="hint">Interno — não vai para o aluno nem para o RH</div>
+      </div>
     `;
-    d.querySelectorAll("button").forEach(b => {
+
+    d.querySelectorAll(".toggle button").forEach(b => {
       b.onclick = () => {
         PRESENCA[turmaAtual.id][a.id] = b.dataset.v;
         renderPresenca();
+        renderResumo();
       };
     });
+
+    const tgl = d.querySelector(".nota-toggle");
+    const cx  = d.querySelector(".nota-box");
+    const ta  = d.querySelector("textarea");
+    tgl.onclick = () => {
+      cx.classList.toggle("open");
+      if (cx.classList.contains("open")) ta.focus();
+    };
+    ta.oninput = () => {
+      NOTAS_ALUNO[turmaAtual.id][a.id] = ta.value;
+      tgl.classList.toggle("tem", !!ta.value.trim());
+    };
+    if (nota) cx.classList.add("open");
+
     box.appendChild(d);
   });
 }
@@ -970,7 +1032,8 @@ document.getElementById("btn-salvar-presenca").onclick = () => {
     alert(`Faltam ${total - marcados} aluno(s) sem marcação.`);
     return;
   }
-  alert("Presença salva. (Prévia — ainda não grava no banco.)");
+  const comNota = Object.values(NOTAS_ALUNO[turmaAtual.id]).filter(v => v && v.trim()).length;
+  alert(`Aula fechada.\nPresença: ${total} aluno(s).\nAnotações internas: ${comNota}.\n\n(Prévia — ainda não grava no banco.)`);
 };
 
 // ══════════════════════════════════════════════════════════

@@ -161,7 +161,19 @@
   }
 
   /* ===== Lousas ===== */
-  .lousa-grid{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .lousa-grid{ display: block; }
+  .lousa-cab{
+    display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+    margin: 18px 0 9px; padding-bottom: 7px;
+    border-bottom: 1px solid rgba(255,255,255,0.09);
+  }
+  .lousa-cab:first-child{ margin-top: 0; }
+  .lousa-cab .la{ color: #fff; font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; }
+  .lousa-cab .ld{
+    color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .lousa-linha{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
   .lousa-thumb{
     background: var(--branco); border-radius: 12px; aspect-ratio: 4/3;
     display: flex; align-items: center; justify-content: center;
@@ -191,6 +203,12 @@
     display: none; flex-direction: column;
   }
   .lousa-editor.open{ display: flex; }
+  .lousa-ctx{
+    padding: 12px 16px 0; display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+  }
+  .lousa-ctx .a{ color: var(--amarelo-neon); font-size: 14px; font-weight: 700; }
+  .lousa-ctx .b{ color: rgba(255,255,255,0.45); font-size: 11.5px; font-weight: 600; }
+
   .lousa-editor-top{
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 16px; gap: 10px;
@@ -376,7 +394,7 @@
 
     /* Aula do dia + lousas lado a lado */
     .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
-    .lousa-grid{ grid-template-columns: repeat(3,1fr); }
+    .lousa-linha{ grid-template-columns: repeat(3,1fr); }
 
     /* Listas em duas colunas para não deixar metade da tela vazia */
     .aluno-lista, #presenca-lista, #historico-lista{
@@ -398,14 +416,14 @@
 
   @media (min-width: 1280px){
     main{ padding: 34px 46px 70px; }
-    .lousa-grid{ grid-template-columns: repeat(4,1fr); }
+    .lousa-linha{ grid-template-columns: repeat(4,1fr); }
   }
 
   /* Mobile: mantém empilhado */
   @media (max-width: 899px){
     .sidebar{ padding: 0 18px 14px; }
     .topbar{ margin: 0 -18px; }
-    .lousa-grid{ grid-template-columns: repeat(2,1fr); }
+    .lousa-linha{ grid-template-columns: repeat(2,1fr); }
   }
 </style>
 </head>
@@ -513,6 +531,7 @@
 
 <!-- ============ EDITOR DE LOUSA ============ -->
 <div class="lousa-editor" id="lousa-editor">
+  <div class="lousa-ctx" id="lousa-ctx"></div>
   <div class="lousa-editor-top">
     <div class="lousa-tools">
       <button class="tool active" data-cor="#0A1214" style="background:#0A1214"></button>
@@ -617,7 +636,10 @@ const TURMAS = [
   }
 ];
 
-// Lousas salvas em memória: { turmaId: [ {id, nome, dataUrl} ] }
+// Lousas salvas em memória.
+// Cada lousa guarda a que TURMA, DATA e AULA pertence — sem isso não dá
+// para saber depois de qual aula ela veio.
+// { turmaId: [ {id, nome, dataUrl, turmaId, turmaNome, aulaTitulo, data, criadaEm} ] }
 const LOUSAS = { t1: [], t2: [], t3: [] };
 // Presença em memória: { turmaId: { alunoId: "p"|"a" } }
 const PRESENCA = { t1:{}, t2:{}, t3:{} };
@@ -691,7 +713,7 @@ function renderAula(){
     <h2>${a.titulo}</h2>
     <p>${a.resumo}</p>
     <a class="btn" href="templateaula.html" target="_blank">Abrir material da aula →</a>
-    <button class="btn ghost" onclick="irPara('lousa')">Abrir lousa</button>
+    <button class="btn ghost" onclick="abrirLousa(null)">Nova lousa desta aula</button>
   `;
   renderResumo();
 }
@@ -725,26 +747,76 @@ function renderResumo(){
 //  Lousas
 // ══════════════════════════════════════════════════════════
 function renderLousas(){
-  const grid = document.getElementById("lousa-grid");
+  const grid  = document.getElementById("lousa-grid");
   const vazio = document.getElementById("lousa-vazio");
   const lista = LOUSAS[turmaAtual.id] || [];
   grid.innerHTML = "";
 
+  // agrupa por aula (título + data), aula atual primeiro
+  const grupos = {};
   lista.forEach(l => {
-    const d = document.createElement("div");
-    d.className = "lousa-thumb";
-    d.innerHTML = `<img src="${l.dataUrl}" alt="${l.nome}"><span class="label">${l.nome}</span>`;
-    d.onclick = () => abrirLousa(l.id);
-    grid.appendChild(d);
+    const k = l.aulaTitulo + "||" + l.data;
+    (grupos[k] = grupos[k] || []).push(l);
   });
 
-  const nova = document.createElement("button");
-  nova.className = "lousa-thumb lousa-nova";
-  nova.innerHTML = `<span class="plus">+</span><span>Nova lousa</span>`;
-  nova.onclick = () => abrirLousa(null);
-  grid.appendChild(nova);
+  const chaveAtual = turmaAtual.aula.titulo + "||" + turmaAtual.aula.data;
+  const chaves = Object.keys(grupos).sort((a,b) =>
+    a === chaveAtual ? -1 : b === chaveAtual ? 1 : 0);
+
+  chaves.forEach(k => {
+    const [titulo, data] = k.split("||");
+    const cab = document.createElement("div");
+    cab.className = "lousa-cab";
+    cab.innerHTML = `<span class="la">${titulo}</span>
+                     <span class="ld">${data} · ${turmaAtual.nome}</span>`;
+    grid.appendChild(cab);
+
+    const wrap = document.createElement("div");
+    wrap.className = "lousa-linha";
+    grupos[k].forEach(l => {
+      const d = document.createElement("div");
+      d.className = "lousa-thumb";
+      d.innerHTML = `<img src="${l.dataUrl}" alt="${l.nome}">
+                     <span class="label">${l.nome}${l.criadaEm ? " · " + horaCurta(l.criadaEm) : ""}</span>`;
+      d.onclick = () => abrirLousa(l.id);
+      wrap.appendChild(d);
+    });
+
+    // "nova lousa" só no bloco da aula de hoje
+    if (k === chaveAtual){
+      const nova = document.createElement("button");
+      nova.className = "lousa-thumb lousa-nova";
+      nova.innerHTML = `<span class="plus">+</span><span>Nova lousa</span>`;
+      nova.onclick = () => abrirLousa(null);
+      wrap.appendChild(nova);
+    }
+    grid.appendChild(wrap);
+  });
+
+  // nenhuma lousa ainda na aula de hoje → mostra o botão mesmo assim
+  if (!chaves.includes(chaveAtual)){
+    const cab = document.createElement("div");
+    cab.className = "lousa-cab";
+    cab.innerHTML = `<span class="la">${turmaAtual.aula.titulo}</span>
+                     <span class="ld">${turmaAtual.aula.data} · ${turmaAtual.nome}</span>`;
+    grid.appendChild(cab);
+    const wrap = document.createElement("div");
+    wrap.className = "lousa-linha";
+    const nova = document.createElement("button");
+    nova.className = "lousa-thumb lousa-nova";
+    nova.innerHTML = `<span class="plus">+</span><span>Nova lousa</span>`;
+    nova.onclick = () => abrirLousa(null);
+    wrap.appendChild(nova);
+    grid.appendChild(wrap);
+  }
 
   vazio.style.display = lista.length ? "none" : "block";
+}
+
+function agoraISO(){ return new Date().toISOString(); }
+function horaCurta(iso){
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
 }
 
 let lousaEditandoId = null;
@@ -754,6 +826,14 @@ function abrirLousa(id){
   lousaEditandoId = id;
   const ed = document.getElementById("lousa-editor");
   ed.classList.add("open");
+
+  // carimbo visível: de qual aula/turma/data é esta lousa
+  const existente = id ? (LOUSAS[turmaAtual.id] || []).find(x => x.id === id) : null;
+  const aulaTit = existente ? existente.aulaTitulo : turmaAtual.aula.titulo;
+  const aulaDat = existente ? existente.data       : turmaAtual.aula.data;
+  const turmaNm = existente ? existente.turmaNome  : turmaAtual.nome;
+  document.getElementById("lousa-ctx").innerHTML =
+    `<span class="a">${aulaTit}</span><span class="b">${aulaDat} · ${turmaNm}</span>`;
   const cv = document.getElementById("lousa-canvas");
   // dimensiona respeitando densidade de tela
   const r = cv.getBoundingClientRect();
@@ -837,12 +917,26 @@ function initCanvas(){
     const arr = LOUSAS[turmaAtual.id];
     if (lousaEditandoId){
       const l = arr.find(x => x.id === lousaEditandoId);
-      if (l) l.dataUrl = dataUrl;
+      if (l){ l.dataUrl = dataUrl; l.editadaEm = agoraISO(); }
     } else {
-      arr.push({ id: "l" + Date.now(), nome: "Lousa " + (arr.length + 1), dataUrl });
+      // toda lousa nasce carimbada com turma, data e aula de origem
+      const daAula = arr.filter(x => x.aulaTitulo === turmaAtual.aula.titulo
+                                  && x.data === turmaAtual.aula.data).length;
+      arr.push({
+        id: "l" + Date.now(),
+        nome: "Lousa " + (daAula + 1),
+        dataUrl,
+        turmaId:     turmaAtual.id,
+        turmaNome:   turmaAtual.nome,
+        aulaTitulo:  turmaAtual.aula.titulo,
+        data:        turmaAtual.aula.data,
+        criadaEm:    agoraISO()
+      });
     }
     document.getElementById("lousa-editor").classList.remove("open");
+    irPara("lousa");
     renderLousas();
+    renderResumo();
   };
 }
 

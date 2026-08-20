@@ -56,7 +56,7 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | `alunos` | Aluno (nome, cargo). | N:1 `turmas` |
 | `professores` | Professor (nome). | N:M `turmas` |
 | `aulas_assigned` | Uma aula do Gerador de Aulas atribuída a uma turma numa data. Abre no `templateaula.html` (o "material da aula" É o carrossel de 8 telas — não existe .pptx literal). Status: agendada / dada. | N:1 `turmas` |
-| `lousas_aula` | Lousas de uma aula: imagem (PNG/base64 ou storage), ordem, título. Várias por aula. Substituiu a antiga `anotacoes_aula` em texto. | N:1 `aulas_assigned` |
+| `lousas_aula` | Lousas de uma aula: imagem (PNG/base64 ou storage), título, ordem e `criada_em`. Várias por aula. **Cada lousa é carimbada com turma, data e nome da aula** — sem isso não há como saber depois de qual aula ela veio. Substituiu a antiga `anotacoes_aula` em texto. | N:1 `aulas_assigned` · N:1 `turmas` |
 | `anotacoes_aluno` | **Anotação INTERNA** do professor sobre um aluno específico numa aula. **Visível só para a Bupp (role `interno`)** — nunca para o aluno, nunca para o RH do cliente. | N:1 `alunos` · N:1 `aulas_assigned` |
 | `trilha_licoes` | Lista de exercícios liberados pra turma depois de uma aula. | N:1 `aulas_assigned` |
 | `progresso_aluno` | Por aluno, por lição da trilha: status (não iniciado / em progresso / feito), timestamp. | N:1 `alunos` · N:1 `trilha_licoes` |
@@ -146,6 +146,11 @@ decidido** — não o contrário. Este doc é adaptado a cada rodada.
 - **Lousa no lugar de anotação em texto**: tela de desenho/escrita salva
   como "lousa" ou "lousas" da aula. Motivou trocar `anotacoes_aula` por
   `lousas_aula` no schema.
+- **Lousa nasce vinculada à aula**: o botão da tela "Aula do dia" abre o
+  canvas direto, já carimbado com turma, data e nome da aula. Não passa por
+  uma tela intermediária de lousas — se passasse, a lousa nasceria solta e
+  não haveria como saber de qual aula era. Na aba Lousas elas aparecem
+  agrupadas por aula, com a aula de hoje no topo.
 - **Presença é marcada no fim da aula** (não é chamada no início).
 - **Anotação interna por aluno**: no fim da aula o professor escreve sobre
   cada aluno. **Não vai para o aluno nem para o RH** — só para a dash

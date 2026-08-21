@@ -63,8 +63,9 @@
   }
 
   /* Nome do usuário. REGRA DE IDIOMA (21/08): a plataforma inteira é em
-     português — professor, aluno e RH. A única exceção é a saudação "Hi, Nome",
-     que fica em inglês como aceno ao produto. Todo o resto: português. */
+     português — abas, botões, rótulos, para professor, aluno e RH. As únicas
+     exceções são a saudação "Hi, Nome" e o selo de papel ("teacher"), que ficam
+     em inglês como aceno ao produto. Todo o resto: português. */
   .whoami{
     font-size: 11.5px; color: var(--cinza-texto); font-weight: 500;
     line-height: 1.35; padding-bottom: 16px; border-bottom: 1px solid var(--borda);
@@ -309,13 +310,6 @@
   .hist-tags{ display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
   .htag{ font-size: 10.5px; font-weight: 700; background: #eef0ec; color: var(--cinza-texto); padding: 4px 8px; border-radius: 6px; }
 
-  .aviso{
-    background: var(--limao-claro); border: none;
-    padding: 12px 14px; margin-bottom: 18px;
-    font-size: 12px; color: #2a3330; line-height: 1.5; font-weight: 500;
-    border-left: 4px solid var(--amarelo-neon); border-radius: 0 10px 10px 0;
-  }
-
   /* ===== Desktop: sidebar fixa + conteúdo largo ===== */
   @media (min-width: 900px){
     body{ display: grid; grid-template-columns: 282px 1fr; align-items: start; }
@@ -387,7 +381,7 @@
 
   <div class="whoami">
     <strong>Hi, Ana Ribeiro</strong>
-    <span>professor</span>
+    <span>teacher</span>
   </div>
 
   <div class="turma-bar">
@@ -412,11 +406,6 @@
 </aside>
 
 <main>
-  <div class="aviso">
-    Prévia com dados fictícios. Nenhuma informação real ainda — o banco será
-    criado depois que esta visualização for aprovada.
-  </div>
-
   <!-- ============ AULA DO DIA ============ -->
   <section class="pane active" id="pane-aula">
     <div class="cols">

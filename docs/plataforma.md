@@ -136,6 +136,22 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Idioma e selos de papel
+A plataforma inteira é em **português** — abas, botões, rótulos — para os quatro
+papéis. As únicas exceções são a saudação **"Hi, Nome"** e o **selo de papel**,
+que ficam em inglês como aceno ao produto:
+
+| Papel | Selo |
+|---|---|
+| Professor | `teacher` |
+| Aluno | `student` |
+| RH do cliente | `manager` |
+| Equipe Bupp (dash interna) | `bupp team` |
+
+Isso confirma que existem **quatro** papéis, não três: além de professor, aluno e
+RH, há a visão interna da Bupp — que é quem enxerga as anotações privadas por
+aluno e é a última tela da fila de construção.
+
 ### 20/08/2026 (noite) — Construção da tela do Professor
 Decisões tomadas enquanto o `plataforma.html` era construído. Método
 combinado com a Karina: **define-se a visualização primeiro, constrói-se a

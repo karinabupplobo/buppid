@@ -621,6 +621,14 @@
   .ab.aviso{ border-color: rgba(217,226,140,0.4); color: rgba(255,255,255,0.6); cursor: default; font-weight: 500; }
   .ab.aviso:hover{ background: transparent; }
 
+  .ab.busca{ color: #fff; }
+  .ab.busca::placeholder{ color: rgba(255,255,255,0.4); }
+  .cx.achou{ box-shadow: 0 0 0 3px #D9E28C; }
+  .dot.tem-anot::after{
+    content: ""; position: absolute; top: -4px; right: -4px;
+    width: 5px; height: 5px; border-radius: 50%; background: #D9E28C;
+  }
+
   .cor-b{
     width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.22);
     cursor: pointer; padding: 0; transition: transform .12s, border-color .12s;
@@ -633,34 +641,47 @@
   }
   body.rabiscando .rabisco{ pointer-events: auto; touch-action: none; cursor: crosshair; }
 
-  /* caixa de texto da anotação, ancorada no rodapé da tela */
-  .anot-nota{
-    position: absolute; left: 50%; transform: translateX(-50%);
-    bottom: 54px; width: min(760px, calc(100% - 48px)); z-index: 14;
-    display: none; flex-direction: column; gap: 5px;
+  /* Caixas de texto: várias por tela, movíveis e redimensionáveis */
+  .cx{
+    position: absolute; z-index: 15; min-width: 90px; min-height: 44px;
+    background: rgba(255,255,255,0.97); border: 1.5px solid rgba(60,110,120,0.5);
+    border-radius: 8px; display: flex; flex-direction: column;
   }
-  body.modo-professor .anot-nota.aberta{ display: flex; }
-  .anot-nota textarea{
-    width: 100%; border: 1.5px solid rgba(217,226,140,0.55); border-radius: 10px;
-    background: rgba(255,255,255,0.97); color: #000; padding: 11px 13px;
-    font-family: inherit; font-size: 14px; line-height: 1.45; resize: vertical;
-    min-height: 66px; outline: none;
-  }
-  .anot-nota .aviso-pub{
-    font-size: 10.5px; font-weight: 700; color: rgba(217,226,140,0.85);
-    letter-spacing: .04em; text-transform: uppercase;
-  }
+  .cx.sel{ border-color: #D9E28C; box-shadow: 0 0 0 2px rgba(217,226,140,0.45); }
+  body.modo-leitura .cx{ border-color: rgba(60,110,120,0.28); }
 
-  /* leitura: anotação exibida para o aluno / no histórico */
-  .anot-leitura{
-    position: absolute; left: 50%; transform: translateX(-50%);
-    bottom: 54px; width: min(760px, calc(100% - 48px)); z-index: 14;
-    background: rgba(255,255,255,0.96); border-left: 4px solid #D9E28C;
-    border-radius: 0 10px 10px 0; padding: 11px 14px; display: none;
+  .cx-alca{
+    height: 16px; flex-shrink: 0; cursor: move; border-radius: 6px 6px 0 0;
+    background: rgba(60,110,120,0.12); display: flex; align-items: center;
+    justify-content: center; gap: 3px;
   }
-  .anot-leitura.tem{ display: block; }
-  .anot-leitura .t{ font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #3C6E78; margin-bottom: 3px; }
-  .anot-leitura .c{ font-size: 14px; color: #000; line-height: 1.45; white-space: pre-wrap; }
+  .cx-alca i{ width: 3px; height: 3px; border-radius: 50%; background: rgba(60,110,120,0.5); }
+  body.modo-leitura .cx-alca{ display: none; }
+
+  .cx-txt{
+    flex: 1; padding: 7px 9px; outline: none; overflow: auto;
+    font-family: inherit; font-size: 15px; line-height: 1.4; color: #000;
+    word-break: break-word;
+  }
+  .cx-txt:empty:before{ content: attr(data-ph); color: #9aa39f; }
+  .cx-txt mark{ background: #D9E28C; color: #0A1214; padding: 0 2px; border-radius: 2px; }
+
+  .cx-fechar{
+    position: absolute; top: -9px; right: -9px; width: 20px; height: 20px;
+    border-radius: 50%; border: none; background: #a3312a; color: #fff;
+    font-size: 12px; line-height: 1; cursor: pointer; display: none;
+    align-items: center; justify-content: center; padding: 0; z-index: 2;
+  }
+  .cx.sel .cx-fechar{ display: flex; }
+  body.modo-leitura .cx-fechar{ display: none !important; }
+
+  .cx-resize{
+    position: absolute; right: 0; bottom: 0; width: 16px; height: 16px;
+    cursor: nwse-resize; z-index: 2;
+    background: linear-gradient(135deg, transparent 50%, rgba(60,110,120,0.45) 50%);
+    border-radius: 0 0 6px 0;
+  }
+  body.modo-leitura .cx-resize{ display: none; }
 
   .marca-anot{
     position: absolute; top: 10px; right: 12px; z-index: 13;
@@ -687,7 +708,21 @@
     <b id="anot-aula">Aula</b>
     <span id="anot-turma"></span>
   </div>
-  <button class="ab" id="ab-nota">Anotar texto</button>
+  <button class="ab" id="ab-nova-cx">+ Caixa de texto</button>
+
+  <span class="fmt-grupo" id="fmt-grupo" style="display:none;align-items:center;gap:5px;">
+    <button class="ab fmt-b" id="fmt-b" title="Negrito"><b>B</b></button>
+    <button class="ab fmt-b" id="fmt-i" title="Itálico"><i>I</i></button>
+    <button class="ab fmt-b" id="fmt-h" title="Destacar">H</button>
+    <select class="ab" id="fmt-tam" title="Tamanho da fonte">
+      <option value="13">13</option>
+      <option value="15" selected>15</option>
+      <option value="19">19</option>
+      <option value="24">24</option>
+      <option value="32">32</option>
+    </select>
+  </span>
+
   <button class="ab" id="ab-rabisco">Rabiscar</button>
   <span class="cores" id="anot-cores" style="display:none;gap:5px;">
     <button class="cor-b on" data-c="#a3312a" style="background:#a3312a"></button>
@@ -696,7 +731,10 @@
     <button class="cor-b" data-c="#1f7a3d" style="background:#1f7a3d"></button>
   </span>
   <button class="ab" id="ab-apagar" style="display:none;">Limpar rabisco</button>
-  <button class="ab aviso">Alunos veem estas anotações</button>
+  <input class="ab busca" id="anot-busca" type="search" placeholder="Buscar nas anotações"
+         style="min-width:150px;font-weight:500;">
+  <span class="ab aviso" id="busca-res" style="display:none;"></span>
+  <span class="ab aviso" id="aviso-pub">Alunos veem estas anotações</span>
 </div>
 
 <div class="app" id="app">
@@ -1168,7 +1206,8 @@
     function montarCamadas(){
       telas = Array.from(document.querySelectorAll(".screen"));
       telas.forEach((tela, i) => {
-        if (tela.querySelector(".rabisco")) return;
+        if (tela.dataset.anotPronta) return;
+        tela.dataset.anotPronta = "1";
         tela.style.position = "relative";
 
         const cv = document.createElement("canvas");
@@ -1180,31 +1219,138 @@
         marca.textContent = "anotada";
         tela.appendChild(marca);
 
-        if (PROF){
-          const box = document.createElement("div");
-          box.className = "anot-nota";
-          box.innerHTML = '<textarea placeholder="Anotação desta tela — a turma vai ver"></textarea>'
-                        + '<span class="aviso-pub">Visível para os alunos no histórico</span>';
-          tela.appendChild(box);
-          const ta = box.querySelector("textarea");
-          ta.value = (ANOT[i] && ANOT[i].texto) || "";
-          ta.addEventListener("input", () => {
-            ANOT[i] = ANOT[i] || {};
-            ANOT[i].texto = ta.value;
-            salvar(); marcarTela(i);
-          });
-        } else {
-          const box = document.createElement("div");
-          box.className = "anot-leitura";
-          box.innerHTML = '<div class="t">Anotação do professor</div><div class="c"></div>';
-          tela.appendChild(box);
-          const txt = (ANOT[i] && ANOT[i].texto) || "";
-          if (txt){ box.querySelector(".c").textContent = txt; box.classList.add("tem"); }
-        }
+        // recria as caixas salvas desta tela
+        const caixas = (ANOT[i] && ANOT[i].caixas) || [];
+        caixas.forEach(c => criarCaixa(tela, i, c));
 
         dimensionar(cv, i);
         marcarTela(i);
       });
+    }
+
+    // ─────────── Caixas de texto ───────────
+    // Cada caixa guarda posição, tamanho e HTML (com negrito, itálico e
+    // destaque). O texto puro também é salvo, para permitir busca depois.
+    function criarCaixa(tela, iTela, dados){
+      const cx = document.createElement("div");
+      cx.className = "cx";
+      cx.style.left   = (dados.x || 40) + "px";
+      cx.style.top    = (dados.y || 70) + "px";
+      cx.style.width  = (dados.w || 240) + "px";
+      cx.style.height = (dados.h || 96)  + "px";
+
+      cx.innerHTML =
+        '<div class="cx-alca"><i></i><i></i><i></i></div>' +
+        '<div class="cx-txt" data-ph="Escreva aqui"></div>' +
+        '<button class="cx-fechar" title="Apagar caixa">×</button>' +
+        '<div class="cx-resize"></div>';
+
+      const txt = cx.querySelector(".cx-txt");
+      txt.innerHTML = dados.html || "";
+      if (dados.tam) txt.style.fontSize = dados.tam + "px";
+
+      if (PROF){
+        txt.contentEditable = "true";
+        txt.addEventListener("input", () => persistir(iTela));
+        txt.addEventListener("focus", () => selecionar(cx));
+        cx.addEventListener("mousedown", () => selecionar(cx));
+        cx.addEventListener("touchstart", () => selecionar(cx), { passive:true });
+
+        arrastar(cx, cx.querySelector(".cx-alca"), iTela);
+        redimensionar(cx, cx.querySelector(".cx-resize"), iTela);
+
+        cx.querySelector(".cx-fechar").onclick = e => {
+          e.stopPropagation();
+          cx.remove();
+          persistir(iTela);
+        };
+      }
+
+      tela.appendChild(cx);
+      return cx;
+    }
+
+    let caixaSel = null;
+    function selecionar(cx){
+      document.querySelectorAll(".cx.sel").forEach(x => x.classList.remove("sel"));
+      if (cx) cx.classList.add("sel");
+      caixaSel = cx;
+      document.getElementById("fmt-grupo").style.display = cx ? "flex" : "none";
+      if (cx){
+        const t = cx.querySelector(".cx-txt");
+        const px = parseInt(t.style.fontSize || "15", 10);
+        const sel = document.getElementById("fmt-tam");
+        if ([...sel.options].some(o => +o.value === px)) sel.value = String(px);
+      }
+    }
+
+    function arrastar(cx, alca, iTela){
+      let ox = 0, oy = 0, on = false;
+      const ini = e => {
+        e.preventDefault(); e.stopPropagation();
+        on = true;
+        const p = e.touches ? e.touches[0] : e;
+        ox = p.clientX - cx.offsetLeft;
+        oy = p.clientY - cx.offsetTop;
+      };
+      const mov = e => {
+        if (!on) return;
+        e.preventDefault();
+        const p = e.touches ? e.touches[0] : e;
+        cx.style.left = Math.max(0, p.clientX - ox) + "px";
+        cx.style.top  = Math.max(0, p.clientY - oy) + "px";
+      };
+      const fim = () => { if (on){ on = false; persistir(iTela); } };
+      alca.addEventListener("mousedown", ini);
+      window.addEventListener("mousemove", mov);
+      window.addEventListener("mouseup", fim);
+      alca.addEventListener("touchstart", ini, { passive:false });
+      window.addEventListener("touchmove", mov, { passive:false });
+      window.addEventListener("touchend", fim);
+    }
+
+    function redimensionar(cx, alca, iTela){
+      let sx = 0, sy = 0, sw = 0, sh = 0, on = false;
+      const ini = e => {
+        e.preventDefault(); e.stopPropagation();
+        on = true;
+        const p = e.touches ? e.touches[0] : e;
+        sx = p.clientX; sy = p.clientY;
+        sw = cx.offsetWidth; sh = cx.offsetHeight;
+      };
+      const mov = e => {
+        if (!on) return;
+        e.preventDefault();
+        const p = e.touches ? e.touches[0] : e;
+        cx.style.width  = Math.max(90, sw + (p.clientX - sx)) + "px";
+        cx.style.height = Math.max(44, sh + (p.clientY - sy)) + "px";
+      };
+      const fim = () => { if (on){ on = false; persistir(iTela); } };
+      alca.addEventListener("mousedown", ini);
+      window.addEventListener("mousemove", mov);
+      window.addEventListener("mouseup", fim);
+      alca.addEventListener("touchstart", ini, { passive:false });
+      window.addEventListener("touchmove", mov, { passive:false });
+      window.addEventListener("touchend", fim);
+    }
+
+    // grava todas as caixas da tela; guarda HTML (formatação) e texto puro (busca)
+    function persistir(iTela){
+      const tela = telas[iTela];
+      if (!tela) return;
+      const caixas = Array.from(tela.querySelectorAll(".cx")).map(cx => {
+        const t = cx.querySelector(".cx-txt");
+        return {
+          x: cx.offsetLeft, y: cx.offsetTop,
+          w: cx.offsetWidth, h: cx.offsetHeight,
+          tam: parseInt(t.style.fontSize || "15", 10),
+          html: t.innerHTML,
+          texto: t.textContent.trim()
+        };
+      });
+      ANOT[iTela] = ANOT[iTela] || {};
+      ANOT[iTela].caixas = caixas;
+      salvar(); marcarTela(iTela);
     }
 
     function dimensionar(cv, i){
@@ -1266,25 +1412,70 @@
 
     function marcarTela(i){
       const a = ANOT[i];
-      const tem = a && ((a.texto && a.texto.trim()) || a.rabisco);
+      const temCaixa = a && a.caixas && a.caixas.some(c => c.texto);
+      const tem = a && (temCaixa || a.rabisco);
       if (telas[i]) telas[i].classList.toggle("tem-anot", !!tem);
+    }
+
+    function indiceAtual(){
+      const d = document.querySelector(".dot.active");
+      return d ? parseInt(d.dataset.index || "0") : 0;
     }
 
     // ---- botões da barra ----
     if (PROF){
-      const bNota    = document.getElementById("ab-nota");
-      const bRab     = document.getElementById("ab-rabisco");
-      const bApagar  = document.getElementById("ab-apagar");
-      const cores    = document.getElementById("anot-cores");
+      const bNova   = document.getElementById("ab-nova-cx");
+      const bRab    = document.getElementById("ab-rabisco");
+      const bApagar = document.getElementById("ab-apagar");
+      const cores   = document.getElementById("anot-cores");
 
-      bNota.onclick = () => {
-        const on = bNota.classList.toggle("on");
-        document.querySelectorAll(".anot-nota").forEach(n => n.classList.toggle("aberta", on));
-        if (on){
-          const atual = telas[document.querySelectorAll(".dot.active").length ? indiceAtual() : 0];
-          const ta = atual && atual.querySelector("textarea");
-          if (ta) ta.focus();
+      bNova.onclick = () => {
+        const i = indiceAtual();
+        const tela = telas[i];
+        if (!tela) return;
+        if (document.body.classList.contains("rabiscando")) bRab.click();
+        const n = tela.querySelectorAll(".cx").length;
+        const cx = criarCaixa(tela, i, { x: 44 + n * 22, y: 78 + n * 22, w: 240, h: 96, tam: 15 });
+        selecionar(cx);
+        cx.querySelector(".cx-txt").focus();
+        persistir(i);
+      };
+
+      const cmd = c => {
+        if (!caixaSel) return;
+        const t = caixaSel.querySelector(".cx-txt");
+        t.focus();
+        document.execCommand(c, false, null);
+        persistir(indiceAtual());
+      };
+      document.getElementById("fmt-b").onmousedown = e => { e.preventDefault(); cmd("bold"); };
+      document.getElementById("fmt-i").onmousedown = e => { e.preventDefault(); cmd("italic"); };
+      document.getElementById("fmt-h").onmousedown = e => {
+        e.preventDefault();
+        if (!caixaSel) return;
+        const t = caixaSel.querySelector(".cx-txt");
+        t.focus();
+        const sel = window.getSelection();
+        if (!sel.rangeCount || sel.isCollapsed) return;
+        const no = sel.anchorNode;
+        const dentro = no && no.parentElement && no.parentElement.closest("mark");
+        if (dentro){
+          const m = no.parentElement.closest("mark");
+          const pai = m.parentNode;
+          while (m.firstChild) pai.insertBefore(m.firstChild, m);
+          pai.removeChild(m);
+        } else {
+          const r = sel.getRangeAt(0);
+          const m = document.createElement("mark");
+          try { r.surroundContents(m); }
+          catch(err){ m.appendChild(r.extractContents()); r.insertNode(m); }
         }
+        persistir(indiceAtual());
+      };
+      document.getElementById("fmt-tam").onchange = function(){
+        if (!caixaSel) return;
+        caixaSel.querySelector(".cx-txt").style.fontSize = this.value + "px";
+        persistir(indiceAtual());
       };
 
       bRab.onclick = () => {
@@ -1292,6 +1483,7 @@
         document.body.classList.toggle("rabiscando", on);
         cores.style.display   = on ? "flex" : "none";
         bApagar.style.display = on ? "flex" : "none";
+        if (on) selecionar(null);
       };
 
       cores.querySelectorAll(".cor-b").forEach(b => {
@@ -1311,14 +1503,72 @@
         if (ANOT[i]) delete ANOT[i].rabisco;
         salvar(); marcarTela(i);
       };
+
+      document.addEventListener("mousedown", e => {
+        if (!e.target.closest(".cx") && !e.target.closest(".anot-bar")) selecionar(null);
+      });
+    } else {
+      document.body.classList.add("modo-leitura");
     }
 
-    function indiceAtual(){
-      const d = document.querySelector(".dot.active");
-      return d ? parseInt(d.dataset.index || "0") : 0;
+    // ─────────── Busca no texto das anotações ───────────
+    // Funciona para professor e aluno: procura no texto puro salvo em cada
+    // caixa e leva direto à tela onde a palavra aparece.
+    const campoBusca = document.getElementById("anot-busca");
+    const resBusca   = document.getElementById("busca-res");
+    let achados = [], iAchado = 0;
+
+    function buscar(){
+      const q = campoBusca.value.trim().toLowerCase();
+      document.querySelectorAll(".cx.achou").forEach(c => c.classList.remove("achou"));
+      achados = []; iAchado = 0;
+
+      if (!q){ resBusca.style.display = "none"; return; }
+
+      telas.forEach((tela, i) => {
+        tela.querySelectorAll(".cx").forEach(cx => {
+          const t = (cx.querySelector(".cx-txt").textContent || "").toLowerCase();
+          if (t.includes(q)){ achados.push({ i, cx }); cx.classList.add("achou"); }
+        });
+      });
+
+      resBusca.style.display = "flex";
+      resBusca.textContent = achados.length
+        ? `${achados.length} resultado${achados.length > 1 ? "s" : ""} — Enter navega`
+        : "nada encontrado";
+      if (achados.length) irAoAchado(0);
     }
+
+    function irAoAchado(n){
+      if (!achados.length) return;
+      iAchado = (n + achados.length) % achados.length;
+      const a = achados[iAchado];
+      if (typeof goTo === "function") goTo(a.i);
+      resBusca.textContent = `${iAchado + 1} de ${achados.length}`;
+      a.cx.scrollIntoView({ block: "nearest" });
+    }
+
+    campoBusca.addEventListener("input", buscar);
+    campoBusca.addEventListener("keydown", e => {
+      if (e.key === "Enter"){ e.preventDefault(); irAoAchado(iAchado + (e.shiftKey ? -1 : 1)); }
+      if (e.key === "Escape"){ campoBusca.value = ""; buscar(); campoBusca.blur(); }
+    });
+
+    // marca no rodapé quais telas têm anotação
+    function marcarDots(){
+      document.querySelectorAll(".dot").forEach((d, i) => {
+        const a = ANOT[i];
+        const tem = a && ((a.caixas && a.caixas.some(c => c.texto)) || a.rabisco);
+        d.classList.toggle("tem-anot", !!tem);
+        d.style.position = "relative";
+      });
+    }
+
+    if (!PROF) document.getElementById("aviso-pub").style.display = "none";
 
     montarCamadas();
+    marcarDots();
+    setInterval(marcarDots, 1500);
     // as telas são reconstruídas quando a dash envia a aula por postMessage
     const alvo = document.getElementById("screens");
     new MutationObserver(() => setTimeout(montarCamadas, 60)).observe(alvo, { childList: true });

@@ -26,8 +26,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --teal-escuro: #0A1214;
-    --amarelo-neon: #D9E28C;
+    /* PALETA INVERTIDA (teste de 21/08): onde era teal escuro virou verde-limão
+       e vice-versa. Os nomes das variáveis foram mantidos para não reescrever o
+       arquivo inteiro — o que muda é o valor. Branco segue branco. */
+    --teal-escuro: #D9E28C;   /* superfície dominante — agora o limão */
+    --amarelo-neon: #0A1214;  /* acento — agora o teal escuro */
     --azul-intermediario: #3C6E78;
     --branco: #FFFFFF;
     --texto: #000000;
@@ -156,11 +159,11 @@
   .btn{
     display: inline-flex; align-items: center; gap: 7px; justify-content: center;
     width: 100%; margin-top: 14px; border: none; border-radius: 10px;
-    background: var(--teal-escuro); color: #fff; font-family: inherit;
+    background: var(--teal-escuro); color: #0A1214; font-family: inherit;
     font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer;
     text-decoration: none; transition: background .15s;
   }
-  .btn:hover{ background: var(--azul-intermediario); }
+  .btn:hover{ background: var(--azul-intermediario); color: #fff; }
   .btn.lime{ background: var(--amarelo-neon); color: var(--teal-escuro); }
   .btn.ghost{
     background: transparent; color: var(--azul-intermediario);
@@ -182,13 +185,13 @@
 
   /* ===== Trilha & performance ===== */
   .switch{
-    display: flex; gap: 4px; background: rgba(255,255,255,0.07);
+    display: flex; gap: 4px; background: rgba(255,255,255,0.5);
     border-radius: 10px; padding: 4px; margin-bottom: 14px;
   }
   .switch button{
     flex: 1; border: none; background: transparent; cursor: pointer;
     font-family: inherit; font-size: 12.5px; font-weight: 700;
-    color: rgba(255,255,255,0.55); padding: 9px; border-radius: 7px;
+    color: #5a635f; padding: 9px; border-radius: 7px;
     transition: background .15s, color .15s;
   }
   .switch button.active{ background: var(--amarelo-neon); color: var(--teal-escuro); }
@@ -238,11 +241,11 @@
 
   /* ===== Presença + anotações ===== */
   .privado{
-    background: rgba(60,110,120,0.16); border: 1px solid rgba(60,110,120,0.4);
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(60,110,120,0.35);
     border-radius: 10px; padding: 11px 14px; margin-bottom: 14px;
-    font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.7); font-weight: 500;
+    font-size: 12px; line-height: 1.5; color: #2a3330; font-weight: 500;
   }
-  .privado b{ display: block; color: var(--amarelo-neon); font-weight: 700; margin-bottom: 2px; }
+  .privado b{ display: block; color: var(--azul-intermediario); font-weight: 800; margin-bottom: 2px; }
 
   .presenca-item{
     background: var(--branco); border-radius: 12px; padding: 14px 16px; margin-bottom: 9px;
@@ -290,9 +293,9 @@
   .htag{ font-size: 10.5px; font-weight: 700; background: #eef0ec; color: var(--cinza-texto); padding: 4px 8px; border-radius: 6px; }
 
   .aviso{
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(217,226,140,0.35);
-    border-radius: 10px; padding: 12px 14px; margin-bottom: 18px;
-    font-size: 12px; color: rgba(255,255,255,0.72); line-height: 1.5; font-weight: 500;
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(10,18,20,0.12);
+    padding: 12px 14px; margin-bottom: 18px;
+    font-size: 12px; color: #2a3330; line-height: 1.5; font-weight: 500;
     border-left: 3px solid var(--amarelo-neon); border-radius: 0 10px 10px 0;
   }
 

@@ -26,11 +26,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* PALETA INVERTIDA (teste de 21/08): onde era teal escuro virou verde-limão
-       e vice-versa. Os nomes das variáveis foram mantidos para não reescrever o
-       arquivo inteiro — o que muda é o valor. Branco segue branco. */
-    --teal-escuro: #D9E28C;   /* superfície dominante — agora o limão */
-    --amarelo-neon: #0A1214;  /* acento — agora o teal escuro */
+    /* Base branca (21/08): a dash inteira é branca. O teal escuro volta a ser
+       cor de texto e de estado ativo; o limão entra como detalhe e como fundo
+       dos botões do menu, sempre com texto teal por cima. */
+    --teal-escuro: #0A1214;
+    --amarelo-neon: #D9E28C;
+    --limao-claro: #EDF1D6;
     --azul-intermediario: #3C6E78;
     --branco: #FFFFFF;
     --texto: #000000;
@@ -42,7 +43,7 @@
 
   html, body{
     margin: 0; padding: 0; min-height: 100%;
-    background: var(--teal-escuro);
+    background: #fafaf8;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-text-size-adjust: 100%;
   }
@@ -52,28 +53,25 @@
      (limão sobre teal escuro), sem perder a sidebar branca. */
   /* Faixa de topo: largura total, logo ao centro, aplicação padrão do
      manual — limão sobre teal escuro. */
-  .faixa-topo{
-    background: var(--teal-escuro);
-    padding: 18px 24px;
-    display: flex; align-items: center; justify-content: flex-start;
-  }
   .logo{
     font-weight: 900; font-size: 30px; letter-spacing: -0.05em;
-    color: var(--amarelo-neon); text-transform: lowercase;
+    color: var(--teal-escuro); text-transform: lowercase;
+    padding-bottom: 4px;
   }
 
-  /* Nome do professor: vive dentro do menu branco */
+  /* Nome do professor */
   .whoami{
     font-size: 11.5px; color: var(--cinza-texto); font-weight: 500;
-    line-height: 1.35; padding-bottom: 14px; border-bottom: 1px solid var(--borda);
+    line-height: 1.35; padding-bottom: 16px; border-bottom: 1px solid var(--borda);
   }
   .whoami strong{
     color: var(--texto); display: block; font-weight: 700; font-size: 14.5px;
-    letter-spacing: -0.01em; margin-bottom: 1px;
+    letter-spacing: -0.01em; margin-bottom: 2px;
   }
   .whoami span{
-    font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--azul-intermediario);
+    display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--teal-escuro);
+    background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
   }
 
   /* ===== Seletor de turma (dropdown custom, em superfície branca) ===== */
@@ -124,21 +122,26 @@
   .dd-opt.sel .t{ font-weight: 700; }
   .dd-opt.sel .m{ color: var(--teal-escuro); opacity: .7; }
 
-  /* ===== Abas (em superfície branca) ===== */
+  /* ===== Abas: botões limão com texto teal ===== */
   .tabs{
-    display: flex; gap: 4px; overflow-x: auto; padding: 14px 18px 0;
+    display: flex; gap: 6px; overflow-x: auto; padding: 14px 18px 0;
     scrollbar-width: none;
   }
   .tabs::-webkit-scrollbar{ display: none; }
   .tab{
-    flex-shrink: 0; background: none; border: none; cursor: pointer;
-    color: var(--cinza-texto); font-family: inherit;
-    font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
-    text-transform: uppercase; padding: 8px 10px 10px;
-    border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+    flex-shrink: 0; cursor: pointer; font-family: inherit;
+    background: var(--limao-claro); border: 1px solid transparent;
+    color: var(--teal-escuro);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 10px 14px; border-radius: 9px;
+    transition: background .14s, border-color .14s;
   }
-  .tab:hover{ color: var(--texto); }
-  .tab.active{ color: var(--teal-escuro); border-bottom-color: var(--amarelo-neon); }
+  .tab:hover{ background: var(--amarelo-neon); }
+  .tab.active{
+    background: var(--amarelo-neon); border-color: var(--amarelo-neon);
+    color: var(--teal-escuro);
+    box-shadow: inset 3px 0 0 var(--teal-escuro);
+  }
 
   /* ===== Conteúdo ===== */
   main{ padding: 18px 18px 60px; }
@@ -146,7 +149,8 @@
   .pane.active{ display: block; }
 
   .card{
-    background: var(--branco); border-radius: 14px; padding: 18px;
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 18px;
     margin-bottom: 14px; color: var(--texto);
   }
   .card-kicker{
@@ -159,7 +163,7 @@
   .btn{
     display: inline-flex; align-items: center; gap: 7px; justify-content: center;
     width: 100%; margin-top: 14px; border: none; border-radius: 10px;
-    background: var(--teal-escuro); color: #0A1214; font-family: inherit;
+    background: var(--teal-escuro); color: #fff; font-family: inherit;
     font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer;
     text-decoration: none; transition: background .15s;
   }
@@ -179,13 +183,18 @@
   .pill.dada{ background: #e8efe3; color: #3f6b45; }
 
   .section-title{
-    color: var(--amarelo-neon); font-size: 11.5px; font-weight: 800;
+    color: var(--teal-escuro); font-size: 11.5px; font-weight: 800;
     letter-spacing: 0.13em; text-transform: uppercase; margin: 4px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before{
+    content: ""; width: 14px; height: 3px; border-radius: 2px;
+    background: var(--amarelo-neon); flex-shrink: 0;
   }
 
   /* ===== Trilha & performance ===== */
   .switch{
-    display: flex; gap: 4px; background: rgba(255,255,255,0.5);
+    display: flex; gap: 4px; background: var(--limao-claro);
     border-radius: 10px; padding: 4px; margin-bottom: 14px;
   }
   .switch button{
@@ -195,8 +204,9 @@
     transition: background .15s, color .15s;
   }
   .switch button.active{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .switch button:hover:not(.active){ color: var(--teal-escuro); }
 
-  .grid-wrap{ overflow-x: auto; background: var(--branco); border-radius: 14px; padding: 4px; }
+  .grid-wrap{ overflow-x: auto; background: var(--branco); border: 1px solid var(--borda); border-radius: 14px; padding: 4px; }
   table{ border-collapse: collapse; width: 100%; font-size: 12.5px; color: var(--texto); }
   th, td{ padding: 10px 8px; text-align: center; white-space: nowrap; }
   th{
@@ -231,7 +241,7 @@
   .barra i{ display: block; height: 100%; background: var(--azul-intermediario); }
 
   .voltar{
-    background: none; border: none; color: var(--amarelo-neon); cursor: pointer;
+    background: none; border: none; color: var(--azul-intermediario); cursor: pointer;
     font-family: inherit; font-size: 12.5px; font-weight: 700; padding: 0 0 12px;
   }
   .kv{ display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #f2f4f0; font-size: 13.5px; }
@@ -241,14 +251,15 @@
 
   /* ===== Presença + anotações ===== */
   .privado{
-    background: rgba(255,255,255,0.55); border: 1px solid rgba(60,110,120,0.35);
+    background: var(--limao-claro); border: 1px solid rgba(60,110,120,0.25);
     border-radius: 10px; padding: 11px 14px; margin-bottom: 14px;
     font-size: 12px; line-height: 1.5; color: #2a3330; font-weight: 500;
   }
   .privado b{ display: block; color: var(--azul-intermediario); font-weight: 800; margin-bottom: 2px; }
 
   .presenca-item{
-    background: var(--branco); border-radius: 12px; padding: 14px 16px; margin-bottom: 9px;
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 9px;
   }
   .presenca-topo{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .presenca-item .nome{ font-size: 14.5px; font-weight: 600; color: var(--texto); }
@@ -283,8 +294,9 @@
 
   /* ===== Histórico ===== */
   .hist-item{
-    background: var(--branco); border-radius: 12px; padding: 15px 16px; margin-bottom: 10px;
+    background: var(--branco); border: 1px solid var(--borda);
     border-left: 4px solid var(--amarelo-neon);
+    border-radius: 0 12px 12px 0; padding: 15px 16px; margin-bottom: 10px;
   }
   .hist-item .data{ font-size: 11px; font-weight: 700; color: var(--azul-intermediario); letter-spacing: .05em; }
   .hist-item .titulo{ font-size: 15px; font-weight: 700; margin: 3px 0 5px; color: var(--texto); }
@@ -293,53 +305,45 @@
   .htag{ font-size: 10.5px; font-weight: 700; background: #eef0ec; color: var(--cinza-texto); padding: 4px 8px; border-radius: 6px; }
 
   .aviso{
-    background: rgba(255,255,255,0.55); border: 1px solid rgba(10,18,20,0.12);
+    background: var(--limao-claro); border: none;
     padding: 12px 14px; margin-bottom: 18px;
     font-size: 12px; color: #2a3330; line-height: 1.5; font-weight: 500;
-    border-left: 3px solid var(--amarelo-neon); border-radius: 0 10px 10px 0;
+    border-left: 4px solid var(--amarelo-neon); border-radius: 0 10px 10px 0;
   }
 
   /* ===== Desktop: sidebar fixa + conteúdo largo ===== */
   @media (min-width: 900px){
-    /* A faixa ocupa a largura toda; abaixo dela, menu e conteúdo lado a lado
-       começando na mesma altura. */
-    body{ display: grid; grid-template-columns: 290px 1fr; align-items: start; }
-    .faixa-topo{ grid-column: 1 / -1; padding-left: 44px; }
+    body{ display: grid; grid-template-columns: 282px 1fr; align-items: start; }
 
+    /* Sidebar ocupa o lado inteiro, do topo ao rodapé */
     .sidebar{
       grid-column: 1;
       background: var(--branco);
-      border: 1px solid var(--borda); border-radius: 14px;
-      margin: 30px 0 30px 24px;
-      padding: 20px; position: sticky; top: 30px;
+      border-right: 1px solid var(--borda);
+      margin: 0; border-radius: 0;
+      padding: 26px 20px 24px;
+      position: sticky; top: 0; height: 100vh;
       display: flex; flex-direction: column; gap: 16px;
     }
 
     .tabs{
-      flex-direction: column; gap: 2px; padding: 0; overflow: visible;
-      border-top: 1px solid var(--borda); padding-top: 14px;
+      flex-direction: column; gap: 5px; padding: 0; overflow: visible;
+      border-top: none; padding-top: 2px;
     }
     .tab{
-      width: 100%; text-align: left; padding: 11px 13px; border-bottom: none;
-      border-radius: 9px; letter-spacing: .04em; font-size: 12.5px;
-    }
-    .tab:hover{ background: #f4f6f0; }
-    /* aba ativa = limão cheio com texto teal, o sinal de "selecionado" */
-    .tab.active{
-      background: var(--amarelo-neon); color: var(--teal-escuro);
-      border-bottom: none;
+      width: 100%; text-align: left; padding: 12px 14px;
+      letter-spacing: .04em; font-size: 12.5px;
     }
 
     main{
       grid-column: 2;
-      padding: 30px 30px 60px 22px; max-width: 1180px; width: 100%;
+      padding: 30px 34px 60px; max-width: 1180px; width: 100%;
     }
 
     .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: stretch; }
     .cols > .card{ margin-bottom: 0; display: flex; flex-direction: column; }
     .cols > #card-resumo .kv:last-of-type{ border-bottom: none; }
 
-    /* Listas em duas colunas para não deixar metade da tela vazia */
     .aluno-lista, #presenca-lista, #historico-lista{
       display: grid; grid-template-columns: repeat(2,1fr); gap: 12px;
     }
@@ -353,8 +357,6 @@
       display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start;
     }
     #trilha-detalhe .det-cols .card{ margin-bottom: 0; }
-
-    .aviso{ max-width: 100%; }
   }
 
   @media (min-width: 1280px){
@@ -363,24 +365,21 @@
 
   /* Mobile: mantém empilhado */
   @media (max-width: 899px){
-    .faixa-topo{ padding: 16px 20px; }
-    .logo{ font-size: 26px; }
     .sidebar{
-      background: var(--branco); border: 1px solid var(--borda);
-      border-radius: 14px; margin: 16px 16px 0; padding: 16px;
+      background: var(--branco); border-bottom: 1px solid var(--borda);
+      border-radius: 0; margin: 0; padding: 18px 18px 14px;
       display: flex; flex-direction: column; gap: 14px;
     }
+    .logo{ font-size: 26px; }
     main{ padding-top: 18px; }
   }
 </style>
 </head>
 <body>
 
-<header class="faixa-topo">
-  <div class="logo">bupp.</div>
-</header>
-
 <aside class="sidebar">
+  <div class="logo">bupp.</div>
+
   <div class="whoami">
     <strong>Prof. Ana Ribeiro</strong>
     <span>professor</span>

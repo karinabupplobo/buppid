@@ -9,11 +9,14 @@
   Estrutura da tela do Professor (fechada em conversa 20/08):
     1. Seletor de turma        — só as turmas do professor logado
     2. Aula do dia             — abre templateaula.html
-    3. Lousas da aula          — desenhar/escrever, guardado como lousa
-    4. Trilha & performance    — liberada automaticamente, prof só visualiza
+    3. Trilha & performance    — liberada automaticamente, prof só visualiza
                                  (dois modos: geral da turma / por aluno)
-    5. Presença                — marcada no FIM da aula
-    6. Histórico               — aulas anteriores da turma
+    4. Fim da aula             — presença + anotação interna por aluno
+    5. Histórico               — aulas anteriores da turma
+
+  ANOTAÇÕES: não há mais lousa separada. O professor anota dentro do próprio
+  material da aula enquanto dá aula; a anotação fica salva naquela versão da
+  aula e aparece no histórico, para professor e alunos.
 -->
 <html lang="pt-BR">
 <head>
@@ -42,19 +45,21 @@
   }
 
   /* ===== Topo ===== */
+  /* Faixa do logo em teal — devolve ao logo a aplicação padrão do manual
+     (limão sobre teal escuro), sem perder a sidebar branca. */
   .topbar{
     position: sticky; top: 0; z-index: 20;
-    background: var(--branco);
-    padding: 14px 18px 10px;
+    background: var(--teal-escuro);
+    padding: 16px 18px 14px;
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--borda);
+    border-bottom: none;
   }
   .logo{
     font-weight: 900; font-size: 20px; letter-spacing: -0.05em;
     color: var(--amarelo-neon); text-transform: lowercase;
   }
-  .whoami{ font-size: 11.5px; color: var(--cinza-texto); font-weight: 500; text-align: right; line-height: 1.35; }
-  .whoami strong{ color: var(--texto); display: block; font-weight: 700; font-size: 12.5px; }
+  .whoami{ font-size: 11.5px; color: rgba(255,255,255,0.5); font-weight: 500; text-align: right; line-height: 1.35; }
+  .whoami strong{ color: #fff; display: block; font-weight: 600; font-size: 12.5px; }
 
   /* ===== Seletor de turma (dropdown custom, em superfície branca) ===== */
   .turma-bar{ padding: 0; position: relative; }
@@ -161,151 +166,6 @@
   .section-title{
     color: var(--amarelo-neon); font-size: 11.5px; font-weight: 800;
     letter-spacing: 0.13em; text-transform: uppercase; margin: 4px 0 12px;
-  }
-
-  /* ===== Lousas ===== */
-  .lousa-grid{ display: block; }
-  .lousa-cab{
-    display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
-    margin: 18px 0 9px; padding-bottom: 7px;
-    border-bottom: 1px solid rgba(255,255,255,0.09);
-  }
-  .lousa-cab:first-child{ margin-top: 0; }
-  .lousa-cab .la{ color: #fff; font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; }
-  .lousa-cab .ld{
-    color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 600;
-    letter-spacing: .04em; text-transform: uppercase;
-  }
-  .lousa-linha{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-  .lousa-thumb{
-    background: var(--branco); border-radius: 12px; aspect-ratio: 4/3;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; overflow: hidden; position: relative;
-    border: 2px solid transparent; transition: border-color .15s;
-  }
-  .lousa-thumb:hover{ border-color: var(--amarelo-neon); }
-  .lousa-thumb img{ width: 100%; height: 100%; object-fit: contain; }
-  .lousa-thumb .label{
-    position: absolute; bottom: 6px; left: 8px;
-    font-size: 10.5px; font-weight: 700; color: var(--cinza-texto);
-  }
-  .lousa-nova{
-    border: 2px dashed rgba(255,255,255,0.25); background: transparent;
-    color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 600;
-    font-family: inherit; flex-direction: column; gap: 4px;
-  }
-  .lousa-nova .plus{ font-size: 26px; font-weight: 300; line-height: 1; }
-  .lousa-vazio{
-    color: rgba(255,255,255,0.4); font-size: 13px; text-align: center;
-    padding: 20px 0 14px; line-height: 1.5;
-  }
-
-  /* Editor de lousa (overlay) */
-  .lousa-editor{
-    position: fixed; inset: 0; z-index: 50; background: var(--teal-escuro);
-    display: none; flex-direction: column;
-  }
-  .lousa-editor.open{ display: flex; }
-
-  .lousa-ctx{ padding: 12px 16px 0; display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
-  .lousa-ctx .a{ color: var(--amarelo-neon); font-size: 14px; font-weight: 700; }
-  .lousa-ctx .b{ color: rgba(255,255,255,0.45); font-size: 11.5px; font-weight: 600; }
-
-  .lousa-editor-top{
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 16px; gap: 12px; flex-wrap: wrap;
-  }
-  .lousa-tools{ display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .lousa-tools .sep{ width: 1px; height: 20px; background: rgba(255,255,255,0.16); margin: 0 3px; }
-  .lousa-tools .sep.so-texto, .fmt.so-texto{ display: none; }
-  .lousa-editor.modo-texto .sep.so-texto,
-  .lousa-editor.modo-texto .fmt.so-texto{ display: flex; }
-
-  .modo{
-    width: 34px; height: 34px; border-radius: 9px; cursor: pointer; padding: 0;
-    border: 1.5px solid rgba(255,255,255,0.2); background: transparent; color: #fff;
-    font-family: inherit; font-size: 15px; font-weight: 800;
-    display: flex; align-items: center; justify-content: center; transition: all .13s;
-  }
-  .modo:hover{ background: rgba(255,255,255,0.08); }
-  .modo.active{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
-
-  .tool{
-    width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
-    cursor: pointer; padding: 0; transition: transform .12s, border-color .12s;
-  }
-  .tool.active{ border-color: var(--amarelo-neon); transform: scale(1.14); }
-  .tool.custom{
-    position: relative; overflow: hidden; display: flex;
-    background: conic-gradient(#a3312a,#c98a12,#1f7a3d,#3C6E78,#7a3ca8,#a3312a);
-  }
-  .tool.custom input{
-    position: absolute; inset: -6px; width: 200%; height: 200%;
-    opacity: 0; cursor: pointer; border: none; padding: 0;
-  }
-
-  .tamanhos{ display: flex; gap: 3px; }
-  .tamanhos button{
-    min-width: 30px; height: 30px; border-radius: 8px; cursor: pointer; padding: 0 6px;
-    border: 1.5px solid rgba(255,255,255,0.2); background: transparent;
-    color: rgba(255,255,255,0.75); font-family: inherit; font-size: 11.5px; font-weight: 800;
-    transition: all .13s;
-  }
-  .tamanhos button:hover{ background: rgba(255,255,255,0.08); }
-  .tamanhos button.active{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
-
-  .fmt{
-    width: 32px; height: 32px; border-radius: 8px; cursor: pointer; padding: 0;
-    border: 1.5px solid rgba(255,255,255,0.2); background: transparent; color: #fff;
-    font-family: 'Times New Roman', Georgia, serif; font-size: 16px;
-    align-items: center; justify-content: center; transition: all .13s;
-  }
-  .fmt:hover{ background: rgba(255,255,255,0.08); }
-  .fmt.on{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
-
-  .lousa-actions{ display: flex; gap: 8px; align-items: center; }
-  .lousa-actions button{
-    border: none; border-radius: 8px; padding: 8px 13px; font-family: inherit;
-    font-size: 12.5px; font-weight: 700; cursor: pointer;
-  }
-  .btn-desfazer{ background: rgba(255,255,255,0.12); color: #fff; font-size: 15px !important; padding: 7px 11px !important; }
-  .btn-limpar{ background: rgba(255,255,255,0.12); color: #fff; }
-  .btn-salvar{ background: var(--amarelo-neon); color: var(--teal-escuro); }
-  .btn-fechar{ background: transparent; color: rgba(255,255,255,0.6); }
-
-  .canvas-wrap{ flex: 1; position: relative; margin: 0 12px 12px; }
-  #lousa-canvas{
-    background: var(--branco); border-radius: 12px; touch-action: none;
-    display: block; width: 100%; height: 100%;
-  }
-  .lousa-editor.modo-texto #lousa-canvas{ cursor: text; }
-
-  #texto-input{
-    position: absolute; display: none; z-index: 3;
-    background: rgba(255,255,255,0.9); border: 1.5px dashed var(--azul-intermediario);
-    border-radius: 6px; padding: 2px 5px; margin: 0; outline: none; resize: none;
-    overflow: hidden; min-width: 60px; line-height: 1.25; white-space: pre;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-  #texto-input.on{ display: block; }
-
-  .dica-texto{
-    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-    background: rgba(10,18,20,0.82); color: var(--amarelo-neon);
-    font-size: 11.5px; font-weight: 600; padding: 7px 13px; border-radius: 999px;
-    display: none; pointer-events: none; white-space: nowrap;
-  }
-  .lousa-editor.modo-texto .dica-texto{ display: block; }
-
-  @media (max-width: 720px){
-    .lousa-editor-top{ padding: 8px 12px; gap: 8px; }
-    .lousa-tools{ gap: 5px; }
-    .modo{ width: 30px; height: 30px; font-size: 13px; }
-    .tool{ width: 24px; height: 24px; }
-    .tamanhos button{ min-width: 26px; height: 27px; font-size: 10.5px; }
-    .fmt{ width: 28px; height: 28px; font-size: 14px; }
-    .lousa-actions button{ padding: 7px 10px; font-size: 11.5px; }
-    .canvas-wrap{ margin: 0 8px 8px; }
   }
 
   /* ===== Trilha & performance ===== */
@@ -432,8 +292,12 @@
       grid-column: 1; grid-row: 1;
       background: var(--branco);
       border-right: 1px solid var(--borda);
-      padding: 24px 20px; position: sticky; top: 0; height: 100vh;
+      padding: 0 20px 24px; position: sticky; top: 0; height: 100vh;
       display: flex; flex-direction: column; gap: 18px;
+    }
+    .topbar{
+      margin: 0 -20px 4px; padding: 22px 20px 20px;
+      flex-direction: column; align-items: flex-start; gap: 12px;
     }
     .topbar{
       position: static; padding: 0; border: none; background: none;
@@ -462,9 +326,9 @@
       padding: 30px 34px 60px; max-width: 1180px; width: 100%;
     }
 
-    /* Aula do dia + lousas lado a lado */
-    .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
-    .lousa-linha{ grid-template-columns: repeat(3,1fr); }
+    .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: stretch; }
+    .cols > .card{ margin-bottom: 0; display: flex; flex-direction: column; }
+    .cols > #card-resumo .kv:last-of-type{ border-bottom: none; }
 
     /* Listas em duas colunas para não deixar metade da tela vazia */
     .aluno-lista, #presenca-lista, #historico-lista{
@@ -486,7 +350,6 @@
 
   @media (min-width: 1280px){
     main{ padding: 34px 46px 70px; }
-    .lousa-linha{ grid-template-columns: repeat(4,1fr); }
   }
 
   /* Mobile: mantém empilhado */
@@ -496,7 +359,6 @@
       border-bottom: 1px solid var(--borda);
     }
     .topbar{ margin: 0 -18px; border-bottom: 1px solid var(--borda); }
-    .lousa-linha{ grid-template-columns: repeat(2,1fr); }
   }
 </style>
 </head>
@@ -526,7 +388,6 @@
 
   <div class="tabs">
   <button class="tab active" data-pane="aula">Aula do dia</button>
-  <button class="tab" data-pane="lousa">Lousas</button>
   <button class="tab" data-pane="trilha">Trilha</button>
   <button class="tab" data-pane="presenca">Fim da aula</button>
     <button class="tab" data-pane="historico">Histórico</button>
@@ -543,19 +404,7 @@
   <section class="pane active" id="pane-aula">
     <div class="cols">
       <div class="card" id="card-aula"></div>
-      <div>
-        <div class="section-title">Resumo da turma</div>
-        <div class="card" id="card-resumo"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ LOUSAS ============ -->
-  <section class="pane" id="pane-lousa">
-    <div class="section-title">Lousas desta aula</div>
-    <div class="lousa-grid" id="lousa-grid"></div>
-    <div class="lousa-vazio" id="lousa-vazio" style="display:none;">
-      Nenhuma lousa ainda.<br>Toque em “Nova lousa” para começar a escrever ou desenhar.
+      <div class="card" id="card-resumo"></div>
     </div>
   </section>
 
@@ -602,56 +451,6 @@
   </section>
 </main>
 
-<!-- ============ EDITOR DE LOUSA ============ -->
-<div class="lousa-editor" id="lousa-editor">
-  <div class="lousa-ctx" id="lousa-ctx"></div>
-
-  <div class="lousa-editor-top">
-    <div class="lousa-tools">
-      <button class="modo active" data-modo="lapis" title="Desenhar">✎</button>
-      <button class="modo" data-modo="texto" title="Texto">T</button>
-      <button class="modo" data-modo="borracha" title="Borracha">⌫</button>
-
-      <span class="sep"></span>
-
-      <button class="tool active" data-cor="#0A1214" style="background:#0A1214"></button>
-      <button class="tool" data-cor="#3C6E78" style="background:#3C6E78"></button>
-      <button class="tool" data-cor="#a3312a" style="background:#a3312a"></button>
-      <button class="tool" data-cor="#1f7a3d" style="background:#1f7a3d"></button>
-      <button class="tool" data-cor="#c98a12" style="background:#c98a12"></button>
-      <label class="tool custom" title="Outra cor">
-        <input type="color" id="cor-livre" value="#0A1214">
-      </label>
-
-      <span class="sep"></span>
-
-      <div class="tamanhos" id="tamanhos">
-        <button data-tam="p">P</button>
-        <button data-tam="m" class="active">M</button>
-        <button data-tam="g">G</button>
-        <button data-tam="gg">GG</button>
-      </div>
-
-      <span class="sep so-texto"></span>
-      <button class="fmt so-texto" id="fmt-negrito" title="Negrito"><b>B</b></button>
-      <button class="fmt so-texto" id="fmt-italico" title="Itálico"><i>I</i></button>
-    </div>
-
-    <div class="lousa-actions">
-      <button class="btn-desfazer" id="btn-desfazer" title="Desfazer">↶</button>
-      <button class="btn-limpar" id="btn-limpar">Limpar</button>
-      <button class="btn-salvar" id="btn-salvar-lousa">Salvar</button>
-      <button class="btn-fechar" id="btn-fechar-lousa">✕</button>
-    </div>
-  </div>
-
-  <div class="canvas-wrap" id="canvas-wrap">
-    <canvas id="lousa-canvas"></canvas>
-    <textarea id="texto-input" spellcheck="false"></textarea>
-    <div class="dica-texto" id="dica-texto">Toque na lousa onde quer escrever</div>
-  </div>
-</div>
-
 <script>
 // ══════════════════════════════════════════════════════════
 //  DADOS FICTÍCIOS — substituídos por Supabase depois que a
@@ -685,9 +484,9 @@ const TURMAS = [
       a4: ["ok","err","pend","pend","pend"]
     },
     historico: [
-      { data:"13/08", titulo:"Email Etiquette", resumo:"Estruturas de abertura e fechamento de e-mail formal.", tags:["4 lousas","Presença 4/4","Trilha 88%"] },
-      { data:"06/08", titulo:"Small Talk at Work", resumo:"Conversa informal antes de reunião com cliente estrangeiro.", tags:["2 lousas","Presença 3/4","Trilha 72%"] },
-      { data:"30/07", titulo:"Describing Processes", resumo:"Sequenciadores e voz passiva para explicar fluxo logístico.", tags:["3 lousas","Presença 4/4","Trilha 91%"] }
+      { data:"13/08", titulo:"Email Etiquette", resumo:"Estruturas de abertura e fechamento de e-mail formal.", tags:["4 anotações","Presença 4/4","Trilha 88%"] },
+      { data:"06/08", titulo:"Small Talk at Work", resumo:"Conversa informal antes de reunião com cliente estrangeiro.", tags:["2 anotações","Presença 3/4","Trilha 72%"] },
+      { data:"30/07", titulo:"Describing Processes", resumo:"Sequenciadores e voz passiva para explicar fluxo logístico.", tags:["3 anotações","Presença 4/4","Trilha 91%"] }
     ]
   },
   {
@@ -714,8 +513,8 @@ const TURMAS = [
       b3: ["pend","pend","pend","pend"]
     },
     historico: [
-      { data:"13/08", titulo:"Numbers & Quantities", resumo:"Números, medidas e quantidades no chão de fábrica.", tags:["3 lousas","Presença 3/3","Trilha 80%"] },
-      { data:"06/08", titulo:"Daily Routine", resumo:"Rotina de turno e verbos no presente simples.", tags:["1 lousa","Presença 2/3","Trilha 65%"] }
+      { data:"13/08", titulo:"Numbers & Quantities", resumo:"Números, medidas e quantidades no chão de fábrica.", tags:["3 anotações","Presença 3/3","Trilha 80%"] },
+      { data:"06/08", titulo:"Daily Routine", resumo:"Rotina de turno e verbos no presente simples.", tags:["1 anotação","Presença 2/3","Trilha 65%"] }
     ]
   },
   {
@@ -734,16 +533,11 @@ const TURMAS = [
     licoes: ["L1","L2","L3","L4","L5","L6"],
     progresso: { c1: ["ok","ok","ok","ok","err","pend"] },
     historico: [
-      { data:"13/08", titulo:"Data Storytelling", resumo:"Apresentar números sem ler o slide.", tags:["5 lousas","Presença 1/1","Trilha 95%"] }
+      { data:"13/08", titulo:"Data Storytelling", resumo:"Apresentar números sem ler o slide.", tags:["5 anotações","Presença 1/1","Trilha 95%"] }
     ]
   }
 ];
 
-// Lousas salvas em memória.
-// Cada lousa guarda a que TURMA, DATA e AULA pertence — sem isso não dá
-// para saber depois de qual aula ela veio.
-// { turmaId: [ {id, nome, dataUrl, turmaId, turmaNome, aulaTitulo, data, criadaEm} ] }
-const LOUSAS = { t1: [], t2: [], t3: [] };
 // Presença em memória: { turmaId: { alunoId: "p"|"a" } }
 const PRESENCA = { t1:{}, t2:{}, t3:{} };
 // Anotações INTERNAS por aluno: { turmaId: { alunoId: "texto" } }
@@ -816,7 +610,6 @@ function renderAula(){
     <h2>${a.titulo}</h2>
     <p>${a.resumo}</p>
     <a class="btn" href="templateaula.html" target="_blank">Abrir material da aula →</a>
-    <button class="btn ghost" onclick="abrirLousa(null)">Nova lousa desta aula</button>
   `;
   renderResumo();
 }
@@ -834,376 +627,15 @@ function renderResumo(){
   const concluiram = t.alunos.filter(a =>
     (t.progresso[a.id] || []).every(s => s !== "pend")).length;
 
-  const lousas = (LOUSAS[t.id] || []).length;
   const marcados = Object.keys(PRESENCA[t.id] || {}).length;
 
   box.innerHTML = `
+    <div class="card-kicker">Resumo da turma</div>
     <div class="kv"><span>Alunos</span><span>${t.alunos.length}</span></div>
     <div class="kv"><span>Média da trilha</span><span class="nota ${classeNota(media)}">${media === null ? "–" : media + "%"}</span></div>
     <div class="kv"><span>Concluíram a trilha</span><span>${concluiram} de ${t.alunos.length}</span></div>
-    <div class="kv"><span>Lousas desta aula</span><span>${lousas}</span></div>
     <div class="kv"><span>Presença</span><span>${marcados ? marcados + " de " + t.alunos.length + " marcados" : "não marcada"}</span></div>
   `;
-}
-
-// ══════════════════════════════════════════════════════════
-//  Lousas
-// ══════════════════════════════════════════════════════════
-function renderLousas(){
-  const grid  = document.getElementById("lousa-grid");
-  const vazio = document.getElementById("lousa-vazio");
-  const lista = LOUSAS[turmaAtual.id] || [];
-  grid.innerHTML = "";
-
-  // agrupa por aula (título + data), aula atual primeiro
-  const grupos = {};
-  lista.forEach(l => {
-    const k = l.aulaTitulo + "||" + l.data;
-    (grupos[k] = grupos[k] || []).push(l);
-  });
-
-  const chaveAtual = turmaAtual.aula.titulo + "||" + turmaAtual.aula.data;
-  const chaves = Object.keys(grupos).sort((a,b) =>
-    a === chaveAtual ? -1 : b === chaveAtual ? 1 : 0);
-
-  chaves.forEach(k => {
-    const [titulo, data] = k.split("||");
-    const cab = document.createElement("div");
-    cab.className = "lousa-cab";
-    cab.innerHTML = `<span class="la">${titulo}</span>
-                     <span class="ld">${data} · ${turmaAtual.nome}</span>`;
-    grid.appendChild(cab);
-
-    const wrap = document.createElement("div");
-    wrap.className = "lousa-linha";
-    grupos[k].forEach(l => {
-      const d = document.createElement("div");
-      d.className = "lousa-thumb";
-      d.innerHTML = `<img src="${l.dataUrl}" alt="${l.nome}">
-                     <span class="label">${l.nome}${l.criadaEm ? " · " + horaCurta(l.criadaEm) : ""}</span>`;
-      d.onclick = () => abrirLousa(l.id);
-      wrap.appendChild(d);
-    });
-
-    // "nova lousa" só no bloco da aula de hoje
-    if (k === chaveAtual){
-      const nova = document.createElement("button");
-      nova.className = "lousa-thumb lousa-nova";
-      nova.innerHTML = `<span class="plus">+</span><span>Nova lousa</span>`;
-      nova.onclick = () => abrirLousa(null);
-      wrap.appendChild(nova);
-    }
-    grid.appendChild(wrap);
-  });
-
-  // nenhuma lousa ainda na aula de hoje → mostra o botão mesmo assim
-  if (!chaves.includes(chaveAtual)){
-    const cab = document.createElement("div");
-    cab.className = "lousa-cab";
-    cab.innerHTML = `<span class="la">${turmaAtual.aula.titulo}</span>
-                     <span class="ld">${turmaAtual.aula.data} · ${turmaAtual.nome}</span>`;
-    grid.appendChild(cab);
-    const wrap = document.createElement("div");
-    wrap.className = "lousa-linha";
-    const nova = document.createElement("button");
-    nova.className = "lousa-thumb lousa-nova";
-    nova.innerHTML = `<span class="plus">+</span><span>Nova lousa</span>`;
-    nova.onclick = () => abrirLousa(null);
-    wrap.appendChild(nova);
-    grid.appendChild(wrap);
-  }
-
-  vazio.style.display = lista.length ? "none" : "block";
-}
-
-function agoraISO(){ return new Date().toISOString(); }
-function horaCurta(iso){
-  const d = new Date(iso);
-  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
-}
-
-let lousaEditandoId = null;
-let ctx, cv, desenhando = false;
-
-// Estado das ferramentas
-let modo      = "lapis";      // lapis | texto | borracha
-let corAtual  = "#0A1214";
-let tamanho   = "m";          // p | m | g | gg
-let negrito   = false;
-let italico   = false;
-
-// Espessura do traço e corpo da fonte por tamanho
-const ESPESSURA = { p: 1.5, m: 3, g: 6, gg: 11 };
-const FONTE     = { p: 15,  m: 22, g: 34, gg: 52 };
-const BORRACHA  = { p: 12,  m: 22, g: 40, gg: 66 };
-
-// Pilha de desfazer (snapshots do canvas)
-let historico = [];
-
-function snapshot(){
-  if (!cv) return;
-  historico.push(cv.toDataURL());
-  if (historico.length > 25) historico.shift();
-}
-
-function desfazer(){
-  if (!historico.length) return;
-  const anterior = historico.pop();
-  const img = new Image();
-  img.onload = () => {
-    const r = cv.getBoundingClientRect();
-    ctx.clearRect(0, 0, r.width, r.height);
-    ctx.drawImage(img, 0, 0, r.width, r.height);
-  };
-  img.src = anterior;
-}
-
-function abrirLousa(id){
-  lousaEditandoId = id;
-  const ed = document.getElementById("lousa-editor");
-  ed.classList.add("open");
-
-  // carimbo visível: de qual aula/turma/data é esta lousa
-  const existente = id ? (LOUSAS[turmaAtual.id] || []).find(x => x.id === id) : null;
-  const aulaTit = existente ? existente.aulaTitulo : turmaAtual.aula.titulo;
-  const aulaDat = existente ? existente.data       : turmaAtual.aula.data;
-  const turmaNm = existente ? existente.turmaNome  : turmaAtual.nome;
-  document.getElementById("lousa-ctx").innerHTML =
-    `<span class="a">${aulaTit}</span><span class="b">${aulaDat} · ${turmaNm}</span>`;
-
-  cv = document.getElementById("lousa-canvas");
-  historico = [];
-
-  // dimensiona respeitando densidade de tela
-  requestAnimationFrame(() => {
-    const r = cv.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    cv.width  = r.width  * dpr;
-    cv.height = r.height * dpr;
-    ctx = cv.getContext("2d");
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, r.width, r.height);
-
-    if (existente){
-      const img = new Image();
-      img.onload = () => { ctx.drawImage(img, 0, 0, r.width, r.height); snapshot(); };
-      img.src = existente.dataUrl;
-    } else {
-      snapshot();
-    }
-  });
-}
-
-function pos(e, el){
-  const r = el.getBoundingClientRect();
-  const p = e.touches ? e.touches[0] : e;
-  return { x: p.clientX - r.left, y: p.clientY - r.top };
-}
-
-// ─────────── Texto na lousa ───────────
-let textoPos = null;
-
-function fonteCSS(){
-  return `${italico ? "italic " : ""}${negrito ? "700 " : "400 "}${FONTE[tamanho]}px 'Inter', system-ui, sans-serif`;
-}
-
-function abrirTexto(x, y){
-  const ta = document.getElementById("texto-input");
-  textoPos = { x, y };
-  ta.value = "";
-  ta.style.left     = x + "px";
-  ta.style.top      = (y - FONTE[tamanho] * 0.9) + "px";
-  ta.style.font     = fonteCSS();
-  ta.style.color    = corAtual;
-  ta.style.height   = (FONTE[tamanho] * 1.35) + "px";
-  ta.classList.add("on");
-  ta.focus();
-}
-
-function confirmarTexto(){
-  const ta = document.getElementById("texto-input");
-  if (!ta.classList.contains("on")) return;
-  const txt = ta.value;
-  ta.classList.remove("on");
-  if (!txt.trim() || !textoPos){ textoPos = null; return; }
-
-  snapshot();
-  ctx.font = fonteCSS();
-  ctx.fillStyle = corAtual;
-  ctx.textBaseline = "alphabetic";
-  txt.split("\n").forEach((linha, i) => {
-    ctx.fillText(linha, textoPos.x + 5, textoPos.y + i * FONTE[tamanho] * 1.25);
-  });
-  textoPos = null;
-}
-
-function initCanvas(){
-  const canvas = document.getElementById("lousa-canvas");
-  const ta = document.getElementById("texto-input");
-  const ed = document.getElementById("lousa-editor");
-
-  // ---- desenho / borracha ----
-  const start = e => {
-    if (modo === "texto") return;
-    e.preventDefault();
-    snapshot();
-    desenhando = true;
-    const { x, y } = pos(e, canvas);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  };
-  const move = e => {
-    if (!desenhando || modo === "texto") return;
-    e.preventDefault();
-    const { x, y } = pos(e, canvas);
-    ctx.strokeStyle = modo === "borracha" ? "#ffffff" : corAtual;
-    ctx.lineWidth   = modo === "borracha" ? BORRACHA[tamanho] : ESPESSURA[tamanho];
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  };
-  const end = () => { desenhando = false; };
-
-  canvas.addEventListener("mousedown", start);
-  canvas.addEventListener("mousemove", move);
-  window.addEventListener("mouseup", end);
-  canvas.addEventListener("touchstart", start, { passive:false });
-  canvas.addEventListener("touchmove", move, { passive:false });
-  canvas.addEventListener("touchend", end);
-
-  // ---- clique para escrever ----
-  const cliqueTexto = e => {
-    if (modo !== "texto") return;
-    if (ta.classList.contains("on")){ confirmarTexto(); return; }
-    const { x, y } = pos(e, canvas);
-    abrirTexto(x, y);
-  };
-  canvas.addEventListener("click", cliqueTexto);
-  canvas.addEventListener("touchend", e => {
-    if (modo === "texto"){ e.preventDefault(); cliqueTexto(e.changedTouches[0]); }
-  }, { passive:false });
-
-  // textarea cresce sozinha e confirma com Esc / Ctrl+Enter
-  ta.addEventListener("input", () => {
-    ta.style.height = "auto";
-    ta.style.height = ta.scrollHeight + "px";
-    ta.style.width  = "auto";
-    ta.style.width  = (ta.scrollWidth + 12) + "px";
-  });
-  ta.addEventListener("keydown", e => {
-    if (e.key === "Escape"){ ta.classList.remove("on"); textoPos = null; }
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); confirmarTexto(); }
-  });
-  ta.addEventListener("blur", () => setTimeout(confirmarTexto, 120));
-
-  // ---- modos ----
-  document.querySelectorAll(".modo").forEach(b => {
-    b.onclick = () => {
-      confirmarTexto();
-      document.querySelectorAll(".modo").forEach(x => x.classList.remove("active"));
-      b.classList.add("active");
-      modo = b.dataset.modo;
-      ed.classList.toggle("modo-texto", modo === "texto");
-    };
-  });
-
-  // ---- cores ----
-  const aplicarCor = c => {
-    corAtual = c;
-    if (ta.classList.contains("on")){ ta.style.color = c; }
-  };
-  document.querySelectorAll(".tool[data-cor]").forEach(t => {
-    t.onclick = () => {
-      document.querySelectorAll(".tool").forEach(x => x.classList.remove("active"));
-      t.classList.add("active");
-      aplicarCor(t.dataset.cor);
-    };
-  });
-  document.getElementById("cor-livre").oninput = function(){
-    document.querySelectorAll(".tool").forEach(x => x.classList.remove("active"));
-    this.parentElement.classList.add("active");
-    aplicarCor(this.value);
-  };
-
-  // ---- tamanhos ----
-  document.querySelectorAll(".tamanhos button").forEach(b => {
-    b.onclick = () => {
-      document.querySelectorAll(".tamanhos button").forEach(x => x.classList.remove("active"));
-      b.classList.add("active");
-      tamanho = b.dataset.tam;
-      if (ta.classList.contains("on")){
-        ta.style.font = fonteCSS();
-        ta.style.top  = (textoPos.y - FONTE[tamanho] * 0.9) + "px";
-      }
-    };
-  });
-
-  // ---- negrito / itálico ----
-  document.getElementById("fmt-negrito").onclick = function(){
-    negrito = !negrito;
-    this.classList.toggle("on", negrito);
-    if (ta.classList.contains("on")) ta.style.font = fonteCSS();
-  };
-  document.getElementById("fmt-italico").onclick = function(){
-    italico = !italico;
-    this.classList.toggle("on", italico);
-    if (ta.classList.contains("on")) ta.style.font = fonteCSS();
-  };
-
-  // ---- ações ----
-  document.getElementById("btn-desfazer").onclick = () => { confirmarTexto(); desfazer(); };
-
-  document.getElementById("btn-limpar").onclick = () => {
-    confirmarTexto();
-    snapshot();
-    const r = canvas.getBoundingClientRect();
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, r.width, r.height);
-  };
-
-  document.getElementById("btn-fechar-lousa").onclick = () => {
-    ta.classList.remove("on"); textoPos = null;
-    document.getElementById("lousa-editor").classList.remove("open");
-  };
-
-  document.getElementById("btn-salvar-lousa").onclick = () => {
-    confirmarTexto();
-    const dataUrl = cv.toDataURL("image/png");
-    const arr = LOUSAS[turmaAtual.id];
-    if (lousaEditandoId){
-      const l = arr.find(x => x.id === lousaEditandoId);
-      if (l){ l.dataUrl = dataUrl; l.editadaEm = agoraISO(); }
-    } else {
-      // toda lousa nasce carimbada com turma, data e aula de origem
-      const daAula = arr.filter(x => x.aulaTitulo === turmaAtual.aula.titulo
-                                  && x.data === turmaAtual.aula.data).length;
-      arr.push({
-        id: "l" + Date.now(),
-        nome: "Lousa " + (daAula + 1),
-        dataUrl,
-        turmaId:     turmaAtual.id,
-        turmaNome:   turmaAtual.nome,
-        aulaTitulo:  turmaAtual.aula.titulo,
-        data:        turmaAtual.aula.data,
-        criadaEm:    agoraISO()
-      });
-    }
-    document.getElementById("lousa-editor").classList.remove("open");
-    irPara("lousa");
-    renderLousas();
-    renderResumo();
-  };
-
-  // Ctrl+Z global dentro do editor
-  document.addEventListener("keydown", e => {
-    if (!ed.classList.contains("open")) return;
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z"
-        && document.activeElement !== ta){
-      e.preventDefault(); desfazer();
-    }
-  });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1441,7 +873,6 @@ document.querySelectorAll(".tab").forEach(t => {
 function renderTudo(){
   renderTurmas();
   renderAula();
-  renderLousas();
   renderTrilhaGeral();
   renderAlunoLista();
   renderPresenca();
@@ -1451,7 +882,6 @@ function renderTudo(){
   document.querySelector(".switch").style.display = "flex";
 }
 
-initCanvas();
 renderTudo();
 </script>
 </body>

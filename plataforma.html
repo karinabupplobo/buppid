@@ -312,14 +312,17 @@
   .estrela:hover{ transform: scale(1.15); }
   .estrela.on{ color: var(--amarelo-neon); text-shadow: 0 0 1px var(--azul-intermediario); }
 
+  /* Cada aula e o seu resumo formam uma dupla, alinhados no topo */
+  .par{ margin-bottom: 18px; }
+  .par > .card{ margin-bottom: 12px; }
+  .par > .card.resumo{ margin-bottom: 0; }
+
   /* aula do dia / histórico */
   .aula-topo{ display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
   .aula-topo .hora{
     font-size: 12px; font-weight: 800; letter-spacing: .06em;
     color: var(--azul-intermediario);
   }
-  .card.sel{ border-color: var(--amarelo-neon); box-shadow: inset 3px 0 0 var(--teal-escuro); }
-  #historico-lista .card{ cursor: pointer; }
 
   /* ===== Presença + anotações ===== */
   .privado{
@@ -408,12 +411,18 @@
     .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
     .cols > .card{ margin-bottom: 0; }
 
+    /* aula à esquerda, resumo daquela aula à direita, mesma altura de topo */
+    .par{
+      display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px;
+      align-items: start; margin-bottom: 22px;
+    }
+    .par > .card{ margin-bottom: 0; }
+
     .aluno-lista, #presenca-lista{
       display: grid; grid-template-columns: repeat(2,1fr); gap: 12px;
     }
     .aluno-lista .card, .presenca-item{ margin-bottom: 0; }
-    /* Today e Histórico: coluna de aulas + painel de resumo ao lado */
-    #card-resumo, #card-hist-resumo{ position: sticky; top: 30px; }
+
 
     .switch{ max-width: 380px; }
     table{ font-size: 13.5px; }
@@ -475,10 +484,7 @@
 <main>
   <!-- ============ AULA DO DIA ============ -->
   <section class="pane active" id="pane-aula">
-    <div class="cols">
-      <div id="lista-aulas-hoje"></div>
-      <div class="card" id="card-resumo"></div>
-    </div>
+    <div id="lista-aulas-hoje"></div>
   </section>
 
   <!-- ============ TRILHA ============ -->
@@ -520,10 +526,7 @@
 
   <!-- ============ HISTÓRICO ============ -->
   <section class="pane" id="pane-historico">
-    <div class="cols">
-      <div id="historico-lista"></div>
-      <div class="card" id="card-hist-resumo"></div>
-    </div>
+    <div id="historico-lista"></div>
   </section>
 </main>
 
@@ -659,7 +662,6 @@ const ENGAJAMENTO  = {};   // { aulaId: { alunoId: 1|2|3 } }
 const NOTAS_ALUNO  = {};   // { aulaId: { alunoId: "texto" } }  — INTERNO
 function estado(store, aulaId){ return (store[aulaId] = store[aulaId] || {}); }
 
-let aulaHistSel = null;   // aula do histórico atualmente aberta
 
 let turmaAtual = TURMAS[0];
 
@@ -728,36 +730,40 @@ function urlAula(modo, titulo, data){
 }
 
 // ══════════════════════════════════════════════════════════
-//  TODAY — pode haver várias aulas no mesmo dia
+//  TODAY — cada aula tem o SEU resumo ao lado, na mesma altura
 // ══════════════════════════════════════════════════════════
 function renderAula(){
   const box = document.getElementById("lista-aulas-hoje");
   const aulas = turmaAtual.aulasHoje || [];
   box.innerHTML = `<div class="section-title">Hoje · ${aulas.length} aula${aulas.length>1?"s":""}</div>`;
 
-  aulas.forEach(a => {
-    const d = document.createElement("div");
-    d.className = "card";
-    d.innerHTML = `
-      <div class="aula-topo">
-        <span class="hora">${a.hora}</span>
-        <span class="pill hoje">Aula de hoje</span>
-      </div>
-      <h2>${a.titulo}</h2>
-      <p>${a.resumo}</p>
-      <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Dar aula e anotar →</a>
-    `;
-    box.appendChild(d);
-  });
-
   if (!aulas.length){
     box.innerHTML += `<div class="card"><p>Nenhuma aula marcada para hoje nesta turma.</p></div>`;
+    return;
   }
-  renderResumo();
+
+  aulas.forEach(a => {
+    const par = document.createElement("div");
+    par.className = "par";
+    par.innerHTML = `
+      <div class="card">
+        <div class="aula-topo">
+          <span class="hora">${a.hora}</span>
+          <span class="pill hoje">Aula de hoje</span>
+        </div>
+        <h2>${a.titulo}</h2>
+        <p>${a.resumo}</p>
+        <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Dar aula e anotar →</a>
+      </div>
+      <div class="card resumo">${htmlResumo(a)}</div>
+    `;
+    box.appendChild(par);
+    ligarExp(par);
+  });
 }
 
 // ══════════════════════════════════════════════════════════
-//  Resumo da turma — linhas que abrem
+//  Resumo da turma — um por aula
 // ══════════════════════════════════════════════════════════
 function linhaExp(id, rotulo, valor, conteudo){
   return `
@@ -776,74 +782,64 @@ function ligarExp(escopo){
   });
 }
 
-function renderResumo(){
-  const box = document.getElementById("card-resumo");
-  if (!box) return;
+function htmlResumo(aula){
   const t = turmaAtual;
-
   const alunos = t.alunos.map(a =>
     `<div class="mini"><b>${a.nome}</b><span>${a.cargo}</span></div>`).join("");
-
   const objetivos = t.objetivos.map((o, i) =>
     `<div class="mini obj"><b>${i+1}.</b><span>${o}</span></div>`).join("");
+  const p = aula ? `-${aula.id}` : "";
 
-  box.innerHTML = `
+  return `
     <div class="card-kicker">Resumo da turma</div>
-    ${linhaExp("alunos",  "Alunos",    t.alunos.length, alunos)}
-    ${linhaExp("nivel",   "Nível",     t.nivel, `<div class="mini"><span>${t.nivelDesc}</span></div>`)}
-    ${linhaExp("empresa", "Empresa",   t.empresa, `<div class="mini"><span>${t.empresaDesc}</span></div>`)}
-    ${linhaExp("obj",     "Objetivos", t.objetivos.length, objetivos)}
+    ${linhaExp("alunos"+p,  "Alunos",    t.alunos.length, alunos)}
+    ${linhaExp("nivel"+p,   "Nível",     t.nivel, `<div class="mini"><span>${t.nivelDesc}</span></div>`)}
+    ${linhaExp("empresa"+p, "Empresa",   t.empresa, `<div class="mini"><span>${t.empresaDesc}</span></div>`)}
+    ${linhaExp("obj"+p,     "Objetivos", t.objetivos.length, objetivos)}
   `;
-  ligarExp(box);
 }
 
+function renderResumo(){ /* o resumo é montado junto de cada aula */ }
+
 // ══════════════════════════════════════════════════════════
-//  HISTÓRICO — mesma estrutura do Today
+//  HISTÓRICO — mesma estrutura: cada aula com o seu painel
 // ══════════════════════════════════════════════════════════
 function renderHistorico(){
   const box = document.getElementById("historico-lista");
   const lista = turmaAtual.historico || [];
   box.innerHTML = `<div class="section-title">Aulas anteriores</div>`;
 
-  if (!aulaHistSel || !lista.some(h => h.id === aulaHistSel)){
-    aulaHistSel = lista.length ? lista[0].id : null;
+  if (!lista.length){
+    box.innerHTML += `<div class="card"><p>Nenhuma aula anterior nesta turma.</p></div>`;
+    return;
   }
 
   lista.forEach(h => {
-    const d = document.createElement("div");
-    d.className = "card" + (h.id === aulaHistSel ? " sel" : "");
-    d.innerHTML = `
-      <div class="aula-topo">
-        <span class="hora">${h.data}</span>
-        <span class="pill dada">Aula dada</span>
+    const par = document.createElement("div");
+    par.className = "par";
+    par.dataset.aula = h.id;
+    par.innerHTML = `
+      <div class="card">
+        <div class="aula-topo">
+          <span class="hora">${h.data}</span>
+          <span class="pill dada">Aula dada</span>
+        </div>
+        <h2>${h.titulo}</h2>
+        <p>${h.resumo}</p>
+        <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
       </div>
-      <h2>${h.titulo}</h2>
-      <p>${h.resumo}</p>
-      <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
+      <div class="card resumo" data-painel="${h.id}"></div>
     `;
-    d.onclick = e => {
-      if (e.target.closest("a")) return;
-      aulaHistSel = h.id;
-      renderHistorico();
-    };
-    box.appendChild(d);
+    box.appendChild(par);
+    pintarPainelHist(h, par.querySelector(`[data-painel="${h.id}"]`));
   });
-
-  if (!lista.length) box.innerHTML += `<div class="card"><p>Nenhuma aula anterior nesta turma.</p></div>`;
-  renderHistResumo();
 }
 
-function renderHistResumo(){
-  const box = document.getElementById("card-hist-resumo");
-  if (!box) return;
+function pintarPainelHist(h, box){
   const t = turmaAtual;
-  const h = (t.historico || []).find(x => x.id === aulaHistSel);
-  if (!h){ box.innerHTML = ""; return; }
-
   const pres = estado(PRESENCA, h.id);
   const eng  = estado(ENGAJAMENTO, h.id);
 
-  // ---- Presença ----
   const presLinhas = t.alunos.map(a => `
     <div class="mini linha-acao">
       <b>${a.nome}</b>
@@ -854,12 +850,10 @@ function renderHistResumo(){
     </div>`).join("");
   const nPres = t.alunos.filter(a => pres[a.id]==="p").length;
   const marcados = t.alunos.filter(a => pres[a.id]).length;
-  const valPres = marcados ? `${nPres}/${t.alunos.length}` : "marcar";
 
-  // ---- Trilhas ----
   const trilhaLinhas = t.alunos.map(a => {
     const st = (h.progresso && h.progresso[a.id]) || [];
-    const feitas = st.filter(x => x !== "pend").length;
+    const feitas  = st.filter(x => x !== "pend").length;
     const acertos = st.filter(x => x === "ok").length;
     const nota = st.length ? Math.round(acertos / st.length * 100) : null;
     const bolas = st.map((x,i) =>
@@ -873,57 +867,53 @@ function renderHistResumo(){
         <span class="tl-sub">${feitas} de ${st.length} lições</span>
       </div>`;
   }).join("");
-  const feitasTodas = t.alunos.filter(a => {
+  const concluiram = t.alunos.filter(a => {
     const st = (h.progresso && h.progresso[a.id]) || [];
     return st.length && st.every(x => x !== "pend");
   }).length;
 
-  // ---- Engajamento ----
   const engLinhas = t.alunos.map(a => {
     const n = eng[a.id] || 0;
     const estrelas = [1,2,3].map(i =>
-      `<button class="estrela ${i<=n?"on":""}" data-aluno="${a.id}" data-n="${i}" title="${i} de 3">★</button>`).join("");
+      `<button class="estrela ${i<=n?"on":""}" data-aluno="${a.id}" data-n="${i}">★</button>`).join("");
     return `<div class="mini linha-acao"><b>${a.nome}</b><span class="estrelas">${estrelas}</span></div>`;
   }).join("");
   const avaliados = t.alunos.filter(a => eng[a.id]).length;
   const medEng = avaliados
-    ? (t.alunos.reduce((s,a) => s + (eng[a.id]||0), 0) / avaliados).toFixed(1)
-    : null;
+    ? (t.alunos.reduce((s,a) => s + (eng[a.id]||0), 0) / avaliados).toFixed(1) : null;
+
+  const abertas = Array.from(box.querySelectorAll(".exp.aberta")).map(e => e.dataset.exp);
 
   box.innerHTML = `
     <div class="card-kicker">${h.titulo} · ${h.data}</div>
-    ${linhaExp("pres",    "Presença",    valPres, presLinhas)}
-    ${linhaExp("trilhas", "Trilhas",     `${feitasTodas}/${t.alunos.length}`, trilhaLinhas)}
-    ${linhaExp("eng",     "Engajamento", medEng ? medEng + "★" : "avaliar", engLinhas)}
+    ${linhaExp("pres-"+h.id,    "Presença",    marcados ? `${nPres}/${t.alunos.length}` : "marcar", presLinhas)}
+    ${linhaExp("trilhas-"+h.id, "Trilhas",     `${concluiram}/${t.alunos.length}`, trilhaLinhas)}
+    ${linhaExp("eng-"+h.id,     "Engajamento", medEng ? medEng + "★" : "avaliar", engLinhas)}
   `;
   ligarExp(box);
+  abertas.forEach(id => {
+    const el = box.querySelector(`.exp[data-exp="${id}"]`);
+    if (el) el.classList.add("aberta");
+  });
 
-  // presença
   box.querySelectorAll(".toggle button").forEach(b => {
     b.onclick = e => {
       e.stopPropagation();
-      const id = b.closest(".toggle").dataset.aluno;
-      pres[id] = b.dataset.v;
-      renderHistResumo();
-      abrir(box, "pres");
+      pres[b.closest(".toggle").dataset.aluno] = b.dataset.v;
+      pintarPainelHist(h, box);
     };
   });
-  // engajamento
   box.querySelectorAll(".estrela").forEach(b => {
     b.onclick = e => {
       e.stopPropagation();
       const id = b.dataset.aluno, n = +b.dataset.n;
-      eng[id] = (eng[id] === n) ? 0 : n;   // clicar de novo na mesma limpa
-      renderHistResumo();
-      abrir(box, "eng");
+      eng[id] = (eng[id] === n) ? 0 : n;
+      pintarPainelHist(h, box);
     };
   });
 }
 
-function abrir(box, id){
-  const el = box.querySelector(`.exp[data-exp="${id}"]`);
-  if (el) el.classList.add("aberta");
-}
+
 
 // ══════════════════════════════════════════════════════════
 //  Trilha & performance

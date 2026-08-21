@@ -51,11 +51,11 @@
      manual — limão sobre teal escuro. */
   .faixa-topo{
     background: var(--teal-escuro);
-    padding: 16px 18px;
-    display: flex; align-items: center; justify-content: center;
+    padding: 18px 24px;
+    display: flex; align-items: center; justify-content: flex-start;
   }
   .logo{
-    font-weight: 900; font-size: 22px; letter-spacing: -0.05em;
+    font-weight: 900; font-size: 30px; letter-spacing: -0.05em;
     color: var(--amarelo-neon); text-transform: lowercase;
   }
 
@@ -301,7 +301,7 @@
     /* A faixa ocupa a largura toda; abaixo dela, menu e conteúdo lado a lado
        começando na mesma altura. */
     body{ display: grid; grid-template-columns: 290px 1fr; align-items: start; }
-    .faixa-topo{ grid-column: 1 / -1; }
+    .faixa-topo{ grid-column: 1 / -1; padding-left: 44px; }
 
     .sidebar{
       grid-column: 1;
@@ -360,6 +360,8 @@
 
   /* Mobile: mantém empilhado */
   @media (max-width: 899px){
+    .faixa-topo{ padding: 16px 20px; }
+    .logo{ font-size: 26px; }
     .sidebar{
       background: var(--branco); border: 1px solid var(--borda);
       border-radius: 14px; margin: 16px 16px 0; padding: 16px;

@@ -246,20 +246,22 @@ checagem no INPI.
 
 ---
 
-## 10. Paleta de cores (fechada em 15/08/2026 — substitui a versão de 14/08)
+## 10. Paleta de cores (fechada em 21/08/2026 — substitui a versão de 15/08)
 
 | Papel | Hex | Uso |
 |---|---|---|
-| **Teal escuro** | `#0A1214` | Fundo dominante — página, base de botões numerados |
-| **Verde-limão** (acento) | `#D9E28C` | Acento — títulos de tela, estado ativo/selecionado, destaques |
-| **Azul intermediário** | `#3C6E78` | Botão primário, elementos interativos, toque/foco |
-| **Branco** | `#FFFFFF` | Cards, superfícies, painéis de conteúdo |
-| **Preto** | `#000000` | Texto sobre branco |
+| **Ameixa** (principal) | `#4A2B4D` | Cor da marca e do logo. Texto de destaque, botão primário, estado ativo |
+| **Verde-limão** (acento) | `#D9E28C` | Acento — pontos do logo, fundo dos botões de menu, selos, marcadores |
+| **Cinza-lavanda** (apoio) | `#6B6478` | Kickers, links, texto secundário, rótulos de grupo |
+| **Branco** | `#FFFFFF` | Base da interface — fundo de página e de cards |
+| **Preto** | `#000000` | Texto corrido |
 
 ### Regras de uso
-- **Teal escuro é o fundo dominante.** Conteúdo (texto, tabelas, formulários) vive em cards
-  brancos por cima dele — o teal nunca recebe texto corrido direto, só título/acento em
-  verde-limão ou branco.
+- **A base é branca, não escura.** Inversão de 21/08: a dash e o produto rodam em fundo branco
+  (off-white `#fafaf8` na página, branco puro nos cards), e a ameixa entra como cor de texto,
+  de estado ativo e de ação. Antes o fundo era escuro e os cards claros.
+- **Ameixa é a cor da marca.** É a cor do logo e o que carrega a identidade. Contraste de
+  9,6:1 sobre branco — serve para qualquer tamanho de texto.
 - **Verde-limão tem dois usos, e são diferentes.** Dentro da interface, ele segue reservado
   para "isto está ativo/selecionado" — título de tela, aba ativa, estado marcado; usá-lo em
   área grande apaga o efeito de destaque. Na marca (logo, capa, avatar, peça isolada), ele
@@ -271,7 +273,12 @@ checagem no INPI.
 - Texto sobre verde-limão é sempre escuro (preto ou teal escuro), nunca branco — o
   verde-limão é claro demais para servir de fundo com texto branco em cima. Esta regra não
   tem exceção, nem no produto nem na marca.
-- Azul intermediário é o botão de ação primária — funciona com texto branco em cima.
+- **Cinza-lavanda é o tom de apoio**: neutro com um toque de roxo, acompanha a ameixa sem
+  competir. Contraste de 6,2:1 sobre branco. Substituiu o azul intermediário `#3C6E78`, que era
+  resquício da paleta teal e brigava com a ameixa.
+- **Nos botões do menu o limão é fundo, com texto ameixa por cima.** Exceção à regra de "limão
+  como acento pontual": funciona porque são elementos pequenos e repetidos, e porque o
+  contraste ameixa-sobre-limão é 6,9:1.
 
 ### Logo
 
@@ -283,25 +290,51 @@ Sem símbolo, sem mascote, sem elemento gráfico acoplado. O nome tem quatro let
 compacto o bastante para funcionar sozinho, inclusive em tamanho pequeno. O padrão do
 mercado-alvo (consultoria) é nome sozinho; ícone puxa a leitura para escola/edtech.
 
+**Versão atual (21/08/2026):** o logotipo passou a ser assinado **"bupp idiomas"**, em duas
+linhas, com a palavra em ameixa `#4A2B4D` e os pingos do "i" em verde-limão `#D9E28C`. Os
+pingos fazem o papel que o ponto final fazia: o gesto de cor está embutido na própria palavra,
+não pendurado no fim. Arquivo em `assets/logo-bupp-idiomas.png` no repositório
+`karinabupplobo/ingles`.
+
 | Versão | Fundo | Palavra | Uso |
 |---|---|---|---|
-| **Principal** | Teal escuro `#0A1214` | Verde-limão `#D9E28C` | Aplicação padrão sobre fundo escuro |
-| **Sóbria** | Teal escuro `#0A1214` | Branco `#FFFFFF` | Quando o limão competiria com outro elemento na peça |
-| **Invertida** | Verde-limão `#D9E28C` | Teal escuro `#0A1214` | Peça curta e isolada — avatar, adesivo, capa de slide |
-| **Clara** | Branco `#FFFFFF` | Teal escuro `#0A1214` | Documento impresso, proposta em PDF, fundo claro |
+| **Principal** | Branco `#FFFFFF` | Ameixa `#4A2B4D`, pingos limão | Aplicação padrão — dash, proposta, documento |
+| **Invertida** | Ameixa `#4A2B4D` | Branco, pingos limão | Capa de proposta, slide de abertura, fundo escuro |
+| **Sobre limão** | Verde-limão `#D9E28C` | Ameixa `#4A2B4D` | Peça curta e isolada — avatar, adesivo |
 
-Reduzido (favicon, avatar, app): só o "b" em teal escuro sobre limão, ou limão sobre teal
-escuro. É derivação do logotipo, não marca gráfica nova.
+Reduzido (favicon, avatar, app): só o "b" em ameixa sobre limão, ou limão sobre ameixa. É
+derivação do logotipo, não marca gráfica nova.
+
+**Pendência:** só existe versão PNG. Falta o vetorial (SVG/AI) e as versões invertida e sobre
+limão, que ainda não foram produzidas.
 
 O elemento gráfico recorrente — a barra de 6 meses parcialmente preenchida — vive no sistema
 (capa de proposta, slide, rodapé, assinatura de e-mail) e nunca entra no logo.
 
-### Nota sobre a mudança de direção
-Este documento, na versão fechada em 14/08/2026, descartava explicitamente esta direção:
-"Azul/petróleo + âmbar" e "Verde-lima dominante" estavam na lista de paletas descartadas,
-com a justificativa de que verde-lima aproxima do território de apps de idioma como Duolingo,
-e teal soaria datado em poucos anos. A decisão de 15/08 reverte esse racional conscientemente
-— registrado aqui para histórico, não como contradição a esconder.
+### Como se chegou à ameixa
+Terceira paleta em uma semana — e a última. A partir daqui, mexer custa retrabalho de material.
+
+- **14/08** — terracota `#8F4426` sobre creme. Caiu por ler como orgânico/eco ao lado de verde.
+- **15/08** — teal escuro `#0A1214` + limão, herdada do template de aula. Segura, mas o teal
+  quase-preto nunca era memorável sozinho.
+- **21/08** — ameixa `#4A2B4D` + limão. Complementar do limão, ou seja, contraste máximo. E é
+  território vago no setor: Berlitz, Rosetta Stone (`#003263`) e Wall Street English são azuis,
+  Duolingo é verde (`#58CC02`), Babbel é laranja (`#FF5F00`). Ninguém em idiomas usa roxo como
+  cor principal.
+- Testado e descartado no mesmo dia: verde-petróleo `#2F5C5C`, que devolvia a marca ao
+  território azul-esverdeado do setor — exatamente o que se queria evitar.
+
+**Riscos assumidos conscientemente:**
+- No Brasil, roxo escuro carrega associação forte com o Nubank. Um comprador de RH pode ler
+  fintech antes de ler consultoria. Aceito em troca de não parecer com nenhum concorrente.
+- A paleta do Duolingo inclui um roxo (`#CE82FF`, em badges premium), então verde + roxo não é
+  território virgem. A distância salva: o deles é lilás claro e acento, o nosso é ameixa fechada
+  e principal.
+
+### Nota histórica sobre as direções descartadas
+O documento de 14/08 descartava explicitamente "azul/petróleo + âmbar" e "verde-lima dominante".
+A decisão de 15/08 reverteu esse racional para o teal, e a de 21/08 abandonou o teal de vez.
+Registrado para histórico, não como contradição a esconder.
 
 ---
 

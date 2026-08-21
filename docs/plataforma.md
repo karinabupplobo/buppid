@@ -146,7 +146,7 @@ que ficam em inglês como aceno ao produto:
 | Professor | `teacher` |
 | Aluno | `student` |
 | RH do cliente | `manager` |
-| Equipe Bupp (dash interna) | `bupp team` |
+| Equipe Bupp (dash interna) | `internal` |
 
 Isso confirma que existem **quatro** papéis, não três: além de professor, aluno e
 RH, há a visão interna da Bupp — que é quem enxerga as anotações privadas por

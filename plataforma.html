@@ -601,6 +601,15 @@ document.addEventListener("keydown", e => {
 // ══════════════════════════════════════════════════════════
 //  Aula do dia
 // ══════════════════════════════════════════════════════════
+// Uma versão da aula = turma + aula + data. A mesma aula dada para duas
+// turmas gera dois conjuntos de anotações independentes.
+function urlAula(modo, titulo, data){
+  return `templateaula.html?modo=${modo}`
+       + `&turma=${encodeURIComponent(turmaAtual.nome)}`
+       + `&aula=${encodeURIComponent(titulo)}`
+       + `&data=${encodeURIComponent(data)}`;
+}
+
 function renderAula(){
   const a = turmaAtual.aula;
   const pillTxt = a.pill === "hoje" ? "Aula de hoje" : "Aula dada";
@@ -609,7 +618,7 @@ function renderAula(){
     <div class="card-kicker">${a.data}</div>
     <h2>${a.titulo}</h2>
     <p>${a.resumo}</p>
-    <a class="btn" href="templateaula.html" target="_blank">Abrir material da aula →</a>
+    <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Dar aula e anotar →</a>
   `;
   renderResumo();
 }
@@ -850,6 +859,8 @@ function renderHistorico(){
       <div class="titulo">${h.titulo}</div>
       <div class="resumo">${h.resumo}</div>
       <div class="hist-tags">${h.tags.map(t => `<span class="htag">${t}</span>`).join("")}</div>
+      <a class="btn ghost" style="margin-top:11px;"
+         href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
     `;
     box.appendChild(d);
   });

@@ -591,9 +591,113 @@
     .wrap, .s2-wrap, .s4-wrap, .big-card.com-cena{ max-width: 1320px; }
   }
 
+
+  /* ═══════════ Camada de anotação do professor ═══════════
+     Ativa só com ?modo=professor. Cada tela tem sua própria anotação:
+     um texto e uma camada de rabisco. Fica salva na versão daquela aula
+     e o aluno vê depois, no histórico. */
+
+  .anot-bar{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+    background: var(--teal-escuro, #0A1214);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    display: none; align-items: center; gap: 8px; padding: 8px 14px; flex-wrap: wrap;
+  }
+  body.modo-professor .anot-bar{ display: flex; }
+  body.modo-professor .app{ padding-top: 52px; }
+
+  .anot-bar .ctx{ display: flex; flex-direction: column; margin-right: auto; min-width: 0; }
+  .anot-bar .ctx b{ color: #D9E28C; font-size: 12.5px; font-weight: 700; }
+  .anot-bar .ctx span{ color: rgba(255,255,255,0.45); font-size: 10.5px; font-weight: 600; }
+
+  .ab{
+    border: 1.5px solid rgba(255,255,255,0.2); background: transparent; color: #fff;
+    border-radius: 8px; padding: 7px 11px; font-family: inherit; font-size: 12px;
+    font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px;
+    transition: all .13s; white-space: nowrap;
+  }
+  .ab:hover{ background: rgba(255,255,255,0.09); }
+  .ab.on{ background: #D9E28C; border-color: #D9E28C; color: #0A1214; }
+  .ab.aviso{ border-color: rgba(217,226,140,0.4); color: rgba(255,255,255,0.6); cursor: default; font-weight: 500; }
+  .ab.aviso:hover{ background: transparent; }
+
+  .cor-b{
+    width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.22);
+    cursor: pointer; padding: 0; transition: transform .12s, border-color .12s;
+  }
+  .cor-b.on{ border-color: #D9E28C; transform: scale(1.15); }
+
+  /* rabisco por cima da tela */
+  .rabisco{
+    position: absolute; inset: 0; z-index: 12; pointer-events: none;
+  }
+  body.rabiscando .rabisco{ pointer-events: auto; touch-action: none; cursor: crosshair; }
+
+  /* caixa de texto da anotação, ancorada no rodapé da tela */
+  .anot-nota{
+    position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: 54px; width: min(760px, calc(100% - 48px)); z-index: 14;
+    display: none; flex-direction: column; gap: 5px;
+  }
+  body.modo-professor .anot-nota.aberta{ display: flex; }
+  .anot-nota textarea{
+    width: 100%; border: 1.5px solid rgba(217,226,140,0.55); border-radius: 10px;
+    background: rgba(255,255,255,0.97); color: #000; padding: 11px 13px;
+    font-family: inherit; font-size: 14px; line-height: 1.45; resize: vertical;
+    min-height: 66px; outline: none;
+  }
+  .anot-nota .aviso-pub{
+    font-size: 10.5px; font-weight: 700; color: rgba(217,226,140,0.85);
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+
+  /* leitura: anotação exibida para o aluno / no histórico */
+  .anot-leitura{
+    position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: 54px; width: min(760px, calc(100% - 48px)); z-index: 14;
+    background: rgba(255,255,255,0.96); border-left: 4px solid #D9E28C;
+    border-radius: 0 10px 10px 0; padding: 11px 14px; display: none;
+  }
+  .anot-leitura.tem{ display: block; }
+  .anot-leitura .t{ font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #3C6E78; margin-bottom: 3px; }
+  .anot-leitura .c{ font-size: 14px; color: #000; line-height: 1.45; white-space: pre-wrap; }
+
+  .marca-anot{
+    position: absolute; top: 10px; right: 12px; z-index: 13;
+    background: #D9E28C; color: #0A1214; font-size: 10px; font-weight: 800;
+    letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px;
+    border-radius: 999px; display: none;
+  }
+  .screen.tem-anot .marca-anot{ display: block; }
+
+  @media (max-width: 720px){
+    .anot-bar{ padding: 6px 10px; gap: 6px; }
+    .ab{ padding: 6px 9px; font-size: 11px; }
+    .anot-bar .ctx b{ font-size: 11.5px; }
+    body.modo-professor .app{ padding-top: 76px; }
+    .anot-nota, .anot-leitura{ bottom: 46px; width: calc(100% - 24px); }
+  }
+
 </style>
 </head>
 <body>
+
+<div class="anot-bar" id="anot-bar">
+  <div class="ctx">
+    <b id="anot-aula">Aula</b>
+    <span id="anot-turma"></span>
+  </div>
+  <button class="ab" id="ab-nota">Anotar texto</button>
+  <button class="ab" id="ab-rabisco">Rabiscar</button>
+  <span class="cores" id="anot-cores" style="display:none;gap:5px;">
+    <button class="cor-b on" data-c="#a3312a" style="background:#a3312a"></button>
+    <button class="cor-b" data-c="#0A1214" style="background:#0A1214"></button>
+    <button class="cor-b" data-c="#3C6E78" style="background:#3C6E78"></button>
+    <button class="cor-b" data-c="#1f7a3d" style="background:#1f7a3d"></button>
+  </span>
+  <button class="ab" id="ab-apagar" style="display:none;">Limpar rabisco</button>
+  <button class="ab aviso">Alunos veem estas anotações</button>
+</div>
 
 <div class="app" id="app">
   <div class="screens" id="screens">
@@ -1012,6 +1116,219 @@
   dots.forEach(dot => {
     dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
   });
+
+  // ══════════════════════════════════════════════════════════
+  //  ANOTAÇÕES DO PROFESSOR NA AULA
+  //
+  //  Substitui a antiga lousa separada (removida em 20/08/2026). O professor
+  //  anota DENTRO do material, enquanto dá aula. Duas camadas por tela:
+  //    · texto  — pesquisável depois
+  //    · rabisco — traço livre por cima do slide
+  //
+  //  As anotações pertencem a UMA VERSÃO da aula: a mesma aula dada para duas
+  //  turmas gera dois conjuntos independentes. A chave é turma + aula + data.
+  //
+  //  IMPORTANTE: estas anotações são PÚBLICAS PARA A TURMA — o aluno as vê no
+  //  histórico. As anotações privadas do professor sobre cada aluno ficam na
+  //  aba "Fim da aula" da plataforma, e nunca aparecem aqui.
+  // ══════════════════════════════════════════════════════════
+  (function(){
+    const qs       = new URLSearchParams(location.search);
+    const PROF     = qs.get("modo") === "professor";
+    const SOLEIT   = qs.get("modo") === "leitura";
+    const CHAVE    = [qs.get("turma") || "", qs.get("aula") || "", qs.get("data") || ""].join("::");
+
+    if (!PROF && !SOLEIT) return;
+
+    document.getElementById("anot-aula").textContent  = qs.get("aula")  || "Aula";
+    document.getElementById("anot-turma").textContent =
+      [qs.get("turma"), qs.get("data")].filter(Boolean).join(" · ");
+
+    if (PROF) document.body.classList.add("modo-professor");
+
+    // { indiceTela: { texto: "", rabisco: dataURL } }
+    const ANOT = carregar();
+
+    function carregar(){
+      try { return JSON.parse(localStorage.getItem("bupp:anot:" + CHAVE)) || {}; }
+      catch(e){ return {}; }
+    }
+    function salvar(){
+      try { localStorage.setItem("bupp:anot:" + CHAVE, JSON.stringify(ANOT)); }
+      catch(e){ /* modo privado do navegador — segue sem persistir */ }
+      if (window.parent !== window){
+        window.parent.postMessage({ type:"bupp:anotacoes", chave: CHAVE, anotacoes: ANOT }, "*");
+      }
+    }
+
+    let cor = "#a3312a";
+    let telas = [];
+
+    // ---- monta as camadas em cada tela ----
+    function montarCamadas(){
+      telas = Array.from(document.querySelectorAll(".screen"));
+      telas.forEach((tela, i) => {
+        if (tela.querySelector(".rabisco")) return;
+        tela.style.position = "relative";
+
+        const cv = document.createElement("canvas");
+        cv.className = "rabisco";
+        tela.appendChild(cv);
+
+        const marca = document.createElement("div");
+        marca.className = "marca-anot";
+        marca.textContent = "anotada";
+        tela.appendChild(marca);
+
+        if (PROF){
+          const box = document.createElement("div");
+          box.className = "anot-nota";
+          box.innerHTML = '<textarea placeholder="Anotação desta tela — a turma vai ver"></textarea>'
+                        + '<span class="aviso-pub">Visível para os alunos no histórico</span>';
+          tela.appendChild(box);
+          const ta = box.querySelector("textarea");
+          ta.value = (ANOT[i] && ANOT[i].texto) || "";
+          ta.addEventListener("input", () => {
+            ANOT[i] = ANOT[i] || {};
+            ANOT[i].texto = ta.value;
+            salvar(); marcarTela(i);
+          });
+        } else {
+          const box = document.createElement("div");
+          box.className = "anot-leitura";
+          box.innerHTML = '<div class="t">Anotação do professor</div><div class="c"></div>';
+          tela.appendChild(box);
+          const txt = (ANOT[i] && ANOT[i].texto) || "";
+          if (txt){ box.querySelector(".c").textContent = txt; box.classList.add("tem"); }
+        }
+
+        dimensionar(cv, i);
+        marcarTela(i);
+      });
+    }
+
+    function dimensionar(cv, i){
+      const r = cv.getBoundingClientRect();
+      if (!r.width || !r.height){ requestAnimationFrame(() => dimensionar(cv, i)); return; }
+      const dpr = window.devicePixelRatio || 1;
+      cv.width  = r.width  * dpr;
+      cv.height = r.height * dpr;
+      const c = cv.getContext("2d");
+      c.scale(dpr, dpr);
+      c.lineCap = "round"; c.lineJoin = "round";
+      const salvo = ANOT[i] && ANOT[i].rabisco;
+      if (salvo){
+        const img = new Image();
+        img.onload = () => c.drawImage(img, 0, 0, r.width, r.height);
+        img.src = salvo;
+      }
+      ligarTraco(cv, i);
+    }
+
+    function ligarTraco(cv, i){
+      if (cv.dataset.ligado) return;
+      cv.dataset.ligado = "1";
+      const c = cv.getContext("2d");
+      let ativo = false;
+      const p = e => {
+        const r = cv.getBoundingClientRect();
+        const t = e.touches ? e.touches[0] : e;
+        return { x: t.clientX - r.left, y: t.clientY - r.top };
+      };
+      const ini = e => {
+        if (!document.body.classList.contains("rabiscando")) return;
+        e.preventDefault(); e.stopPropagation();
+        ativo = true;
+        const { x, y } = p(e);
+        c.beginPath(); c.moveTo(x, y);
+      };
+      const mov = e => {
+        if (!ativo) return;
+        e.preventDefault(); e.stopPropagation();
+        const { x, y } = p(e);
+        c.strokeStyle = cor; c.lineWidth = 3.5;
+        c.lineTo(x, y); c.stroke();
+      };
+      const fim = () => {
+        if (!ativo) return;
+        ativo = false;
+        ANOT[i] = ANOT[i] || {};
+        ANOT[i].rabisco = cv.toDataURL("image/png");
+        salvar(); marcarTela(i);
+      };
+      cv.addEventListener("mousedown", ini);
+      cv.addEventListener("mousemove", mov);
+      window.addEventListener("mouseup", fim);
+      cv.addEventListener("touchstart", ini, { passive:false });
+      cv.addEventListener("touchmove", mov, { passive:false });
+      cv.addEventListener("touchend", fim);
+    }
+
+    function marcarTela(i){
+      const a = ANOT[i];
+      const tem = a && ((a.texto && a.texto.trim()) || a.rabisco);
+      if (telas[i]) telas[i].classList.toggle("tem-anot", !!tem);
+    }
+
+    // ---- botões da barra ----
+    if (PROF){
+      const bNota    = document.getElementById("ab-nota");
+      const bRab     = document.getElementById("ab-rabisco");
+      const bApagar  = document.getElementById("ab-apagar");
+      const cores    = document.getElementById("anot-cores");
+
+      bNota.onclick = () => {
+        const on = bNota.classList.toggle("on");
+        document.querySelectorAll(".anot-nota").forEach(n => n.classList.toggle("aberta", on));
+        if (on){
+          const atual = telas[document.querySelectorAll(".dot.active").length ? indiceAtual() : 0];
+          const ta = atual && atual.querySelector("textarea");
+          if (ta) ta.focus();
+        }
+      };
+
+      bRab.onclick = () => {
+        const on = bRab.classList.toggle("on");
+        document.body.classList.toggle("rabiscando", on);
+        cores.style.display   = on ? "flex" : "none";
+        bApagar.style.display = on ? "flex" : "none";
+      };
+
+      cores.querySelectorAll(".cor-b").forEach(b => {
+        b.onclick = () => {
+          cores.querySelectorAll(".cor-b").forEach(x => x.classList.remove("on"));
+          b.classList.add("on");
+          cor = b.dataset.c;
+        };
+      });
+
+      bApagar.onclick = () => {
+        const i  = indiceAtual();
+        const cv = telas[i] && telas[i].querySelector(".rabisco");
+        if (!cv) return;
+        const r = cv.getBoundingClientRect();
+        cv.getContext("2d").clearRect(0, 0, r.width, r.height);
+        if (ANOT[i]) delete ANOT[i].rabisco;
+        salvar(); marcarTela(i);
+      };
+    }
+
+    function indiceAtual(){
+      const d = document.querySelector(".dot.active");
+      return d ? parseInt(d.dataset.index || "0") : 0;
+    }
+
+    montarCamadas();
+    // as telas são reconstruídas quando a dash envia a aula por postMessage
+    const alvo = document.getElementById("screens");
+    new MutationObserver(() => setTimeout(montarCamadas, 60)).observe(alvo, { childList: true });
+    window.addEventListener("resize", () => {
+      telas.forEach((t, i) => {
+        const cv = t.querySelector(".rabisco");
+        if (cv){ cv.dataset.ligado = ""; dimensionar(cv, i); }
+      });
+    });
+  })();
 </script>
 
 </body>

@@ -57,11 +57,9 @@
   /* Faixa de topo: largura total, logo ao centro, aplicação padrão do
      manual — limão sobre teal escuro. */
   .logo{
-    font-weight: 900; font-size: 30px; letter-spacing: -0.05em;
-    color: var(--teal-escuro); text-transform: lowercase;
-    padding-bottom: 4px;
+    display: block; width: 158px; height: auto;
+    margin-bottom: 2px;
   }
-  .logo .ponto{ color: var(--amarelo-neon); }
 
   /* Nome do professor */
   .whoami{
@@ -374,7 +372,7 @@
       border-radius: 0; margin: 0; padding: 18px 18px 14px;
       display: flex; flex-direction: column; gap: 14px;
     }
-    .logo{ font-size: 26px; }
+    .logo{ width: 134px; }
     main{ padding-top: 18px; }
   }
 </style>
@@ -382,7 +380,7 @@
 <body>
 
 <aside class="sidebar">
-  <div class="logo">bupp<span class="ponto">.</span></div>
+  <img class="logo" src="assets/logo-bupp-idiomas.png" alt="bupp idiomas">
 
   <div class="whoami">
     <strong>Prof. Ana Ribeiro</strong>

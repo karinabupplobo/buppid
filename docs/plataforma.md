@@ -147,6 +147,11 @@ decidido** — não o contrário. Este doc é adaptado a cada rodada.
 - **Lousa no lugar de anotação em texto**: tela de desenho/escrita salva
   como "lousa" ou "lousas" da aula. Motivou trocar `anotacoes_aula` por
   `lousas_aula` no schema.
+- **Lousa tem desenho E texto**: caneta livre, ferramenta de texto (clica
+  onde quer escrever), borracha, 5 cores fixas + seletor livre, 4 tamanhos
+  (P/M/G/GG, que valem para traço, texto e borracha), negrito e itálico, e
+  desfazer com pilha de 25 passos. O texto é rasterizado no canvas ao
+  confirmar — a lousa continua sendo salva como uma imagem única.
 - **Lousa nasce vinculada à aula**: o botão da tela "Aula do dia" abre o
   canvas direto, já carimbado com turma, data e nome da aula. Não passa por
   uma tela intermediária de lousas — se passasse, a lousa nasceria solta e

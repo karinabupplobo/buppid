@@ -47,19 +47,31 @@
   /* ===== Topo ===== */
   /* Faixa do logo em teal — devolve ao logo a aplicação padrão do manual
      (limão sobre teal escuro), sem perder a sidebar branca. */
-  .topbar{
-    position: sticky; top: 0; z-index: 20;
+  /* Faixa de topo: largura total, logo ao centro, aplicação padrão do
+     manual — limão sobre teal escuro. */
+  .faixa-topo{
     background: var(--teal-escuro);
-    padding: 16px 18px 14px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: none;
+    padding: 16px 18px;
+    display: flex; align-items: center; justify-content: center;
   }
   .logo{
-    font-weight: 900; font-size: 20px; letter-spacing: -0.05em;
+    font-weight: 900; font-size: 22px; letter-spacing: -0.05em;
     color: var(--amarelo-neon); text-transform: lowercase;
   }
-  .whoami{ font-size: 11.5px; color: rgba(255,255,255,0.5); font-weight: 500; text-align: right; line-height: 1.35; }
-  .whoami strong{ color: #fff; display: block; font-weight: 600; font-size: 12.5px; }
+
+  /* Nome do professor: vive dentro do menu branco */
+  .whoami{
+    font-size: 11.5px; color: var(--cinza-texto); font-weight: 500;
+    line-height: 1.35; padding-bottom: 14px; border-bottom: 1px solid var(--borda);
+  }
+  .whoami strong{
+    color: var(--texto); display: block; font-weight: 700; font-size: 14.5px;
+    letter-spacing: -0.01em; margin-bottom: 1px;
+  }
+  .whoami span{
+    font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--azul-intermediario);
+  }
 
   /* ===== Seletor de turma (dropdown custom, em superfície branca) ===== */
   .turma-bar{ padding: 0; position: relative; }
@@ -286,26 +298,23 @@
 
   /* ===== Desktop: sidebar fixa + conteúdo largo ===== */
   @media (min-width: 900px){
-    body{ display: grid; grid-template-columns: 290px 1fr; min-height: 100vh; }
+    /* A faixa ocupa a largura toda; abaixo dela, menu e conteúdo lado a lado
+       começando na mesma altura. */
+    body{ display: grid; grid-template-columns: 290px 1fr; align-items: start; }
+    .faixa-topo{ grid-column: 1 / -1; }
 
     .sidebar{
-      grid-column: 1; grid-row: 1;
+      grid-column: 1;
       background: var(--branco);
-      border-right: 1px solid var(--borda);
-      padding: 0 20px 24px; position: sticky; top: 0; height: 100vh;
-      display: flex; flex-direction: column; gap: 18px;
+      border: 1px solid var(--borda); border-radius: 14px;
+      margin: 30px 0 30px 24px;
+      padding: 20px; position: sticky; top: 30px;
+      display: flex; flex-direction: column; gap: 16px;
     }
-    .topbar{
-      position: static; background: var(--teal-escuro); border: none;
-      margin: 0 -20px 4px; padding: 22px 20px 20px;
-      flex-direction: column; align-items: flex-start; gap: 12px;
-    }
-    .logo{ font-size: 26px; }
-    .whoami{ text-align: left; }
 
     .tabs{
       flex-direction: column; gap: 2px; padding: 0; overflow: visible;
-      border-top: 1px solid var(--borda); padding-top: 16px;
+      border-top: 1px solid var(--borda); padding-top: 14px;
     }
     .tab{
       width: 100%; text-align: left; padding: 11px 13px; border-bottom: none;
@@ -319,8 +328,8 @@
     }
 
     main{
-      grid-column: 2; grid-row: 1;
-      padding: 30px 34px 60px; max-width: 1180px; width: 100%;
+      grid-column: 2;
+      padding: 30px 30px 60px 22px; max-width: 1180px; width: 100%;
     }
 
     .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: stretch; }
@@ -346,28 +355,30 @@
   }
 
   @media (min-width: 1280px){
-    main{ padding: 34px 46px 70px; }
+    main{ padding: 30px 44px 70px 26px; }
   }
 
   /* Mobile: mantém empilhado */
   @media (max-width: 899px){
     .sidebar{
-      background: var(--branco); padding: 0 18px 14px;
-      border-bottom: 1px solid var(--borda);
+      background: var(--branco); border: 1px solid var(--borda);
+      border-radius: 14px; margin: 16px 16px 0; padding: 16px;
+      display: flex; flex-direction: column; gap: 14px;
     }
-    .topbar{ margin: 0 -18px; background: var(--teal-escuro); border-bottom: none; }
+    main{ padding-top: 18px; }
   }
 </style>
 </head>
 <body>
 
+<header class="faixa-topo">
+  <div class="logo">bupp.</div>
+</header>
+
 <aside class="sidebar">
-  <div class="topbar">
-    <div class="logo">bupp.</div>
-    <div class="whoami">
-      <strong>Prof. Ana Ribeiro</strong>
-      professor
-    </div>
+  <div class="whoami">
+    <strong>Prof. Ana Ribeiro</strong>
+    <span>professor</span>
   </div>
 
   <div class="turma-bar">

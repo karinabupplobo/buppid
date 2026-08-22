@@ -52,7 +52,7 @@
 
   html, body{
     margin: 0; padding: 0; min-height: 100%;
-    background: #F7F6F9;   /* cinza-lavanda quase branco, puxado do #6B6478 */
+    background: #EFEDF3;   /* cinza-lavanda claro, puxado do #6B6478 */
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-text-size-adjust: 100%;
   }
@@ -314,10 +314,12 @@
   .estrela:hover{ transform: scale(1.15); }
   .estrela.on{ color: var(--amarelo-neon); text-shadow: 0 0 1px var(--azul-intermediario); }
 
-  /* Cada aula e o seu resumo formam uma dupla, alinhados no topo */
-  .par{ margin-bottom: 18px; }
-  .par > .card{ margin-bottom: 12px; }
-  .par > .card.resumo{ margin-bottom: 0; }
+  /* Aula e pontos de atenção num card só: retângulo horizontal no desktop,
+     vertical no celular. */
+  .par{ margin-bottom: 16px; }
+  .card.unico{ padding: 0; overflow: hidden; margin-bottom: 0; }
+  .lado-aula{ padding: 18px; }
+  .lado-pontos{ padding: 18px; border-top: 1px solid var(--borda); background: #fcfcfa; }
 
   /* aula do dia / histórico */
   .aula-topo{ display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -543,12 +545,16 @@
     .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
     .cols > .card{ margin-bottom: 0; }
 
-    /* aula à esquerda, resumo daquela aula à direita, mesma altura de topo */
-    .par{
-      display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px;
-      align-items: start; margin-bottom: 22px;
+    /* retângulo horizontal: aula à esquerda, pontos de atenção à direita */
+    .par{ margin-bottom: 18px; }
+    .card.unico{
+      display: grid; grid-template-columns: 1.3fr 1fr; align-items: stretch;
     }
-    .par > .card{ margin-bottom: 0; }
+    .lado-aula{ padding: 22px; display: flex; flex-direction: column; }
+    .lado-aula .btn{ margin-top: auto; }
+    .lado-pontos{
+      padding: 22px; border-top: none; border-left: 1px solid var(--borda);
+    }
 
     .aluno-lista, #presenca-lista{
       display: grid; grid-template-columns: repeat(2,1fr); gap: 12px;
@@ -1203,17 +1209,19 @@ function renderAula(){
     const par = document.createElement("div");
     par.className = "par";
     par.innerHTML = `
-      <div class="card">
-        <div class="aula-topo">
-          <span class="hora">${a.hora}</span>
-          <span class="pill hoje">Aula de hoje</span>
-          <button class="chip-turma" data-resumo-turma>Resumo da turma ›</button>
+      <div class="card unico">
+        <div class="lado-aula">
+          <div class="aula-topo">
+            <span class="hora">${a.hora}</span>
+            <span class="pill hoje">Aula de hoje</span>
+            <button class="chip-turma" data-resumo-turma>Resumo da turma ›</button>
+          </div>
+          <h2>${a.titulo}</h2>
+          <p>${a.resumo}</p>
+          <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Dar aula e anotar →</a>
         </div>
-        <h2>${a.titulo}</h2>
-        <p>${a.resumo}</p>
-        <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Dar aula e anotar →</a>
+        <div class="lado-pontos">${htmlPontosAtencao(a)}</div>
       </div>
-      <div class="card resumo">${htmlPontosAtencao(a)}</div>
     `;
     box.appendChild(par);
     ligarExp(par);
@@ -1313,16 +1321,18 @@ function renderHistorico(){
     par.className = "par";
     par.dataset.aula = h.id;
     par.innerHTML = `
-      <div class="card">
-        <div class="aula-topo">
-          <span class="hora">${h.data}</span>
-          <span class="pill dada">Aula dada</span>
+      <div class="card unico">
+        <div class="lado-aula">
+          <div class="aula-topo">
+            <span class="hora">${h.data}</span>
+            <span class="pill dada">Aula dada</span>
+          </div>
+          <h2>${h.titulo}</h2>
+          <p>${h.resumo}</p>
+          <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
         </div>
-        <h2>${h.titulo}</h2>
-        <p>${h.resumo}</p>
-        <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
+        <div class="lado-pontos" data-painel="${h.id}"></div>
       </div>
-      <div class="card resumo" data-painel="${h.id}"></div>
     `;
     box.appendChild(par);
     pintarPainelHist(h, par.querySelector(`[data-painel="${h.id}"]`));

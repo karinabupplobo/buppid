@@ -15,7 +15,9 @@
                                  turma virou pop-up, aberto pelo chip no topo.
     3. Trilha & performance    — liberada automaticamente, prof só visualiza
                                  (dois modos: geral da turma / por aluno)
-    4. Fim da aula             — presença + anotação interna por aluno
+    4. Fim da aula             — fecha o DIA INTEIRO: todas as aulas de todas as
+                                 turmas, agrupadas por turma, com presença e
+                                 anotação interna por aluno
     5. Histórico               — mesma estrutura do Today: lista de aulas dadas
                                  (botão "ver aula e anotações") e, ao lado, o
                                  resumo daquela aula com presença, trilhas e
@@ -495,6 +497,32 @@
     border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 4px;
   }
 
+  /* ===== Fechar o dia: blocos por aula ===== */
+  .bloco-aula{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 16px; margin-bottom: 14px;
+  }
+  .bloco-aula.ok{ border-color: #b6d7ac; }
+  .ba-cab{
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--borda);
+  }
+  .ba-esq{ display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .ba-hora{
+    font-size: 12.5px; font-weight: 800; letter-spacing: .04em;
+    color: var(--teal-escuro); background: var(--amarelo-neon);
+    padding: 5px 9px; border-radius: 7px; flex-shrink: 0;
+  }
+  .ba-turma{ font-size: 14.5px; font-weight: 800; color: var(--texto); letter-spacing: -0.01em; }
+  .ba-aula{ font-size: 12.5px; color: var(--cinza-texto); }
+  .ba-status{
+    font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--cinza-texto); background: #f2f4ee; padding: 5px 9px; border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
+  .ba-alunos .presenca-item{ background: #fafbf7; border-color: transparent; }
+
   /* ===== Presença + anotações ===== */
   .privado{
     background: var(--limao-claro); border: 1px solid rgba(60,110,120,0.25);
@@ -593,10 +621,10 @@
       padding: 22px; border-top: none; border-left: 1px solid var(--borda);
     }
 
-    .aluno-lista, #presenca-lista{
-      display: grid; grid-template-columns: repeat(2,1fr); gap: 12px;
-    }
-    .aluno-lista .card, .presenca-item{ margin-bottom: 0; }
+    .aluno-lista{ display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    .aluno-lista .card{ margin-bottom: 0; }
+    .ba-alunos{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .ba-alunos .presenca-item{ margin-bottom: 0; }
 
 
     .switch{ max-width: 380px; }
@@ -688,7 +716,7 @@
 
   <!-- ============ PRESENÇA ============ -->
   <section class="pane" id="pane-presenca">
-    <div class="section-title">Fechar a aula — presença e anotações</div>
+    <div class="section-title">Fechar o dia — todas as turmas</div>
     <div class="privado">
       <b>As anotações por aluno são internas.</b>
       Ficam visíveis só para a Bupp, na dash interna. O aluno não vê, o RH do
@@ -1665,87 +1693,108 @@ document.querySelectorAll(".switch button").forEach(b => {
 // ══════════════════════════════════════════════════════════
 //  Presença
 // ══════════════════════════════════════════════════════════
-let aulaFimSel = null;
+// ══════════════════════════════════════════════════════════
+//  FIM DA AULA — fecha o DIA INTEIRO, todas as turmas
+//  Decisão de 21/08: o professor não marca presença logo depois de cada
+//  aula; ele junta tudo e fecha no fim do expediente. Por isso esta tela
+//  ignora a turma selecionada no menu e lista TODAS as aulas de hoje,
+//  agrupadas por turma — os alunos nunca se misturam.
+// ══════════════════════════════════════════════════════════
+function aulasDoDia(){
+  const out = [];
+  TURMAS.forEach(t => (t.aulasHoje || []).forEach(a => out.push({ turma:t, aula:a })));
+  return out.sort((x,y) => x.aula.hora.localeCompare(y.aula.hora));
+}
 
 function renderPresenca(){
-  const t = turmaAtual;
-  const aulas = t.aulasHoje || [];
-  const sel = document.getElementById("fim-seletor");
   const box = document.getElementById("presenca-lista");
   const btn = document.getElementById("btn-salvar-presenca");
+  document.getElementById("fim-seletor").innerHTML = "";
+  const lista = aulasDoDia();
 
-  if (!aulas.length){
-    sel.innerHTML = "";
-    box.innerHTML = `<div class="card"><p>Nenhuma aula hoje nesta turma.</p></div>`;
+  if (!lista.length){
+    box.innerHTML = `<div class="card"><p>Nenhuma aula hoje.</p></div>`;
     btn.style.display = "none";
     return;
   }
   btn.style.display = "flex";
-
-  if (!aulaFimSel || !aulas.some(a => a.id === aulaFimSel)) aulaFimSel = aulas[0].id;
-
-  // Se houver mais de uma aula hoje, escolher de qual é a presença
-  sel.innerHTML = aulas.length > 1
-    ? `<div class="switch">${aulas.map(a =>
-        `<button class="${a.id===aulaFimSel?"active":""}" data-aula="${a.id}">${a.hora} · ${a.titulo}</button>`
-      ).join("")}</div>`
-    : "";
-  sel.querySelectorAll("button").forEach(b => {
-    b.onclick = () => { aulaFimSel = b.dataset.aula; renderPresenca(); };
-  });
-
-  const pres  = estado(PRESENCA, aulaFimSel);
-  const notas = estado(NOTAS_ALUNO, aulaFimSel);
-
   box.innerHTML = "";
-  t.alunos.forEach(a => {
-    const atual = pres[a.id];
-    const nota  = notas[a.id] || "";
-    const d = document.createElement("div");
-    d.className = "presenca-item";
-    d.innerHTML = `
-      <div class="presenca-topo">
-        <span class="nome">${a.nome}</span>
-        <span class="toggle">
-          <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
-          <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
-        </span>
+
+  lista.forEach(({turma, aula}) => {
+    const pres  = estado(PRESENCA, aula.id);
+    const notas = estado(NOTAS_ALUNO, aula.id);
+    const marcados = turma.alunos.filter(a => pres[a.id]).length;
+    const completo = marcados === turma.alunos.length;
+
+    const bloco = document.createElement("div");
+    bloco.className = "bloco-aula" + (completo ? " ok" : "");
+    bloco.innerHTML = `
+      <div class="ba-cab">
+        <div class="ba-esq">
+          <span class="ba-hora">${aula.hora}</span>
+          <div>
+            <div class="ba-turma">${turma.nome}</div>
+            <div class="ba-aula">${aula.titulo}</div>
+          </div>
+        </div>
+        <span class="ba-status">${completo ? "fechada" : `${marcados}/${turma.alunos.length}`}</span>
       </div>
-      <button class="nota-toggle${nota ? " tem" : ""}">
-        <span class="dot-nota"></span>
-        ${nota ? "Anotação escrita" : "Anotar sobre este aluno"} ›
-      </button>
-      <div class="nota-box">
-        <textarea placeholder="Como foi a participação, o que travou, o que reforçar na próxima…">${nota}</textarea>
-        <div class="hint">Interno — não vai para o aluno nem para o RH</div>
-      </div>`;
+      <div class="ba-alunos"></div>`;
 
-    d.querySelectorAll(".toggle button").forEach(b => {
-      b.onclick = () => { pres[a.id] = b.dataset.v; renderPresenca(); };
+    const lst = bloco.querySelector(".ba-alunos");
+    turma.alunos.forEach(al => {
+      const atual = pres[al.id];
+      const nota  = notas[al.id] || "";
+      const d = document.createElement("div");
+      d.className = "presenca-item";
+      d.innerHTML = `
+        <div class="presenca-topo">
+          <span class="nome">${al.nome}</span>
+          <span class="toggle">
+            <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
+            <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
+          </span>
+        </div>
+        <button class="nota-toggle${nota ? " tem" : ""}">
+          <span class="dot-nota"></span>
+          ${nota ? "Anotação escrita" : "Anotar sobre este aluno"} ›
+        </button>
+        <div class="nota-box">
+          <textarea placeholder="Como foi a participação, o que travou, o que reforçar na próxima…">${nota}</textarea>
+          <div class="hint">Interno — não vai para o aluno nem para o RH</div>
+        </div>`;
+
+      d.querySelectorAll(".toggle button").forEach(b => {
+        b.onclick = () => { pres[al.id] = b.dataset.v; renderPresenca(); };
+      });
+      const tgl = d.querySelector(".nota-toggle");
+      const cx  = d.querySelector(".nota-box");
+      const ta  = d.querySelector("textarea");
+      tgl.onclick = () => { cx.classList.toggle("open"); if (cx.classList.contains("open")) ta.focus(); };
+      ta.oninput = () => { notas[al.id] = ta.value; tgl.classList.toggle("tem", !!ta.value.trim()); };
+      if (nota) cx.classList.add("open");
+
+      lst.appendChild(d);
     });
-
-    const tgl = d.querySelector(".nota-toggle");
-    const cx  = d.querySelector(".nota-box");
-    const ta  = d.querySelector("textarea");
-    tgl.onclick = () => { cx.classList.toggle("open"); if (cx.classList.contains("open")) ta.focus(); };
-    ta.oninput = () => { notas[a.id] = ta.value; tgl.classList.toggle("tem", !!ta.value.trim()); };
-    if (nota) cx.classList.add("open");
-
-    box.appendChild(d);
+    box.appendChild(bloco);
   });
 }
 
 document.getElementById("btn-salvar-presenca").onclick = () => {
-  const t = turmaAtual;
-  const pres  = estado(PRESENCA, aulaFimSel);
-  const notas = estado(NOTAS_ALUNO, aulaFimSel);
-  const marcados = t.alunos.filter(a => pres[a.id]).length;
-  if (marcados < t.alunos.length){
-    alert(`Faltam ${t.alunos.length - marcados} aluno(s) sem marcação.`);
+  const lista = aulasDoDia();
+  let faltando = 0, totalAlunos = 0, comNota = 0;
+  lista.forEach(({turma, aula}) => {
+    const pres  = estado(PRESENCA, aula.id);
+    const notas = estado(NOTAS_ALUNO, aula.id);
+    totalAlunos += turma.alunos.length;
+    faltando += turma.alunos.filter(a => !pres[a.id]).length;
+    comNota  += turma.alunos.filter(a => (notas[a.id]||"").trim()).length;
+  });
+  if (faltando){
+    alert(`Ainda faltam ${faltando} marcação(ões) de presença.`);
     return;
   }
-  const comNota = t.alunos.filter(a => (notas[a.id]||"").trim()).length;
-  alert(`Aula fechada.\nPresença: ${t.alunos.length} aluno(s).\nAnotações internas: ${comNota}.\n\n(Prévia — ainda não grava no banco.)`);
+  alert(`Dia fechado.\n${lista.length} aula(s) · ${totalAlunos} presença(s).\nAnotações internas: ${comNota}.\n\n(Prévia — ainda não grava no banco.)`);
 };
 
 // ══════════════════════════════════════════════════════════

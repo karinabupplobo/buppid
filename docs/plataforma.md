@@ -174,6 +174,12 @@ decidido** — não o contrário. Este doc é adaptado a cada rodada.
   não haveria como saber de qual aula era. Na aba Lousas elas aparecem
   agrupadas por aula, com a aula de hoje no topo.
 - **Presença é marcada no fim da aula** (não é chamada no início).
+- **A aba "Fim da aula" fecha o DIA INTEIRO, não uma turma** (definido em
+  21/08). Ela ignora a turma selecionada no menu e lista todas as aulas do dia
+  de todas as turmas, em blocos separados por turma — os alunos nunca se
+  misturam. Motivo: o professor junta tudo e fecha no fim do expediente, em vez
+  de fechar cada aula logo depois de dá-la. Sem isso ele precisaria trocar de
+  turma no menu várias vezes para fechar o dia.
 - **Anotação interna por aluno**: no fim da aula o professor escreve sobre
   cada aluno. **Não vai para o aluno nem para o RH** — só para a dash
   interna da Bupp. Nova tabela `anotacoes_aluno`, com RLS restrita ao role

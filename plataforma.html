@@ -460,6 +460,24 @@
   }
   .voltar-turma:hover{ color: var(--teal-escuro); }
 
+  /* itens do bloco "Precisa ser tratado" */
+  .item-trat{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+    display: flex; align-items: flex-start; gap: 9px;
+  }
+  .item-trat:last-child{ margin-bottom: 0; }
+  .item-trat .it-txt{ font-size: 13px; color: var(--texto); line-height: 1.45; }
+  .item-trat .tag-al{ flex-shrink: 0; margin-top: 1px; }
+
+  .item-trat.recado{
+    flex-direction: column; gap: 6px;
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 9px 9px 0;
+  }
+  .rec-cab{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rec-de{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); }
+  .item-trat.recado .btn-tratar{ margin-top: 2px; align-self: flex-start; }
+
   .selo-ok{
     font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
     background: #e8efe3; color: #3f6b45; padding: 3px 7px; border-radius: 999px;
@@ -1140,28 +1158,54 @@ function abrirFichaAluno(idAluno, veioDaTurma){
     : `<div class="mini"><span>Nenhuma aula dada ainda.</span></div>`;
 
   const alertas = alertasDoAluno(a);
-  const pendentes = alertas.length
-    ? alertas.map(al => {
-        const r = ROTULO_ALERTA[al.tipo] || { rot:al.tipo, cor:"lavanda" };
-        return `<div class="mini"><b><span class="tag-al ${r.cor}">${r.rot}</span></b><span>${al.texto}</span></div>`;
-      }).join("")
+  const recadosPend = (a.historico || [])
+    .map((h, idx) => ({ ...h, idx }))
+    .filter(h => !h.tratado);
+
+  // Pedagógico: tudo que vem do desempenho, numa linha por causa
+  const pedag = alertas.filter(al => al.tipo !== "msg").map(al => {
+    const r = ROTULO_ALERTA[al.tipo] || { rot:al.tipo, cor:"lavanda" };
+    let detalhe = al.texto;
+    if (al.tipo === "tema"){
+      detalhe = `Erra em ${al.texto}`;
+    }
+    return `<div class="item-trat">
+      <span class="tag-al ${r.cor}">${r.rot}</span>
+      <span class="it-txt">${detalhe}</span>
+    </div>`;
+  }).join("");
+
+  // Recados: o texto completo aparece AQUI, não repetido no histórico
+  const recados = recadosPend.map(h => `
+    <div class="item-trat recado">
+      <div class="rec-cab">
+        <span class="tag-al lavanda">Recado</span>
+        <span class="rec-de">${DE_QUEM[h.tipo] || h.tipo} · ${h.autor} · ${h.data}</span>
+      </div>
+      <div class="it-txt">${h.texto}</div>
+      <button class="btn-tratar" data-tratar="${h.idx}">Marcar como tratado</button>
+    </div>`).join("");
+
+  const pendentes = (pedag || recados)
+    ? pedag + recados
     : `<div class="mini"><span>Nada pendente.</span></div>`;
 
   // linha do tempo: recado não tratado vem destacado
-  const eventos = (a.historico || []).length
-    ? a.historico.map((h, idx) => `
-        <div class="ev ${h.tratado ? "" : "pendente"}">
+  // Só o que já foi resolvido. O que está pendente vive em "Precisa ser
+  // tratado" acima — quando você marca como tratado, desce para cá.
+  const tratados = (a.historico || []).filter(h => h.tratado);
+  const eventos = tratados.length
+    ? tratados.map(h => `
+        <div class="ev">
           <div class="ev-topo">
             <span class="ev-data">${h.data}</span>
             <span class="ev-de">${DE_QUEM[h.tipo] || h.tipo} · ${h.autor}</span>
-            ${h.tratado ? '<span class="selo-ok">tratado</span>'
-                        : '<span class="selo-pend">não tratado</span>'}
           </div>
           <div class="ev-txt">${h.texto}</div>
-          ${h.tratado ? "" :
-            `<button class="btn-tratar" data-tratar="${idx}">Marcar como tratado</button>`}
         </div>`).join("")
-    : `<div class="mini"><span>Nenhuma interação registrada ainda.</span></div>`;
+    : `<div class="mini"><span>${recadosPend.length
+        ? "Nada resolvido ainda — os recados abertos estão acima."
+        : "Nenhuma interação registrada ainda."}</span></div>`;
 
   // desempenho nas trilhas já dadas
   const trilhas = (t.historico || []).map(h => {
@@ -1184,7 +1228,7 @@ function abrirFichaAluno(idAluno, veioDaTurma){
     ${veioDaTurma ? '<button class="voltar-turma" id="voltar-turma">‹ Voltar para a turma</button>' : ""}
     ${numeros}
     <div class="bloco">
-      <div class="bt">Precisa ser tratado</div>
+      <div class="bt">Precisa ser tratado · ${alertas.length}</div>
       ${pendentes}
     </div>
     <div class="bloco">
@@ -1192,7 +1236,7 @@ function abrirFichaAluno(idAluno, veioDaTurma){
       ${presLista}
     </div>
     <div class="bloco">
-      <div class="bt">Histórico de interações</div>
+      <div class="bt">Já resolvido · ${tratados.length}</div>
       ${eventos}
     </div>
     <div class="bloco">
@@ -1284,12 +1328,13 @@ function alertasDoAluno(a){
       if (st[i] === "err") d.erros++;
     });
   });
-  Object.entries(porTema).forEach(([tema, d]) => {
-    if (d.total >= MIN_LICOES_TEMA && d.erros / d.total >= LIM_ERRO_TEMA){
-      out.push({ tipo:"tema", peso:3,
-        texto:`Erra em <b>${tema}</b>: ${d.erros} de ${d.total} lições do tema.` });
-    }
-  });
+  const temasRuins = Object.entries(porTema)
+    .filter(([, d]) => d.total >= MIN_LICOES_TEMA && d.erros / d.total >= LIM_ERRO_TEMA)
+    .map(([tema, d]) => ({ tema, ...d }));
+  if (temasRuins.length){
+    out.push({ tipo:"tema", peso:3, temas: temasRuins,
+      texto: temasRuins.map(x => `<b>${x.tema}</b> (${x.erros}/${x.total})`).join(", ") });
+  }
 
   // ---- engajamento ----
   const notas = (t.historico || [])
@@ -1303,10 +1348,11 @@ function alertasDoAluno(a){
   }
 
   // ---- recados não tratados ----
-  (a.historico || []).filter(h => !h.tratado).forEach(h => {
-    out.push({ tipo:"msg", peso:4, origem:h.tipo,
-      texto:`<b>${DE_QUEM[h.tipo] || h.tipo}</b> deixou recado em ${h.data}, ainda não tratado.` });
-  });
+  const pendentes = (a.historico || []).filter(h => !h.tratado);
+  if (pendentes.length){
+    out.push({ tipo:"msg", peso:4, recados: pendentes,
+      texto: pendentes.map(h => DE_QUEM[h.tipo] || h.tipo).join(", ") });
+  }
 
   return out.sort((x,y) => y.peso - x.peso);
 }

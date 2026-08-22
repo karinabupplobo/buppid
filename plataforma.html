@@ -460,6 +460,31 @@
   }
   .voltar-turma:hover{ color: var(--teal-escuro); }
 
+  /* ===== Trilhas ===== */
+  .trilha-item{ border-bottom: 1px solid #f2f4f0; }
+  .trilha-item:last-child{ border-bottom: none; }
+  .tr-cab-esq{ display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+  .tr-tit{ font-size: 14.5px; font-weight: 700; color: var(--texto); letter-spacing: -0.01em; }
+  .tr-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+  .trilha-item .exp-cab{ padding: 13px 0; }
+
+  .tr-aluno{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+  }
+  .tr-aluno:last-child{ margin-bottom: 0; }
+  .tr-nome{
+    display: flex; align-items: center; gap: 6px; background: none; border: none;
+    cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700;
+    color: var(--texto); padding: 0; margin-bottom: 6px;
+  }
+  .tr-nome:hover{ color: var(--azul-intermediario); }
+  .tr-bolas{ display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tr-num{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 11.5px; font-weight: 700; }
+  .tr-num .ok{ color: #3f6b45; }
+  .tr-num .er{ color: #a3312a; }
+  .tr-num .pe{ color: #9aa39f; }
+  .tr-num .nota{ margin-left: auto; font-size: 13px; }
+
   /* itens do bloco "Precisa ser tratado" */
   .item-trat{
     background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
@@ -687,10 +712,6 @@
     table{ font-size: 13.5px; }
     th, td{ padding: 13px 12px; }
 
-    #trilha-detalhe .det-cols{
-      display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start;
-    }
-    #trilha-detalhe .det-cols .card{ margin-bottom: 0; }
   }
 
   @media (min-width: 1280px){
@@ -748,26 +769,7 @@
 
   <!-- ============ TRILHA ============ -->
   <section class="pane" id="pane-trilha">
-    <div class="switch">
-      <button class="active" data-modo="geral">Visão da turma</button>
-      <button data-modo="aluno">Por aluno</button>
-    </div>
-
-    <div id="trilha-geral">
-      <div class="section-title">Trilha — Negotiation Phrases</div>
-      <div class="grid-wrap">
-        <table id="tabela-trilha"></table>
-      </div>
-    </div>
-
-    <div id="trilha-aluno" style="display:none;">
-      <div class="aluno-lista" id="aluno-lista"></div>
-    </div>
-
-    <div id="trilha-detalhe" style="display:none;">
-      <button class="voltar" id="btn-voltar-aluno">← Voltar</button>
-      <div id="detalhe-conteudo"></div>
-    </div>
+    <div id="lista-trilhas"></div>
   </section>
 
   <!-- ============ PRESENÇA ============ -->
@@ -1742,128 +1744,93 @@ function classeNota(n){
   return n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
 }
 
-function renderTrilhaGeral(){
+// ══════════════════════════════════════════════════════════
+//  TRILHAS — uma lista por turma
+//  Cada trilha vira uma linha com a média de acerto da turma. Ao clicar,
+//  abre a lista de alunos com os acertos e erros de cada um.
+// ══════════════════════════════════════════════════════════
+function mediaTrilha(h){
   const t = turmaAtual;
-  const tb = document.getElementById("tabela-trilha");
-  let head = `<thead><tr><th class="aluno-nome">Aluno</th>`;
-  t.licoes.forEach(l => head += `<th>${l}</th>`);
-  head += `<th>Nota</th></tr></thead>`;
-
-  let body = "<tbody>";
+  let total = 0, acertos = 0;
   t.alunos.forEach(a => {
-    const st = t.progresso[a.id] || [];
-    const n = notaDe(st);
-    body += `<tr onclick="verAluno('${a.id}')"><td class="aluno-nome">${a.nome}</td>`;
-    st.forEach(s => {
-      const txt = s === "ok" ? "✓" : s === "err" ? "✕" : "–";
-      body += `<td><span class="st ${s}">${txt}</span></td>`;
-    });
-    body += `<td class="nota ${classeNota(n)}">${n === null ? "–" : n + "%"}</td></tr>`;
+    const st = (h.progresso && h.progresso[a.id]) || [];
+    st.forEach(x => { if (x !== "pend"){ total++; if (x === "ok") acertos++; } });
   });
-  body += "</tbody>";
-  tb.innerHTML = head + body;
+  return total ? Math.round(acertos / total * 100) : null;
 }
 
-function renderAlunoLista(){
-  const box = document.getElementById("aluno-lista");
-  box.innerHTML = "";
-  turmaAtual.alunos.forEach(a => {
-    const st = turmaAtual.progresso[a.id] || [];
-    const feitas = st.filter(s => s !== "pend").length;
-    const pct = Math.round((feitas / st.length) * 100);
-    const n = notaDe(st);
-    const d = document.createElement("div");
-    d.className = "card";
-    d.style.display = "block";
-    d.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div>
-          <h3>${a.nome}</h3>
-          <div class="sub">${a.cargo}</div>
-        </div>
-        <div class="nota ${classeNota(n)}" style="font-size:18px;">${n === null ? "–" : n + "%"}</div>
-      </div>
-      <div class="barra"><i style="width:${pct}%"></i></div>
-      <div class="sub" style="margin-top:6px;">${feitas} de ${st.length} lições feitas</div>
-    `;
-    d.onclick = () => verAluno(a.id);
-    box.appendChild(d);
-  });
+function classeNota(n){
+  if (n === null) return "";
+  return n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
 }
 
-function verAluno(id){
+function renderTrilhaGeral(){
+  const box = document.getElementById("lista-trilhas");
   const t = turmaAtual;
-  const a = t.alunos.find(x => x.id === id);
-  const st = t.progresso[id] || [];
-  const acertos = st.filter(s => s === "ok").length;
-  const erros = st.filter(s => s === "err").length;
-  const pend = st.filter(s => s === "pend").length;
-  const n = notaDe(st);
+  const trilhas = t.historico || [];
 
-  document.getElementById("trilha-geral").style.display = "none";
-  document.getElementById("trilha-aluno").style.display = "none";
-  document.getElementById("trilha-detalhe").style.display = "block";
-  document.querySelector(".switch").style.display = "none";
+  box.innerHTML = `<div class="section-title">Trilhas de ${t.nome}</div>`;
 
-  let licoes = "";
-  st.forEach((s, i) => {
-    const txt = s === "ok" ? "Acertou" : s === "err" ? "Errou" : "Não fez";
-    licoes += `<div class="kv">
-        <span>${t.licoes[i]}</span>
-        <span><span class="st ${s}" style="margin-right:6px;">${s==="ok"?"✓":s==="err"?"✕":"–"}</span>${txt}</span>
+  if (!trilhas.length){
+    box.innerHTML += `<div class="card"><p>Nenhuma trilha liberada ainda nesta turma.</p></div>`;
+    return;
+  }
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = trilhas.map(h => {
+    const m = mediaTrilha(h);
+    const fizeram = t.alunos.filter(a => {
+      const st = (h.progresso && h.progresso[a.id]) || [];
+      return st.some(x => x !== "pend");
+    }).length;
+
+    const linhas = t.alunos.map(a => {
+      const st = (h.progresso && h.progresso[a.id]) || [];
+      const acertos = st.filter(x => x === "ok").length;
+      const erros   = st.filter(x => x === "err").length;
+      const pend    = st.filter(x => x === "pend").length;
+      const nota = st.length && (st.length - pend)
+        ? Math.round(acertos / st.length * 100) : null;
+      const bolas = st.map((x,i) =>
+        `<span class="st ${x}" title="${(h.licoes||[])[i]||""}${(h.temas||[])[i] ? " — " + h.temas[i] : ""}">${
+          x==="ok"?"✓":x==="err"?"✕":"–"}</span>`).join("");
+      return `
+        <div class="tr-aluno">
+          <button class="tr-nome" data-aluno-pop="${a.id}">${a.nome}<i class="seta-r"></i></button>
+          <div class="tr-bolas">${bolas}</div>
+          <div class="tr-num">
+            <span class="ok">${acertos} certo${acertos!==1?"s":""}</span>
+            <span class="er">${erros} erro${erros!==1?"s":""}</span>
+            ${pend ? `<span class="pe">${pend} não fez</span>` : ""}
+            <span class="nota ${classeNota(nota)}">${nota===null?"–":nota+"%"}</span>
+          </div>
+        </div>`;
+    }).join("");
+
+    return `
+      <div class="exp trilha-item" data-exp="tr-${h.id}">
+        <button class="exp-cab">
+          <span class="tr-cab-esq">
+            <span class="tr-tit">${h.titulo}</span>
+            <span class="tr-sub">${h.dia ? h.dia + " " : ""}${h.data} · ${(h.licoes||[]).length} lições · ${fizeram}/${t.alunos.length} fizeram</span>
+          </span>
+          <span class="exp-val">
+            <span class="nota ${classeNota(m)}">${m===null?"–":m+"%"}</span>
+            <i class="seta"></i>
+          </span>
+        </button>
+        <div class="exp-corpo">${linhas}</div>
       </div>`;
-  });
+  }).join("");
 
-  // 1 aula = 1 trilha = N lições. O gabarito é da trilha inteira, não de
-  // uma lição isolada — por isso um botão só.
-  const urlTrilha = `templatetrilha.html?modo=gabarito`
-    + `&aluno=${encodeURIComponent(a.nome)}`
-    + `&turma=${encodeURIComponent(t.nome)}`
-    + `&aula=${encodeURIComponent(t.aula.titulo)}`
-    + `&nota=${n === null ? "" : n}`;
-
-  document.getElementById("detalhe-conteudo").innerHTML = `
-    <div class="det-cols">
-    <div class="card">
-      <div class="card-kicker">${a.cargo}</div>
-      <h2>${a.nome}</h2>
-      <div style="margin-top:14px;">
-        <div class="kv"><span>Nota da trilha</span><span class="nota ${classeNota(n)}">${n === null ? "–" : n + "%"}</span></div>
-        <div class="kv"><span>Acertos</span><span>${acertos}</span></div>
-        <div class="kv"><span>Erros</span><span>${erros}</span></div>
-        <div class="kv"><span>Pendentes</span><span>${pend}</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-kicker">Lição a lição</div>
-      ${licoes}
-      <a class="btn" href="${urlTrilha}" target="_blank">Ver trilha completa →</a>
-    </div>
-    </div>
-  `;
+  box.appendChild(card);
+  ligarExp(card);
+  ligarNomes(card);
 }
 
-document.getElementById("btn-voltar-aluno").onclick = () => {
-  document.getElementById("trilha-detalhe").style.display = "none";
-  document.querySelector(".switch").style.display = "flex";
-  const modo = document.querySelector(".switch button.active").dataset.modo;
-  document.getElementById("trilha-geral").style.display = modo === "geral" ? "block" : "none";
-  document.getElementById("trilha-aluno").style.display = modo === "aluno" ? "block" : "none";
-};
+function renderAlunoLista(){ /* a visão por aluno saiu; a ficha abre pelo nome */ }
 
-document.querySelectorAll(".switch button").forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll(".switch button").forEach(x => x.classList.remove("active"));
-    b.classList.add("active");
-    document.getElementById("trilha-detalhe").style.display = "none";
-    document.getElementById("trilha-geral").style.display = b.dataset.modo === "geral" ? "block" : "none";
-    document.getElementById("trilha-aluno").style.display = b.dataset.modo === "aluno" ? "block" : "none";
-  };
-});
-
-// ══════════════════════════════════════════════════════════
-//  Presença
-// ══════════════════════════════════════════════════════════
 // ══════════════════════════════════════════════════════════
 //  FIM DA AULA — fecha o DIA INTEIRO, todas as turmas
 //  Decisão de 21/08: o professor não marca presença logo depois de cada
@@ -2000,8 +1967,6 @@ function renderTudo(){
   renderPresenca();
   renderHistorico();
   renderResumo();
-  document.getElementById("trilha-detalhe").style.display = "none";
-  document.querySelector(".switch").style.display = "flex";
 }
 
 renderTudo();

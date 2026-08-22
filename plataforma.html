@@ -19,9 +19,9 @@
     4. Fim da aula             — fecha o DIA INTEIRO: todas as aulas de todas as
                                  turmas, agrupadas por turma, com presença e
                                  anotação interna por aluno
-    5. Histórico               — mesma estrutura do Hoje: lista de aulas dadas
-                                 (botão "ver aula e anotações") e, ao lado, o
-                                 resumo daquela aula com presença, trilhas e
+    5. Histórico               — mesma estrutura do Hoje: card com identificação
+                                 no topo e botão "ver aula e anotações". O "+"
+                                 abre o pop-up com presença, trilhas e
                                  engajamento (1 a 3 estrelas por aluno)
 
   ANOTAÇÕES: não há mais lousa separada. O professor anota dentro do próprio
@@ -1611,7 +1611,7 @@ function identTexto(t){
 
 // Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
 // os detalhes da turma. O nome da turma sai daqui — ele está dentro do "+".
-function htmlIdent(t, dia, hora){
+function htmlIdent(t, dia, hora, aulaHist){
   const p = partesIdent(t);
   return `<div class="ident">
     <span class="id-emp">${p.empresa}</span>
@@ -1712,27 +1712,35 @@ function renderHistorico(){
     par.className = "par";
     par.dataset.aula = h.id;
     par.innerHTML = `
-      <div class="card unico">
-        <div class="lado-aula">
-          <div class="aula-topo">
-            <span class="pill dada">Aula dada</span>
-          </div>
-          ${htmlIdent(turmaAtual, h.dia, h.data)}
-          <h2>${h.titulo}</h2>
-          <p>${h.resumo}</p>
-          <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
+      <div class="card">
+        <div class="aula-topo">
+          <span class="pill dada">Aula dada</span>
+          ${htmlIdent(turmaAtual, h.dia, h.data, h)}
         </div>
-        <div class="lado-pontos" data-painel="${h.id}"></div>
+        <h2>${h.titulo}</h2>
+        <p>${h.resumo}</p>
+        <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
       </div>
     `;
     const bmais = par.querySelector("[data-resumo-turma]");
-    if (bmais) bmais.onclick = abrirResumoTurma;
+    if (bmais) bmais.onclick = () => abrirPainelAula(h);
     box.appendChild(par);
-    pintarPainelHist(h, par.querySelector(`[data-painel="${h.id}"]`));
   });
 }
 
+// Presença, trilhas e engajamento de uma aula passada. Ficam dentro do "+"
+// do card, não mais num painel ao lado — o card do histórico é igual ao de Hoje.
+function abrirPainelAula(h){
+  const t = turmaAtual;
+  abrirModal("Aula dada", h.titulo, `
+    <div class="ctx-aula">${identTexto(t)} · ${h.dia || ""} ${h.data}</div>
+    <div class="pa-corpo" id="painel-aula-corpo"></div>
+  `);
+  pintarPainelHist(h, document.getElementById("painel-aula-corpo"));
+}
+
 function pintarPainelHist(h, box){
+  if (!box) return;
   const t = turmaAtual;
   const pres = estado(PRESENCA, h.id);
   const eng  = estado(ENGAJAMENTO, h.id);
@@ -1782,8 +1790,6 @@ function pintarPainelHist(h, box){
   const abertas = Array.from(box.querySelectorAll(".exp.aberta")).map(e => e.dataset.exp);
 
   box.innerHTML = `
-    <div class="card-kicker">${identTexto(t)}</div>
-    <div class="painel-aula">${h.titulo} — ${h.dia ? h.dia + " " : ""}${h.data}</div>
     ${linhaExp("pres-"+h.id,    "Presença",    marcados ? `${nPres}/${t.alunos.length}` : "marcar", presLinhas)}
     ${linhaExp("trilhas-"+h.id, "Trilhas",     `${concluiram}/${t.alunos.length}`, trilhaLinhas)}
     ${linhaExp("eng-"+h.id,     "Engajamento", medEng ? medEng + "★" : "avaliar", engLinhas)}
@@ -1809,22 +1815,6 @@ function pintarPainelHist(h, box){
       pintarPainelHist(h, box);
     };
   });
-}
-
-
-
-// ══════════════════════════════════════════════════════════
-//  Trilha & performance
-// ══════════════════════════════════════════════════════════
-function notaDe(status){
-  const feitas = status.filter(s => s !== "pend");
-  if (!feitas.length) return null;
-  const acertos = status.filter(s => s === "ok").length;
-  return Math.round((acertos / status.length) * 100);
-}
-function classeNota(n){
-  if (n === null) return "";
-  return n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
 }
 
 // ══════════════════════════════════════════════════════════

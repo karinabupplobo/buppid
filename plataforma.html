@@ -292,16 +292,6 @@
   .trilha-linha .tl-bolas{ display: flex; gap: 4px; margin: 6px 0 3px; flex-wrap: wrap; }
   .trilha-linha .tl-sub{ font-size: 11px; }
 
-  .eng-linha{
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 10px; margin-top: 9px; padding-top: 9px; border-top: 1px solid #eef0ea;
-  }
-  .eng-linha.off{ opacity: .4; }
-  .eng-rot{
-    font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--azul-intermediario);
-  }
-
   .estrelas{ display: flex; gap: 2px; }
   .estrela{
     background: none; border: none; cursor: pointer; padding: 2px;
@@ -611,45 +601,339 @@
   .bloco-aula.cancelada .ba-hora{ background: #fbe0de; color: #a3312a; }
   .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
 
-  /* ===== Fechar o dia: blocos por aula ===== */
+  /* ===== Fechar o dia ===== */
   .bloco-aula{
     background: var(--branco); border: 1px solid var(--borda);
-    border-radius: 14px; padding: 16px; margin-bottom: 14px;
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
   }
   .bloco-aula.ok{ border-color: #b6d7ac; }
-  .ba-cab{
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--borda);
+
+  .ba-cab{ padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--borda); }
+  .ba-cab .ident{ margin-bottom: 7px; }
+  .ba-linha{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .ba-aula{
+    font-size: 17px; font-weight: 800; color: var(--texto);
+    letter-spacing: -0.02em; min-width: 0;
   }
-  .ba-esq{ display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .ba-hora{
-    font-size: 12.5px; font-weight: 800; letter-spacing: .04em;
-    color: var(--teal-escuro); background: var(--amarelo-neon);
-    padding: 5px 9px; border-radius: 7px; flex-shrink: 0; white-space: nowrap;
-  }
-  .ba-turma{ font-size: 14.5px; font-weight: 800; color: var(--texto); letter-spacing: -0.01em; }
-  .ba-aula{ font-size: 12.5px; color: var(--cinza-texto); }
   .ba-status{
     font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--cinza-texto); background: #f2f4ee; padding: 5px 9px; border-radius: 999px;
-    flex-shrink: 0;
+    color: var(--cinza-texto); background: #f2f4ee; padding: 5px 10px; border-radius: 999px;
+    flex-shrink: 0; white-space: nowrap;
   }
   .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
-  .ba-alunos .presenca-item{ background: #fafbf7; border-color: transparent; }
+
+  /* item de aluno */
+  .presenca-item{
+    background: #fafbf7; border: 1px solid transparent;
+    border-radius: 11px; padding: 13px 14px; margin-bottom: 9px;
+  }
+  .presenca-item:last-child{ margin-bottom: 0; }
+  .presenca-item.marcado{ background: var(--branco); border-color: var(--borda); }
+
+  .pi-nome{
+    font-size: 14.5px; font-weight: 700; color: var(--texto);
+    letter-spacing: -0.01em; margin-bottom: 11px;
+  }
+  .pi-campos{ display: flex; flex-direction: column; gap: 9px; }
+  .pi-campo{
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .pi-campo.off{ opacity: .35; }
+  .pi-rot{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--azul-intermediario);
+  }
+
+  .toggle{ display: flex; gap: 6px; }
+  .toggle button{
+    border: 1.5px solid var(--borda); background: var(--branco); border-radius: 8px;
+    padding: 7px 13px; font-family: inherit; font-size: 12px; font-weight: 700;
+    cursor: pointer; color: var(--cinza-texto); transition: all .13s;
+  }
+  .toggle button:hover{ border-color: var(--azul-intermediario); }
+  .toggle button.on-p{ background: #dff0d8; border-color: #b6d7ac; color: #3f6b45; }
+  .toggle button.on-a{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
+
+  .nota-toggle{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario);
+    padding: 11px 0 0; margin-top: 11px; border-top: 1px solid #eef0ea;
+    display: flex; align-items: center; gap: 6px; width: 100%;
+  }
+  .nota-toggle:hover{ color: var(--teal-escuro); }
+  .nota-toggle .dot-nota{
+    width: 6px; height: 6px; border-radius: 50%; background: var(--amarelo-neon);
+    box-shadow: 0 0 0 2px rgba(217,226,140,.4); display: none; flex-shrink: 0;
+  }
+  .nota-toggle.tem .dot-nota{ display: block; }
+
+  .nota-box{ display: none; margin-top: 10px; }
+  .nota-box.open{ display: block; }
+  .nota-box textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 11px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 74px; outline: none; line-height: 1.45;
+  }
+  .nota-box textarea:focus{ border-color: var(--azul-intermediario); }
+  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 6px; font-weight: 600; }
+
+  /* cancelada */
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  /* Identificação da aula: Empresa · Nível · Dia · Horário · [+] */
+  .ident{
+    display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
+    margin-bottom: 9px; font-size: 12px; min-width: 0;
+  }
+  .id-emp{
+    font-weight: 800; color: var(--teal-escuro); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .id-niv{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em; flex-shrink: 0;
+    background: var(--limao-claro); color: var(--teal-escuro);
+    padding: 2px 7px; border-radius: 999px;
+  }
+  /* identificação dentro do card de trilha */
+  .ident-tr{ margin: 2px 0 1px; font-size: 11.5px; }
+  .id-dia, .id-hora{
+    font-weight: 700; color: var(--cinza-texto); white-space: nowrap; flex-shrink: 0;
+  }
+  .id-hora{ color: var(--azul-intermediario); }
+  .id-mais{
+    flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; padding: 0;
+    border: 1px solid var(--borda); background: var(--branco);
+    color: var(--teal-escuro); font-family: inherit; font-size: 16px;
+    line-height: 1; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background .13s, border-color .13s;
+  }
+  .id-mais:hover{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); }
+  .painel-aula{
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+    margin: -4px 0 10px; letter-spacing: -0.01em;
+  }
+
+  /* ===== Trilhas ===== */
+  .trilha-cab{
+    padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .trilha-cab .ident{ margin-bottom: 3px; }
+  .tc-sub{ font-size: 11.5px; color: var(--cinza-texto); font-weight: 600; }
+
+  .trilha-item{ border-bottom: 1px solid #f2f4f0; }
+  .trilha-item:last-child{ border-bottom: none; }
+  .tr-cab-esq{ display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+  .tr-tit{ font-size: 14.5px; font-weight: 700; color: var(--texto); letter-spacing: -0.01em; }
+  .tr-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+  .trilha-item .exp-cab{ padding: 13px 0; }
+
+  .tr-aluno{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+  }
+  .tr-aluno:last-child{ margin-bottom: 0; }
+  .tr-nome{
+    display: flex; align-items: center; gap: 6px; background: none; border: none;
+    cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700;
+    color: var(--texto); padding: 0; margin-bottom: 6px;
+  }
+  .tr-nome:hover{ color: var(--azul-intermediario); }
+  .tr-bolas{ display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tr-num{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 11.5px; font-weight: 700; }
+  .tr-num .ok{ color: #3f6b45; }
+  .tr-num .er{ color: #a3312a; }
+  .tr-num .pe{ color: #9aa39f; }
+  .tr-num .nota{ margin-left: auto; font-size: 13px; }
+
+  /* itens do bloco "Precisa ser tratado" */
+  .item-trat{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+    display: flex; align-items: flex-start; gap: 9px;
+  }
+  .item-trat:last-child{ margin-bottom: 0; }
+  .item-trat .it-txt{ font-size: 13px; color: var(--texto); line-height: 1.45; }
+  .item-trat .tag-al{ flex-shrink: 0; margin-top: 1px; }
+
+  .item-trat.recado{
+    flex-direction: column; gap: 6px;
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 9px 9px 0;
+  }
+  .rec-cab{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rec-de{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); }
+  .item-trat.recado .btn-tratar{ margin-top: 2px; align-self: flex-start; }
+
+  .selo-ok{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: #e8efe3; color: #3f6b45; padding: 3px 7px; border-radius: 999px;
+  }
+  .btn-tratar{
+    margin-top: 8px; background: none; border: 1.5px solid var(--borda);
+    border-radius: 7px; padding: 6px 11px; font-family: inherit; font-size: 11.5px;
+    font-weight: 700; color: var(--azul-intermediario); cursor: pointer;
+    transition: background .13s, border-color .13s;
+  }
+  .btn-tratar:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+
+  .responder textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 70px; outline: none; line-height: 1.45;
+  }
+  .responder textarea:focus{ border-color: var(--azul-intermediario); }
+  .responder .btn{ margin-top: 9px; }
+
+  .mini.destaque{
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 8px 8px 0; padding: 11px 12px;
+  }
+  .mini.destaque span{ color: var(--texto); font-size: 13.5px; font-weight: 500; }
+
+  .mini.alerta-turma{
+    border-left: 3px solid var(--amarelo-neon); border-radius: 0 8px 8px 0;
+    background: var(--limao-claro);
+  }
+  .mini.alerta-turma span{ color: var(--texto); }
+
+  .aviso-visao{
+    font-size: 11.5px; color: var(--cinza-texto); line-height: 1.5;
+    border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 4px;
+  }
+
+  /* ===== Ações da aula: Iniciar / Cancelar ===== */
+  .acoes-aula{ display: flex; gap: 8px; margin-top: 14px; }
+  .acoes-aula .btn{ margin-top: 0; }
+  .acoes-aula .btn:first-child{ flex: 1; }
+  .btn.cancelar{
+    background: transparent; color: #a3312a; border: 1.5px solid #eab5b1;
+    flex-shrink: 0; width: auto; padding: 12px 16px;
+  }
+  .btn.cancelar:hover{ background: #fbe0de; color: #a3312a; }
+
+  .pill.cancelada{ background: #fbe0de; color: #a3312a; }
+
+  .cancel-aviso{
+    background: #fbe0de; border-radius: 10px; padding: 11px 13px; margin-top: 14px;
+  }
+  .cancel-aviso .ct{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: #a3312a; margin-bottom: 2px;
+  }
+  .cancel-aviso .cm{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  .ctx-aula{
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .pa-corpo{ margin-bottom: 18px; }
+  .pa-corpo .card-kicker{ display: none; }
+
+  .motivos{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .mot{
+    border: 1.5px solid var(--borda); background: var(--branco); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--texto);
+    padding: 8px 12px; border-radius: 8px; transition: all .13s;
+  }
+  .mot:hover{ border-color: var(--azul-intermediario); }
+  .mot.on{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); font-weight: 700; }
+
+  .acoes-modal{ display: flex; gap: 8px; }
+  .acoes-modal .btn{ margin-top: 0; }
+
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .bloco-aula.cancelada .ba-hora{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  /* ===== Fechar o dia ===== */
+  .bloco-aula{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  }
+  .bloco-aula.ok{ border-color: #b6d7ac; }
+
+  .ba-cab{ padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--borda); }
+  .ba-cab .ident{ margin-bottom: 7px; }
+  .ba-linha{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .ba-aula{
+    font-size: 17px; font-weight: 800; color: var(--texto);
+    letter-spacing: -0.02em; min-width: 0;
+  }
+  .ba-status{
+    font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--cinza-texto); background: #f2f4ee; padding: 5px 10px; border-radius: 999px;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
+
+  /* item de aluno */
+  .presenca-item{
+    background: #fafbf7; border: 1px solid transparent;
+    border-radius: 11px; padding: 13px 14px; margin-bottom: 9px;
+  }
+  .presenca-item:last-child{ margin-bottom: 0; }
+  .presenca-item.marcado{ background: var(--branco); border-color: var(--borda); }
+
+  .pi-nome{
+    font-size: 14.5px; font-weight: 700; color: var(--texto);
+    letter-spacing: -0.01em; margin-bottom: 11px;
+  }
+  .pi-campos{ display: flex; flex-direction: column; gap: 9px; }
+  .pi-campo{
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .pi-campo.off{ opacity: .35; }
+  .pi-rot{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--azul-intermediario);
+  }
+
+  .toggle{ display: flex; gap: 6px; }
+  .toggle button{
+    border: 1.5px solid var(--borda); background: var(--branco); border-radius: 8px;
+    padding: 7px 13px; font-family: inherit; font-size: 12px; font-weight: 700;
+    cursor: pointer; color: var(--cinza-texto); transition: all .13s;
+  }
+  .toggle button:hover{ border-color: var(--azul-intermediario); }
+  .toggle button.on-p{ background: #dff0d8; border-color: #b6d7ac; color: #3f6b45; }
+  .toggle button.on-a{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
+
+  .nota-toggle{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario);
+    padding: 11px 0 0; margin-top: 11px; border-top: 1px solid #eef0ea;
+    display: flex; align-items: center; gap: 6px; width: 100%;
+  }
+  .nota-toggle:hover{ color: var(--teal-escuro); }
+  .nota-toggle .dot-nota{
+    width: 6px; height: 6px; border-radius: 50%; background: var(--amarelo-neon);
+    box-shadow: 0 0 0 2px rgba(217,226,140,.4); display: none; flex-shrink: 0;
+  }
+  .nota-toggle.tem .dot-nota{ display: block; }
+
+  .nota-box{ display: none; margin-top: 10px; }
+  .nota-box.open{ display: block; }
+  .nota-box textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 11px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 74px; outline: none; line-height: 1.45;
+  }
+  .nota-box textarea:focus{ border-color: var(--azul-intermediario); }
+  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 6px; font-weight: 600; }
+
+  /* cancelada */
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
 
   /* ===== Presença + anotações ===== */
-  .privado{
-    background: var(--limao-claro); border: 1px solid rgba(60,110,120,0.25);
-    border-radius: 10px; padding: 11px 14px; margin-bottom: 14px;
-    font-size: 12px; line-height: 1.5; color: #2a3330; font-weight: 500;
-  }
-  .privado b{ display: block; color: var(--azul-intermediario); font-weight: 800; margin-bottom: 2px; }
 
   .presenca-item{
     background: var(--branco); border: 1px solid var(--borda);
     border-radius: 12px; padding: 14px 16px; margin-bottom: 9px;
   }
-  .presenca-topo{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .presenca-item .nome{ font-size: 14.5px; font-weight: 600; color: var(--texto); }
   .toggle{ display: flex; gap: 6px; }
   .toggle button{
@@ -2016,16 +2300,18 @@ function renderPresenca(){
     bloco.className = "bloco-aula" + (cancelada ? " cancelada" : completo ? " ok" : "");
     bloco.innerHTML = `
       <div class="ba-cab">
-        <div class="ba-esq">
-          <span class="ba-hora">${aula.dia ? aula.dia + " " : ""}${aula.hora}</span>
-          <div>
-            <div class="ba-turma">${turma.empresa} · ${turma.nivel}</div>
-            <div class="ba-aula">${aula.titulo}</div>
-          </div>
+        <div class="ident">
+          <span class="id-emp">${turma.empresa}</span>
+          <span class="id-niv">${turma.nivel}</span>
+          <span class="id-dia">${aula.dia || ""}</span>
+          <span class="id-hora">${aula.hora}</span>
         </div>
-        <span class="ba-status">${
-          cancelada ? "cancelada" : completo ? "fechada" : `${marcados}/${turma.alunos.length}`
-        }</span>
+        <div class="ba-linha">
+          <span class="ba-aula">${aula.titulo}</span>
+          <span class="ba-status">${
+            cancelada ? "cancelada" : completo ? "fechada" : `${marcados} de ${turma.alunos.length}`
+          }</span>
+        </div>
       </div>
       ${cancelada
         ? `<div class="ba-cancel">${cancelada.motivo}${cancelada.obs ? " — " + cancelada.obs : ""}</div>`
@@ -2041,20 +2327,24 @@ function renderPresenca(){
       const nEng  = eng[al.id] || 0;
       const d = document.createElement("div");
       d.className = "presenca-item";
+      d.className = "presenca-item" + (atual ? " marcado" : "");
       d.innerHTML = `
-        <div class="presenca-topo">
-          <span class="nome">${al.nome}</span>
-          <span class="toggle">
-            <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
-            <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
-          </span>
-        </div>
-        <div class="eng-linha${atual === "a" ? " off" : ""}">
-          <span class="eng-rot">Engajamento</span>
-          <span class="estrelas">
-            ${[1,2,3].map(i =>
-              `<button class="estrela ${i<=nEng?"on":""}" data-eng="${i}">★</button>`).join("")}
-          </span>
+        <div class="pi-nome">${al.nome}</div>
+        <div class="pi-campos">
+          <div class="pi-campo">
+            <span class="pi-rot">Presença</span>
+            <span class="toggle">
+              <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
+              <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
+            </span>
+          </div>
+          <div class="pi-campo${atual === "a" ? " off" : ""}">
+            <span class="pi-rot">Engajamento</span>
+            <span class="estrelas">
+              ${[1,2,3].map(i =>
+                `<button class="estrela ${i<=nEng?"on":""}" data-eng="${i}">★</button>`).join("")}
+            </span>
+          </div>
         </div>
         <button class="nota-toggle${nota ? " tem" : ""}">
           <span class="dot-nota"></span>

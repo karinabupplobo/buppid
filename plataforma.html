@@ -8,11 +8,12 @@
 
   Estrutura da tela do Professor (fechada em conversa 20/08):
     1. Seletor de turma        — só as turmas do professor logado
-    2. Hoje                    — pode haver VÁRIAS aulas no mesmo dia. Ao lado de
-                                 cada aula, PONTOS DE ATENÇÃO: objetivo da aula,
-                                 vocabulário essencial, ponto gramatical e a lista
-                                 de alunos que precisam de atenção. O resumo da
-                                 turma virou pop-up, aberto pelo chip no topo.
+    2. Hoje                    — pode haver VÁRIAS aulas no mesmo dia. O card traz
+                                 só a aula; clicar em "Iniciar" abre o pop-up de
+                                 PONTOS DE ATENÇÃO (objetivo, vocabulário, ponto
+                                 gramatical, atenção à turma e a alunos) e só de
+                                 lá se vai para o material. O "+" ao lado do
+                                 horário abre os detalhes da turma.
     3. Trilha & performance    — liberada automaticamente, prof só visualiza
                                  (dois modos: geral da turma / por aluno)
     4. Fim da aula             — fecha o DIA INTEIRO: todas as aulas de todas as
@@ -325,8 +326,12 @@
   .lado-pontos{ padding: 18px; border-top: 1px solid var(--borda); background: #fcfcfa; }
 
   /* aula do dia / histórico */
-  .aula-topo{ display: flex; align-items: center; margin-bottom: 8px; }
-  .aula-topo .pill{ white-space: nowrap; margin-bottom: 0; }
+  .aula-topo{
+    display: flex; align-items: center; gap: 9px; margin-bottom: 10px;
+    flex-wrap: wrap; min-width: 0;
+  }
+  .aula-topo .pill{ white-space: nowrap; margin-bottom: 0; flex-shrink: 0; }
+  .aula-topo .ident{ margin-bottom: 0; }
 
   /* ===== Chip do resumo da turma ===== */
 
@@ -468,8 +473,8 @@
   }
   .id-hora{ color: var(--azul-intermediario); }
   .id-mais{
-    margin-left: auto; flex-shrink: 0;
-    width: 24px; height: 24px; border-radius: 50%; padding: 0;
+    flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; padding: 0;
     border: 1px solid var(--borda); background: var(--branco);
     color: var(--teal-escuro); font-family: inherit; font-size: 16px;
     line-height: 1; cursor: pointer; display: flex; align-items: center;
@@ -581,6 +586,13 @@
     color: #a3312a; margin-bottom: 2px;
   }
   .cancel-aviso .cm{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  .ctx-aula{
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .pa-corpo{ margin-bottom: 18px; }
+  .pa-corpo .card-kicker{ display: none; }
 
   .motivos{ display: flex; flex-wrap: wrap; gap: 6px; }
   .mot{
@@ -1456,19 +1468,16 @@ function renderAula(){
     const par = document.createElement("div");
     par.className = "par";
     par.innerHTML = `
-      <div class="card unico">
-        <div class="lado-aula">
-          <div class="aula-topo">
-            ${CANCELADAS[a.id]
-              ? '<span class="pill cancelada">Cancelada</span>'
-              : '<span class="pill hoje">Aula de hoje</span>'}
-          </div>
+      <div class="card">
+        <div class="aula-topo">
+          ${CANCELADAS[a.id]
+            ? '<span class="pill cancelada">Cancelada</span>'
+            : '<span class="pill hoje">Aula de hoje</span>'}
           ${htmlIdent(turmaAtual, a.dia, a.hora)}
-          <h2>${a.titulo}</h2>
-          <p>${a.resumo}</p>
-          ${htmlAcoesAula(a)}
         </div>
-        <div class="lado-pontos">${htmlPontosAtencao(a)}</div>
+        <h2>${a.titulo}</h2>
+        <p>${a.resumo}</p>
+        ${htmlAcoesAula(a)}
       </div>
     `;
     box.appendChild(par);
@@ -1503,16 +1512,37 @@ function htmlAcoesAula(a){
   }
   return `
     <div class="acoes-aula">
-      <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Iniciar →</a>
+      <button class="btn" data-iniciar>Iniciar →</button>
       <button class="btn cancelar" data-cancelar>Cancelar</button>
     </div>`;
 }
 
 function ligarAcoesAula(escopo, a){
+  const bi = escopo.querySelector("[data-iniciar]");
+  if (bi) bi.onclick = () => abrirPontosAtencao(a);
   const bc = escopo.querySelector("[data-cancelar]");
   if (bc) bc.onclick = () => abrirCancelar(a);
   const br = escopo.querySelector("[data-reativar]");
   if (br) br.onclick = () => { delete CANCELADAS[a.id]; renderAula(); renderPresenca(); };
+}
+
+// Pontos de atenção deixaram de ficar na tela de Hoje: agora aparecem como
+// passo obrigatório entre clicar em "Iniciar" e abrir o material da aula.
+// O professor lê o que precisa observar antes de entrar na aula.
+function abrirPontosAtencao(a){
+  abrirModal("Antes de começar", a.titulo, `
+    <div class="ctx-aula">${identTexto(turmaAtual)} · ${a.dia || ""} ${a.hora}</div>
+    <div class="pa-corpo">${htmlPontosAtencao(a)}</div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="pa-voltar">Voltar</button>
+      <a class="btn" id="pa-ir" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Ir para a aula →</a>
+    </div>
+  `);
+  const corpo = document.getElementById("modal-corpo");
+  ligarExp(corpo);
+  ligarNomes(corpo);
+  document.getElementById("pa-voltar").onclick = fecharModal;
+  document.getElementById("pa-ir").onclick = () => setTimeout(fecharModal, 60);
 }
 
 function abrirCancelar(a){

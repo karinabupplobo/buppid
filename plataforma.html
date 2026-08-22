@@ -7,7 +7,8 @@
   visualização for aprovada (decisão da Karina, 20/08/2026).
 
   Estrutura da tela do Professor (fechada em conversa 20/08):
-    1. Seletor de turma        — só as turmas do professor logado
+    1. Seletor de EMPRESA      — as telas juntam todas as turmas daquela empresa
+                                 (mudou em 21/08: antes era seletor de turma)
     2. Hoje                    — pode haver VÁRIAS aulas no mesmo dia. O card traz
                                  só a aula; clicar em "Iniciar" abre o pop-up de
                                  PONTOS DE ATENÇÃO (objetivo, vocabulário, ponto
@@ -467,11 +468,17 @@
     font-weight: 800; color: var(--teal-escuro); white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis;
   }
+  .id-turma{
+    font-weight: 600; color: var(--cinza-texto); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
   .id-niv{
     font-size: 10px; font-weight: 800; letter-spacing: .06em; flex-shrink: 0;
     background: var(--limao-claro); color: var(--teal-escuro);
     padding: 2px 7px; border-radius: 999px;
   }
+  /* identificação dentro do card de trilha */
+  .ident-tr{ margin: 2px 0 1px; font-size: 11.5px; }
   .id-dia, .id-hora{
     font-weight: 700; color: var(--cinza-texto); white-space: nowrap; flex-shrink: 0;
   }
@@ -812,12 +819,7 @@
 
   <!-- ============ PRESENÇA ============ -->
   <section class="pane" id="pane-presenca">
-    <div class="section-title">Fechar o dia — todas as turmas</div>
-    <div class="privado">
-      <b>As anotações por aluno são internas.</b>
-      Ficam visíveis só para a Bupp, na dash interna. O aluno não vê, o RH do
-      cliente não vê.
-    </div>
+    <div class="section-title" id="fim-titulo"></div>
     <div id="fim-seletor"></div>
     <div id="presenca-lista"></div>
     <button class="btn lime" id="btn-salvar-presenca">Salvar presença e anotações</button>
@@ -919,6 +921,40 @@ const TURMAS = [
     ]
   },
   {
+    id: "t4",
+    nome: "Sertrading — Diretoria",
+    tipo: "corporativa",
+    nivel: "B2",
+    nivelDesc: "Intermediário alto — argumenta e sustenta posição em reunião, ainda trava em registro formal.",
+    empresa: "Sertrading",
+    empresaDesc: "Trading de comércio exterior, São Paulo/SP. Contrato fechado com RH em jun/2026.",
+    modulo: "Módulo 2 — Reuniões",
+    objetivoTurma: "Em 6 meses, a diretoria conduz reunião de resultado com a matriz em inglês, sem material traduzido.",
+    alunos: [
+      { id:"d1", nome:"Ricardo Menezes", cargo:"Diretor Comercial", historico:[] },
+      { id:"d2", nome:"Patrícia Vlach",  cargo:"Diretora de Operações",
+        historico:[
+          { data:"20/08", tipo:"rh", autor:"RH — Sertrading", texto:"Patrícia viaja para a matriz em outubro. Reforçar reunião de resultado.", tratado:false }
+        ] }
+    ],
+    licoes: ["L1","L2","L3","L4"],
+    progresso: { d1:["ok","ok","ok","err"], d2:["ok","err","err","pend"] },
+    aulasHoje: [
+      { id:"h5", hora:"10:00", dia:"Qui", titulo:"Reporting Results", data:"Hoje, 20/08",
+        resumo:"Apresentar número de resultado e explicar variação para a matriz.",
+        objetivo:"O aluno apresenta o resultado do trimestre e explica a variação sem ler o slide.",
+        vocab:["revenue","forecast","gap","to break down","quarter"],
+        gramatica:"Comparativos para variação: <em>Revenue was 12% higher than forecast.</em>" }
+    ],
+    historico: [
+      { id:"p7", data:"13/08", dia:"Qui", titulo:"Running a Meeting",
+        resumo:"Abrir, conduzir e encerrar reunião com agenda.",
+        progresso: { d1:["ok","ok","ok"], d2:["ok","err","err"] },
+        licoes: ["L1","L2","L3"],
+        temas:  ["Vocabulário","Conectivos","Conectivos"] }
+    ]
+  },
+  {
     id: "t2",
     nome: "Tirolez — Liderança",
     tipo: "corporativa",
@@ -1007,6 +1043,19 @@ const CANCELADAS   = {};
 function estado(store, aulaId){ return (store[aulaId] = store[aulaId] || {}); }
 
 
+// A navegação passou a ser por EMPRESA (21/08): o seletor lista empresas, e
+// todas as telas juntam as turmas daquela empresa. `turmaAtual` continua
+// existindo para o que é específico de uma turma, mas é derivado da aula.
+function empresas(){
+  const m = new Map();
+  TURMAS.forEach(t => {
+    if (!m.has(t.empresa)) m.set(t.empresa, { nome:t.empresa, desc:t.empresaDesc, turmas:[] });
+    m.get(t.empresa).turmas.push(t);
+  });
+  return [...m.values()];
+}
+let empresaAtual = empresas()[0];
+function turmasDaEmpresa(){ return empresaAtual.turmas; }
 let turmaAtual = TURMAS[0];
 
 // ══════════════════════════════════════════════════════════
@@ -1018,35 +1067,31 @@ function metaTurma(t){
 }
 
 function renderTurmas(){
-  document.getElementById("dd-nome").textContent = turmaAtual.nome;
-  document.getElementById("dd-sub").textContent  = metaTurma(turmaAtual);
+  const e = empresaAtual;
+  const nAlunos = e.turmas.reduce((n,t) => n + t.alunos.length, 0);
+  document.getElementById("dd-nome").textContent = e.nome;
+  document.getElementById("dd-sub").textContent =
+    `${e.turmas.length} turma${e.turmas.length>1?"s":""} · ${nAlunos} aluno${nAlunos>1?"s":""}`;
 
   const panel = document.getElementById("dd-panel");
   panel.innerHTML = "";
+  const g = document.createElement("div");
+  g.className = "dd-group";
+  g.textContent = "Empresas";
+  panel.appendChild(g);
 
-  const grupos = [
-    ["Turmas",             TURMAS.filter(t => t.tipo === "corporativa")],
-    ["Alunos particulares", TURMAS.filter(t => t.tipo === "particular")]
-  ];
-
-  grupos.forEach(([label, lista]) => {
-    if (!lista.length) return;
-    const g = document.createElement("div");
-    g.className = "dd-group";
-    g.textContent = label;
-    panel.appendChild(g);
-
-    lista.forEach(t => {
-      const b = document.createElement("button");
-      b.className = "dd-opt" + (t.id === turmaAtual.id ? " sel" : "");
-      b.innerHTML = `<span class="t">${t.nome}</span><span class="m">${t.nivel} · ${t.alunos.length}</span>`;
-      b.onclick = () => {
-        turmaAtual = t;
-        document.getElementById("dd-turma").classList.remove("open");
-        renderTudo();
-      };
-      panel.appendChild(b);
-    });
+  empresas().forEach(emp => {
+    const n = emp.turmas.reduce((x,t) => x + t.alunos.length, 0);
+    const b = document.createElement("button");
+    b.className = "dd-opt" + (emp.nome === empresaAtual.nome ? " sel" : "");
+    b.innerHTML = `<span class="t">${emp.nome}</span><span class="m">${emp.turmas.length} turma${emp.turmas.length>1?"s":""} · ${n}</span>`;
+    b.onclick = () => {
+      empresaAtual = emp;
+      turmaAtual = emp.turmas[0];
+      document.getElementById("dd-turma").classList.remove("open");
+      renderTudo();
+    };
+    panel.appendChild(b);
   });
 }
 
@@ -1066,6 +1111,12 @@ document.addEventListener("keydown", e => {
 // ══════════════════════════════════════════════════════════
 // Uma versão da aula = turma + aula + data. A mesma aula dada para duas
 // turmas gera dois conjuntos de anotações independentes.
+function urlAulaT(t, modo, titulo, data){
+  return `templateaula.html?modo=${modo}`
+       + `&turma=${encodeURIComponent(t.nome)}`
+       + `&aula=${encodeURIComponent(titulo)}`
+       + `&data=${encodeURIComponent(data)}`;
+}
 function urlAula(modo, titulo, data){
   return `templateaula.html?modo=${modo}`
        + `&turma=${encodeURIComponent(turmaAtual.nome)}`
@@ -1095,10 +1146,10 @@ document.getElementById("modal").onclick = e => {
 };
 document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
 
-function abrirResumoTurma(){
-  const t = turmaAtual;
+function abrirResumoTurma(t){
+  t = t || turmaAtual;
   const alunos = t.alunos.map(a => {
-    const n = alertasDoAluno(a).length;
+    const n = alertasDoAluno(a, t).length;
     return `
       <button class="aluno-link" data-aluno-pop="${a.id}">
         <span class="al-nome">${a.nome}<i class="seta-r"></i></span>
@@ -1124,7 +1175,7 @@ function abrirResumoTurma(){
       ${alunos}
     </div>
   `);
-  ligarNomes(document.getElementById("modal-corpo"), true);
+  ligarNomes(document.getElementById("modal-corpo"), true, t);
 }
 
 // Ficha do aluno: histórico de interações e acompanhamento.
@@ -1136,8 +1187,8 @@ const DE_QUEM = {
   prof:   "Professor"
 };
 
-function abrirFichaAluno(idAluno, veioDaTurma){
-  const t = turmaAtual;
+function abrirFichaAluno(idAluno, veioDaTurma, turma){
+  const t = turma || turmaAtual;
   const a = t.alunos.find(x => x.id === idAluno);
   if (!a) return;
 
@@ -1197,7 +1248,7 @@ function abrirFichaAluno(idAluno, veioDaTurma){
       }).join("")
     : `<div class="mini"><span>Nenhuma aula dada ainda.</span></div>`;
 
-  const alertas = alertasDoAluno(a);
+  const alertas = alertasDoAluno(a, t);
   const recadosPend = (a.historico || [])
     .map((h, idx) => ({ ...h, idx }))
     .filter(h => !h.tratado);
@@ -1297,13 +1348,13 @@ function abrirFichaAluno(idAluno, veioDaTurma){
   `);
 
   const volt = document.getElementById("voltar-turma");
-  if (volt) volt.onclick = abrirResumoTurma;
+  if (volt) volt.onclick = () => abrirResumoTurma(t);
 
   // marcar recado como tratado
   document.querySelectorAll("[data-tratar]").forEach(b => {
     b.onclick = () => {
       a.historico[+b.dataset.tratar].tratado = true;
-      abrirFichaAluno(idAluno, veioDaTurma);   // repinta
+      abrirFichaAluno(idAluno, veioDaTurma, t);   // repinta
       renderAula();
     };
   });
@@ -1319,7 +1370,7 @@ function abrirFichaAluno(idAluno, veioDaTurma){
       data: hojeCurto(), tipo:"prof", autor:"Prof. Ana Ribeiro",
       texto: txt, tratado: true    // recado do professor já nasce lido pela gestão
     });
-    abrirFichaAluno(idAluno, veioDaTurma);
+    abrirFichaAluno(idAluno, veioDaTurma, t);
     renderAula();
   };
 }
@@ -1342,8 +1393,8 @@ const LIM_ERRO_TEMA   = 0.40;
 const MIN_LICOES_TEMA = 2;     // abaixo disso, um erro isolado viraria alerta
 const LIM_ENGAJAMENTO = 1.5;
 
-function alertasDoAluno(a){
-  const t = turmaAtual;
+function alertasDoAluno(a, t){
+  t = t || turmaAtual;
   const out = [];
 
   // ---- erro concentrado numa trilha ----
@@ -1404,8 +1455,8 @@ function alertasDoAluno(a){
 // ══════════════════════════════════════════════════════════
 const LIM_TURMA = 0.60;   // 60% ou mais dos alunos que fizeram
 
-function alertasDaTurma(){
-  const t = turmaAtual;
+function alertasDaTurma(t){
+  t = t || turmaAtual;
   const out = [];
 
   (t.historico || []).forEach(h => {
@@ -1449,9 +1500,10 @@ function alertasDaTurma(){
   return out;
 }
 
-function alunosComAlerta(){
-  return turmaAtual.alunos
-    .map(a => ({ aluno:a, alertas: alertasDoAluno(a) }))
+function alunosComAlerta(t){
+  t = t || turmaAtual;
+  return t.alunos
+    .map(a => ({ aluno:a, alertas: alertasDoAluno(a, t) }))
     .filter(x => x.alertas.length)
     .sort((x,y) => y.alertas[0].peso - x.alertas[0].peso);
 }
@@ -1461,15 +1513,18 @@ function alunosComAlerta(){
 // ══════════════════════════════════════════════════════════
 function renderAula(){
   const box = document.getElementById("lista-aulas-hoje");
-  const aulas = turmaAtual.aulasHoje || [];
-  box.innerHTML = `<div class="section-title">Hoje · ${aulas.length} aula${aulas.length>1?"s":""}</div>`;
+  const itens = [];
+  turmasDaEmpresa().forEach(t => (t.aulasHoje || []).forEach(a => itens.push({ t, a })));
+  itens.sort((x,y) => x.a.hora.localeCompare(y.a.hora));
 
-  if (!aulas.length){
-    box.innerHTML += `<div class="card"><p>Nenhuma aula marcada para hoje nesta turma.</p></div>`;
+  box.innerHTML = `<div class="section-title">${itens.length} aula${itens.length!==1?"s":""}</div>`;
+
+  if (!itens.length){
+    box.innerHTML += `<div class="card"><p>Nenhuma aula marcada para hoje nesta empresa.</p></div>`;
     return;
   }
 
-  aulas.forEach(a => {
+  itens.forEach(({t, a}) => {
     const par = document.createElement("div");
     par.className = "par";
     par.innerHTML = `
@@ -1478,7 +1533,7 @@ function renderAula(){
           ${CANCELADAS[a.id]
             ? '<span class="pill cancelada">Cancelada</span>'
             : '<span class="pill hoje">Aula de hoje</span>'}
-          ${htmlIdent(turmaAtual, a.dia, a.hora)}
+          ${htmlIdent(t, a.dia, a.hora)}
         </div>
         <h2>${a.titulo}</h2>
         <p>${a.resumo}</p>
@@ -1486,12 +1541,41 @@ function renderAula(){
       </div>
     `;
     box.appendChild(par);
-    ligarExp(par);
-    ligarNomes(par);
-    const chip = par.querySelector("[data-resumo-turma]");
-    if (chip) chip.onclick = abrirResumoTurma;
-    ligarAcoesAula(par, a);
+    const bm = par.querySelector("[data-resumo-turma]");
+    if (bm) bm.onclick = () => abrirResumoTurma(t);
+    ligarAcoesAula(par, a, t);
   });
+}
+
+// Identificação completa de uma aula: empresa · turma · nível.
+// Sem isso, um card de aula solto não diz de quem é — e o nome da turma
+// nem sempre contém o nome da empresa (ex.: "Particular — Marcos B.").
+function partesIdent(t){
+  // O nome da turma às vezes já começa com a empresa ("Sertrading — Comex"),
+  // às vezes não ("Particular — Marcos B."). Evita repetir.
+  const nome = t.nome;
+  const jaTem = nome.toLowerCase().startsWith(t.empresa.toLowerCase());
+  const resto = jaTem ? nome.slice(t.empresa.length).replace(/^\s*[—\-·]\s*/, "") : nome;
+  return { empresa: t.empresa, turma: resto, nivel: t.nivel };
+}
+
+function identTexto(t){
+  const p = partesIdent(t);
+  return `${p.empresa} · ${p.turma} · ${p.nivel}`;
+}
+
+// Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
+// os detalhes da turma. O nome da turma sai daqui — ele está dentro do "+".
+function htmlIdent(t, dia, hora){
+  const p = partesIdent(t);
+  return `<div class="ident">
+    <span class="id-emp">${p.empresa}</span>
+    <span class="id-turma">${p.turma}</span>
+    <span class="id-niv">${p.nivel}</span>
+    ${dia  ? `<span class="id-dia">${dia}</span>`   : ""}
+    ${hora ? `<span class="id-hora">${hora}</span>` : ""}
+    <button class="id-mais" data-resumo-turma title="Detalhes da turma" aria-label="Detalhes da turma">+</button>
+  </div>`;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1522,11 +1606,11 @@ function htmlAcoesAula(a){
     </div>`;
 }
 
-function ligarAcoesAula(escopo, a){
+function ligarAcoesAula(escopo, a, t){
   const bi = escopo.querySelector("[data-iniciar]");
-  if (bi) bi.onclick = () => abrirPontosAtencao(a);
+  if (bi) bi.onclick = () => abrirPontosAtencao(a, t);
   const bc = escopo.querySelector("[data-cancelar]");
-  if (bc) bc.onclick = () => abrirCancelar(a);
+  if (bc) bc.onclick = () => abrirCancelar(a, t);
   const br = escopo.querySelector("[data-reativar]");
   if (br) br.onclick = () => { delete CANCELADAS[a.id]; renderAula(); renderPresenca(); };
 }
@@ -1534,10 +1618,11 @@ function ligarAcoesAula(escopo, a){
 // Pontos de atenção deixaram de ficar na tela de Hoje: agora aparecem como
 // passo obrigatório entre clicar em "Iniciar" e abrir o material da aula.
 // O professor lê o que precisa observar antes de entrar na aula.
-function abrirPontosAtencao(a){
+function abrirPontosAtencao(a, t){
+  t = t || turmaAtual;
   abrirModal("Antes de começar", a.titulo, `
-    <div class="ctx-aula">${identTexto(turmaAtual)} · ${a.dia || ""} ${a.hora}</div>
-    <div class="pa-corpo">${htmlPontosAtencao(a)}</div>
+    <div class="ctx-aula">${identTexto(t)} · ${a.dia || ""} ${a.hora}</div>
+    <div class="pa-corpo">${htmlPontosAtencao(a, t)}</div>
     <div class="acoes-modal">
       <button class="btn ghost" id="pa-voltar">Voltar</button>
       <a class="btn" id="pa-ir" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Ir para a aula →</a>
@@ -1545,15 +1630,16 @@ function abrirPontosAtencao(a){
   `);
   const corpo = document.getElementById("modal-corpo");
   ligarExp(corpo);
-  ligarNomes(corpo);
+  ligarNomes(corpo, false, t);
   document.getElementById("pa-voltar").onclick = fecharModal;
   document.getElementById("pa-ir").onclick = () => setTimeout(fecharModal, 60);
 }
 
-function abrirCancelar(a){
+function abrirCancelar(a, t){
+  t = t || turmaAtual;
   abrirModal("Cancelar aula", a.titulo, `
     <div class="bloco">
-      <div class="bt">${turmaAtual.nome} · ${a.dia ? a.dia + " " : ""}${a.hora}</div>
+      <div class="bt">${t.nome} · ${a.dia ? a.dia + " " : ""}${a.hora}</div>
       <div class="mini"><span>A aula fica registrada como cancelada e sai da lista de
       presença do dia. Dá para reativar depois.</span></div>
     </div>
@@ -1600,32 +1686,8 @@ function abrirCancelar(a){
 // Identificação completa de uma aula: empresa · turma · nível.
 // Sem isso, um card de aula solto não diz de quem é — e o nome da turma
 // nem sempre contém o nome da empresa (ex.: "Particular — Marcos B.").
-function partesIdent(t){
-  // O nome da turma às vezes já começa com a empresa ("Sertrading — Comex"),
-  // às vezes não ("Particular — Marcos B."). Evita repetir.
-  const nome = t.nome;
-  const jaTem = nome.toLowerCase().startsWith(t.empresa.toLowerCase());
-  const resto = jaTem ? nome.slice(t.empresa.length).replace(/^\s*[—\-·]\s*/, "") : nome;
-  return { empresa: t.empresa, turma: resto, nivel: t.nivel };
-}
-
-function identTexto(t){
-  const p = partesIdent(t);
-  return `${p.empresa} · ${p.turma} · ${p.nivel}`;
-}
-
 // Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
 // os detalhes da turma. O nome da turma sai daqui — ele está dentro do "+".
-function htmlIdent(t, dia, hora, aulaHist){
-  const p = partesIdent(t);
-  return `<div class="ident">
-    <span class="id-emp">${p.empresa}</span>
-    <span class="id-niv">${p.nivel}</span>
-    ${dia  ? `<span class="id-dia">${dia}</span>`   : ""}
-    ${hora ? `<span class="id-hora">${hora}</span>` : ""}
-    <button class="id-mais" data-resumo-turma title="Detalhes da turma" aria-label="Detalhes da turma">+</button>
-  </div>`;
-}
 
 function linhaExp(id, rotulo, valor, conteudo){
   return `
@@ -1644,9 +1706,12 @@ function ligarExp(escopo){
   });
 }
 
-function ligarNomes(escopo, veioDaTurma){
+function ligarNomes(escopo, veioDaTurma, t){
   escopo.querySelectorAll("[data-aluno-pop]").forEach(b => {
-    b.onclick = e => { e.stopPropagation(); abrirFichaAluno(b.dataset.alunoPop, veioDaTurma); };
+    const turma = b.dataset.turma
+      ? TURMAS.find(x => x.id === b.dataset.turma)
+      : t;
+    b.onclick = e => { e.stopPropagation(); abrirFichaAluno(b.dataset.alunoPop, veioDaTurma, turma); };
   });
 }
 
@@ -1658,8 +1723,9 @@ const ROTULO_ALERTA = {
   msg:         { rot:"Recado pendente", cor:"lavanda"  }
 };
 
-function htmlPontosAtencao(aula){
-  const alertados = alunosComAlerta();
+function htmlPontosAtencao(aula, t){
+  t = t || turmaAtual;
+  const alertados = alunosComAlerta(t);
 
   const vocab = (aula.vocab || []).map(v => `<span class="tagv">${v}</span>`).join("");
 
@@ -1674,14 +1740,14 @@ function htmlPontosAtencao(aula){
           return `<span class="tag-al ${r.cor}">${r.rot}</span>`;
         }).join("");
         return `
-          <button class="aluno-alerta" data-aluno-pop="${aluno.id}">
+          <button class="aluno-alerta" data-aluno-pop="${aluno.id}" data-turma="${t.id}">
             <span class="an">${aluno.nome}<i class="seta-r"></i></span>
             <span class="ats">${tags}</span>
           </button>`;
       }).join("")
     : `<div class="mini"><span>Nenhum aluno precisa de atenção especial nesta turma agora.</span></div>`;
 
-  const daTurma = alertasDaTurma();
+  const daTurma = alertasDaTurma(t);
   const turmaHtml = daTurma.length
     ? daTurma.map(al => `<div class="mini alerta-turma"><span>${al.texto}</span></div>`).join("")
     : `<div class="mini"><span>Nenhum ponto em que a turma inteira esteja travando.</span></div>`;
@@ -1704,49 +1770,53 @@ function renderResumo(){ /* substituído pelos Pontos de atenção */ }
 // ══════════════════════════════════════════════════════════
 function renderHistorico(){
   const box = document.getElementById("historico-lista");
-  const lista = turmaAtual.historico || [];
-  box.innerHTML = `<div class="section-title">Aulas anteriores</div>`;
+  const itens = [];
+  turmasDaEmpresa().forEach(t => (t.historico || []).forEach(h => itens.push({ t, h })));
+  // mais recentes primeiro (data no formato dd/mm)
+  const chave = d => { const [dd,mm] = (d||"").split("/"); return (mm||"") + (dd||""); };
+  itens.sort((x,y) => chave(y.h.data).localeCompare(chave(x.h.data)));
 
-  if (!lista.length){
-    box.innerHTML += `<div class="card"><p>Nenhuma aula anterior nesta turma.</p></div>`;
+  box.innerHTML = `<div class="section-title">${itens.length} aula${itens.length!==1?"s":""} anterior${itens.length!==1?"es":""}</div>`;
+
+  if (!itens.length){
+    box.innerHTML += `<div class="card"><p>Nenhuma aula anterior nesta empresa.</p></div>`;
     return;
   }
 
-  lista.forEach(h => {
+  itens.forEach(({t, h}) => {
     const par = document.createElement("div");
     par.className = "par";
-    par.dataset.aula = h.id;
     par.innerHTML = `
       <div class="card">
         <div class="aula-topo">
           <span class="pill dada">Aula dada</span>
-          ${htmlIdent(turmaAtual, h.dia, h.data, h)}
+          ${htmlIdent(t, h.dia, h.data)}
         </div>
         <h2>${h.titulo}</h2>
         <p>${h.resumo}</p>
-        <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
+        <a class="btn" href="${urlAulaT(t, 'leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
       </div>
     `;
     const bmais = par.querySelector("[data-resumo-turma]");
-    if (bmais) bmais.onclick = () => abrirPainelAula(h);
+    if (bmais) bmais.onclick = () => abrirPainelAula(h, t);
     box.appendChild(par);
   });
 }
 
 // Presença, trilhas e engajamento de uma aula passada. Ficam dentro do "+"
 // do card, não mais num painel ao lado — o card do histórico é igual ao de Hoje.
-function abrirPainelAula(h){
+function abrirPainelAula(h, t){
   // Sem linha de contexto: empresa, nível e data já estão no card que abriu
   // este pop-up, e o cabeçalho do modal repete o nome da aula.
   abrirModal("Aula dada", h.titulo, `
     <div class="pa-corpo" id="painel-aula-corpo"></div>
   `);
-  pintarPainelHist(h, document.getElementById("painel-aula-corpo"));
+  pintarPainelHist(h, document.getElementById("painel-aula-corpo"), t);
 }
 
-function pintarPainelHist(h, box){
+function pintarPainelHist(h, box, turma){
   if (!box) return;
-  const t = turmaAtual;
+  const t = turma || turmaAtual;
   const pres = estado(PRESENCA, h.id);
   const eng  = estado(ENGAJAMENTO, h.id);
 
@@ -1809,7 +1879,7 @@ function pintarPainelHist(h, box){
     b.onclick = e => {
       e.stopPropagation();
       pres[b.closest(".toggle").dataset.aluno] = b.dataset.v;
-      pintarPainelHist(h, box);
+      pintarPainelHist(h, box, t);
     };
   });
   box.querySelectorAll(".estrela").forEach(b => {
@@ -1817,7 +1887,7 @@ function pintarPainelHist(h, box){
       e.stopPropagation();
       const id = b.dataset.aluno, n = +b.dataset.n;
       eng[id] = (eng[id] === n) ? 0 : n;
-      pintarPainelHist(h, box);
+      pintarPainelHist(h, box, t);
     };
   });
 }
@@ -1827,8 +1897,8 @@ function pintarPainelHist(h, box){
 //  Cada trilha vira uma linha com a média de acerto da turma. Ao clicar,
 //  abre a lista de alunos com os acertos e erros de cada um.
 // ══════════════════════════════════════════════════════════
-function mediaTrilha(h){
-  const t = turmaAtual;
+function mediaTrilha(h, turma){
+  const t = turma || turmaAtual;
   let total = 0, acertos = 0;
   t.alunos.forEach(a => {
     const st = (h.progresso && h.progresso[a.id]) || [];
@@ -1844,20 +1914,22 @@ function classeNota(n){
 
 function renderTrilhaGeral(){
   const box = document.getElementById("lista-trilhas");
-  const t = turmaAtual;
-  const trilhas = t.historico || [];
+  const itens = [];
+  turmasDaEmpresa().forEach(t => (t.historico || []).forEach(h => itens.push({ t, h })));
+  const chave = d => { const [dd,mm] = (d||"").split("/"); return (mm||"") + (dd||""); };
+  itens.sort((x,y) => chave(y.h.data).localeCompare(chave(x.h.data)));
 
-  box.innerHTML = `<div class="section-title">Trilhas · ${identTexto(t)}</div>`;
+  box.innerHTML = `<div class="section-title">${itens.length} trilha${itens.length!==1?"s":""}</div>`;
 
-  if (!trilhas.length){
-    box.innerHTML += `<div class="card"><p>Nenhuma trilha liberada ainda nesta turma.</p></div>`;
+  if (!itens.length){
+    box.innerHTML += `<div class="card"><p>Nenhuma trilha liberada ainda nesta empresa.</p></div>`;
     return;
   }
 
   const card = document.createElement("div");
   card.className = "card";
-  card.innerHTML = trilhas.map(h => {
-    const m = mediaTrilha(h);
+  card.innerHTML = itens.map(({t, h}) => {
+    const m = mediaTrilha(h, t);
     const fizeram = t.alunos.filter(a => {
       const st = (h.progresso && h.progresso[a.id]) || [];
       return st.some(x => x !== "pend");
@@ -1875,7 +1947,7 @@ function renderTrilhaGeral(){
           x==="ok"?"✓":x==="err"?"✕":"–"}</span>`).join("");
       return `
         <div class="tr-aluno">
-          <button class="tr-nome" data-aluno-pop="${a.id}">${a.nome}<i class="seta-r"></i></button>
+          <button class="tr-nome" data-aluno-pop="${a.id}" data-turma="${t.id}">${a.nome}<i class="seta-r"></i></button>
           <div class="tr-bolas">${bolas}</div>
           <div class="tr-num">
             <span class="ok">${acertos} certo${acertos!==1?"s":""}</span>
@@ -1886,13 +1958,20 @@ function renderTrilhaGeral(){
         </div>`;
     }).join("");
 
+    const p = partesIdent(t);
     return `
       <div class="exp trilha-item" data-exp="tr-${h.id}">
         <button class="exp-cab">
           <span class="tr-cab-esq">
             <span class="tr-tit">${h.titulo}</span>
-            <span class="tr-sub">${identTexto(t)}</span>
-            <span class="tr-sub">${h.dia ? h.dia + " " : ""}${h.data} · ${(h.licoes||[]).length} lições · ${fizeram}/${t.alunos.length} fizeram</span>
+            <span class="ident ident-tr">
+              <span class="id-emp">${p.empresa}</span>
+              <span class="id-turma">${p.turma}</span>
+              <span class="id-niv">${p.nivel}</span>
+              ${h.dia ? `<span class="id-dia">${h.dia}</span>` : ""}
+              <span class="id-hora">${h.data}</span>
+            </span>
+            <span class="tr-sub">${(h.licoes||[]).length} lições · ${fizeram}/${t.alunos.length} fizeram</span>
           </span>
           <span class="exp-val">
             <span class="nota ${classeNota(m)}">${m===null?"–":m+"%"}</span>
@@ -1919,7 +1998,7 @@ function renderAlunoLista(){ /* a visão por aluno saiu; a ficha abre pelo nome 
 // ══════════════════════════════════════════════════════════
 function aulasDoDia(){
   const out = [];
-  TURMAS.forEach(t => (t.aulasHoje || []).forEach(a => out.push({ turma:t, aula:a })));
+  turmasDaEmpresa().forEach(t => (t.aulasHoje || []).forEach(a => out.push({ turma:t, aula:a })));
   return out.sort((x,y) => x.aula.hora.localeCompare(y.aula.hora));
 }
 
@@ -1928,9 +2007,11 @@ function renderPresenca(){
   const btn = document.getElementById("btn-salvar-presenca");
   document.getElementById("fim-seletor").innerHTML = "";
   const lista = aulasDoDia();
+  const tit = document.getElementById("fim-titulo");
+  if (tit) tit.textContent = `${lista.length} aula${lista.length!==1?"s":""}`;
 
   if (!lista.length){
-    box.innerHTML = `<div class="card"><p>Nenhuma aula hoje.</p></div>`;
+    box.innerHTML = `<div class="card"><p>Nenhuma aula hoje nesta empresa.</p></div>`;
     btn.style.display = "none";
     return;
   }

@@ -136,6 +136,17 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Navegação por empresa
+O seletor do topo deixou de listar turmas e passou a listar **empresas**. Ao
+escolher uma empresa, as quatro telas (Hoje, Trilhas, Fim da aula, Histórico)
+juntam **todas as turmas daquela empresa**. Motivo: um professor que atende três
+turmas da mesma empresa não deveria trocar de contexto três vezes para ver o dia.
+
+Consequência: cada card precisa se identificar sozinho, porque a tela mistura
+turmas. Todo card de aula mostra **Empresa · Turma · Nível · Dia · Horário**,
+mais um botão "+" que abre os detalhes da turma (ou, no Histórico, presença,
+trilhas e engajamento daquela aula).
+
 ### 21/08/2026 — Idioma e selos de papel
 A plataforma inteira é em **português** — abas, botões, rótulos — para os quatro
 papéis. As únicas exceções são a saudação **"Hi, Nome"** e o **selo de papel**,

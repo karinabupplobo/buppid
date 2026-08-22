@@ -465,6 +465,24 @@
   }
   .voltar-turma:hover{ color: var(--teal-escuro); }
 
+  /* Identificação da aula: empresa · turma · nível */
+  .ident{
+    display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    margin-bottom: 7px; font-size: 11.5px;
+  }
+  .id-emp{ font-weight: 800; color: var(--teal-escuro); }
+  .id-sep{ color: #c9c6d0; }
+  .id-turma{ font-weight: 600; color: var(--cinza-texto); }
+  .id-niv{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em;
+    background: var(--limao-claro); color: var(--teal-escuro);
+    padding: 2px 7px; border-radius: 999px;
+  }
+  .painel-aula{
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+    margin: -4px 0 10px; letter-spacing: -0.01em;
+  }
+
   /* ===== Trilhas ===== */
   .trilha-item{ border-bottom: 1px solid #f2f4f0; }
   .trilha-item:last-child{ border-bottom: none; }
@@ -1449,6 +1467,7 @@ function renderAula(){
               : '<span class="pill hoje">Aula de hoje</span>'}
             <button class="chip-turma" data-resumo-turma>Turma ›</button>
           </div>
+          ${htmlIdent(turmaAtual)}
           <h2>${a.titulo}</h2>
           <p>${a.resumo}</p>
           ${htmlAcoesAula(a)}
@@ -1547,6 +1566,33 @@ function abrirCancelar(a){
   };
 }
 
+// Identificação completa de uma aula: empresa · turma · nível.
+// Sem isso, um card de aula solto não diz de quem é — e o nome da turma
+// nem sempre contém o nome da empresa (ex.: "Particular — Marcos B.").
+function partesIdent(t){
+  // O nome da turma às vezes já começa com a empresa ("Sertrading — Comex"),
+  // às vezes não ("Particular — Marcos B."). Evita repetir.
+  const nome = t.nome;
+  const jaTem = nome.toLowerCase().startsWith(t.empresa.toLowerCase());
+  const resto = jaTem ? nome.slice(t.empresa.length).replace(/^\s*[—\-·]\s*/, "") : nome;
+  return { empresa: t.empresa, turma: resto, nivel: t.nivel };
+}
+
+function identTexto(t){
+  const p = partesIdent(t);
+  return `${p.empresa} · ${p.turma} · ${p.nivel}`;
+}
+
+function htmlIdent(t){
+  const p = partesIdent(t);
+  return `<div class="ident">
+    <span class="id-emp">${p.empresa}</span>
+    <span class="id-sep">·</span>
+    <span class="id-turma">${p.turma}</span>
+    <span class="id-niv">${p.nivel}</span>
+  </div>`;
+}
+
 function linhaExp(id, rotulo, valor, conteudo){
   return `
     <div class="exp" data-exp="${id}">
@@ -1643,6 +1689,7 @@ function renderHistorico(){
             <span class="hora">${h.dia ? h.dia + " " : ""}${h.data}</span>
             <span class="pill dada">Aula dada</span>
           </div>
+          ${htmlIdent(turmaAtual)}
           <h2>${h.titulo}</h2>
           <p>${h.resumo}</p>
           <a class="btn" href="${urlAula('leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
@@ -1705,7 +1752,8 @@ function pintarPainelHist(h, box){
   const abertas = Array.from(box.querySelectorAll(".exp.aberta")).map(e => e.dataset.exp);
 
   box.innerHTML = `
-    <div class="card-kicker">${h.titulo} · ${h.dia ? h.dia + " " : ""}${h.data}</div>
+    <div class="card-kicker">${identTexto(t)}</div>
+    <div class="painel-aula">${h.titulo} — ${h.dia ? h.dia + " " : ""}${h.data}</div>
     ${linhaExp("pres-"+h.id,    "Presença",    marcados ? `${nPres}/${t.alunos.length}` : "marcar", presLinhas)}
     ${linhaExp("trilhas-"+h.id, "Trilhas",     `${concluiram}/${t.alunos.length}`, trilhaLinhas)}
     ${linhaExp("eng-"+h.id,     "Engajamento", medEng ? medEng + "★" : "avaliar", engLinhas)}
@@ -1774,7 +1822,7 @@ function renderTrilhaGeral(){
   const t = turmaAtual;
   const trilhas = t.historico || [];
 
-  box.innerHTML = `<div class="section-title">Trilhas de ${t.nome}</div>`;
+  box.innerHTML = `<div class="section-title">Trilhas · ${identTexto(t)}</div>`;
 
   if (!trilhas.length){
     box.innerHTML += `<div class="card"><p>Nenhuma trilha liberada ainda nesta turma.</p></div>`;
@@ -1818,6 +1866,7 @@ function renderTrilhaGeral(){
         <button class="exp-cab">
           <span class="tr-cab-esq">
             <span class="tr-tit">${h.titulo}</span>
+            <span class="tr-sub">${identTexto(t)}</span>
             <span class="tr-sub">${h.dia ? h.dia + " " : ""}${h.data} · ${(h.licoes||[]).length} lições · ${fizeram}/${t.alunos.length} fizeram</span>
           </span>
           <span class="exp-val">
@@ -1877,8 +1926,8 @@ function renderPresenca(){
         <div class="ba-esq">
           <span class="ba-hora">${aula.dia ? aula.dia + " " : ""}${aula.hora}</span>
           <div>
-            <div class="ba-turma">${turma.nome}</div>
-            <div class="ba-aula">${aula.titulo}</div>
+            <div class="ba-turma">${partesIdent(turma).empresa} · ${partesIdent(turma).turma}</div>
+            <div class="ba-aula">${aula.titulo} · ${turma.nivel}</div>
           </div>
         </div>
         <span class="ba-status">${

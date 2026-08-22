@@ -38,6 +38,7 @@
     --teal-escuro: #4A2B4D;
     --amarelo-neon: #D9E28C;
     --limao-claro: #EDF1D6;
+    --bg-dash: #EFEDF3;      /* fundo da dash — o seletor de turma usa o mesmo tom */
     /* Cor intermediária: saiu o azul #3C6E78 (resquício da paleta teal, que
        brigava com a ameixa) e entrou o cinza-lavanda — neutro com um toque de
        roxo, 6,2:1 sobre branco. Usado em kickers, links e texto de apoio. */
@@ -52,7 +53,7 @@
 
   html, body{
     margin: 0; padding: 0; min-height: 100%;
-    background: #EFEDF3;   /* cinza-lavanda claro, puxado do #6B6478 */
+    background: var(--bg-dash);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-text-size-adjust: 100%;
   }
@@ -99,13 +100,13 @@
   .dd{ position: relative; width: 100%; }
   .dd-trigger{
     width: 100%; display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; background: #f5f6f2;
+    gap: 12px; background: var(--bg-dash);
     border: 1px solid var(--borda); border-radius: 12px;
     color: var(--texto); font-family: inherit; padding: 13px 16px;
     cursor: pointer; text-align: left; transition: border-color .15s, background .15s;
   }
-  .dd-trigger:hover{ background: #eef0ea; }
-  .dd.open .dd-trigger{ border-color: var(--azul-intermediario); background: #eef0ea; }
+  .dd-trigger:hover{ background: #E7E4EE; }
+  .dd.open .dd-trigger{ border-color: var(--azul-intermediario); background: #E7E4EE; }
   .dd-trigger .nome{ font-size: 15px; font-weight: 700; letter-spacing: -0.01em; display: block; }
   .dd-trigger .sub{ font-size: 11.5px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; display: block; }
   .dd-caret{

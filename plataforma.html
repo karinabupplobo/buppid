@@ -8,7 +8,7 @@
 
   Estrutura da tela do Professor (fechada em conversa 20/08):
     1. Seletor de turma        — só as turmas do professor logado
-    2. Today                   — pode haver VÁRIAS aulas no mesmo dia. Ao lado de
+    2. Hoje                    — pode haver VÁRIAS aulas no mesmo dia. Ao lado de
                                  cada aula, PONTOS DE ATENÇÃO: objetivo da aula,
                                  vocabulário essencial, ponto gramatical e a lista
                                  de alunos que precisam de atenção. O resumo da
@@ -18,7 +18,7 @@
     4. Fim da aula             — fecha o DIA INTEIRO: todas as aulas de todas as
                                  turmas, agrupadas por turma, com presença e
                                  anotação interna por aluno
-    5. Histórico               — mesma estrutura do Today: lista de aulas dadas
+    5. Histórico               — mesma estrutura do Hoje: lista de aulas dadas
                                  (botão "ver aula e anotações") e, ao lado, o
                                  resumo daquela aula com presença, trilhas e
                                  engajamento (1 a 3 estrelas por aluno)
@@ -715,8 +715,8 @@
   </div>
 
   <div class="tabs">
-  <button class="tab active" data-pane="aula">Today</button>
-  <button class="tab" data-pane="trilha">Trilha</button>
+  <button class="tab active" data-pane="aula">Hoje</button>
+  <button class="tab" data-pane="trilha">Trilhas</button>
   <button class="tab" data-pane="presenca">Fim da aula</button>
     <button class="tab" data-pane="historico">Histórico</button>
   </div>
@@ -1371,7 +1371,7 @@ function alunosComAlerta(){
 }
 
 // ══════════════════════════════════════════════════════════
-//  TODAY — cada aula com os seus Pontos de atenção ao lado
+//  HOJE — cada aula com os seus Pontos de atenção ao lado
 // ══════════════════════════════════════════════════════════
 function renderAula(){
   const box = document.getElementById("lista-aulas-hoje");
@@ -1567,7 +1567,7 @@ function renderResumo(){ /* substituído pelos Pontos de atenção */ }
 
 
 // ══════════════════════════════════════════════════════════
-//  HISTÓRICO — mesma estrutura: cada aula com o seu painel
+//  HISTÓRICO — mesma estrutura do Hoje: cada aula com o seu painel
 // ══════════════════════════════════════════════════════════
 function renderHistorico(){
   const box = document.getElementById("historico-lista");

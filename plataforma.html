@@ -656,6 +656,20 @@
   </section>
 </main>
 
+<!-- ============ POP-UP ============ -->
+<div class="modal" id="modal">
+  <div class="modal-cx" role="dialog" aria-modal="true">
+    <div class="modal-topo">
+      <div>
+        <div class="modal-kicker" id="modal-kicker"></div>
+        <h3 id="modal-titulo"></h3>
+      </div>
+      <button class="modal-x" id="modal-x" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-corpo" id="modal-corpo"></div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════
 //  DADOS FICTÍCIOS — substituídos por Supabase depois que a
@@ -1652,19 +1666,5 @@ function renderTudo(){
 
 renderTudo();
 </script>
-<!-- ============ POP-UP ============ -->
-<div class="modal" id="modal">
-  <div class="modal-cx" role="dialog" aria-modal="true">
-    <div class="modal-topo">
-      <div>
-        <div class="modal-kicker" id="modal-kicker"></div>
-        <h3 id="modal-titulo"></h3>
-      </div>
-      <button class="modal-x" id="modal-x" aria-label="Fechar">×</button>
-    </div>
-    <div class="modal-corpo" id="modal-corpo"></div>
-  </div>
-</div>
-
 </body>
 </html>

@@ -103,25 +103,14 @@
     background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
   }
 
-  /* ===== Botão "N turmas" ===== */
-  .turma-bar{ padding: 0; }
-  .btn-turmas{
-    width: 100%; display: flex; align-items: center; gap: 9px;
-    background: var(--bg-dash); border: 1px solid var(--borda); border-radius: 12px;
-    color: var(--texto); font-family: inherit; padding: 13px 16px;
-    cursor: pointer; text-align: left; transition: background .15s, border-color .15s;
+  /* Link pequeno "N turmas", logo abaixo do selo do usuário */
+  .link-turmas{
+    background: none; border: none; padding: 2px 0 0; cursor: pointer;
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    color: var(--azul-intermediario); white-space: nowrap;
   }
-  .btn-turmas:hover{ background: #E7E4EE; border-color: var(--azul-intermediario); }
-  .bt-n{ font-size: 22px; font-weight: 800; color: var(--teal-escuro); line-height: 1; }
-  .bt-r{
-    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--cinza-texto);
-  }
-  .bt-seta{
-    margin-left: auto; width: 8px; height: 8px;
-    border-right: 2px solid var(--azul-intermediario);
-    border-top: 2px solid var(--azul-intermediario); transform: rotate(45deg);
-  }
+  .link-turmas b{ font-weight: 800; color: var(--teal-escuro); }
+  .link-turmas:hover{ color: var(--teal-escuro); text-decoration: underline; }
 
   /* item de turma no pop-up */
   .turma-item{
@@ -301,6 +290,16 @@
   .trilha-linha .tl-topo{ display: flex; align-items: center; justify-content: space-between; }
   .trilha-linha .tl-bolas{ display: flex; gap: 4px; margin: 6px 0 3px; flex-wrap: wrap; }
   .trilha-linha .tl-sub{ font-size: 11px; }
+
+  .eng-linha{
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-top: 9px; padding-top: 9px; border-top: 1px solid #eef0ea;
+  }
+  .eng-linha.off{ opacity: .4; }
+  .eng-rot{
+    font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--azul-intermediario);
+  }
 
   .estrelas{ display: flex; gap: 2px; }
   .estrela{
@@ -769,16 +768,11 @@
     <div class="whoami">
       <strong>Hi, Ana Ribeiro</strong>
       <span>teacher</span>
+      <button class="link-turmas" id="btn-turmas"><b id="bt-turmas-n"></b> turmas ›</button>
     </div>
   </div>
 
-  <div class="turma-bar">
-    <button class="btn-turmas" id="btn-turmas">
-      <span class="bt-n" id="bt-turmas-n"></span>
-      <span class="bt-r">turmas</span>
-      <span class="bt-seta"></span>
-    </button>
-  </div>
+
 
   <div class="tabs">
   <button class="tab active" data-pane="aula">Hoje</button>
@@ -1550,15 +1544,17 @@ function identTexto(t){
 
 // Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
 // os detalhes da turma. O nome da turma sai daqui — ele está dentro do "+".
-function htmlIdent(t, dia, hora){
+function htmlIdent(t, dia, hora, comMais){
   const p = partesIdent(t);
+  const mais = comMais === false ? "" :
+    `<button class="id-mais" data-resumo-turma title="Detalhes da turma" aria-label="Detalhes da turma">+</button>`;
   return `<div class="ident">
     <span class="id-emp">${p.empresa}</span>
     <span class="id-turma">${p.turma}</span>
     <span class="id-niv">${p.nivel}</span>
     ${dia  ? `<span class="id-dia">${dia}</span>`   : ""}
     ${hora ? `<span class="id-hora">${hora}</span>` : ""}
-    <button class="id-mais" data-resumo-turma title="Detalhes da turma" aria-label="Detalhes da turma">+</button>
+    ${mais}
   </div>`;
 }
 
@@ -1774,15 +1770,13 @@ function renderHistorico(){
       <div class="card">
         <div class="aula-topo">
           <span class="pill dada">Aula dada</span>
-          ${htmlIdent(t, h.dia, h.data)}
+          ${htmlIdent(t, h.dia, h.data, false)}
         </div>
         <h2>${h.titulo}</h2>
         <p>${h.resumo}</p>
         <a class="btn" href="${urlAulaT(t, 'leitura', h.titulo, h.data)}" target="_blank">Ver aula e anotações →</a>
       </div>
     `;
-    const bmais = par.querySelector("[data-resumo-turma]");
-    if (bmais) bmais.onclick = () => abrirPainelAula(h, t);
     box.appendChild(par);
   });
 }
@@ -2034,6 +2028,8 @@ function renderPresenca(){
     turma.alunos.forEach(al => {
       const atual = pres[al.id];
       const nota  = notas[al.id] || "";
+      const eng   = estado(ENGAJAMENTO, aula.id);
+      const nEng  = eng[al.id] || 0;
       const d = document.createElement("div");
       d.className = "presenca-item";
       d.innerHTML = `
@@ -2042,6 +2038,13 @@ function renderPresenca(){
           <span class="toggle">
             <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
             <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
+          </span>
+        </div>
+        <div class="eng-linha${atual === "a" ? " off" : ""}">
+          <span class="eng-rot">Engajamento</span>
+          <span class="estrelas">
+            ${[1,2,3].map(i =>
+              `<button class="estrela ${i<=nEng?"on":""}" data-eng="${i}">★</button>`).join("")}
           </span>
         </div>
         <button class="nota-toggle${nota ? " tem" : ""}">
@@ -2055,6 +2058,13 @@ function renderPresenca(){
 
       d.querySelectorAll(".toggle button").forEach(b => {
         b.onclick = () => { pres[al.id] = b.dataset.v; renderPresenca(); };
+      });
+      d.querySelectorAll(".estrela").forEach(b => {
+        b.onclick = () => {
+          const n = +b.dataset.eng;
+          eng[al.id] = (eng[al.id] === n) ? 0 : n;   // clicar de novo limpa
+          renderPresenca();
+        };
       });
       const tgl = d.querySelector(".nota-toggle");
       const cx  = d.querySelector(".nota-box");

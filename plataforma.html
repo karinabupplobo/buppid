@@ -419,6 +419,32 @@
     background: var(--amarelo-neon); color: var(--teal-escuro);
     padding: 3px 7px; border-radius: 999px;
   }
+  .selo-ok{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: #e8efe3; color: #3f6b45; padding: 3px 7px; border-radius: 999px;
+  }
+  .btn-tratar{
+    margin-top: 8px; background: none; border: 1.5px solid var(--borda);
+    border-radius: 7px; padding: 6px 11px; font-family: inherit; font-size: 11.5px;
+    font-weight: 700; color: var(--azul-intermediario); cursor: pointer;
+    transition: background .13s, border-color .13s;
+  }
+  .btn-tratar:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+
+  .responder textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 70px; outline: none; line-height: 1.45;
+  }
+  .responder textarea:focus{ border-color: var(--azul-intermediario); }
+  .responder .btn{ margin-top: 9px; }
+
+  .mini.alerta-turma{
+    border-left: 3px solid var(--amarelo-neon); border-radius: 0 8px 8px 0;
+    background: var(--limao-claro);
+  }
+  .mini.alerta-turma span{ color: var(--texto); }
+
   .aviso-visao{
     font-size: 11.5px; color: var(--cinza-texto); line-height: 1.5;
     border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 4px;
@@ -693,17 +719,20 @@ const TURMAS = [
         resumo:"Estruturas de abertura e fechamento de e-mail formal.",
         progresso: { a1:["ok","ok","ok","ok"], a2:["ok","ok","err","ok"],
                      a3:["ok","ok","ok","ok"], a4:["ok","err","ok","pend"] },
-        licoes: ["L1","L2","L3","L4"] },
+        licoes: ["L1","L2","L3","L4"],
+        temas:  ["Vocabulário","Condicionais","Formalidade","Vocabulário"] },
       { id:"p2", data:"06/08", titulo:"Small Talk at Work",
         resumo:"Conversa informal antes de reunião com cliente estrangeiro.",
         progresso: { a1:["ok","ok","err"], a2:["ok","err","pend"],
                      a3:["ok","ok","ok"], a4:["pend","pend","pend"] },
-        licoes: ["L1","L2","L3"] },
+        licoes: ["L1","L2","L3"],
+        temas:  ["Vocabulário","Condicionais","Past simple"] },
       { id:"p3", data:"30/07", titulo:"Describing Processes",
         resumo:"Sequenciadores e voz passiva para explicar fluxo logístico.",
         progresso: { a1:["ok","ok","ok","ok"], a2:["ok","ok","ok","err"],
                      a3:["ok","ok","ok","ok"], a4:["ok","ok","err","pend"] },
-        licoes: ["L1","L2","L3","L4"] }
+        licoes: ["L1","L2","L3","L4"],
+        temas:  ["Sequenciadores","Vocabulário","Voz passiva","Voz passiva"] }
     ]
   },
   {
@@ -746,12 +775,14 @@ const TURMAS = [
     historico: [
       { id:"p4", data:"13/08", titulo:"Numbers & Quantities",
         resumo:"Números, medidas e quantidades no chão de fábrica.",
-        progresso: { b1:["ok","ok","ok"], b2:["ok","err","ok"], b3:["ok","pend","pend"] },
-        licoes: ["L1","L2","L3"] },
+        progresso: { b1:["ok","err","ok"], b2:["ok","err","ok"], b3:["ok","err","pend"] },
+        licoes: ["L1","L2","L3"],
+        temas:  ["Números","Plural irregular","Vocabulário"] },
       { id:"p5", data:"06/08", titulo:"Daily Routine",
         resumo:"Rotina de turno e verbos no presente simples.",
         progresso: { b1:["ok","ok"], b2:["ok","ok"], b3:["pend","pend"] },
-        licoes: ["L1","L2"] }
+        licoes: ["L1","L2"],
+        temas:  ["Presente simples","Vocabulário"] }
     ]
   },
   {
@@ -784,7 +815,8 @@ const TURMAS = [
       { id:"p6", data:"13/08", titulo:"Data Storytelling",
         resumo:"Apresentar números sem ler o slide.",
         progresso: { c1:["ok","ok","ok","ok","ok"] },
-        licoes: ["L1","L2","L3","L4","L5"] }
+        licoes: ["L1","L2","L3","L4","L5"],
+        temas:  ["Números","Presente perfeito","Vocabulário","Conectivos","Presente perfeito"] }
     ]
   }
 ];
@@ -865,6 +897,11 @@ function urlAula(modo, titulo, data){
 // ══════════════════════════════════════════════════════════
 //  POP-UPS
 // ══════════════════════════════════════════════════════════
+function hojeCurto(){
+  const d = new Date();
+  return String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0");
+}
+
 function abrirModal(kicker, titulo, html){
   document.getElementById("modal-kicker").textContent = kicker;
   document.getElementById("modal-titulo").textContent = titulo;
@@ -930,14 +967,17 @@ function abrirFichaAluno(idAluno){
 
   // linha do tempo: recado não tratado vem destacado
   const eventos = (a.historico || []).length
-    ? a.historico.map(h => `
+    ? a.historico.map((h, idx) => `
         <div class="ev ${h.tratado ? "" : "pendente"}">
           <div class="ev-topo">
             <span class="ev-data">${h.data}</span>
             <span class="ev-de">${DE_QUEM[h.tipo] || h.tipo} · ${h.autor}</span>
-            ${h.tratado ? "" : '<span class="selo-pend">não tratado</span>'}
+            ${h.tratado ? '<span class="selo-ok">tratado</span>'
+                        : '<span class="selo-pend">não tratado</span>'}
           </div>
           <div class="ev-txt">${h.texto}</div>
+          ${h.tratado ? "" :
+            `<button class="btn-tratar" data-tratar="${idx}">Marcar como tratado</button>`}
         </div>`).join("")
     : `<div class="mini"><span>Nenhuma interação registrada ainda.</span></div>`;
 
@@ -968,14 +1008,45 @@ function abrirFichaAluno(idAluno){
       ${eventos}
     </div>
     <div class="bloco">
+      <div class="bt">Escrever para a gestão</div>
+      <div class="responder">
+        <textarea id="resp-txt" placeholder="Recado sobre ${a.nome.split(" ")[0]} para a gestão da Bupp…"></textarea>
+        <button class="btn lime" id="resp-enviar">Enviar recado</button>
+      </div>
+    </div>
+    <div class="bloco">
       <div class="bt">Desempenho nas trilhas</div>
       ${trilhas}
     </div>
     <div class="aviso-visao">
-      Esta ficha é vista pelo professor e pela gestão da Bupp. O aluno e o RH do
-      cliente não têm acesso a ela.
+      Linha direta entre <b>professor</b> e <b>gestão da Bupp</b>: os dois leem e
+      escrevem aqui. O aluno e o RH do cliente não têm acesso a esta ficha.
     </div>
   `);
+
+  // marcar recado como tratado
+  document.querySelectorAll("[data-tratar]").forEach(b => {
+    b.onclick = () => {
+      a.historico[+b.dataset.tratar].tratado = true;
+      abrirFichaAluno(idAluno);   // repinta
+      renderAula();
+    };
+  });
+
+  // professor escreve para a gestão
+  const env = document.getElementById("resp-enviar");
+  if (env) env.onclick = () => {
+    const ta = document.getElementById("resp-txt");
+    const txt = (ta.value || "").trim();
+    if (!txt) return;
+    a.historico = a.historico || [];
+    a.historico.unshift({
+      data: hojeCurto(), tipo:"prof", autor:"Prof. Ana Ribeiro",
+      texto: txt, tratado: true    // recado do professor já nasce lido pela gestão
+    });
+    abrirFichaAluno(idAluno);
+    renderAula();
+  };
 }
 
 // ══════════════════════════════════════════════════════════
@@ -986,45 +1057,119 @@ function abrirFichaAluno(idAluno){
 //    3. engajamento baixo (média de estrelas <= 1,5)
 //    4. existe recado NÃO TRATADO do aluno, do RH ou da gestão Bupp
 // ══════════════════════════════════════════════════════════
+// Limiares calibrados com a Karina em 21/08:
+//   · 40% de erro NA MESMA TRILHA  → o aluno não pegou aquela aula
+//   · 40% de erro NO MESMO TEMA    → é o assunto, não a aula
+//   · engajamento médio <= 1,5     → desengajamento
+//   · recado não tratado           → alguém está esperando resposta
+const LIM_ERRO_TRILHA = 0.40;
+const LIM_ERRO_TEMA   = 0.40;
+const MIN_LICOES_TEMA = 2;     // abaixo disso, um erro isolado viraria alerta
+const LIM_ENGAJAMENTO = 1.5;
+
 function alertasDoAluno(a){
   const t = turmaAtual;
   const out = [];
 
-  let totalLicoes = 0, totalErros = 0;
+  // ---- erro concentrado numa trilha ----
   (t.historico || []).forEach(h => {
     const st = (h.progresso && h.progresso[a.id]) || [];
     if (!st.length) return;
-    totalLicoes += st.length;
-    totalErros  += st.filter(x => x === "err").length;
-    if (st.every(x => x !== "ok")){
+    const erros = st.filter(x => x === "err").length;
+    if (erros / st.length >= LIM_ERRO_TRILHA){
       out.push({ tipo:"trilha", peso:2,
-        texto:`Não acertou nada na trilha de <b>${h.titulo}</b> (${h.data}).` });
+        texto:`Errou ${erros} de ${st.length} na trilha de <b>${h.titulo}</b> (${h.data}).` });
     }
   });
-  const taxaErro = totalLicoes ? totalErros / totalLicoes : 0;
-  if (totalLicoes >= 4 && taxaErro >= 0.3){
-    out.push({ tipo:"erro", peso:2,
-      texto:`Erra com frequência: ${totalErros} de ${totalLicoes} lições nas trilhas anteriores.` });
-  }
 
+  // ---- erro concentrado num tema, somando todas as trilhas ----
+  const porTema = {};
+  (t.historico || []).forEach(h => {
+    const st = (h.progresso && h.progresso[a.id]) || [];
+    (h.temas || []).forEach((tema, i) => {
+      if (!st[i]) return;
+      const d = porTema[tema] = porTema[tema] || { total:0, erros:0 };
+      d.total++;
+      if (st[i] === "err") d.erros++;
+    });
+  });
+  Object.entries(porTema).forEach(([tema, d]) => {
+    if (d.total >= MIN_LICOES_TEMA && d.erros / d.total >= LIM_ERRO_TEMA){
+      out.push({ tipo:"tema", peso:3,
+        texto:`Erra em <b>${tema}</b>: ${d.erros} de ${d.total} lições do tema.` });
+    }
+  });
+
+  // ---- engajamento ----
   const notas = (t.historico || [])
-    .map(h => (ENGAJAMENTO[h.id] || {})[a.id])
-    .filter(Boolean);
+    .map(h => (ENGAJAMENTO[h.id] || {})[a.id]).filter(Boolean);
   if (notas.length){
     const media = notas.reduce((x,y) => x+y, 0) / notas.length;
-    if (media <= 1.5){
+    if (media <= LIM_ENGAJAMENTO){
       out.push({ tipo:"engajamento", peso:2,
         texto:`Engajamento baixo: média ${media.toFixed(1)} de 3 nas últimas ${notas.length} aula(s).` });
     }
   }
 
+  // ---- recados não tratados ----
   (a.historico || []).filter(h => !h.tratado).forEach(h => {
-    const de = { rh:"RH do cliente", gestao:"Gestão Bupp", aluno:"O próprio aluno", prof:"Professor" }[h.tipo] || h.tipo;
-    out.push({ tipo:"msg", peso:3, origem:h.tipo,
-      texto:`<b>${de}</b> deixou recado em ${h.data}, ainda não tratado.` });
+    out.push({ tipo:"msg", peso:4, origem:h.tipo,
+      texto:`<b>${DE_QUEM[h.tipo] || h.tipo}</b> deixou recado em ${h.data}, ainda não tratado.` });
   });
 
   return out.sort((x,y) => y.peso - x.peso);
+}
+
+// ══════════════════════════════════════════════════════════
+//  ALERTA DE TURMA — quando o problema não é de um aluno
+//  Dispara quando a maior parte da turma erra a MESMA lição ou o
+//  MESMO tema. Aí o ponto é da aula, não do aluno.
+// ══════════════════════════════════════════════════════════
+const LIM_TURMA = 0.60;   // 60% ou mais dos alunos que fizeram
+
+function alertasDaTurma(){
+  const t = turmaAtual;
+  const out = [];
+
+  (t.historico || []).forEach(h => {
+    const licoes = h.licoes || [];
+    licoes.forEach((lic, i) => {
+      let fizeram = 0, erraram = 0;
+      t.alunos.forEach(a => {
+        const st = (h.progresso && h.progresso[a.id]) || [];
+        if (!st[i] || st[i] === "pend") return;
+        fizeram++;
+        if (st[i] === "err") erraram++;
+      });
+      if (fizeram >= 2 && erraram / fizeram >= LIM_TURMA){
+        const tema = (h.temas || [])[i];
+        out.push({ tipo:"licao",
+          texto:`<b>${erraram} de ${fizeram}</b> erraram ${lic}${tema ? " — " + tema : ""}, na trilha de <b>${h.titulo}</b>.` });
+      }
+    });
+  });
+
+  // mesmo tema, somando todas as trilhas
+  const porTema = {};
+  (t.historico || []).forEach(h => {
+    (h.temas || []).forEach((tema, i) => {
+      t.alunos.forEach(a => {
+        const st = (h.progresso && h.progresso[a.id]) || [];
+        if (!st[i] || st[i] === "pend") return;
+        const d = porTema[tema] = porTema[tema] || { total:0, erros:0 };
+        d.total++;
+        if (st[i] === "err") d.erros++;
+      });
+    });
+  });
+  Object.entries(porTema).forEach(([tema, d]) => {
+    if (d.total >= 4 && d.erros / d.total >= LIM_ERRO_TEMA){
+      out.push({ tipo:"tema",
+        texto:`A turma erra <b>${tema}</b>: ${d.erros} de ${d.total} respostas do tema.` });
+    }
+  });
+
+  return out;
 }
 
 function alunosComAlerta(){
@@ -1097,7 +1242,8 @@ function ligarNomes(escopo){
 }
 
 const ROTULO_ALERTA = {
-  trilha:      { rot:"Trilha zerada",   cor:"vermelho" },
+  tema:        { rot:"Trava num tema",  cor:"vermelho" },
+  trilha:      { rot:"Errou muito",     cor:"vermelho" },
   erro:        { rot:"Erro recorrente", cor:"vermelho" },
   engajamento: { rot:"Engajamento",     cor:"ambar"    },
   msg:         { rot:"Recado pendente", cor:"lavanda"  }
@@ -1126,11 +1272,17 @@ function htmlPontosAtencao(aula){
       }).join("")
     : `<div class="mini"><span>Nenhum aluno precisa de atenção especial nesta turma agora.</span></div>`;
 
+  const daTurma = alertasDaTurma();
+  const turmaHtml = daTurma.length
+    ? daTurma.map(al => `<div class="mini alerta-turma"><span>${al.texto}</span></div>`).join("")
+    : `<div class="mini"><span>Nenhum ponto em que a turma inteira esteja travando.</span></div>`;
+
   return `
     <div class="card-kicker">Pontos de atenção</div>
     ${linhaExp("obj-"+aula.id,  "Objetivo da aula", "", `<div class="mini"><span>${aula.objetivo || "—"}</span></div>`)}
     ${linhaExp("voc-"+aula.id,  "Vocabulário essencial", (aula.vocab||[]).length, `<div class="vocs">${vocab || "—"}</div>`)}
     ${linhaExp("gram-"+aula.id, "Ponto gramatical", "", `<div class="mini"><span>${aula.gramatica || "—"}</span></div>`)}
+    ${linhaExp("turma-"+aula.id, "Atenção à turma", daTurma.length, turmaHtml)}
     ${linhaExp("aten-"+aula.id, "Atenção a alunos", alertados.length, alunosHtml)}
   `;
 }

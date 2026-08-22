@@ -485,6 +485,12 @@
   }
 
   /* ===== Trilhas ===== */
+  .trilha-cab{
+    padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .trilha-cab .ident{ margin-bottom: 3px; }
+  .tc-sub{ font-size: 11.5px; color: var(--cinza-texto); font-weight: 600; }
+
   .trilha-item{ border-bottom: 1px solid #f2f4f0; }
   .trilha-item:last-child{ border-bottom: none; }
   .tr-cab-esq{ display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
@@ -1892,76 +1898,87 @@ function classeNota(n){
 
 function renderTrilhaGeral(){
   const box = document.getElementById("lista-trilhas");
-  const itens = [];
-  turmasDaEmpresa().forEach(t => (t.historico || []).forEach(h => itens.push({ t, h })));
-  const chave = d => { const [dd,mm] = (d||"").split("/"); return (mm||"") + (dd||""); };
-  itens.sort((x,y) => chave(y.h.data).localeCompare(chave(x.h.data)));
+  // Um CARD POR TURMA. A identificação (empresa · nível · dia · horário) fica
+  // no topo do card, uma vez só — dentro dele, as trilhas daquela turma.
+  const comTrilha = TURMAS.filter(t => (t.historico || []).length);
+  const total = comTrilha.reduce((n,t) => n + t.historico.length, 0);
 
-  box.innerHTML = `<div class="section-title">${itens.length} trilha${itens.length!==1?"s":""}</div>`;
+  box.innerHTML = `<div class="section-title">${total} trilha${total!==1?"s":""} · ${comTrilha.length} turma${comTrilha.length!==1?"s":""}</div>`;
 
-  if (!itens.length){
-    box.innerHTML += `<div class="card"><p>Nenhuma trilha liberada ainda nesta empresa.</p></div>`;
+  if (!total){
+    box.innerHTML += `<div class="card"><p>Nenhuma trilha liberada ainda.</p></div>`;
     return;
   }
 
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = itens.map(({t, h}) => {
-    const m = mediaTrilha(h, t);
-    const fizeram = t.alunos.filter(a => {
-      const st = (h.progresso && h.progresso[a.id]) || [];
-      return st.some(x => x !== "pend");
-    }).length;
+  const chave = d => { const [dd,mm] = (d||"").split("/"); return (mm||"") + (dd||""); };
 
-    const linhas = t.alunos.map(a => {
-      const st = (h.progresso && h.progresso[a.id]) || [];
-      const acertos = st.filter(x => x === "ok").length;
-      const erros   = st.filter(x => x === "err").length;
-      const pend    = st.filter(x => x === "pend").length;
-      const nota = st.length && (st.length - pend)
-        ? Math.round(acertos / st.length * 100) : null;
-      const bolas = st.map((x,i) =>
-        `<span class="st ${x}" title="${(h.licoes||[])[i]||""}${(h.temas||[])[i] ? " — " + h.temas[i] : ""}">${
-          x==="ok"?"✓":x==="err"?"✕":"–"}</span>`).join("");
-      return `
-        <div class="tr-aluno">
-          <button class="tr-nome" data-aluno-pop="${a.id}" data-turma="${t.id}">${a.nome}<i class="seta-r"></i></button>
-          <div class="tr-bolas">${bolas}</div>
-          <div class="tr-num">
-            <span class="ok">${acertos} certo${acertos!==1?"s":""}</span>
-            <span class="er">${erros} erro${erros!==1?"s":""}</span>
-            ${pend ? `<span class="pe">${pend} não fez</span>` : ""}
-            <span class="nota ${classeNota(nota)}">${nota===null?"–":nota+"%"}</span>
-          </div>
-        </div>`;
-    }).join("");
-
+  comTrilha.forEach(t => {
     const p = partesIdent(t);
-    return `
-      <div class="exp trilha-item" data-exp="tr-${h.id}">
-        <button class="exp-cab">
-          <span class="tr-cab-esq">
-            <span class="tr-tit">${h.titulo}</span>
-            <span class="ident ident-tr">
-              <span class="id-emp">${p.empresa}</span>
-              <span class="id-niv">${p.nivel}</span>
-              ${h.dia ? `<span class="id-dia">${h.dia}</span>` : ""}
-              <span class="id-hora">${h.data}</span>
-            </span>
-            <span class="tr-sub">${(h.licoes||[]).length} lições · ${fizeram}/${t.alunos.length} fizeram</span>
-          </span>
-          <span class="exp-val">
-            <span class="nota ${classeNota(m)}">${m===null?"–":m+"%"}</span>
-            <i class="seta"></i>
-          </span>
-        </button>
-        <div class="exp-corpo">${linhas}</div>
-      </div>`;
-  }).join("");
+    const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+    const trilhas = [...t.historico].sort((x,y) => chave(y.data).localeCompare(chave(x.data)));
 
-  box.appendChild(card);
-  ligarExp(card);
-  ligarNomes(card);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="trilha-cab">
+        <div class="ident">
+          <span class="id-emp">${p.empresa}</span>
+          <span class="id-turma">${p.turma}</span>
+          <span class="id-niv">${p.nivel}</span>
+          ${grade ? `<span class="id-hora">${grade}</span>` : ""}
+        </div>
+        <div class="tc-sub">${trilhas.length} trilha${trilhas.length!==1?"s":""} · ${t.alunos.length} aluno${t.alunos.length!==1?"s":""}</div>
+      </div>
+      ${trilhas.map(h => {
+        const m = mediaTrilha(h, t);
+        const fizeram = t.alunos.filter(a => {
+          const st = (h.progresso && h.progresso[a.id]) || [];
+          return st.some(x => x !== "pend");
+        }).length;
+
+        const linhas = t.alunos.map(a => {
+          const st = (h.progresso && h.progresso[a.id]) || [];
+          const acertos = st.filter(x => x === "ok").length;
+          const erros   = st.filter(x => x === "err").length;
+          const pend    = st.filter(x => x === "pend").length;
+          const nota = st.length && (st.length - pend)
+            ? Math.round(acertos / st.length * 100) : null;
+          const bolas = st.map((x,i) =>
+            `<span class="st ${x}" title="${(h.licoes||[])[i]||""}${(h.temas||[])[i] ? " — " + h.temas[i] : ""}">${
+              x==="ok"?"✓":x==="err"?"✕":"–"}</span>`).join("");
+          return `
+            <div class="tr-aluno">
+              <button class="tr-nome" data-aluno-pop="${a.id}" data-turma="${t.id}">${a.nome}<i class="seta-r"></i></button>
+              <div class="tr-bolas">${bolas}</div>
+              <div class="tr-num">
+                <span class="ok">${acertos} certo${acertos!==1?"s":""}</span>
+                <span class="er">${erros} erro${erros!==1?"s":""}</span>
+                ${pend ? `<span class="pe">${pend} não fez</span>` : ""}
+                <span class="nota ${classeNota(nota)}">${nota===null?"–":nota+"%"}</span>
+              </div>
+            </div>`;
+        }).join("");
+
+        return `
+          <div class="exp trilha-item" data-exp="tr-${h.id}">
+            <button class="exp-cab">
+              <span class="tr-cab-esq">
+                <span class="tr-tit">${h.titulo}</span>
+                <span class="tr-sub">${h.dia ? h.dia + " " : ""}${h.data} · ${(h.licoes||[]).length} lições · ${fizeram}/${t.alunos.length} fizeram</span>
+              </span>
+              <span class="exp-val">
+                <span class="nota ${classeNota(m)}">${m===null?"–":m+"%"}</span>
+                <i class="seta"></i>
+              </span>
+            </button>
+            <div class="exp-corpo">${linhas}</div>
+          </div>`;
+      }).join("")}
+    `;
+    box.appendChild(card);
+    ligarExp(card);
+    ligarNomes(card);
+  });
 }
 
 function renderAlunoLista(){ /* a visão por aluno saiu; a ficha abre pelo nome */ }

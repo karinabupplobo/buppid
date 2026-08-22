@@ -790,31 +790,31 @@ const TURMAS = [
     },
     // Podem existir várias aulas no mesmo dia para a mesma turma.
     aulasHoje: [
-      { id:"h1", hora:"08:00", titulo:"Negotiation Phrases", data:"Hoje, 20/08",
+      { id:"h1", hora:"08:00", dia:"Quinta", titulo:"Negotiation Phrases", data:"Hoje, 20/08",
         resumo:"Vocabulário e estruturas para conduzir uma negociação: abertura, contraproposta e fechamento.",
         objetivo:"Ao fim da aula, o aluno abre uma negociação, faz uma contraproposta e fecha o acordo em inglês.",
         vocab:["counteroffer","to meet halfway","deadline","terms and conditions","to close a deal"],
         gramatica:"Condicional de 1º tipo em oferta: <em>If you can lower the price, we'll increase the volume.</em>" },
-      { id:"h2", hora:"17:30", titulo:"Follow-up Emails", data:"Hoje, 20/08",
+      { id:"h2", hora:"17:30", dia:"Quinta", titulo:"Follow-up Emails", data:"Hoje, 20/08",
         resumo:"Retomar uma negociação por escrito depois da call: resumo, próximo passo e prazo.",
         objetivo:"O aluno escreve um e-mail de follow-up com resumo do combinado, próximo passo e prazo claro.",
         vocab:["as discussed","next steps","by the end of the week","to confirm","attached"],
         gramatica:"Futuro com <em>will</em> para compromisso: <em>I'll send the revised proposal by Friday.</em>" }
     ],
     historico: [
-      { id:"p1", data:"13/08", titulo:"Email Etiquette",
+      { id:"p1", data:"13/08", dia:"Quinta", titulo:"Email Etiquette",
         resumo:"Estruturas de abertura e fechamento de e-mail formal.",
         progresso: { a1:["ok","ok","ok","ok"], a2:["ok","ok","err","ok"],
                      a3:["ok","ok","ok","ok"], a4:["ok","err","ok","pend"] },
         licoes: ["L1","L2","L3","L4"],
         temas:  ["Vocabulário","Condicionais","Formalidade","Vocabulário"] },
-      { id:"p2", data:"06/08", titulo:"Small Talk at Work",
+      { id:"p2", data:"06/08", dia:"Quinta", titulo:"Small Talk at Work",
         resumo:"Conversa informal antes de reunião com cliente estrangeiro.",
         progresso: { a1:["ok","ok","err"], a2:["ok","err","pend"],
                      a3:["ok","ok","ok"], a4:["pend","pend","pend"] },
         licoes: ["L1","L2","L3"],
         temas:  ["Vocabulário","Condicionais","Past simple"] },
-      { id:"p3", data:"30/07", titulo:"Describing Processes",
+      { id:"p3", data:"30/07", dia:"Quinta", titulo:"Describing Processes",
         resumo:"Sequenciadores e voz passiva para explicar fluxo logístico.",
         progresso: { a1:["ok","ok","ok","ok"], a2:["ok","ok","ok","err"],
                      a3:["ok","ok","ok","ok"], a4:["ok","ok","err","pend"] },
@@ -850,19 +850,19 @@ const TURMAS = [
       b3: ["pend","pend","pend","pend"]
     },
     aulasHoje: [
-      { id:"h3", hora:"07:00", titulo:"Safety Rules", data:"Hoje, 20/08",
+      { id:"h3", hora:"07:00", dia:"Quinta", titulo:"Safety Rules", data:"Hoje, 20/08",
         resumo:"Regras de segurança na fábrica: sinalização, EPI e instruções diretas.",
         objetivo:"O aluno dá uma instrução de segurança direta para um visitante que não fala português.",
         vocab:["safety goggles","warning sign","forbidden","emergency exit","to wear"],
         gramatica:"Imperativo e <em>must / must not</em> para regra: <em>You must wear a helmet.</em>" }
     ],
     historico: [
-      { id:"p4", data:"13/08", titulo:"Numbers & Quantities",
+      { id:"p4", data:"13/08", dia:"Quinta", titulo:"Numbers & Quantities",
         resumo:"Números, medidas e quantidades no chão de fábrica.",
         progresso: { b1:["ok","err","ok"], b2:["ok","err","ok"], b3:["ok","err","pend"] },
         licoes: ["L1","L2","L3"],
         temas:  ["Números","Plural irregular","Vocabulário"] },
-      { id:"p5", data:"06/08", titulo:"Daily Routine",
+      { id:"p5", data:"06/08", dia:"Quinta", titulo:"Daily Routine",
         resumo:"Rotina de turno e verbos no presente simples.",
         progresso: { b1:["ok","ok"], b2:["ok","ok"], b3:["pend","pend"] },
         licoes: ["L1","L2"],
@@ -886,14 +886,14 @@ const TURMAS = [
     licoes: ["L1","L2","L3","L4","L5","L6"],
     progresso: { c1: ["ok","ok","ok","ok","err","pend"] },
     aulasHoje: [
-      { id:"h4", hora:"12:00", titulo:"Pitching to Investors", data:"Hoje, 20/08",
+      { id:"h4", hora:"12:00", dia:"Quinta", titulo:"Pitching to Investors", data:"Hoje, 20/08",
         resumo:"Estrutura de pitch: problema, solução, tração e pedido.",
         objetivo:"O aluno apresenta a empresa em 10 minutos, sem ler slide, e sustenta o pedido final.",
         vocab:["runway","traction","market fit","to scale","funding round"],
         gramatica:"Presente perfeito para tração: <em>We've grown 40% since January.</em>" }
     ],
     historico: [
-      { id:"p6", data:"13/08", titulo:"Data Storytelling",
+      { id:"p6", data:"13/08", dia:"Quinta", titulo:"Data Storytelling",
         resumo:"Apresentar números sem ler o slide.",
         progresso: { c1:["ok","ok","ok","ok","ok"] },
         licoes: ["L1","L2","L3","L4","L5"],
@@ -1350,7 +1350,7 @@ function renderAula(){
       <div class="card unico">
         <div class="lado-aula">
           <div class="aula-topo">
-            <span class="hora">${a.hora}</span>
+            <span class="hora">${a.dia ? a.dia + " · " : ""}${a.hora}</span>
             <span class="pill hoje">Aula de hoje</span>
             <button class="chip-turma" data-resumo-turma>Resumo da turma ›</button>
           </div>
@@ -1462,7 +1462,7 @@ function renderHistorico(){
       <div class="card unico">
         <div class="lado-aula">
           <div class="aula-topo">
-            <span class="hora">${h.data}</span>
+            <span class="hora">${h.dia ? h.dia + " · " : ""}${h.data}</span>
             <span class="pill dada">Aula dada</span>
           </div>
           <h2>${h.titulo}</h2>
@@ -1527,7 +1527,7 @@ function pintarPainelHist(h, box){
   const abertas = Array.from(box.querySelectorAll(".exp.aberta")).map(e => e.dataset.exp);
 
   box.innerHTML = `
-    <div class="card-kicker">${h.titulo} · ${h.data}</div>
+    <div class="card-kicker">${h.titulo} · ${h.dia ? h.dia + " " : ""}${h.data}</div>
     ${linhaExp("pres-"+h.id,    "Presença",    marcados ? `${nPres}/${t.alunos.length}` : "marcar", presLinhas)}
     ${linhaExp("trilhas-"+h.id, "Trilhas",     `${concluiram}/${t.alunos.length}`, trilhaLinhas)}
     ${linhaExp("eng-"+h.id,     "Engajamento", medEng ? medEng + "★" : "avaliar", engLinhas)}
@@ -1731,7 +1731,7 @@ function renderPresenca(){
     bloco.innerHTML = `
       <div class="ba-cab">
         <div class="ba-esq">
-          <span class="ba-hora">${aula.hora}</span>
+          <span class="ba-hora">${aula.dia ? aula.dia + " · " : ""}${aula.hora}</span>
           <div>
             <div class="ba-turma">${turma.nome}</div>
             <div class="ba-aula">${aula.titulo}</div>

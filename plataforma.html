@@ -421,6 +421,42 @@
     background: var(--amarelo-neon); color: var(--teal-escuro);
     padding: 3px 7px; border-radius: 999px;
   }
+  /* botão de aluno no resumo da turma */
+  .aluno-link{
+    width: 100%; display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    background: #fafbf7; border: 1px solid transparent; border-radius: 8px;
+    padding: 10px 11px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: border-color .13s, background .13s;
+  }
+  .aluno-link:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .al-nome{
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+  }
+  .al-cargo{ font-size: 12px; color: var(--cinza-texto); }
+  .aluno-link .tag-al{ margin-top: 4px; }
+
+  /* números consolidados da ficha */
+  .nums{
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px;
+  }
+  .num{
+    background: #fafbf7; border-radius: 10px; padding: 11px 10px;
+    display: flex; flex-direction: column; gap: 1px; text-align: center;
+  }
+  .nv{ font-size: 20px; font-weight: 800; color: var(--texto); letter-spacing: -0.02em; }
+  .nv.alta{ color: #3f6b45; } .nv.media{ color: #8a6d1f; } .nv.baixa{ color: #a3312a; }
+  .nr{ font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--azul-intermediario); }
+  .nd{ font-size: 10.5px; color: var(--cinza-texto); }
+  .pres-rot{ font-size: 12px; color: var(--cinza-texto); }
+
+  .voltar-turma{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding: 0 0 12px;
+  }
+  .voltar-turma:hover{ color: var(--teal-escuro); }
+
   .selo-ok{
     font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
     background: #e8efe3; color: #3f6b45; padding: 3px 7px; border-radius: 999px;
@@ -934,8 +970,15 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(
 
 function abrirResumoTurma(){
   const t = turmaAtual;
-  const alunos = t.alunos.map(a =>
-    `<div class="mini"><b>${a.nome}</b><span>${a.cargo}</span></div>`).join("");
+  const alunos = t.alunos.map(a => {
+    const n = alertasDoAluno(a).length;
+    return `
+      <button class="aluno-link" data-aluno-pop="${a.id}">
+        <span class="al-nome">${a.nome}<i class="seta-r"></i></span>
+        <span class="al-cargo">${a.cargo}</span>
+        ${n ? `<span class="tag-al vermelho">${n} ponto${n>1?"s":""} de atenção</span>` : ""}
+      </button>`;
+  }).join("");
   abrirModal("Resumo da turma", t.nome, `
     <div class="bloco">
       <div class="bt">Empresa</div>
@@ -954,6 +997,7 @@ function abrirResumoTurma(){
       ${alunos}
     </div>
   `);
+  ligarNomes(document.getElementById("modal-corpo"), true);
 }
 
 // Ficha do aluno: histórico de interações e acompanhamento.
@@ -965,10 +1009,66 @@ const DE_QUEM = {
   prof:   "Professor"
 };
 
-function abrirFichaAluno(idAluno){
+function abrirFichaAluno(idAluno, veioDaTurma){
   const t = turmaAtual;
   const a = t.alunos.find(x => x.id === idAluno);
   if (!a) return;
+
+  // ---- números consolidados de todas as aulas dadas ----
+  const aulas = t.historico || [];
+  let presentes = 0, faltas = 0, marcadas = 0;
+  aulas.forEach(h => {
+    const v = (PRESENCA[h.id] || {})[a.id];
+    if (!v) return;
+    marcadas++;
+    if (v === "p") presentes++; else faltas++;
+  });
+  const pctPres = marcadas ? Math.round(presentes / marcadas * 100) : null;
+
+  const estrelas = aulas.map(h => (ENGAJAMENTO[h.id] || {})[a.id]).filter(Boolean);
+  const medEng = estrelas.length
+    ? (estrelas.reduce((x,y) => x+y, 0) / estrelas.length) : null;
+
+  const notasTrilha = aulas.map(h => {
+    const st = (h.progresso && h.progresso[a.id]) || [];
+    if (!st.length) return null;
+    return Math.round(st.filter(x => x === "ok").length / st.length * 100);
+  }).filter(n => n !== null);
+  const medNota = notasTrilha.length
+    ? Math.round(notasTrilha.reduce((x,y) => x+y, 0) / notasTrilha.length) : null;
+
+  const classe = n => n === null ? "" : n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
+
+  const numeros = `
+    <div class="nums">
+      <div class="num">
+        <span class="nv ${classe(pctPres)}">${pctPres === null ? "–" : pctPres + "%"}</span>
+        <span class="nr">Presença</span>
+        <span class="nd">${marcadas ? `${presentes} de ${marcadas} aulas` : "não marcada"}</span>
+      </div>
+      <div class="num">
+        <span class="nv">${medEng === null ? "–" : medEng.toFixed(1) + "★"}</span>
+        <span class="nr">Engajamento</span>
+        <span class="nd">${estrelas.length ? `média de ${estrelas.length} aula(s)` : "não avaliado"}</span>
+      </div>
+      <div class="num">
+        <span class="nv ${classe(medNota)}">${medNota === null ? "–" : medNota + "%"}</span>
+        <span class="nr">Trilhas</span>
+        <span class="nd">${notasTrilha.length ? `média de ${notasTrilha.length} trilha(s)` : "sem trilha"}</span>
+      </div>
+    </div>`;
+
+  // presença aula a aula
+  const presLista = aulas.length
+    ? aulas.map(h => {
+        const v = (PRESENCA[h.id] || {})[a.id];
+        const rot = v === "p" ? "Presente" : v === "a" ? "Faltou" : "não marcada";
+        const cor = v === "p" ? "ok" : v === "a" ? "err" : "pend";
+        return `<div class="mini linha-acao"><b>${h.titulo}</b>
+          <span><span class="st ${cor}">${v==="p"?"✓":v==="a"?"✕":"–"}</span>
+          <span class="pres-rot">${rot}</span> · ${h.data}</span></div>`;
+      }).join("")
+    : `<div class="mini"><span>Nenhuma aula dada ainda.</span></div>`;
 
   const alertas = alertasDoAluno(a);
   const pendentes = alertas.length
@@ -1012,9 +1112,15 @@ function abrirFichaAluno(idAluno){
   }).join("") || `<div class="mini"><span>Sem trilhas registradas.</span></div>`;
 
   abrirModal(a.cargo, a.nome, `
+    ${veioDaTurma ? '<button class="voltar-turma" id="voltar-turma">‹ Voltar para a turma</button>' : ""}
+    ${numeros}
     <div class="bloco">
       <div class="bt">Precisa ser tratado</div>
       ${pendentes}
+    </div>
+    <div class="bloco">
+      <div class="bt">Presença aula a aula</div>
+      ${presLista}
     </div>
     <div class="bloco">
       <div class="bt">Histórico de interações</div>
@@ -1037,11 +1143,14 @@ function abrirFichaAluno(idAluno){
     </div>
   `);
 
+  const volt = document.getElementById("voltar-turma");
+  if (volt) volt.onclick = abrirResumoTurma;
+
   // marcar recado como tratado
   document.querySelectorAll("[data-tratar]").forEach(b => {
     b.onclick = () => {
       a.historico[+b.dataset.tratar].tratado = true;
-      abrirFichaAluno(idAluno);   // repinta
+      abrirFichaAluno(idAluno, veioDaTurma);   // repinta
       renderAula();
     };
   });
@@ -1057,7 +1166,7 @@ function abrirFichaAluno(idAluno){
       data: hojeCurto(), tipo:"prof", autor:"Prof. Ana Ribeiro",
       texto: txt, tratado: true    // recado do professor já nasce lido pela gestão
     });
-    abrirFichaAluno(idAluno);
+    abrirFichaAluno(idAluno, veioDaTurma);
     renderAula();
   };
 }
@@ -1248,9 +1357,9 @@ function ligarExp(escopo){
   });
 }
 
-function ligarNomes(escopo){
+function ligarNomes(escopo, veioDaTurma){
   escopo.querySelectorAll("[data-aluno-pop]").forEach(b => {
-    b.onclick = e => { e.stopPropagation(); abrirFichaAluno(b.dataset.alunoPop); };
+    b.onclick = e => { e.stopPropagation(); abrirFichaAluno(b.dataset.alunoPop, veioDaTurma); };
   });
 }
 

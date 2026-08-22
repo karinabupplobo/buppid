@@ -455,10 +455,6 @@
     font-weight: 800; color: var(--teal-escuro); white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis;
   }
-  .id-turma{
-    font-weight: 600; color: var(--cinza-texto); white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis;
-  }
   .id-niv{
     font-size: 10px; font-weight: 800; letter-spacing: .06em; flex-shrink: 0;
     background: var(--limao-claro); color: var(--teal-escuro);
@@ -1062,20 +1058,16 @@ function abrirListaTurmas(){
   const corpo = [...porEmp.entries()].map(([emp, lista]) => `
     <div class="bloco">
       <div class="bt">${emp}</div>
-      ${lista.map(t => {
-        const p = partesIdent(t);
-        return `
+      ${lista.map(t => `
         <button class="turma-item" data-turma-pop="${t.id}">
           <span class="ti-esq">
-            <span class="ti-nome">${p.turma}</span>
-            <span class="ti-meta">${t.alunos.length} aluno${t.alunos.length>1?"s":""} · ${t.modulo}</span>
+            <span class="ti-nome">${t.nivel} · ${grade(t)}</span>
+            <span class="ti-meta">${t.modulo}</span>
           </span>
           <span class="ti-dir">
-            <span class="id-niv">${t.nivel}</span>
-            <span class="ti-grade">${grade(t)}</span>
+            <span class="ti-grade">${t.alunos.length} aluno${t.alunos.length>1?"s":""}</span>
           </span>
-        </button>`;
-      }).join("")}
+        </button>`).join("")}
     </div>`).join("");
 
   abrirModal("Minhas turmas", `${TURMAS.length} turmas`, corpo);
@@ -1142,7 +1134,8 @@ function abrirResumoTurma(t){
         ${n ? `<span class="tag-al vermelho">${n} ponto${n>1?"s":""} de atenção</span>` : ""}
       </button>`;
   }).join("");
-  abrirModal("Resumo da turma", t.nome, `
+  const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+  abrirModal("Turma", `${t.empresa} · ${t.nivel}${grade ? " · " + grade : ""}`, `
     <div class="bloco">
       <div class="bt">Empresa</div>
       <div class="mini"><b>${t.empresa}</b><span>${t.empresaDesc}</span></div>
@@ -1544,9 +1537,10 @@ function partesIdent(t){
   return { empresa: t.empresa, turma: resto, nivel: t.nivel };
 }
 
+// A turma é identificada por EMPRESA · NÍVEL · DIA · HORÁRIO. O nome interno
+// da turma ("Comex", "Diretoria") não aparece em lugar nenhum da interface.
 function identTexto(t){
-  const p = partesIdent(t);
-  return `${p.empresa} · ${p.turma} · ${p.nivel}`;
+  return `${t.empresa} · ${t.nivel}`;
 }
 
 // Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
@@ -1625,7 +1619,7 @@ function abrirCancelar(a, t){
   t = t || turmaAtual;
   abrirModal("Cancelar aula", a.titulo, `
     <div class="bloco">
-      <div class="bt">${t.nome} · ${a.dia ? a.dia + " " : ""}${a.hora}</div>
+      <div class="bt">${t.empresa} · ${t.nivel} · ${a.dia ? a.dia + " " : ""}${a.hora}</div>
       <div class="mini"><span>A aula fica registrada como cancelada e sai da lista de
       presença do dia. Dá para reativar depois.</span></div>
     </div>
@@ -1923,7 +1917,6 @@ function renderTrilhaGeral(){
       <div class="trilha-cab">
         <div class="ident">
           <span class="id-emp">${p.empresa}</span>
-          <span class="id-turma">${p.turma}</span>
           <span class="id-niv">${p.nivel}</span>
           ${grade ? `<span class="id-hora">${grade}</span>` : ""}
         </div>
@@ -2026,8 +2019,8 @@ function renderPresenca(){
         <div class="ba-esq">
           <span class="ba-hora">${aula.dia ? aula.dia + " " : ""}${aula.hora}</span>
           <div>
-            <div class="ba-turma">${partesIdent(turma).empresa} · ${partesIdent(turma).turma}</div>
-            <div class="ba-aula">${aula.titulo} · ${turma.nivel}</div>
+            <div class="ba-turma">${turma.empresa} · ${turma.nivel}</div>
+            <div class="ba-aula">${aula.titulo}</div>
           </div>
         </div>
         <span class="ba-status">${

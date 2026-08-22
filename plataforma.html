@@ -16,11 +16,12 @@
                                  gramatical, atenção à turma e a alunos) e só de
                                  lá se vai para o material. O "+" ao lado do
                                  horário abre os detalhes da turma.
-    3. Trilha & performance    — liberada automaticamente, prof só visualiza
-                                 (dois modos: geral da turma / por aluno)
-    4. Fim da aula             — fecha o DIA INTEIRO: todas as aulas de todas as
-                                 turmas, agrupadas por turma, com presença e
-                                 anotação interna por aluno
+    3. Fim da aula             — fecha o DIA INTEIRO: todas as aulas de todas as
+                                 turmas, com presença, engajamento (1 a 3
+                                 estrelas) e anotação interna por aluno
+    4. Trilhas                 — liberadas automaticamente, prof só visualiza:
+                                 uma linha por trilha com a média da turma, que
+                                 abre os acertos e erros de cada aluno
     5. Histórico               — mesma estrutura do Hoje: card com identificação
                                  no topo e botão "ver aula e anotações". O "+"
                                  abre o pop-up com presença, trilhas e
@@ -776,8 +777,8 @@
 
   <div class="tabs">
   <button class="tab active" data-pane="aula">Hoje</button>
-  <button class="tab" data-pane="trilha">Trilhas</button>
   <button class="tab" data-pane="presenca">Fim da aula</button>
+  <button class="tab" data-pane="trilha">Trilhas</button>
     <button class="tab" data-pane="historico">Histórico</button>
   </div>
 </aside>
@@ -1550,7 +1551,6 @@ function htmlIdent(t, dia, hora, comMais){
     `<button class="id-mais" data-resumo-turma title="Detalhes da turma" aria-label="Detalhes da turma">+</button>`;
   return `<div class="ident">
     <span class="id-emp">${p.empresa}</span>
-    <span class="id-turma">${p.turma}</span>
     <span class="id-niv">${p.nivel}</span>
     ${dia  ? `<span class="id-dia">${dia}</span>`   : ""}
     ${hora ? `<span class="id-hora">${hora}</span>` : ""}
@@ -1944,7 +1944,6 @@ function renderTrilhaGeral(){
             <span class="tr-tit">${h.titulo}</span>
             <span class="ident ident-tr">
               <span class="id-emp">${p.empresa}</span>
-              <span class="id-turma">${p.turma}</span>
               <span class="id-niv">${p.nivel}</span>
               ${h.dia ? `<span class="id-dia">${h.dia}</span>` : ""}
               <span class="id-hora">${h.data}</span>

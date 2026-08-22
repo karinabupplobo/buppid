@@ -136,11 +136,14 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
-### 21/08/2026 — Navegação por empresa
-O seletor do topo deixou de listar turmas e passou a listar **empresas**. Ao
-escolher uma empresa, as quatro telas (Hoje, Trilhas, Fim da aula, Histórico)
-juntam **todas as turmas daquela empresa**. Motivo: um professor que atende três
-turmas da mesma empresa não deveria trocar de contexto três vezes para ver o dia.
+### 21/08/2026 — Sem seletor: tudo do professor numa tela
+Passou por duas versões no mesmo dia. Primeiro o seletor de turma virou seletor
+de **empresa**; depois o seletor foi **removido de vez**. As quatro telas (Hoje,
+Trilhas, Fim da aula, Histórico) mostram **todas as turmas do professor**, sem
+filtro. No lugar do seletor há um botão **"N turmas"** que abre um pop-up com a
+lista completa — empresa, turma, nível, dia e horário — e cada turma leva ao seu
+resumo. Motivo: filtrar obrigava o professor a trocar de contexto várias vezes
+para fechar um dia que mistura empresas.
 
 Consequência: cada card precisa se identificar sozinho, porque a tela mistura
 turmas. Todo card de aula mostra **Empresa · Turma · Nível · Dia · Horário**,

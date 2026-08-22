@@ -7,8 +7,9 @@
   visualização for aprovada (decisão da Karina, 20/08/2026).
 
   Estrutura da tela do Professor (fechada em conversa 20/08):
-    1. Seletor de EMPRESA      — as telas juntam todas as turmas daquela empresa
-                                 (mudou em 21/08: antes era seletor de turma)
+    1. Botão "N turmas"        — não filtra nada: as telas mostram TODAS as turmas
+                                 do professor. O botão abre um pop-up com a lista
+                                 completa (empresa, turma, nível, dia, horário)
     2. Hoje                    — pode haver VÁRIAS aulas no mesmo dia. O card traz
                                  só a aula; clicar em "Iniciar" abre o pop-up de
                                  PONTOS DE ATENÇÃO (objetivo, vocabulário, ponto
@@ -73,7 +74,7 @@
 
   /* Logo à esquerda, identificação do usuário à direita, na mesma linha */
   .topo-sidebar{
-    display: flex; align-items: flex-start; justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--borda);
   }
 
@@ -102,53 +103,39 @@
     background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
   }
 
-  /* ===== Seletor de turma (dropdown custom, em superfície branca) ===== */
-  .turma-bar{ padding: 0; position: relative; }
-
-  .dd{ position: relative; width: 100%; }
-  .dd-trigger{
-    width: 100%; display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; background: var(--bg-dash);
-    border: 1px solid var(--borda); border-radius: 12px;
+  /* ===== Botão "N turmas" ===== */
+  .turma-bar{ padding: 0; }
+  .btn-turmas{
+    width: 100%; display: flex; align-items: center; gap: 9px;
+    background: var(--bg-dash); border: 1px solid var(--borda); border-radius: 12px;
     color: var(--texto); font-family: inherit; padding: 13px 16px;
-    cursor: pointer; text-align: left; transition: border-color .15s, background .15s;
+    cursor: pointer; text-align: left; transition: background .15s, border-color .15s;
   }
-  .dd-trigger:hover{ background: #E7E4EE; }
-  .dd.open .dd-trigger{ border-color: var(--azul-intermediario); background: #E7E4EE; }
-  .dd-trigger .nome{ font-size: 15px; font-weight: 700; letter-spacing: -0.01em; display: block; }
-  .dd-trigger .sub{ font-size: 11.5px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; display: block; }
-  .dd-caret{
-    flex-shrink: 0; width: 11px; height: 11px; border-right: 2px solid var(--azul-intermediario);
-    border-bottom: 2px solid var(--azul-intermediario); transform: rotate(45deg) translate(-2px,-2px);
-    transition: transform .2s;
+  .btn-turmas:hover{ background: #E7E4EE; border-color: var(--azul-intermediario); }
+  .bt-n{ font-size: 22px; font-weight: 800; color: var(--teal-escuro); line-height: 1; }
+  .bt-r{
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--cinza-texto);
   }
-  .dd.open .dd-caret{ transform: rotate(-135deg) translate(-3px,-3px); }
+  .bt-seta{
+    margin-left: auto; width: 8px; height: 8px;
+    border-right: 2px solid var(--azul-intermediario);
+    border-top: 2px solid var(--azul-intermediario); transform: rotate(45deg);
+  }
 
-  .dd-panel{
-    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 40;
-    background: var(--branco); border: 1px solid var(--border-strong, #d7dad3);
-    border-radius: 12px; padding: 6px; overflow: hidden;
-    box-shadow: 0 14px 34px rgba(10,18,20,0.16);
-    display: none; max-height: 60vh; overflow-y: auto;
+  /* item de turma no pop-up */
+  .turma-item{
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; background: #fafbf7; border: 1px solid transparent; border-radius: 9px;
+    padding: 11px 12px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: background .13s, border-color .13s;
   }
-  .dd.open .dd-panel{ display: block; }
-  .dd-group{
-    font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--azul-intermediario); padding: 10px 12px 6px;
-  }
-  .dd-opt{
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    width: 100%; background: none; border: none; cursor: pointer; text-align: left;
-    font-family: inherit; color: var(--texto); padding: 10px 12px;
-    border-radius: 8px; transition: background .12s;
-  }
-  .dd-opt:hover{ background: #f2f4ee; }
-  /* selecionado = limão com texto escuro (nunca branco sobre limão) */
-  .dd-opt.sel{ background: var(--amarelo-neon); color: var(--teal-escuro); font-weight: 700; }
-  .dd-opt .t{ font-size: 14px; font-weight: 600; }
-  .dd-opt .m{ font-size: 11px; color: var(--cinza-texto); font-weight: 500; flex-shrink: 0; }
-  .dd-opt.sel .t{ font-weight: 700; }
-  .dd-opt.sel .m{ color: var(--teal-escuro); opacity: .7; }
+  .turma-item:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .ti-esq{ display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ti-nome{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
+  .ti-meta{ font-size: 11.5px; color: var(--cinza-texto); }
+  .ti-dir{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .ti-grade{ font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario); white-space: nowrap; }
 
   /* ===== Abas: botões limão com texto teal ===== */
   .tabs{
@@ -786,16 +773,11 @@
   </div>
 
   <div class="turma-bar">
-    <div class="dd" id="dd-turma">
-      <button class="dd-trigger" id="dd-trigger">
-        <span>
-          <span class="nome" id="dd-nome"></span>
-          <span class="sub" id="dd-sub"></span>
-        </span>
-        <span class="dd-caret"></span>
-      </button>
-      <div class="dd-panel" id="dd-panel"></div>
-    </div>
+    <button class="btn-turmas" id="btn-turmas">
+      <span class="bt-n" id="bt-turmas-n"></span>
+      <span class="bt-r">turmas</span>
+      <span class="bt-seta"></span>
+    </button>
   </div>
 
   <div class="tabs">
@@ -1043,19 +1025,11 @@ const CANCELADAS   = {};
 function estado(store, aulaId){ return (store[aulaId] = store[aulaId] || {}); }
 
 
-// A navegação passou a ser por EMPRESA (21/08): o seletor lista empresas, e
-// todas as telas juntam as turmas daquela empresa. `turmaAtual` continua
-// existindo para o que é específico de uma turma, mas é derivado da aula.
-function empresas(){
-  const m = new Map();
-  TURMAS.forEach(t => {
-    if (!m.has(t.empresa)) m.set(t.empresa, { nome:t.empresa, desc:t.empresaDesc, turmas:[] });
-    m.get(t.empresa).turmas.push(t);
-  });
-  return [...m.values()];
-}
-let empresaAtual = empresas()[0];
-function turmasDaEmpresa(){ return empresaAtual.turmas; }
+// Sem seletor: as telas mostram TODAS as turmas do professor (21/08). O botão
+// do topo abre a lista completa; `turmaAtual` só é usado como fallback, já que
+// cada card carrega a sua turma.
+function turmasDaEmpresa(){ return TURMAS; }
+
 let turmaAtual = TURMAS[0];
 
 // ══════════════════════════════════════════════════════════
@@ -1067,44 +1041,54 @@ function metaTurma(t){
 }
 
 function renderTurmas(){
-  const e = empresaAtual;
-  const nAlunos = e.turmas.reduce((n,t) => n + t.alunos.length, 0);
-  document.getElementById("dd-nome").textContent = e.nome;
-  document.getElementById("dd-sub").textContent =
-    `${e.turmas.length} turma${e.turmas.length>1?"s":""} · ${nAlunos} aluno${nAlunos>1?"s":""}`;
+  document.getElementById("bt-turmas-n").textContent = TURMAS.length;
+}
 
-  const panel = document.getElementById("dd-panel");
-  panel.innerHTML = "";
-  const g = document.createElement("div");
-  g.className = "dd-group";
-  g.textContent = "Empresas";
-  panel.appendChild(g);
+function abrirListaTurmas(){
+  // Agrupa por empresa, mas lista turma a turma com nível, dia e horário.
+  const porEmp = new Map();
+  TURMAS.forEach(t => {
+    if (!porEmp.has(t.empresa)) porEmp.set(t.empresa, []);
+    porEmp.get(t.empresa).push(t);
+  });
 
-  empresas().forEach(emp => {
-    const n = emp.turmas.reduce((x,t) => x + t.alunos.length, 0);
-    const b = document.createElement("button");
-    b.className = "dd-opt" + (emp.nome === empresaAtual.nome ? " sel" : "");
-    b.innerHTML = `<span class="t">${emp.nome}</span><span class="m">${emp.turmas.length} turma${emp.turmas.length>1?"s":""} · ${n}</span>`;
+  const grade = t => {
+    const aulas = (t.aulasHoje || []);
+    if (!aulas.length) return "sem aula hoje";
+    return aulas.map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+  };
+
+  const corpo = [...porEmp.entries()].map(([emp, lista]) => `
+    <div class="bloco">
+      <div class="bt">${emp}</div>
+      ${lista.map(t => {
+        const p = partesIdent(t);
+        return `
+        <button class="turma-item" data-turma-pop="${t.id}">
+          <span class="ti-esq">
+            <span class="ti-nome">${p.turma}</span>
+            <span class="ti-meta">${t.alunos.length} aluno${t.alunos.length>1?"s":""} · ${t.modulo}</span>
+          </span>
+          <span class="ti-dir">
+            <span class="id-niv">${t.nivel}</span>
+            <span class="ti-grade">${grade(t)}</span>
+          </span>
+        </button>`;
+      }).join("")}
+    </div>`).join("");
+
+  abrirModal("Minhas turmas", `${TURMAS.length} turmas`, corpo);
+
+  document.querySelectorAll("[data-turma-pop]").forEach(b => {
     b.onclick = () => {
-      empresaAtual = emp;
-      turmaAtual = emp.turmas[0];
-      document.getElementById("dd-turma").classList.remove("open");
-      renderTudo();
+      const t = TURMAS.find(x => x.id === b.dataset.turmaPop);
+      if (t) abrirResumoTurma(t);
     };
-    panel.appendChild(b);
   });
 }
 
-document.getElementById("dd-trigger").onclick = e => {
-  e.stopPropagation();
-  document.getElementById("dd-turma").classList.toggle("open");
-};
-document.addEventListener("click", () =>
-  document.getElementById("dd-turma").classList.remove("open"));
-document.getElementById("dd-panel").onclick = e => e.stopPropagation();
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") document.getElementById("dd-turma").classList.remove("open");
-});
+document.getElementById("btn-turmas").onclick = abrirListaTurmas;
+
 
 // ══════════════════════════════════════════════════════════
 //  Aula do dia

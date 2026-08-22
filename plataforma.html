@@ -327,8 +327,8 @@
   }
 
   /* ===== Chip do resumo da turma ===== */
-  .section-title{ justify-content: space-between; }
   .chip-turma{
+    margin-left: auto; flex-shrink: 0;
     border: 1px solid var(--borda); background: var(--branco); cursor: pointer;
     font-family: inherit; font-size: 11px; font-weight: 800; letter-spacing: .06em;
     text-transform: uppercase; color: var(--teal-escuro);
@@ -438,6 +438,12 @@
   }
   .responder textarea:focus{ border-color: var(--azul-intermediario); }
   .responder .btn{ margin-top: 9px; }
+
+  .mini.destaque{
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 8px 8px 0; padding: 11px 12px;
+  }
+  .mini.destaque span{ color: var(--texto); font-size: 13.5px; font-weight: 500; }
 
   .mini.alerta-turma{
     border-left: 3px solid var(--amarelo-neon); border-radius: 0 8px 8px 0;
@@ -685,11 +691,7 @@ const TURMAS = [
     empresa: "Sertrading",
     empresaDesc: "Trading de comércio exterior, São Paulo/SP. Contrato fechado com RH em jun/2026.",
     modulo: "Módulo 3 — Negociação",
-    objetivos: [
-      "Conduzir uma negociação de frete em inglês do início ao fechamento, sem apoio de tradutor.",
-      "Escrever e-mail de contraproposta com condições comerciais claras.",
-      "Sustentar uma call de 30 minutos com fornecedor estrangeiro."
-    ],
+    objetivoTurma: "Em 6 meses, o time de Comex negocia frete em inglês do início ao fechamento — sem tradutor e sem escalar para a diretoria.",
     alunos: [
       { id:"a1", nome:"Bruno Tavares",  cargo:"Analista de Comex",
         historico:[
@@ -758,10 +760,7 @@ const TURMAS = [
     empresa: "Tirolez",
     empresaDesc: "Indústria de laticínios, São Paulo/SP. Turma de supervisão de fábrica.",
     modulo: "Módulo 1 — Fundamentos",
-    objetivos: [
-      "Dar instrução de segurança em inglês para visitante estrangeiro na planta.",
-      "Reportar ocorrência de turno por escrito, em frases curtas e corretas."
-    ],
+    objetivoTurma: "Em 6 meses, a supervisão conduz uma visita de auditoria estrangeira na planta em inglês, sem intérprete.",
     alunos: [
       { id:"b1", nome:"Gisele Piernikarz", cargo:"Gerente de DHO", historico:[] },
       { id:"b2", nome:"Rafael Souza",      cargo:"Supervisor de Produção",
@@ -808,10 +807,7 @@ const TURMAS = [
     empresa: "Nelogica",
     empresaDesc: "Software para mercado financeiro, Porto Alegre/RS. Aula particular do CEO.",
     modulo: "Módulo 5 — Apresentações",
-    objetivos: [
-      "Apresentar a empresa a investidor estrangeiro em 10 minutos, sem leitura de slide.",
-      "Responder perguntas difíceis de investidor sem perder a linha de raciocínio."
-    ],
+    objetivoTurma: "Em 6 meses, apresentar a empresa e sustentar o Q&A com investidor estrangeiro, sem leitura de slide.",
     alunos: [ { id:"c1", nome:"Marcos Boschetti", cargo:"CEO e cofundador",
         historico:[
           { data:"17/08", tipo:"aluno", autor:"Marcos Boschetti", texto:"Tenho pitch real para investidor dia 05/09. Dá para focar nisso nas próximas aulas?", tratado:false }
@@ -934,9 +930,6 @@ function abrirResumoTurma(){
   const t = turmaAtual;
   const alunos = t.alunos.map(a =>
     `<div class="mini"><b>${a.nome}</b><span>${a.cargo}</span></div>`).join("");
-  const objetivos = t.objetivos.map((o, i) =>
-    `<div class="mini obj"><b>${i+1}.</b><span>${o}</span></div>`).join("");
-
   abrirModal("Resumo da turma", t.nome, `
     <div class="bloco">
       <div class="bt">Empresa</div>
@@ -947,8 +940,8 @@ function abrirResumoTurma(){
       <div class="mini"><span>${t.nivelDesc}</span></div>
     </div>
     <div class="bloco">
-      <div class="bt">Objetivos do módulo · ${t.objetivos.length}</div>
-      ${objetivos}
+      <div class="bt">Objetivo da turma</div>
+      <div class="mini destaque"><span>${t.objetivoTurma}</span></div>
     </div>
     <div class="bloco">
       <div class="bt">Alunos · ${t.alunos.length}</div>
@@ -1199,12 +1192,7 @@ function alunosComAlerta(){
 function renderAula(){
   const box = document.getElementById("lista-aulas-hoje");
   const aulas = turmaAtual.aulasHoje || [];
-  box.innerHTML = `
-    <div class="section-title">
-      <span>Hoje · ${aulas.length} aula${aulas.length>1?"s":""}</span>
-      <button class="chip-turma" id="abrir-resumo-turma">Resumo da turma ›</button>
-    </div>`;
-  document.getElementById("abrir-resumo-turma").onclick = abrirResumoTurma;
+  box.innerHTML = `<div class="section-title">Hoje · ${aulas.length} aula${aulas.length>1?"s":""}</div>`;
 
   if (!aulas.length){
     box.innerHTML += `<div class="card"><p>Nenhuma aula marcada para hoje nesta turma.</p></div>`;
@@ -1219,6 +1207,7 @@ function renderAula(){
         <div class="aula-topo">
           <span class="hora">${a.hora}</span>
           <span class="pill hoje">Aula de hoje</span>
+          <button class="chip-turma" data-resumo-turma>Resumo da turma ›</button>
         </div>
         <h2>${a.titulo}</h2>
         <p>${a.resumo}</p>
@@ -1229,6 +1218,8 @@ function renderAula(){
     box.appendChild(par);
     ligarExp(par);
     ligarNomes(par);
+    const chip = par.querySelector("[data-resumo-turma]");
+    if (chip) chip.onclick = abrirResumoTurma;
   });
 }
 

@@ -497,6 +497,44 @@
     border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 4px;
   }
 
+  /* ===== Ações da aula: Iniciar / Cancelar ===== */
+  .acoes-aula{ display: flex; gap: 8px; margin-top: 14px; }
+  .acoes-aula .btn{ margin-top: 0; }
+  .acoes-aula .btn:first-child{ flex: 1; }
+  .btn.cancelar{
+    background: transparent; color: #a3312a; border: 1.5px solid #eab5b1;
+    flex-shrink: 0; width: auto; padding: 12px 16px;
+  }
+  .btn.cancelar:hover{ background: #fbe0de; color: #a3312a; }
+
+  .pill.cancelada{ background: #fbe0de; color: #a3312a; }
+
+  .cancel-aviso{
+    background: #fbe0de; border-radius: 10px; padding: 11px 13px; margin-top: 14px;
+  }
+  .cancel-aviso .ct{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: #a3312a; margin-bottom: 2px;
+  }
+  .cancel-aviso .cm{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  .motivos{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .mot{
+    border: 1.5px solid var(--borda); background: var(--branco); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--texto);
+    padding: 8px 12px; border-radius: 8px; transition: all .13s;
+  }
+  .mot:hover{ border-color: var(--azul-intermediario); }
+  .mot.on{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); font-weight: 700; }
+
+  .acoes-modal{ display: flex; gap: 8px; }
+  .acoes-modal .btn{ margin-top: 0; }
+
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .bloco-aula.cancelada .ba-hora{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
   /* ===== Fechar o dia: blocos por aula ===== */
   .bloco-aula{
     background: var(--branco); border: 1px solid var(--borda);
@@ -906,6 +944,8 @@ const TURMAS = [
 const PRESENCA     = {};   // { aulaId: { alunoId: "p"|"a" } }
 const ENGAJAMENTO  = {};   // { aulaId: { alunoId: 1|2|3 } }
 const NOTAS_ALUNO  = {};   // { aulaId: { alunoId: "texto" } }  — INTERNO
+// Aulas canceladas: { aulaId: { motivo, obs, quando } }
+const CANCELADAS   = {};
 function estado(store, aulaId){ return (store[aulaId] = store[aulaId] || {}); }
 
 
@@ -1351,12 +1391,14 @@ function renderAula(){
         <div class="lado-aula">
           <div class="aula-topo">
             <span class="hora">${a.dia ? a.dia + " · " : ""}${a.hora}</span>
-            <span class="pill hoje">Aula de hoje</span>
+            ${CANCELADAS[a.id]
+              ? '<span class="pill cancelada">Cancelada</span>'
+              : '<span class="pill hoje">Aula de hoje</span>'}
             <button class="chip-turma" data-resumo-turma>Resumo da turma ›</button>
           </div>
           <h2>${a.titulo}</h2>
           <p>${a.resumo}</p>
-          <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Dar aula e anotar →</a>
+          ${htmlAcoesAula(a)}
         </div>
         <div class="lado-pontos">${htmlPontosAtencao(a)}</div>
       </div>
@@ -1366,7 +1408,90 @@ function renderAula(){
     ligarNomes(par);
     const chip = par.querySelector("[data-resumo-turma]");
     if (chip) chip.onclick = abrirResumoTurma;
+    ligarAcoesAula(par, a);
   });
+}
+
+// ══════════════════════════════════════════════════════════
+//  Ações da aula: Iniciar e Cancelar
+// ══════════════════════════════════════════════════════════
+const MOTIVOS_CANCEL = [
+  "Cliente cancelou",
+  "Professor indisponível",
+  "Feriado / ponto facultativo",
+  "Sem quórum de alunos",
+  "Outro"
+];
+
+function htmlAcoesAula(a){
+  const c = CANCELADAS[a.id];
+  if (c){
+    return `
+      <div class="cancel-aviso">
+        <div class="ct">Aula cancelada</div>
+        <div class="cm">${c.motivo}${c.obs ? " — " + c.obs : ""}</div>
+      </div>
+      <button class="btn ghost" data-reativar>Reativar aula</button>`;
+  }
+  return `
+    <div class="acoes-aula">
+      <a class="btn" href="${urlAula('professor', a.titulo, a.data)}" target="_blank">Iniciar →</a>
+      <button class="btn cancelar" data-cancelar>Cancelar</button>
+    </div>`;
+}
+
+function ligarAcoesAula(escopo, a){
+  const bc = escopo.querySelector("[data-cancelar]");
+  if (bc) bc.onclick = () => abrirCancelar(a);
+  const br = escopo.querySelector("[data-reativar]");
+  if (br) br.onclick = () => { delete CANCELADAS[a.id]; renderAula(); renderPresenca(); };
+}
+
+function abrirCancelar(a){
+  abrirModal("Cancelar aula", a.titulo, `
+    <div class="bloco">
+      <div class="bt">${turmaAtual.nome} · ${a.dia ? a.dia + " " : ""}${a.hora}</div>
+      <div class="mini"><span>A aula fica registrada como cancelada e sai da lista de
+      presença do dia. Dá para reativar depois.</span></div>
+    </div>
+    <div class="bloco">
+      <div class="bt">Motivo</div>
+      <div class="motivos" id="motivos">
+        ${MOTIVOS_CANCEL.map((m,i) =>
+          `<button class="mot${i===0?" on":""}" data-m="${m}">${m}</button>`).join("")}
+      </div>
+    </div>
+    <div class="bloco">
+      <div class="bt">Observação (opcional)</div>
+      <div class="responder">
+        <textarea id="cancel-obs" placeholder="Detalhe o que aconteceu, se for útil registrar…"></textarea>
+      </div>
+    </div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="cancel-voltar">Voltar</button>
+      <button class="btn cancelar" id="cancel-ok">Marcar como cancelada</button>
+    </div>
+  `);
+
+  let motivo = MOTIVOS_CANCEL[0];
+  document.querySelectorAll("#motivos .mot").forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll("#motivos .mot").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      motivo = b.dataset.m;
+    };
+  });
+  document.getElementById("cancel-voltar").onclick = fecharModal;
+  document.getElementById("cancel-ok").onclick = () => {
+    CANCELADAS[a.id] = {
+      motivo,
+      obs: (document.getElementById("cancel-obs").value || "").trim(),
+      quando: hojeCurto()
+    };
+    fecharModal();
+    renderAula();
+    renderPresenca();
+  };
 }
 
 function linhaExp(id, rotulo, valor, conteudo){
@@ -1721,13 +1846,14 @@ function renderPresenca(){
   box.innerHTML = "";
 
   lista.forEach(({turma, aula}) => {
+    const cancelada = CANCELADAS[aula.id];
     const pres  = estado(PRESENCA, aula.id);
     const notas = estado(NOTAS_ALUNO, aula.id);
     const marcados = turma.alunos.filter(a => pres[a.id]).length;
     const completo = marcados === turma.alunos.length;
 
     const bloco = document.createElement("div");
-    bloco.className = "bloco-aula" + (completo ? " ok" : "");
+    bloco.className = "bloco-aula" + (cancelada ? " cancelada" : completo ? " ok" : "");
     bloco.innerHTML = `
       <div class="ba-cab">
         <div class="ba-esq">
@@ -1737,9 +1863,15 @@ function renderPresenca(){
             <div class="ba-aula">${aula.titulo}</div>
           </div>
         </div>
-        <span class="ba-status">${completo ? "fechada" : `${marcados}/${turma.alunos.length}`}</span>
+        <span class="ba-status">${
+          cancelada ? "cancelada" : completo ? "fechada" : `${marcados}/${turma.alunos.length}`
+        }</span>
       </div>
-      <div class="ba-alunos"></div>`;
+      ${cancelada
+        ? `<div class="ba-cancel">${cancelada.motivo}${cancelada.obs ? " — " + cancelada.obs : ""}</div>`
+        : `<div class="ba-alunos"></div>`}`;
+
+    if (cancelada){ box.appendChild(bloco); return; }
 
     const lst = bloco.querySelector(".ba-alunos");
     turma.alunos.forEach(al => {
@@ -1783,7 +1915,9 @@ function renderPresenca(){
 document.getElementById("btn-salvar-presenca").onclick = () => {
   const lista = aulasDoDia();
   let faltando = 0, totalAlunos = 0, comNota = 0;
+  let canceladas = 0;
   lista.forEach(({turma, aula}) => {
+    if (CANCELADAS[aula.id]){ canceladas++; return; }
     const pres  = estado(PRESENCA, aula.id);
     const notas = estado(NOTAS_ALUNO, aula.id);
     totalAlunos += turma.alunos.length;
@@ -1794,7 +1928,7 @@ document.getElementById("btn-salvar-presenca").onclick = () => {
     alert(`Ainda faltam ${faltando} marcação(ões) de presença.`);
     return;
   }
-  alert(`Dia fechado.\n${lista.length} aula(s) · ${totalAlunos} presença(s).\nAnotações internas: ${comNota}.\n\n(Prévia — ainda não grava no banco.)`);
+  alert(`Dia fechado.\n${lista.length - canceladas} aula(s) dada(s)${canceladas ? ` · ${canceladas} cancelada(s)` : ""}.\n${totalAlunos} presença(s) · ${comNota} anotação(ões) interna(s).\n\n(Prévia — ainda não grava no banco.)`);
 };
 
 // ══════════════════════════════════════════════════════════

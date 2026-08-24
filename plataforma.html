@@ -75,10 +75,13 @@
      é a borda esquerda do "b" — alinha com o nome do professor abaixo. */
   .logo{ display: block; width: 118px; height: auto; flex-shrink: 0; }
 
-  /* Logo à esquerda, identificação do usuário à direita, na mesma linha */
+  /* TESTE: faixa marrom no topo da sidebar, com logo e usuário por cima.
+     Voltar: git checkout v-20260821-1400-ANTES-topo-marrom */
   .topo-sidebar{
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--borda);
+    gap: 12px; background: var(--teal-escuro);
+    margin: -26px -20px 4px; padding: 22px 20px 20px;
+    border-bottom: none;
   }
 
   /* Nome do usuário. REGRA DE IDIOMA (21/08): a plataforma inteira é em
@@ -92,12 +95,12 @@
        RH do cliente  -> manager
        equipe Bupp    -> internal                                             */
   .whoami{
-    font-size: 11.5px; color: var(--cinza-texto); font-weight: 500;
+    font-size: 11.5px; color: rgba(255,255,255,.7); font-weight: 500;
     line-height: 1.3; text-align: right; flex-shrink: 0;
     display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
   }
   .whoami strong{
-    color: var(--texto); display: block; font-weight: 700; font-size: 13px;
+    color: #fff; display: block; font-weight: 700; font-size: 13px;
     letter-spacing: -0.01em;
   }
   .whoami span{
@@ -112,8 +115,9 @@
     font-family: inherit; font-size: 11px; font-weight: 600;
     color: var(--azul-intermediario); white-space: nowrap;
   }
-  .link-turmas b{ font-weight: 800; color: var(--teal-escuro); }
-  .link-turmas:hover{ color: var(--teal-escuro); text-decoration: underline; }
+  .link-turmas{ color: rgba(255,255,255,.72); }
+  .link-turmas b{ font-weight: 800; color: #fff; }
+  .link-turmas:hover{ color: #fff; text-decoration: underline; }
 
   /* item de turma no pop-up */
   .turma-item{
@@ -790,9 +794,10 @@
   @media (max-width: 899px){
     .sidebar{
       background: var(--branco); border-bottom: 1px solid var(--borda);
-      border-radius: 0; margin: 0; padding: 18px 18px 14px;
+      border-radius: 0; margin: 0; padding: 0 18px 14px;
       display: flex; flex-direction: column; gap: 14px;
     }
+    .topo-sidebar{ margin: 0 -18px 4px; padding: 18px 18px 16px; }
     .logo{ width: 112px; }
     main{ padding-top: 18px; }
   }
@@ -802,7 +807,7 @@
 
 <aside class="sidebar">
   <div class="topo-sidebar">
-    <img class="logo" src="assets/logo-bupp-marrom-azul.png" alt="bupp idiomas">
+    <img class="logo" src="assets/logo-bupp-marrom-azul-claro.png" alt="bupp idiomas">
     <div class="whoami">
       <strong>Hi, Ana Ribeiro</strong>
       <span>teacher</span>

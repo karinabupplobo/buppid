@@ -48,6 +48,28 @@ branco 1,56:1 (por isso o azul nunca é texto, só preenchimento).
 
 ---
 
+## Comb 3 — Cinza + azul-bebê
+**Tag:** `comb-3-cinza-azul`
+
+| Papel | Hex | Onde aparece |
+|---|---|---|
+| Cinza escuro | `#404040` | Texto, títulos, botões, aba ativa, palavra do logo |
+| Azul-bebê | `#A8D5F2` | Acento — abas, faixa das trilhas, selo, botão "+" |
+| Azul do logo | `#7CBBE4` | Só nos pingos do "i" |
+| Azul lavado | `#E4F1FA` | Fundos suaves |
+| Cinza neutro | `#F5F4F2` | Fundo da página |
+| Branco | `#FFFFFF` | Cards |
+
+Arquivo do logo: `assets/logo-bupp-cinza-azul.png`
+
+Contrastes: cinza sobre branco 10,4:1 · cinza sobre azul 6,7:1 · azul sobre
+branco 1,56:1.
+
+É a Comb 1 com o azul-bebê no lugar do limão — mesma estrutura neutra, acento
+frio em vez de quente.
+
+---
+
 ## Descartadas no caminho
 
 - **Ameixa `#4A2B4D` + limão `#D9E28C` + cinza-lavanda `#6B6478`** — tag

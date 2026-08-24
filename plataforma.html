@@ -75,13 +75,13 @@
      é a borda esquerda do "b" — alinha com o nome do professor abaixo. */
   .logo{ display: block; width: 118px; height: auto; flex-shrink: 0; }
 
-  /* TESTE: faixa marrom no topo da sidebar, com logo e usuário por cima.
-     Voltar: git checkout v-20260821-1400-ANTES-topo-marrom */
+  /* Sidebar inteira em marrom: logo, usuário e abas sobre fundo escuro.
+     Voltar ao topo marrom com abas claras:
+     git checkout v-20260821-1415-ANTES-sidebar-toda-marrom */
   .topo-sidebar{
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; background: var(--teal-escuro);
-    margin: -26px -20px 4px; padding: 22px 20px 20px;
-    border-bottom: none;
+    gap: 12px; padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,.14);
   }
 
   /* Nome do usuário. REGRA DE IDIOMA (21/08): a plataforma inteira é em
@@ -133,7 +133,7 @@
   .ti-dir{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
   .ti-grade{ font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario); white-space: nowrap; }
 
-  /* ===== Abas: botões limão com texto teal ===== */
+  /* ===== Abas: sobre a sidebar escura ===== */
   .tabs{
     display: flex; gap: 6px; overflow-x: auto; padding: 14px 18px 0;
     scrollbar-width: none;
@@ -141,17 +141,17 @@
   .tabs::-webkit-scrollbar{ display: none; }
   .tab{
     flex-shrink: 0; cursor: pointer; font-family: inherit;
-    background: var(--limao-claro); border: 1px solid transparent;
-    color: var(--teal-escuro);
+    background: rgba(255,255,255,.08); border: 1px solid transparent;
+    color: rgba(255,255,255,.78);
     font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
     text-transform: uppercase; padding: 10px 14px; border-radius: 9px;
-    transition: background .14s, border-color .14s;
+    transition: background .14s, color .14s;
   }
-  .tab:hover{ background: var(--amarelo-neon); }
+  .tab:hover{ background: rgba(255,255,255,.16); color: #fff; }
   .tab.active{
     background: var(--amarelo-neon); border-color: var(--amarelo-neon);
     color: var(--teal-escuro);
-    box-shadow: inset 3px 0 0 var(--teal-escuro);
+    box-shadow: none;
   }
 
   /* ===== Conteúdo ===== */
@@ -739,8 +739,8 @@
     /* Sidebar ocupa o lado inteiro, do topo ao rodapé */
     .sidebar{
       grid-column: 1;
-      background: var(--branco);
-      border-right: 1px solid var(--borda);
+      background: var(--teal-escuro);
+      border-right: none;
       margin: 0; border-radius: 0;
       padding: 26px 20px 24px;
       position: sticky; top: 0; height: 100vh;
@@ -749,7 +749,7 @@
 
     .tabs{
       flex-direction: column; gap: 5px; padding: 0; overflow: visible;
-      border-top: none; padding-top: 2px;
+      border-top: none; padding-top: 4px;
     }
     .tab{
       width: 100%; text-align: left; padding: 12px 14px;
@@ -793,11 +793,11 @@
   /* Mobile: mantém empilhado */
   @media (max-width: 899px){
     .sidebar{
-      background: var(--branco); border-bottom: 1px solid var(--borda);
-      border-radius: 0; margin: 0; padding: 0 18px 14px;
+      background: var(--teal-escuro); border-bottom: none;
+      border-radius: 0; margin: 0; padding: 18px 18px 16px;
       display: flex; flex-direction: column; gap: 14px;
     }
-    .topo-sidebar{ margin: 0 -18px 4px; padding: 18px 18px 16px; }
+    .topo-sidebar{ padding-bottom: 14px; }
     .logo{ width: 112px; }
     main{ padding-top: 18px; }
   }

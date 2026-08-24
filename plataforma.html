@@ -623,16 +623,28 @@
   }
   .bloco-aula.ok{ border-color: #b6d7ac; }
 
-  .ba-cab{ padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--borda); }
+  /* cabeçalho na cor escura, sangrando até a borda — mesmo tratamento das
+     trilhas. Texto branco, e o acento fica no selo do nível. */
+  .ba-cab{
+    background: var(--teal-escuro);
+    margin: -18px -18px 16px; padding: 14px 18px;
+    border-radius: 13px 13px 0 0;
+  }
   .ba-cab .ident{ margin-bottom: 7px; }
-  .ba-linha{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .ba-cab .id-emp{ color: #fff; }
+  .ba-cab .id-turma{ color: rgba(255,255,255,.72); }
+  .ba-cab .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .ba-cab .id-dia, .ba-cab .id-hora{ color: rgba(255,255,255,.8); }
+
+  .ba-linha{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .ba-aula{
-    font-size: 17px; font-weight: 800; color: var(--texto);
+    font-size: 17px; font-weight: 800; color: #fff;
     letter-spacing: -0.02em; min-width: 0;
   }
   .ba-status{
     font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--cinza-texto); background: #f2f4ee; padding: 5px 10px; border-radius: 999px;
+    color: rgba(255,255,255,.75); background: rgba(255,255,255,.14);
+    padding: 5px 10px; border-radius: 999px;
     flex-shrink: 0; white-space: nowrap;
   }
   .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
@@ -702,7 +714,7 @@
   /* cancelada */
   .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
   .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
-  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; padding-top: 2px; }
 
   /* ===== Histórico ===== */
   .hist-item{

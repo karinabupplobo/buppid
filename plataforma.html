@@ -622,60 +622,67 @@
   }
   .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
 
-  /* item de aluno */
-  .presenca-item{
-    background: #fafbf7; border: 1px solid transparent;
-    border-radius: 11px; padding: 13px 14px; margin-bottom: 9px;
+  /* Uma LINHA por aluno: nome · presença · engajamento · ícone de anotação */
+  .linha-aluno{
+    border-bottom: 1px solid #f2f4f0;
   }
-  .presenca-item:last-child{ margin-bottom: 0; }
-  .presenca-item.marcado{ background: var(--branco); border-color: var(--borda); }
+  .linha-aluno:last-child{ border-bottom: none; }
 
-  .pi-nome{
-    font-size: 14.5px; font-weight: 700; color: var(--texto);
-    letter-spacing: -0.01em; margin-bottom: 11px;
+  .la-linha{
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 2px;
   }
-  .pi-campos{ display: flex; flex-direction: column; gap: 9px; }
-  .pi-campo{
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  .la-nome{
+    flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--texto);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .pi-campo.off{ opacity: .35; }
-  .pi-rot{
-    font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
-    color: var(--azul-intermediario);
-  }
+  .linha-aluno.marcado .la-nome{ font-weight: 700; }
 
-  .toggle{ display: flex; gap: 6px; }
+  .toggle{ display: flex; gap: 5px; flex-shrink: 0; }
   .toggle button{
-    border: 1.5px solid var(--borda); background: var(--branco); border-radius: 8px;
-    padding: 7px 13px; font-family: inherit; font-size: 12px; font-weight: 700;
-    cursor: pointer; color: var(--cinza-texto); transition: all .13s;
+    border: 1.5px solid var(--borda); background: var(--branco); border-radius: 7px;
+    padding: 6px 11px; font-family: inherit; font-size: 11.5px; font-weight: 700;
+    cursor: pointer; color: var(--cinza-texto); transition: all .13s; white-space: nowrap;
   }
   .toggle button:hover{ border-color: var(--azul-intermediario); }
   .toggle button.on-p{ background: #dff0d8; border-color: #b6d7ac; color: #3f6b45; }
   .toggle button.on-a{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
 
-  .nota-toggle{
-    background: none; border: none; cursor: pointer; font-family: inherit;
-    font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario);
-    padding: 11px 0 0; margin-top: 11px; border-top: 1px solid #eef0ea;
-    display: flex; align-items: center; gap: 6px; width: 100%;
-  }
-  .nota-toggle:hover{ color: var(--teal-escuro); }
-  .nota-toggle .dot-nota{
-    width: 6px; height: 6px; border-radius: 50%; background: var(--amarelo-neon);
-    box-shadow: 0 0 0 2px rgba(217,226,140,.4); display: none; flex-shrink: 0;
-  }
-  .nota-toggle.tem .dot-nota{ display: block; }
+  .estrelas{ display: flex; gap: 1px; flex-shrink: 0; }
+  .estrelas.off{ opacity: .3; }
 
-  .nota-box{ display: none; margin-top: 10px; }
+  .ico-nota{
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px; padding: 0;
+    border: 1.5px solid var(--borda); background: var(--branco);
+    color: var(--cinza-texto); cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center; transition: all .13s;
+  }
+  .ico-nota svg{ width: 15px; height: 15px; }
+  .ico-nota:hover{ border-color: var(--azul-intermediario); color: var(--azul-intermediario); }
+  .ico-nota.aberto{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
+  .ico-nota.tem{ color: var(--teal-escuro); border-color: var(--amarelo-neon); }
+  .ico-nota.tem::after{
+    content: ""; position: absolute; top: -3px; right: -3px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amarelo-neon); border: 1.5px solid var(--branco);
+  }
+
+  .nota-box{ display: none; padding: 0 2px 12px; }
   .nota-box.open{ display: block; }
   .nota-box textarea{
     width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
-    padding: 11px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
-    resize: vertical; min-height: 74px; outline: none; line-height: 1.45;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 66px; outline: none; line-height: 1.45;
   }
   .nota-box textarea:focus{ border-color: var(--azul-intermediario); }
-  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 6px; font-weight: 600; }
+  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 5px; font-weight: 600; }
+
+  @media (max-width: 620px){
+    .la-linha{ flex-wrap: wrap; gap: 9px; padding: 12px 2px; }
+    .la-nome{ flex: 1 0 100%; }
+    .toggle{ flex: 1; }
+    .toggle button{ flex: 1; }
+  }
 
   /* cancelada */
   .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
@@ -1021,8 +1028,7 @@
 
     .aluno-lista{ display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
     .aluno-lista .card{ margin-bottom: 0; }
-    .ba-alunos{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-    .ba-alunos .presenca-item{ margin-bottom: 0; }
+
 
 
     .switch{ max-width: 380px; }
@@ -2327,29 +2333,26 @@ function renderPresenca(){
       const nEng  = eng[al.id] || 0;
       const d = document.createElement("div");
       d.className = "presenca-item";
-      d.className = "presenca-item" + (atual ? " marcado" : "");
+      d.className = "linha-aluno" + (atual ? " marcado" : "");
       d.innerHTML = `
-        <div class="pi-nome">${al.nome}</div>
-        <div class="pi-campos">
-          <div class="pi-campo">
-            <span class="pi-rot">Presença</span>
-            <span class="toggle">
-              <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
-              <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
-            </span>
-          </div>
-          <div class="pi-campo${atual === "a" ? " off" : ""}">
-            <span class="pi-rot">Engajamento</span>
-            <span class="estrelas">
-              ${[1,2,3].map(i =>
-                `<button class="estrela ${i<=nEng?"on":""}" data-eng="${i}">★</button>`).join("")}
-            </span>
-          </div>
+        <div class="la-linha">
+          <span class="la-nome">${al.nome}</span>
+          <span class="toggle">
+            <button class="${atual === "p" ? "on-p" : ""}" data-v="p">Presente</button>
+            <button class="${atual === "a" ? "on-a" : ""}" data-v="a">Faltou</button>
+          </span>
+          <span class="estrelas${atual === "a" ? " off" : ""}">
+            ${[1,2,3].map(i =>
+              `<button class="estrela ${i<=nEng?"on":""}" data-eng="${i}" title="${i} de 3">★</button>`).join("")}
+          </span>
+          <button class="ico-nota${nota ? " tem" : ""}" title="${nota ? "Anotação escrita" : "Anotar sobre este aluno"}"
+                  aria-label="Anotação interna sobre ${al.nome}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+          </button>
         </div>
-        <button class="nota-toggle${nota ? " tem" : ""}">
-          <span class="dot-nota"></span>
-          ${nota ? "Anotação escrita" : "Anotar sobre este aluno"} ›
-        </button>
         <div class="nota-box">
           <textarea placeholder="Como foi a participação, o que travou, o que reforçar na próxima…">${nota}</textarea>
           <div class="hint">Interno — não vai para o aluno nem para o RH</div>
@@ -2365,10 +2368,14 @@ function renderPresenca(){
           renderPresenca();
         };
       });
-      const tgl = d.querySelector(".nota-toggle");
+      const tgl = d.querySelector(".ico-nota");
       const cx  = d.querySelector(".nota-box");
       const ta  = d.querySelector("textarea");
-      tgl.onclick = () => { cx.classList.toggle("open"); if (cx.classList.contains("open")) ta.focus(); };
+      tgl.onclick = () => {
+        cx.classList.toggle("open");
+        tgl.classList.toggle("aberto", cx.classList.contains("open"));
+        if (cx.classList.contains("open")) ta.focus();
+      };
       ta.oninput = () => { notas[al.id] = ta.value; tgl.classList.toggle("tem", !!ta.value.trim()); };
       if (nota) cx.classList.add("open");
 

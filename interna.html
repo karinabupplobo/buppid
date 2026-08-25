@@ -3338,6 +3338,24 @@ function nivelAlunoLabel(a){
   return a.nivel_sub ? `${a.nivel_banda} ${a.nivel_sub}` : a.nivel_banda;
 }
 
+// Quem está escrevendo uma anotação não é digitado à mão — vem do login
+// de verdade. index.html (embutido aqui nas abas Tasks/Leads/Mercado) já
+// tem login por usuário/senha e guarda a sessão em localStorage; como
+// interna.html é servido da mesma origem, dá pra ler direto, sem duplicar
+// login nenhum. Só funciona depois que a pessoa loga pelo menos uma vez
+// numa dessas abas nesta sessão do navegador.
+function usuarioLogadoInterno(){
+  try{
+    const sessao = JSON.parse(localStorage.getItem("tasks_std_auth_session") || "null");
+    const usuarios = JSON.parse(localStorage.getItem("tasks_std_users") || "null") || [];
+    if (sessao && usuarios.length){
+      const u = usuarios.find(x => x.username === sessao.username);
+      if (u) return u.name || u.login || u.username;
+    }
+  } catch(e){ /* localStorage inacessível ou corrompido — trata como deslogado */ }
+  return null;
+}
+
 
 // Histórico com a gestão desde a época em que a empresa era lead — mesmo
 // registro de comentários (`e.cm`) que a aba Leads usa. Vira "cliente" não
@@ -3410,8 +3428,17 @@ async function atribuirProfessor(turmaId, professorId, elSalvo){
   setTimeout(() => { elSalvo.textContent = ""; }, 2000);
 }
 
+const ROTULO_FORMATO = { live: "Live", online: "Online" };
+
+// dias_semana é array de {dia, hora} (ex.: [{dia:"Seg",hora:"08:00"}]) desde
+// 25/08 — antes era só array de strings. diaTexto cobre os dois formatos
+// pra não quebrar turma antiga migrada sem passar de novo pelo form.
+function diaTexto(d){
+  return typeof d === "string" ? d : `${d.dia} ${d.hora || ""}`.trim();
+}
+
 function turmaLinhaHtml(t){
-  const meta = [t.nivel, t.formato, (t.dias_semana || []).length ? t.dias_semana.join("/") : null]
+  const meta = [t.nivel, ROTULO_FORMATO[t.formato] || t.formato, (t.dias_semana || []).length ? t.dias_semana.map(diaTexto).join(" · ") : null]
     .filter(Boolean).join(" · ");
   return `
     <div class="turma-linha">
@@ -3437,17 +3464,30 @@ function turmaLinhaHtml(t){
 function abrirDetalheTurma(t){
   const alunos = alunosDaTurma(t.id);
   const modulos = (t.nomes_modulos || []).filter(Boolean);
+  const freq = (t.dias_semana || []).length;
   const corpo = `
     <div class="dt-grid">
-      <div class="mini"><b>Dias da aula</b><span>${(t.dias_semana || []).length ? t.dias_semana.join(", ") : "—"}</span></div>
-      <div class="mini"><b>Formato</b><span>${t.formato || "—"}</span></div>
-      <div class="mini"><b>Frequência</b><span>${t.frequencia_semanal ? t.frequencia_semanal + "x por semana" : "—"}</span></div>
+      <div class="mini"><b>Dias da aula</b><span>${(t.dias_semana || []).length ? t.dias_semana.map(diaTexto).join(", ") : "—"}</span></div>
+      <div class="mini">
+        <b>Formato</b>
+        <select id="dt-formato" data-turma="${t.id}">
+          <option value="">Selecione</option>
+          <option value="live" ${t.formato === "live" ? "selected" : ""}>Live</option>
+          <option value="online" ${t.formato === "online" ? "selected" : ""}>Online</option>
+        </select>
+        <span id="dt-formato-salvo" class="tl-salvo"></span>
+      </div>
+      <div class="mini"><b>Frequência</b><span>${freq ? freq + "x por semana" : "—"}</span></div>
     </div>
     <div class="mini obj"><b>Objetivo 1</b><span>${t.objetivo_1 || "—"}</span></div>
     ${t.objetivo_2 ? `<div class="mini obj"><b>Objetivo 2</b><span>${t.objetivo_2}</span></div>` : ""}
     ${t.assuntos_essenciais ? `<div class="mini obj"><b>Assuntos essenciais</b><span>${t.assuntos_essenciais}</span></div>` : ""}
     ${t.restricoes ? `<div class="mini obj alerta-turma"><b>Restrições</b><span>${t.restricoes}</span></div>` : ""}
     ${modulos.length ? `<div class="mini obj"><b>Módulos</b><span>${modulos.join(" · ")}</span></div>` : ""}
+
+    <div class="rt-titulo" style="margin-top:16px;">Material</div>
+    <div class="sem-turmas">Nenhum material ainda — o Gerador de Aulas ainda não grava em <code>aulas_assigned</code> (tabela pendente no Supabase). Quando ligar, o material de cada aluno aparece aqui.</div>
+
     <div class="rt-titulo" style="margin-top:16px;">Alunos (${alunos.length})</div>
     ${alunos.length ? alunos.map(a => `
       <div class="turma-item" data-aluno-detalhe="${a.id}">
@@ -3459,6 +3499,22 @@ function abrirDetalheTurma(t){
       </div>`).join("") : `<div class="sem-turmas">Nenhum aluno vinculado ainda.</div>`}
   `;
   abrirModal(t.empresas_cliente ? t.empresas_cliente.nome : "Turma", t.nome, corpo);
+  const selFormato = document.getElementById("dt-formato");
+  selFormato.onchange = async () => {
+    const salvo = document.getElementById("dt-formato-salvo");
+    salvo.textContent = "Salvando...";
+    try{
+      const res = await fetch(`${SB_URL}/rest/v1/turmas?id=eq.${t.id}`, {
+        method: "PATCH", headers: SB_H, body: JSON.stringify({ formato: selFormato.value || null })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      t.formato = selFormato.value || null;
+      salvo.textContent = "Salvo ✓";
+      setTimeout(() => { salvo.textContent = ""; }, 2000);
+    } catch(err){
+      salvo.textContent = "Erro: " + err.message; salvo.style.color = "var(--erro)";
+    }
+  };
   document.querySelectorAll("[data-aluno-detalhe]").forEach(el => {
     el.onclick = () => abrirDetalheAluno(alunos.find(a => a.id === el.dataset.alunoDetalhe));
   });
@@ -3483,8 +3539,15 @@ async function abrirDetalheAluno(aluno, turmasDaEmpresa){
 }
 
 const ROTULO_TIPO_ANOTACAO = { prof: "Professor", rh: "RH", aluno: "Aluno", gestao: "Gestão Bupp" };
+// Formato curto pro rodapé de cada anotação: "Nome - papel". O papel vem
+// do tipo (que por sua vez vem da dash de onde a pessoa escreveu, nunca
+// de uma escolha manual) — mesma convenção de idioma dos selos de papel
+// do resto do produto (teacher/student/manager), só que "adm" no lugar
+// de "internal" aqui, por pedido da Karina.
+const ROTULO_TIPO_CURTO = { prof: "teacher", rh: "manager", aluno: "student", gestao: "adm" };
 
 function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
+  const autorLogado = usuarioLogadoInterno();
   const corpo = `
     <div class="dt-grid">
       <div class="mini"><b>Nível (Level Test)</b><span>${nivelAlunoLabel(aluno)}</span></div>
@@ -3513,14 +3576,16 @@ function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
     <div class="cm-lista">
       ${anotacoes.length ? anotacoes.map(a => `
         <div class="cm-item">
-          <div class="cm-meta">${ROTULO_TIPO_ANOTACAO[a.tipo] || a.tipo} · ${a.autor} · ${new Date(a.criado_em).toLocaleDateString("pt-BR")}</div>
+          <div class="cm-meta">${a.autor} - ${ROTULO_TIPO_CURTO[a.tipo] || a.tipo} · ${new Date(a.criado_em).toLocaleDateString("pt-BR")}</div>
           <p>${a.texto}</p>
         </div>`).join("") : `<p class="lead-meta">Nenhuma anotação ainda.</p>`}
     </div>
     <div class="form-modal" style="margin-top:10px;">
-      <div class="anot-autor-fixo">Você escreve como <b>Karina Bupp Team</b></div>
+      ${autorLogado
+        ? `<div class="anot-autor-fixo">Você escreve como <b>${autorLogado} - adm</b></div>`
+        : `<div class="mini obj alerta-turma"><b>Sem login detectado</b><span>Abra a aba Tasks ou Leads e entre com seu usuário antes de escrever uma anotação — é de lá que o nome vem, ninguém digita nome aqui.</span></div>`}
       <textarea id="anot-txt" rows="2" placeholder="anotação sobre esse aluno…"></textarea>
-      <button type="button" class="btn-salvar" id="anot-salvar" style="margin-top:8px;">Adicionar</button>
+      <button type="button" class="btn-salvar" id="anot-salvar" style="margin-top:8px;" ${autorLogado ? "" : "disabled"}>Adicionar</button>
       <div id="anot-msg" style="font-size:12px;font-weight:700;margin-top:6px;"></div>
     </div>
   `;
@@ -3549,11 +3614,12 @@ function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
     const texto = document.getElementById("anot-txt").value.trim();
     const msg = document.getElementById("anot-msg");
     if (!texto){ msg.textContent = "Escreva algo antes de adicionar."; msg.style.color = "var(--erro)"; return; }
+    if (!autorLogado){ msg.textContent = "Sem login detectado — abra Tasks ou Leads e entre antes."; msg.style.color = "var(--erro)"; return; }
     document.getElementById("anot-salvar").disabled = true; msg.textContent = "Salvando...";
     try{
       const res = await fetch(`${SB_URL}/rest/v1/anotacoes_aluno`, {
         method: "POST", headers: { ...SB_H, "Prefer": "return=representation" },
-        body: JSON.stringify({ aluno_id: aluno.id, tipo: "gestao", autor: "Karina Bupp Team", texto })
+        body: JSON.stringify({ aluno_id: aluno.id, tipo: "gestao", autor: autorLogado, texto })
       });
       if (!res.ok) throw new Error(await res.text());
       const nova = (await res.json())[0];

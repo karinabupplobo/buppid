@@ -1444,6 +1444,13 @@
   }
   .ec-cab{ display:flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
   .ec-cab h3{ margin: 0 0 3px; font-size: 15.5px; font-weight: 800; color: var(--texto); }
+  .ec-clicavel{ cursor: pointer; }
+  .ec-clicavel:hover{ text-decoration: underline; }
+  .cm-lista{ display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; max-height: 260px; overflow-y: auto; }
+  .cm-item{ background: var(--limao-claro); border: 1px solid var(--borda); border-radius: 8px; padding: 8px 10px; }
+  .cm-meta{ font-size: 10.5px; color: var(--cinza-texto); font-weight: 700; }
+  .cm-item p{ margin: 3px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--texto); }
+  .lead-meta{ font-size: 12.5px; color: var(--cinza-texto); }
   .ec-meta{ font-size: 12px; color: var(--cinza-texto); line-height: 1.4; max-width: 520px; }
   .ec-btns{ flex-shrink: 0; display:flex; gap: 8px; }
   .btn-mini{
@@ -3330,6 +3337,67 @@ function nivelAlunoLabel(a){
 }
 
 
+// Histórico com a gestão desde a época em que a empresa era lead — mesmo
+// registro de comentários (`e.cm`) que a aba Leads usa. Vira "cliente" não
+// zera a conversa: continua no mesmo lugar, só muda o status do lead.
+async function abrirHistoricoEmpresa(empresa){
+  if (!empresa) return;
+  abrirModal("Empresas", empresa.nome, `<div class="turmas-vazio">Carregando histórico...</div>`);
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/bupp_dashboard_data?section=eq.leads&select=data,revision`, { headers: SB_H });
+    if (!res.ok) throw new Error(await res.text());
+    const rows = await res.json();
+    const row = rows[0];
+    const leads = (row && row.data) || [];
+    const chaveLead = empresa.lead_origem_id || empresa.nome;
+    const lead = leads.find(l => l.n === chaveLead);
+    renderHistoricoEmpresa(empresa, leads, lead, row ? (row.revision || 0) : 0);
+  } catch(err){
+    document.getElementById("modal-corpo").innerHTML = `<div class="turmas-vazio">Erro ao carregar histórico: ${err.message}</div>`;
+  }
+}
+
+function renderHistoricoEmpresa(empresa, leads, lead, revision){
+  const cm = (lead && lead.cm) || [];
+  const corpo = `
+    ${lead ? "" : `<div class="mini alerta-turma"><b>Sem lead de origem</b><span>Essa empresa não veio do funil de Leads (foi cadastrada direto por "+ Nova Empresa"), então não tem histórico anterior — só o que for escrito daqui pra frente.</span></div>`}
+    <div class="rt-titulo">Histórico com a gestão (${cm.length})</div>
+    <div class="cm-lista">
+      ${cm.length ? cm.slice().reverse().map(m => `
+        <div class="cm-item">
+          <div class="cm-meta">${m.quem || "—"} · ${m.dt}</div>
+          <p>${m.t}</p>
+        </div>`).join("") : `<p class="lead-meta">Nenhum comentário ainda.</p>`}
+    </div>
+    <div class="form-modal" style="margin-top:10px;">
+      <textarea id="hist-emp-txt" rows="2" placeholder="o que aconteceu com essa empresa…"></textarea>
+      <button type="button" class="btn-salvar" id="hist-emp-salvar" style="margin-top:8px;">Adicionar</button>
+      <div id="hist-emp-msg" style="font-size:12px;font-weight:700;margin-top:6px;"></div>
+    </div>
+  `;
+  abrirModal("Empresas", empresa.nome, corpo);
+  document.getElementById("hist-emp-salvar").onclick = async () => {
+    const txt = document.getElementById("hist-emp-txt").value.trim();
+    const msg = document.getElementById("hist-emp-msg");
+    if (!txt){ msg.textContent = "Escreva algo antes de adicionar."; msg.style.color = "var(--erro)"; return; }
+    if (!lead){ msg.textContent = "Sem lead de origem — não tem onde gravar esse comentário."; msg.style.color = "var(--erro)"; return; }
+    document.getElementById("hist-emp-salvar").disabled = true;
+    msg.textContent = "Salvando...";
+    try{
+      lead.cm = [...(lead.cm || []), { t: txt, dt: hojeCurto(), quem: "Gestão Bupp" }];
+      const res = await fetch(`${SB_URL}/rest/v1/bupp_dashboard_data?section=eq.leads`, {
+        method: "PATCH", headers: SB_H,
+        body: JSON.stringify({ data: leads, revision: (revision || 0) + 1, updated_at: new Date().toISOString() })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      renderHistoricoEmpresa(empresa, leads, lead, (revision || 0) + 1);
+    } catch(err){
+      msg.textContent = "Erro ao salvar: " + err.message; msg.style.color = "var(--erro)";
+      document.getElementById("hist-emp-salvar").disabled = false;
+    }
+  };
+}
+
 async function atribuirProfessor(turmaId, professorId, elSalvo){
   await fetch(`${SB_URL}/rest/v1/turmas?id=eq.${turmaId}`, {
     method: "PATCH", headers: SB_H, body: JSON.stringify({ professor_id: professorId || null })
@@ -3381,7 +3449,7 @@ function abrirDetalheTurma(t){
     ${modulos.length ? `<div class="mini obj"><b>Módulos</b><span>${modulos.join(" · ")}</span></div>` : ""}
     <div class="rt-titulo" style="margin-top:16px;">Alunos (${alunos.length})</div>
     ${alunos.length ? alunos.map(a => `
-      <div class="turma-item" style="cursor:default;">
+      <div class="turma-item" data-aluno-detalhe="${a.id}">
         <span class="ti-esq">
           <span class="ti-nome">${a.nome}${a.cargo ? " · " + a.cargo : ""}</span>
           <span class="ti-meta">${a.email || "sem e-mail"}</span>
@@ -3390,35 +3458,93 @@ function abrirDetalheTurma(t){
       </div>`).join("") : `<div class="sem-turmas">Nenhum aluno vinculado ainda.</div>`}
   `;
   abrirModal(t.empresas_cliente ? t.empresas_cliente.nome : "Turma", t.nome, corpo);
+  document.querySelectorAll("[data-aluno-detalhe]").forEach(el => {
+    el.onclick = () => abrirDetalheAluno(alunos.find(a => a.id === el.dataset.alunoDetalhe));
+  });
 }
 
-// Aluno fez o Level Test (ou entrou pelo +Aluno) mas ainda não foi alocado
-// numa turma — mostra o nível pra Bupp decidir onde encaixar.
-function abrirAlocarAluno(aluno, turmasDaEmpresa){
+// Ficha do aluno: nível (Level Test), performance do que já existe (ainda
+// não tem presença/trilha — tabelas presenca/progresso_aluno do schema de
+// 10 não foram criadas) e anotações de prof/RH/aluno/gestão, acumulativas
+// (não são por aula). Se `turmasDaEmpresa` vier preenchido, mostra também
+// o bloco de alocar numa turma — é o caso do aluno "sem turma ainda".
+async function abrirDetalheAluno(aluno, turmasDaEmpresa){
+  if (!aluno) return;
+  abrirModal("Aluno", aluno.nome, `<div class="turmas-vazio">Carregando...</div>`);
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/anotacoes_aluno?aluno_id=eq.${aluno.id}&order=criado_em.desc`, { headers: SB_H });
+    if (!res.ok) throw new Error(await res.text());
+    const anotacoes = await res.json();
+    renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes);
+  } catch(err){
+    document.getElementById("modal-corpo").innerHTML = `<div class="turmas-vazio">Erro ao carregar aluno: ${err.message}</div>`;
+  }
+}
+
+const ROTULO_TIPO_ANOTACAO = { prof: "Professor", rh: "RH", aluno: "Aluno", gestao: "Gestão Bupp" };
+
+function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
   const corpo = `
-    <div class="mini obj"><b>Nível (Level Test)</b><span>${nivelAlunoLabel(aluno)}</span></div>
-    ${aluno.cargo ? `<div class="mini obj"><b>Cargo</b><span>${aluno.cargo}</span></div>` : ""}
-    ${aluno.email ? `<div class="mini obj"><b>E-mail</b><span>${aluno.email}</span></div>` : ""}
-    <div class="form-modal" style="margin-top:14px;">
-      <div class="campo">
-        <label>Alocar na turma</label>
-        <select id="aloc-turma">
-          <option value="">Selecione uma turma</option>
-          ${turmasDaEmpresa.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
-        </select>
-      </div>
-      <button type="button" class="btn-salvar" id="aloc-confirmar" ${turmasDaEmpresa.length ? "" : "disabled"}>Alocar</button>
-      <div id="aloc-msg" style="font-size:12px;font-weight:700;margin-top:8px;"></div>
+    <div class="dt-grid">
+      <div class="mini"><b>Nível (Level Test)</b><span>${nivelAlunoLabel(aluno)}</span></div>
+      ${aluno.cargo ? `<div class="mini"><b>Cargo</b><span>${aluno.cargo}</span></div>` : ""}
+      ${aluno.email ? `<div class="mini"><b>E-mail</b><span>${aluno.email}</span></div>` : ""}
+      ${aluno.area_atuacao ? `<div class="mini"><b>Área de atuação</b><span>${aluno.area_atuacao}</span></div>` : ""}
     </div>
-    ${turmasDaEmpresa.length ? "" : `<div class="sem-turmas" style="margin-top:8px;">Essa empresa ainda não tem turma — crie uma com "+ Turma" antes de alocar.</div>`}
+    <div class="mini obj alerta-turma"><b>Performance</b><span>Presença e progresso na trilha ainda não estão conectados (tabelas presenca/progresso_aluno pendentes). Só o Level Test está disponível hoje.</span></div>
+
+    ${turmasDaEmpresa ? `
+      <div class="rt-titulo" style="margin-top:16px;">Alocar numa turma</div>
+      <div class="form-modal">
+        <div class="campo">
+          <select id="aloc-turma">
+            <option value="">Selecione uma turma</option>
+            ${turmasDaEmpresa.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
+          </select>
+        </div>
+        <button type="button" class="btn-salvar" id="aloc-confirmar" ${turmasDaEmpresa.length ? "" : "disabled"}>Alocar</button>
+        <div id="aloc-msg" style="font-size:12px;font-weight:700;margin-top:8px;"></div>
+      </div>
+      ${turmasDaEmpresa.length ? "" : `<div class="sem-turmas" style="margin-top:8px;">Essa empresa ainda não tem turma — crie uma com "+ Turma" antes de alocar.</div>`}
+    ` : ""}
+
+    <div class="rt-titulo" style="margin-top:16px;">Anotações (${anotacoes.length})</div>
+    <div class="cm-lista">
+      ${anotacoes.length ? anotacoes.map(a => `
+        <div class="cm-item">
+          <div class="cm-meta">${ROTULO_TIPO_ANOTACAO[a.tipo] || a.tipo} · ${a.autor} · ${new Date(a.criado_em).toLocaleDateString("pt-BR")}</div>
+          <p>${a.texto}</p>
+        </div>`).join("") : `<p class="lead-meta">Nenhuma anotação ainda.</p>`}
+    </div>
+    <div class="form-modal" style="margin-top:10px;">
+      <div class="linha2">
+        <div class="campo">
+          <label>Quem escreve</label>
+          <select id="anot-tipo">
+            <option value="gestao">Gestão Bupp</option>
+            <option value="prof">Professor</option>
+            <option value="rh">RH</option>
+            <option value="aluno">Aluno</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Seu nome</label>
+          <input id="anot-autor" placeholder="Ex.: Karina">
+        </div>
+      </div>
+      <textarea id="anot-txt" rows="2" placeholder="anotação sobre esse aluno…"></textarea>
+      <button type="button" class="btn-salvar" id="anot-salvar" style="margin-top:8px;">Adicionar</button>
+      <div id="anot-msg" style="font-size:12px;font-weight:700;margin-top:6px;"></div>
+    </div>
   `;
-  abrirModal("Alocar aluno", aluno.nome, corpo);
-  const btn = document.getElementById("aloc-confirmar");
-  if (btn) btn.onclick = async () => {
+  abrirModal("Aluno", aluno.nome, corpo);
+
+  const btnAloc = document.getElementById("aloc-confirmar");
+  if (btnAloc) btnAloc.onclick = async () => {
     const turmaId = document.getElementById("aloc-turma").value;
     const msg = document.getElementById("aloc-msg");
     if (!turmaId){ msg.textContent = "Selecione uma turma."; msg.style.color = "var(--erro)"; return; }
-    btn.disabled = true; msg.textContent = "Alocando...";
+    btnAloc.disabled = true; msg.textContent = "Alocando...";
     try{
       const res = await fetch(`${SB_URL}/rest/v1/turma_alunos`, {
         method: "POST", headers: SB_H, body: JSON.stringify({ turma_id: turmaId, aluno_id: aluno.id })
@@ -3428,7 +3554,28 @@ function abrirAlocarAluno(aluno, turmasDaEmpresa){
       fecharModal();
       renderTurmas();
     } catch(err){
-      msg.textContent = "Erro ao alocar: " + err.message; msg.style.color = "var(--erro)"; btn.disabled = false;
+      msg.textContent = "Erro ao alocar: " + err.message; msg.style.color = "var(--erro)"; btnAloc.disabled = false;
+    }
+  };
+
+  document.getElementById("anot-salvar").onclick = async () => {
+    const texto = document.getElementById("anot-txt").value.trim();
+    const autor = document.getElementById("anot-autor").value.trim();
+    const tipo = document.getElementById("anot-tipo").value;
+    const msg = document.getElementById("anot-msg");
+    if (!texto || !autor){ msg.textContent = "Preencha quem escreve e o texto."; msg.style.color = "var(--erro)"; return; }
+    document.getElementById("anot-salvar").disabled = true; msg.textContent = "Salvando...";
+    try{
+      const res = await fetch(`${SB_URL}/rest/v1/anotacoes_aluno`, {
+        method: "POST", headers: { ...SB_H, "Prefer": "return=representation" },
+        body: JSON.stringify({ aluno_id: aluno.id, tipo, autor, texto })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const nova = (await res.json())[0];
+      renderDetalheAluno(aluno, turmasDaEmpresa, [nova, ...anotacoes]);
+    } catch(err){
+      msg.textContent = "Erro ao salvar: " + err.message; msg.style.color = "var(--erro)";
+      document.getElementById("anot-salvar").disabled = false;
     }
   };
 }
@@ -3470,7 +3617,7 @@ function renderTurmas(){
       <div class="empresa-card">
         <div class="ec-cab">
           <div>
-            <h3>${e.nome}</h3>
+            <h3 class="ec-clicavel" data-empresa-historico="${e.id}">${e.nome}</h3>
             ${meta ? `<div class="ec-meta">${meta}</div>` : ""}
           </div>
           <div class="ec-btns">
@@ -3500,11 +3647,14 @@ function renderTurmas(){
   wrap.querySelectorAll("[data-turma-detalhe]").forEach(el => {
     el.onclick = () => abrirDetalheTurma(TURMAS_SB.find(t => t.id === el.dataset.turmaDetalhe));
   });
+  wrap.querySelectorAll("[data-empresa-historico]").forEach(el => {
+    el.onclick = () => abrirHistoricoEmpresa(EMPRESAS_SB.find(e => e.id === el.dataset.empresaHistorico));
+  });
   wrap.querySelectorAll("[data-aluno-alocar]").forEach(btn => {
     btn.onclick = () => {
       const aluno = ALUNOS_SB.find(a => a.id === btn.dataset.alunoAlocar);
       const turmasDaEmpresa = TURMAS_SB.filter(t => t.empresa_cliente_id === btn.dataset.empresa);
-      abrirAlocarAluno(aluno, turmasDaEmpresa);
+      abrirDetalheAluno(aluno, turmasDaEmpresa);
     };
   });
 }

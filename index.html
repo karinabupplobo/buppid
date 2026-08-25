@@ -141,6 +141,8 @@
     letter-spacing: inherit; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 4px;
   }
   .tasks-colfiltro-btn svg { width: 9px; height: 9px; flex: none; }
+  /* "Responsáveis" não cabe na barra do celular; vira "Resp." abaixo de 1140px. */
+  .rot-curto { display: none; }
   .tasks-colfiltro-btn.ativo::after {
     content: ""; width: 5px; height: 5px; border-radius: 50%;
     background: var(--accent-lime); margin-left: 1px;
@@ -372,6 +374,8 @@
     }
     .tasks-header-row > div:first-child,
     .tasks-header-row > div:last-child { display: none; }
+    .rot-longo { display: none; }
+    .rot-curto { display: inline; }
     /* Os campos fluem lado a lado e quebram sozinhos conforme a largura:
        2 por fileira num celular, 3 ou 4 numa janela estreita de desktop. */
     .tasks-row { display: flex; flex-wrap: wrap; gap: 8px 10px; padding: 10px 12px; }
@@ -3153,7 +3157,7 @@ function renderTasksHeaderRow() {
 
   const col = (chave, rotulo, conteudo, ativo) => `
     <div class="tasks-colfiltro">
-      <button type="button" class="tasks-colfiltro-btn${ativo ? " ativo" : ""}" data-abrir="${chave}">${esc(rotulo)} ${chevron}</button>
+      <button type="button" class="tasks-colfiltro-btn${ativo ? " ativo" : ""}" data-abrir="${chave}">${rotulo} ${chevron}</button>
       <div class="tasks-colfiltro-menu${tasksFiltroMenuAberto === chave ? " open" : ""}" data-menu="${chave}">
         ${conteudo}
         <button type="button" class="tasks-colfiltro-limpar" data-limpar="${chave}">Limpar</button>
@@ -3166,7 +3170,7 @@ function renderTasksHeaderRow() {
     ${col("status", "Status", opcoesStatus, f.status.size > 0)}
     ${col("inicio", "Início", datasHtml("inicioDe", "inicioAte"), !!(f.inicioDe || f.inicioAte))}
     ${col("fim", "Fim", datasHtml("fimDe", "fimAte"), !!(f.fimDe || f.fimAte))}
-    ${col("responsaveis", "Responsáveis", opcoesResp, f.responsaveis.size > 0)}
+    ${col("responsaveis", "<span class=\"rot-longo\">Responsáveis</span><span class=\"rot-curto\">Resp.</span>", opcoesResp, f.responsaveis.size > 0)}
     <div></div>
   `;
 

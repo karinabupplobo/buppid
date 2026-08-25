@@ -361,21 +361,26 @@
   .settings-email-menu button:hover { background: var(--land-default); color: var(--accent-lime); }
   #settings-msg { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
 
-  /* --- Telas estreitas: a grade de 7 colunas pede cerca de 1020px de largura
-     útil. Abaixo disso cada linha vira um cartão empilhado com o rótulo de cada
-     campo em cima, em vez de estourar a tela na horizontal. --- */
-  @media (max-width: 1140px) {
-    /* O cabeçalho deixa de ser uma grade de colunas e vira uma barra de
-       filtros: os títulos continuam visíveis (e clicáveis), mas fluem em
-       linha em vez de tentar alinhar com colunas que não existem mais. */
+  /* No CELULAR a barra de filtros volta: sem cabeçalho de tabela, é a única
+     forma de alcançar os filtros de coluna. */
+  @media (max-width: 760px) {
     .tasks-header-row {
-      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      display: flex !important; flex-wrap: wrap; gap: 8px 14px;
       border-radius: 11px 11px 0 0;
     }
     .tasks-header-row > div:first-child,
     .tasks-header-row > div:last-child { display: none; }
     .rot-longo { display: none; }
     .rot-curto { display: inline; }
+  }
+
+  /* --- Telas estreitas: a grade de 7 colunas pede cerca de 1020px de largura
+     útil. Abaixo disso cada linha vira um cartão empilhado com o rótulo de cada
+     campo em cima, em vez de estourar a tela na horizontal. --- */
+  @media (max-width: 1140px) {
+    /* Entre 760 e 1140px a tabela deixa de ser grade e a barra não tem o que
+       rotular: fica escondida, como era antes. Ela volta só no celular. */
+    .tasks-header-row { display: none; }
     /* Os campos fluem lado a lado e quebram sozinhos conforme a largura:
        2 por fileira num celular, 3 ou 4 numa janela estreita de desktop. */
     .tasks-row { display: flex; flex-wrap: wrap; gap: 8px 10px; padding: 10px 12px; }
@@ -752,7 +757,22 @@
   .lh-txt a{ color: var(--accent); font-weight: 700; }
   .lh-vazio{ font-size: 12.5px; color: var(--text-muted); padding: 4px 2px; }
 
-  #leads-main { display: grid; grid-template-columns: 232px 1fr; gap: 16px; align-items: start; }
+  /* O funil começa CENTRALIZADO e sozinho: é a visão de onde estão as
+     empresas. Ao escolher uma etapa, ele encolhe para a esquerda e a planilha
+     daquela etapa ocupa o resto. */
+  #leads-main { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+  #leads-funnel{ max-width: 420px; margin: 0 auto; width: 100%; }
+  body.leads-etapa-aberta #leads-main{ grid-template-columns: 232px 1fr; }
+  body.leads-etapa-aberta #leads-funnel{ max-width: none; margin: 0; }
+  body:not(.leads-etapa-aberta) #leads-tabela{ display: none; }
+  body:not(.leads-etapa-aberta) #leads-voltar-funil{ display: none; }
+  #leads-voltar-funil{
+    display: flex; align-items: center; gap: 7px;
+    border: 1px solid var(--border); background: var(--panel); border-radius: 9px;
+    padding: 9px 13px; font-family: inherit; font-size: 12.5px; font-weight: 700;
+    color: var(--accent); cursor: pointer; margin-bottom: 10px;
+  }
+  #leads-voltar-funil:hover{ background: var(--focus-bg); border-color: var(--accent); }
   #leads-funnel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px 13px; position: sticky; top: 18px; }
   /* Faixa do topo do funil no padrão da dash: fundo marrom, texto branco,
@@ -795,19 +815,10 @@
   @media (max-width: 900px) {
     #leads-main { grid-template-columns: 1fr; }
     #leads-funnel { position: static; }
-    /* No celular a tela começa no funil; a planilha só aparece depois que uma
-       etapa é escolhida — daí o funil recolhe para dar espaço à lista. */
-    body.leads-etapa-aberta #leads-funnel > h4,
-    body.leads-etapa-aberta #funnel-stages,
-    body.leads-etapa-aberta #funnel-hint { display: none; }
-    body:not(.leads-etapa-aberta) #leads-tabela { display: none; }
-    #leads-voltar-funil{ display: none; }
-    body.leads-etapa-aberta #leads-voltar-funil{
-      display: flex; align-items: center; gap: 7px; width: 100%;
-      border: 1px solid var(--border); background: var(--panel); border-radius: 9px;
-      padding: 10px 12px; font-family: inherit; font-size: 12.5px; font-weight: 700;
-      color: var(--accent); cursor: pointer; margin-bottom: 10px;
-    }
+    /* No celular não há espaço para os dois lado a lado: ao escolher a etapa,
+       o funil some por completo e a planilha ocupa a tela. */
+    body.leads-etapa-aberta #leads-funnel { display: none; }
+    #leads-voltar-funil{ width: 100%; }
     #leads-cabecalho{ display: none; }
     .lead-row > summary{
       grid-template-columns: 26px minmax(0,1fr) 54px 34px;
@@ -2398,8 +2409,9 @@ function renderFunil(calc) {
 
 document.getElementById("funnel-stages").addEventListener("click", ev => {
   const b = ev.target.closest("[data-fs]"); if (!b) return;
-  // celular: entrar numa etapa troca o funil pela planilha daquela etapa
-  if (window.innerWidth <= 900) document.body.classList.add("leads-etapa-aberta");
+  // Escolher uma etapa abre a planilha daquela etapa. No desktop o funil vai
+  // para a lateral; no celular ele sai de cena.
+  document.body.classList.add("leads-etapa-aberta");
   // clicar na etapa já ativa limpa o filtro e volta a mostrar tudo
   leadsFiltro = leadsFiltro === b.dataset.fs ? "todos" : b.dataset.fs;
   renderLeads();

@@ -1050,31 +1050,79 @@
     .btn-csv{ margin-left: 0; flex: 1; }
     #titulo-geral{ margin-bottom: 10px; }
 
-  /* ── Filtro único com sugestões e chips ── */
-  .busca-uni{ position: relative; flex: 1; min-width: 260px; }
-  .busca-uni input{ width: 100%; }
-  .bu-sugestoes{
-    position: absolute; top: calc(100% + 5px); left: 0; right: 0; z-index: 45;
-    background: var(--branco); border: 1px solid var(--borda); border-radius: 10px;
-    box-shadow: 0 14px 34px rgba(0,0,0,.16); overflow: hidden;
-    max-height: 300px; overflow-y: auto; display: none;
+  /* ── Botão "+ Filtro" e painel em dois passos ── */
+  .add-filtro{ position: relative; }
+  .btn-add{
+    display: flex; align-items: center; gap: 7px;
+    border: 1px dashed var(--azul-intermediario); background: var(--branco);
+    border-radius: 9px; padding: 9px 14px; cursor: pointer; font-family: inherit;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
+    transition: background .13s, border-color .13s;
   }
-  .bu-sugestoes.on{ display: block; }
-  .bu-item{
+  .btn-add:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); border-style: solid; }
+  .btn-add .mais{ font-size: 15px; line-height: 1; font-weight: 800; }
+
+  .af-painel{
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 50;
+    min-width: 260px; max-width: 320px;
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 11px;
+    box-shadow: 0 16px 38px rgba(0,0,0,.18); overflow: hidden; display: none;
+  }
+  .af-painel.on{ display: block; }
+
+  .af-tit{
+    font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--azul-intermediario); padding: 11px 13px 7px;
+  }
+  .af-topo{ display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--borda); }
+  .af-topo .af-tit{ padding: 11px 13px 11px 0; }
+  .af-voltar{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 20px; line-height: 1; color: var(--azul-intermediario);
+    padding: 8px 6px 8px 11px;
+  }
+  .af-voltar:hover{ color: var(--teal-escuro); }
+
+  .af-cat{
     width: 100%; display: flex; align-items: center; gap: 10px;
     background: none; border: none; cursor: pointer; font-family: inherit;
-    padding: 9px 12px; text-align: left; border-bottom: 1px solid #f4f2f0;
+    padding: 10px 13px; text-align: left; border-top: 1px solid #f4f2f0;
   }
-  .bu-item:last-child{ border-bottom: none; }
-  .bu-item:hover{ background: var(--limao-claro); }
-  .bu-cat{
-    font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--azul-intermediario); background: #f4f2f0;
-    padding: 3px 7px; border-radius: 5px; flex-shrink: 0; min-width: 66px; text-align: center;
+  .af-cat:hover{ background: var(--limao-claro); }
+  .af-rot{ flex: 1; font-size: 13.5px; font-weight: 600; color: var(--texto); }
+  .af-n{
+    font-size: 11px; font-weight: 700; color: var(--cinza-texto); flex-shrink: 0;
   }
-  .bu-val{ flex: 1; font-size: 13px; font-weight: 600; color: var(--texto); }
-  .bu-n{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); flex-shrink: 0; }
+  .af-seta{
+    width: 6px; height: 6px; flex-shrink: 0;
+    border-right: 2px solid var(--azul-intermediario);
+    border-top: 2px solid var(--azul-intermediario); transform: rotate(45deg);
+  }
 
+  .af-busca-cx{ padding: 9px 11px; border-bottom: 1px solid var(--borda); }
+  .af-busca{
+    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 7px 9px;
+    font-family: inherit; font-size: 12.5px; color: var(--texto); outline: none;
+  }
+  .af-busca:focus{ border-color: var(--teal-escuro); }
+  .af-lista{ max-height: 240px; overflow-y: auto; padding: 5px 8px; }
+  .af-item{
+    display: flex; align-items: center; gap: 9px; padding: 7px 5px; cursor: pointer;
+    font-size: 12.5px; border-radius: 6px;
+  }
+  .af-item:hover{ background: #faf9f7; }
+  .af-item input{ accent-color: var(--teal-escuro); cursor: pointer; flex-shrink: 0; }
+  .af-val{ flex: 1; color: var(--texto); font-weight: 500; }
+  .af-vazio{ font-size: 12px; color: var(--cinza-texto); padding: 10px 5px; }
+  .af-rodape{ padding: 9px 11px; border-top: 1px solid var(--borda); }
+  .af-ok{
+    width: 100%; border: none; border-radius: 8px; background: var(--teal-escuro);
+    color: #fff; font-family: inherit; font-size: 12.5px; font-weight: 700;
+    padding: 9px; cursor: pointer;
+  }
+  .af-ok:hover{ background: var(--azul-intermediario); }
+
+  /* ── Chips dos filtros ativos ── */
   .chips-filtro{ display: flex; flex-wrap: wrap; gap: 7px; margin: -6px 0 14px; }
   .chips-filtro:empty{ margin: 0; }
   .chip{
@@ -1100,6 +1148,8 @@
     text-decoration: underline; padding: 0 6px;
   }
   .chip-limpar:hover{ color: var(--teal-escuro); }
+
+  #titulo-geral{ margin-bottom: 10px; }
 
   .btn-limpar-col{
     border: 1px solid var(--borda); background: var(--limao-claro); border-radius: 9px;
@@ -1200,10 +1250,9 @@
 <main>
   <section class="pane active" id="pane-planilha">
     <div class="barra-planilha">
-      <div class="busca-uni" id="busca-uni">
-        <input class="filtro" id="f-busca" type="search" autocomplete="off"
-               placeholder="Filtrar por empresa, turma, aula, dia, aluno ou professor…">
-        <div class="bu-sugestoes" id="bu-sugestoes"></div>
+      <div class="add-filtro" id="add-filtro">
+        <button class="btn-add" id="btn-add"><span class="mais">+</span> Filtro</button>
+        <div class="af-painel" id="af-painel"></div>
       </div>
       <button class="btn-limpar-col" id="limpar-col" style="display:none;"></button>
       <span class="cont-linhas" id="cont-linhas"></span>
@@ -1340,26 +1389,22 @@ function passaFiltrosBasicos(l){
   });
 }
 
-function sugestoesPara(txt){
-  const q = txt.trim().toLowerCase();
-  if (!q) return [];
-  const out = [];
-  CATEGORIAS.forEach(c => {
-    const vistos = new Set();
-    LINHAS.forEach(l => {
-      const v = c.campo(l);
-      if (!v || vistos.has(v)) return;
-      if (!v.toLowerCase().includes(q)) return;
-      if (CHIPS.some(ch => ch.k === c.k && ch.valor === v)) return;
-      vistos.add(v);
-      // Quantas linhas esse valor traria SOMANDO aos chips já postos. Ignora
-      // os chips da própria categoria, que são alternativas entre si.
-      const n = LINHAS.filter(x =>
-        c.campo(x) === v && passaFiltrosColuna(x) && passaChipsExceto(x, c.k)).length;
-      if (n) out.push({ k:c.k, rot:c.rot, valor:v, n });   // sem resultado, não sugere
-    });
-  });
-  return out.sort((a,b) => b.n - a.n).slice(0, 12);
+// ── Painel "+ Filtro": escolhe a categoria, depois os valores ──
+let catAberta = null;
+
+function abrirPainelFiltro(){
+  catAberta = null;
+  pintarPainel();
+  document.getElementById("af-painel").classList.add("on");
+}
+function fecharPainelFiltro(){
+  document.getElementById("af-painel").classList.remove("on");
+  catAberta = null;
+}
+
+function contarValor(c, v){
+  return LINHAS.filter(x =>
+    c.campo(x) === v && passaFiltrosColuna(x) && passaChipsExceto(x, c.k)).length;
 }
 
 function passaChipsExceto(l, katual){
@@ -1371,32 +1416,75 @@ function passaChipsExceto(l, katual){
   });
 }
 
-function renderSugestoes(){
-  const cx  = document.getElementById("bu-sugestoes");
-  const txt = document.getElementById("f-busca").value;
-  const lista = sugestoesPara(txt);
-  if (!lista.length){
-    cx.classList.remove("on");
-    cx.innerHTML = "";
+function pintarPainel(){
+  const p = document.getElementById("af-painel");
+
+  // ── passo 1: escolher a categoria ──
+  if (!catAberta){
+    p.innerHTML = `
+      <div class="af-tit">Filtrar por</div>
+      ${CATEGORIAS.map(c => {
+        const usados = CHIPS.filter(ch => ch.k === c.k).length;
+        const total = new Set(LINHAS.map(l => c.campo(l)).filter(Boolean)).size;
+        return `<button class="af-cat" data-k="${c.k}">
+          <span class="af-rot">${c.rot}</span>
+          <span class="af-n">${usados ? `${usados} de ${total}` : total}</span>
+          <span class="af-seta"></span>
+        </button>`;
+      }).join("")}`;
+    p.querySelectorAll(".af-cat").forEach(b => {
+      b.onclick = e => { e.stopPropagation(); catAberta = b.dataset.k; pintarPainel(); };
+    });
     return;
   }
-  cx.innerHTML = lista.map((s, i) => `
-    <button class="bu-item" data-i="${i}">
-      <span class="bu-cat">${s.rot}</span>
-      <span class="bu-val">${s.valor}</span>
-      <span class="bu-n">${s.n}</span>
-    </button>`).join("");
-  cx.classList.add("on");
-  cx.querySelectorAll(".bu-item").forEach(b => {
-    b.onclick = () => {
-      const s = lista[+b.dataset.i];
-      CHIPS.push({ k:s.k, rot:s.rot, valor:s.valor });
-      document.getElementById("f-busca").value = "";
-      cx.classList.remove("on");
-      renderChips();
-      renderTabela();
-    };
-  });
+
+  // ── passo 2: escolher os valores ──
+  const c = CATEGORIAS.find(x => x.k === catAberta);
+  const marcados = new Set(CHIPS.filter(ch => ch.k === c.k).map(ch => ch.valor));
+  const vals = [...new Set(LINHAS.map(l => c.campo(l)).filter(Boolean))]
+    .map(v => ({ v, n: contarValor(c, v) }))
+    .filter(x => x.n || marcados.has(x.v))
+    .sort((a,b) => b.n - a.n || a.v.localeCompare(b.v, "pt-BR", { numeric:true }));
+
+  p.innerHTML = `
+    <div class="af-topo">
+      <button class="af-voltar" data-voltar>&lsaquo;</button>
+      <span class="af-tit">${c.rot}</span>
+    </div>
+    <div class="af-busca-cx">
+      <input class="af-busca" type="search" placeholder="Buscar ${c.rot.toLowerCase()}…">
+    </div>
+    <div class="af-lista">
+      ${vals.map(x => `
+        <label class="af-item">
+          <input type="checkbox" value="${x.v.replace(/"/g,'&quot;')}" ${marcados.has(x.v) ? "checked" : ""}>
+          <span class="af-val">${x.v}</span>
+          <span class="af-n">${x.n}</span>
+        </label>`).join("") || '<div class="af-vazio">Nada disponível com os filtros atuais</div>'}
+    </div>
+    <div class="af-rodape">
+      <button class="af-ok" data-aplicar>Aplicar</button>
+    </div>`;
+
+  const busca = p.querySelector(".af-busca");
+  busca.oninput = () => {
+    const q = busca.value.trim().toLowerCase();
+    p.querySelectorAll(".af-item").forEach(it => {
+      it.style.display = it.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+  };
+  p.querySelector("[data-voltar]").onclick = e => { e.stopPropagation(); catAberta = null; pintarPainel(); };
+  p.querySelector("[data-aplicar]").onclick = e => {
+    e.stopPropagation();
+    const escolhidos = [...p.querySelectorAll(".af-item input")].filter(i => i.checked).map(i => i.value);
+    // troca os chips desta categoria pelos novos
+    for (let i = CHIPS.length - 1; i >= 0; i--) if (CHIPS[i].k === c.k) CHIPS.splice(i, 1);
+    escolhidos.forEach(v => CHIPS.push({ k:c.k, rot:c.rot, valor:v }));
+    fecharPainelFiltro();
+    renderChips();
+    renderTabela();
+  };
+  setTimeout(() => busca.focus(), 30);
 }
 
 function renderChips(){
@@ -2350,23 +2438,16 @@ document.getElementById("a-limpar").onclick = () => {
   renderAlertas();
 };
 
-const campoBusca = document.getElementById("f-busca");
-campoBusca.oninput = renderSugestoes;
-campoBusca.onfocus = renderSugestoes;
-campoBusca.onkeydown = e => {
-  if (e.key === "Escape"){ document.getElementById("bu-sugestoes").classList.remove("on"); }
-  if (e.key === "Enter"){
-    const primeiro = document.querySelector(".bu-item");
-    if (primeiro) primeiro.click();
-  }
-  // Backspace no campo vazio remove o último chip
-  if (e.key === "Backspace" && !campoBusca.value && CHIPS.length){
-    CHIPS.pop(); renderChips(); renderTabela();
-  }
+document.getElementById("btn-add").onclick = e => {
+  e.stopPropagation();
+  const p = document.getElementById("af-painel");
+  if (p.classList.contains("on")) fecharPainelFiltro(); else abrirPainelFiltro();
 };
+document.getElementById("af-painel").onclick = e => e.stopPropagation();
 document.addEventListener("click", e => {
-  if (!e.target.closest("#busca-uni")) document.getElementById("bu-sugestoes").classList.remove("on");
+  if (!e.target.closest("#add-filtro")) fecharPainelFiltro();
 });
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharPainelFiltro(); });
 document.getElementById("btn-csv").onclick = baixarCSV;
 document.getElementById("limpar-col").onclick = () => {
   Object.keys(FILTROS_COL).forEach(k => delete FILTROS_COL[k]);

@@ -1,5 +1,13 @@
 # NEXT STEPS
 
+- [ ] **SEGURANÇA — voltar a senha antes dos dados reais.** A dash interna
+      (`interna.html`) está pública no GitHub Pages sem login, e desde 21/08 o
+      `index.html` em modo `?embed=1` também entra sem senha. Os dados da
+      interna são fictícios, mas a **base de leads do `index.html` tem 76
+      empresas reais com contatos verificados** — hoje qualquer pessoa com o
+      link `index.html?embed=1&view=leads` abre essa base. Precisa de porta de
+      entrada antes de a plataforma sair do ar de teste.
+
 ## Próximo
 
 - [ ] TESTAR a migração do Supabase (v-20260820-2105) no navegador: abrir

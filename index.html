@@ -130,7 +130,10 @@
     border-bottom: 1px solid var(--border);
     border-left: 3px solid transparent;
   }
-  .tasks-header-row { background: var(--accent-lime); font-size: 11px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 0.03em; border-radius: 11px 11px 0 0; }
+  /* Cabeçalho na cor escura, igual às planilhas da dash interna. */
+  .tasks-header-row { background: var(--accent); font-size: 10px; font-weight: 800; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.07em; border-radius: 11px 11px 0 0; border-bottom: none; }
+  .tasks-header-row > div:first-child { font-weight: 800; }
   /* cabeçalhos filtráveis: mesmo texto do header, mas viram botão com dropdown */
   .tasks-colfiltro { position: relative; }
   .tasks-colfiltro-btn {
@@ -139,8 +142,10 @@
   }
   .tasks-colfiltro-btn svg { width: 9px; height: 9px; flex: none; }
   .tasks-colfiltro-btn.ativo::after {
-    content: ""; width: 5px; height: 5px; border-radius: 50%; background: #000; margin-left: 1px;
+    content: ""; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent-lime); margin-left: 1px;
   }
+  .tasks-colfiltro-btn:hover { color: var(--accent-lime); }
   .tasks-colfiltro-menu {
     display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; background: #fff;
     border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.16);
@@ -664,11 +669,11 @@
     align-items: center; gap: 10px;
   }
   #leads-cabecalho{
-    padding: 9px 12px; background: var(--land-default);
-    border: 1px solid var(--border); border-bottom: none;
+    padding: 10px 12px; background: var(--accent);
+    border: 1px solid var(--accent); border-bottom: none;
     border-radius: 12px 12px 0 0;
     font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--text-muted);
+    color: #fff;
   }
   #leads-cabecalho span:last-child{ grid-column: 1 / -1; display: none; }
   #leads-list{ border-radius: 0 0 12px 12px; }

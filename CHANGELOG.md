@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-0035-pontos-atencao-so-erros — 26/08/2026
+- O que mudou: a seção "Onde prestar atenção" (`aluno.html`, aba Início)
+  tinha dois problemas. (1) Tema acertado por inteiro aparecia com tag
+  verde "X de X certos" — não é ponto de atenção. Agora um tema só entra
+  se tiver erro ou pendência. (2) Lição não feita era descartada na
+  contagem (o `"pend"` caía num early return em `meusTemas()`), então
+  trilha não feita nunca aparecia. Agora conta separado e mostra tag
+  "N a fazer". Ordenação prioriza mais erro, depois mais pendência.
+  Mensagem de vazio virou positiva. Tag `.tema-tag.pendente` nova, em
+  cinza neutro.
+- Arquivos: aluno.html
+- Motivo: pedido da Karina em 25/08 — pontos de atenção devem ser erros
+  e trilhas não feitas, não acertos.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-0020-topo-enxuto-nota-dez
+
 ## v-20260826-0020-topo-enxuto-nota-dez — 26/08/2026
 - O que mudou: duas mudanças em `aluno.html`. (1) O topo da aba Início
   perdeu a descrição do nível (`nivelDesc`), o módulo do curso e a barra

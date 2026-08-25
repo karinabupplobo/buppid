@@ -877,6 +877,28 @@
     .u-card .rt-linha:first-of-type{ margin-top: 8px; }
   }
 
+  /* ── Alertas agrupados por empresa ── */
+  .grupo-emp{ margin-bottom: 22px; }
+  .ge-cab{
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 11px 14px; margin-bottom: 10px;
+    background: var(--limao-claro); border-left: 4px solid var(--amarelo-neon);
+    border-radius: 0 10px 10px 0;
+  }
+  .ge-nome{
+    font-size: 14px; font-weight: 800; color: var(--teal-escuro); letter-spacing: -.01em;
+  }
+  .ge-n{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--azul-intermediario);
+  }
+  .ge-aviso{
+    margin-left: auto; border: 1px solid var(--borda); background: var(--branco);
+    border-radius: 8px; padding: 6px 11px; cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 700; color: var(--teal-escuro); white-space: nowrap;
+  }
+  .ge-aviso:hover{ background: var(--teal-escuro); color: #fff; border-color: var(--teal-escuro); }
+
   /* ── Avisos enviados ao RH ── */
   .btn-novo-doc{
     display: inline-flex; align-items: center; gap: 7px;
@@ -1285,15 +1307,15 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=6" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=7" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=6" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=7" title="Leads"></iframe>
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=6" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=7" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -2302,12 +2324,13 @@ document.getElementById("btn-csv-u").onclick = () => {
 //  na aba Alertas da dash do manager — os alertas pedagógicos automáticos e
 //  as anotações internas nunca saem daqui.
 // ══════════════════════════════════════════════════════════
-function abrirNovoAviso(){
+function abrirNovoAviso(empresaPre){
   const empresas = [...new Set(TURMAS.map(t => t.empresa))];
   abrirModal("Avisos", "Novo aviso ao RH", `
     <div class="form-linha">
       <label for="av-emp">Empresa</label>
-      <select id="av-emp">${empresas.map(e => `<option>${e}</option>`).join("")}</select>
+      <select id="av-emp">${empresas.map(e =>
+        `<option ${e === empresaPre ? "selected" : ""}>${e}</option>`).join("")}</select>
     </div>
     <div class="form-linha">
       <label for="av-tipo">Tipo</label>
@@ -2347,7 +2370,7 @@ function abrirNovoAviso(){
     renderAlertas();
   };
 }
-document.getElementById("btn-aviso").onclick = abrirNovoAviso;
+document.getElementById("btn-aviso").onclick = () => abrirNovoAviso();
 
 // ── Exportar CSV ──
 function baixarCSV(){
@@ -2471,52 +2494,73 @@ function renderAlertas(){
   document.getElementById("a-cont").textContent =
     nFiltros ? `${itens.length} de ${total} alunos` : `${total} aluno${total!==1?"s":""}`;
 
+  // Agrupa os alunos por empresa: a leitura natural aqui é "como está cada
+  // cliente", e dentro dele quem precisa de atenção.
+  const porEmpresa = new Map();
+  itens.forEach(x => {
+    const e = x.t.empresa;
+    if (!porEmpresa.has(e)) porEmpresa.set(e, []);
+    porEmpresa.get(e).push(x);
+  });
+
   const avisos = AVISOS_RH.filter(a => !fEmp || a.empresa === fEmp);
+  const rotTipo = { info:"Informativo", atencao:"Atenção", risco:"Risco" };
+
   box.innerHTML = `
+    <div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção · ${porEmpresa.size} empresa${porEmpresa.size!==1?"s":""}</div>
+    ${!itens.length ? `<div class="card"><p>${nFiltros
+        ? "Nenhum aluno em atenção com esses filtros."
+        : "Nenhum aluno em atenção agora."}</p></div>` : ""}
+
+    ${[...porEmpresa.entries()].map(([emp, lista]) => `
+      <section class="grupo-emp">
+        <div class="ge-cab">
+          <span class="ge-nome">${emp}</span>
+          <span class="ge-n">${lista.length} aluno${lista.length!==1?"s":""}</span>
+          <button class="ge-aviso" data-aviso-emp="${emp}">Avisar o RH ›</button>
+        </div>
+        ${lista.map(({t, a, al}) => {
+          const p = partesIdent(t);
+          return `
+          <div class="card">
+            <div class="ident">
+              <span class="id-emp">${p.empresa}</span>
+              <span class="id-turma">${p.turma}</span>
+              <span class="id-niv">${t.nivel}</span>
+              <span class="id-hora">${professorDe(t).nome}</span>
+            </div>
+            <h2>${a.nome}</h2>
+            <p>${a.cargo}</p>
+            <div style="margin-top:12px;">
+              ${al.map(x => {
+                const r = ROT[x.tipo] || { r:x.tipo, c:"lavanda" };
+                return `<div class="item-trat">
+                  <span class="tag-al ${r.c}">${r.r}</span>
+                  <span class="it-txt">${x.texto}</span></div>`;
+              }).join("")}
+            </div>
+          </div>`;
+        }).join("")}
+      </section>`).join("")}
+
     <div class="section-title">${avisos.length} aviso${avisos.length!==1?"s":""} enviado${avisos.length!==1?"s":""} ao RH</div>
     ${avisos.length ? avisos.map(a => `
       <div class="card aviso-enviado">
         <div class="ident">
           <span class="id-emp">${a.empresa}</span>
           <span class="id-turma">${a.autor}</span>
-          <span class="id-niv av-${a.tipo}">${{info:"Informativo",atencao:"Atenção",risco:"Risco"}[a.tipo] || a.tipo}</span>
+          <span class="id-niv av-${a.tipo}">${rotTipo[a.tipo] || a.tipo}</span>
           <span class="id-hora">${a.data}</span>
         </div>
         <h2>${a.assunto}</h2>
         <p>${a.texto}</p>
         <div class="av-status">${a.lido ? "Lido pelo RH" : "Ainda não lido"}</div>
       </div>`).join("")
-    : `<div class="card"><p>Nenhum aviso enviado ainda.</p></div>`}
-    <div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção</div>`;
-  if (!itens.length){
-    box.innerHTML += `<div class="card"><p>${nFiltros
-      ? "Nenhum aluno em atenção com esses filtros."
-      : "Nenhum aluno em atenção agora."}</p></div>`;
-    return;
-  }
+    : `<div class="card"><p>Nenhum aviso enviado ainda.</p></div>`}`;
 
-  itens.forEach(({t, a, al}) => {
-    const p = partesIdent(t);
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="ident">
-        <span class="id-emp">${p.empresa}</span>
-        <span class="id-turma">${p.turma}</span>
-        <span class="id-niv">${t.nivel}</span>
-        <span class="id-hora">${professorDe(t).nome}</span>
-      </div>
-      <h2>${a.nome}</h2>
-      <p>${a.cargo}</p>
-      <div style="margin-top:12px;">
-        ${al.map(x => {
-          const r = ROT[x.tipo] || { r:x.tipo, c:"lavanda" };
-          return `<div class="item-trat">
-            <span class="tag-al ${r.c}">${r.r}</span>
-            <span class="it-txt">${x.texto}</span></div>`;
-        }).join("")}
-      </div>`;
-    box.appendChild(card);
+  // "Avisar o RH" a partir do grupo já vem com a empresa escolhida
+  box.querySelectorAll("[data-aviso-emp]").forEach(b => {
+    b.onclick = () => abrirNovoAviso(b.dataset.avisoEmp);
   });
 }
 

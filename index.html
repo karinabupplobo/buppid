@@ -2323,7 +2323,7 @@ const FUNIL = [
   { k: "st:cliente",    h: 140,              r: "Cliente",          d: "fechou" },
   // Lost fecha o funil por baixo, em vermelho: é o oposto de Cliente, não uma
   // continuação da rampa. Cor fixa na mão, fora da rampa vermelho→verde.
-  { k: "st:lost",       h: 0, s: 62, l: 44,  r: "Lost",             d: "não avançou — perdida" }
+  { k: "st:lost",       h: 0, s: 62, l: 44,  r: "Perdido",          d: "não avançou — perdida" }
 ];
 
 // HSL de cada etapa: cor calculada pela posição no funil (rampa vermelho→verde),
@@ -2390,12 +2390,10 @@ function renderFunil(calc) {
 
   const bloq = calc.filter(x => x.c.prioridade === "bloqueado" && !ETAPAS_TRABALHO.includes(x.e.st || "novo")).length;
   const desc = calc.filter(x => (x.e.st || "novo") === "descartada").length;
+  // Sem texto de instrução: sobra só o que é informação de estado.
   document.getElementById("funnel-hint").innerHTML =
-    `Arraste a empresa até a etapa, ou use o seletor de status dentro da ficha.
-     As quatro primeiras etapas o motor calcula: soltar numa delas devolve a empresa
-     para a faixa automática. Contatar tira a empresa da prioridade.` +
-    (bloq ? `<br><b>${bloq} bloqueada(s)</b> por penalidade.` : "") +
-    (desc ? `<br>${desc} descartada(s), fora do funil.` : "");
+    (bloq ? `<b>${bloq} bloqueada(s)</b> por penalidade.` : "") +
+    (desc ? `${bloq ? "<br>" : ""}${desc} descartada(s), fora do funil.` : "");
 }
 
 document.getElementById("funnel-stages").addEventListener("click", ev => {

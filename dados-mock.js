@@ -422,3 +422,59 @@ const TIPOS_DOC = [
   { k:"outro",    rot:"Outro" }
 ];
 const STATUS_DOC = ["vigente", "pago", "em aberto", "vencido", "encerrado"];
+
+// ══════════════════════════════════════════════════════════
+//  AULAS FUTURAS
+//  O que já está agendado. O aluno vê o assunto e o que vai treinar, mas a
+//  trilha correspondente só é liberada depois que a aula acontece — é lição
+//  de casa, não material de estudo antecipado.
+//    { id, data, dia, hora, titulo, resumo, temas }
+// ══════════════════════════════════════════════════════════
+TURMAS[0].futuras = [   // Sertrading — Comex (B1)
+  { id:"f1", data:"27/08", dia:"Qui", hora:"08:00", titulo:"Handling Objections",
+    resumo:"Responder a objeção de preço e de prazo sem ceder de imediato.",
+    temas:["Condicionais","Vocabulário"] },
+  { id:"f2", data:"03/09", dia:"Qui", hora:"08:00", titulo:"Closing the Deal",
+    resumo:"Fechar o acordo, confirmar condições e registrar o combinado.",
+    temas:["Futuro com will","Formalidade"] },
+  { id:"f3", data:"10/09", dia:"Qui", hora:"08:00", titulo:"Supplier Calls",
+    resumo:"Conduzir uma call de 30 minutos com fornecedor estrangeiro.",
+    temas:["Vocabulário","Conectivos"] }
+];
+TURMAS[1].futuras = [   // Sertrading — Diretoria (B2)
+  { id:"f4", data:"27/08", dia:"Qui", hora:"10:00", titulo:"Board Updates",
+    resumo:"Atualizar o board da matriz em cinco minutos, sem slide.",
+    temas:["Presente perfeito","Conectivos"] },
+  { id:"f5", data:"03/09", dia:"Qui", hora:"10:00", titulo:"Difficult Questions",
+    resumo:"Responder pergunta difícil sem perder a linha de raciocínio.",
+    temas:["Condicionais","Formalidade"] }
+];
+TURMAS[2].futuras = [   // Tirolez — Liderança (A2)
+  { id:"f6", data:"27/08", dia:"Qui", hora:"07:00", titulo:"Reporting an Incident",
+    resumo:"Relatar uma ocorrência de turno em frases curtas e corretas.",
+    temas:["Past simple","Vocabulário"] },
+  { id:"f7", data:"03/09", dia:"Qui", hora:"07:00", titulo:"Giving Directions",
+    resumo:"Orientar um visitante dentro da planta.",
+    temas:["Imperativo","Preposições"] }
+];
+TURMAS[3].futuras = [   // Nelogica — particular (B2)
+  { id:"f8", data:"27/08", dia:"Qui", hora:"12:00", titulo:"Investor Q&A",
+    resumo:"Sustentar o Q&A depois do pitch.",
+    temas:["Condicionais","Vocabulário"] }
+];
+
+// Trilha de uma aula que já aconteceu, do ponto de vista de UM aluno.
+// Devolve null quando a aula não tem trilha registrada.
+function trilhaDoAluno(turma, aula, alunoId){
+  const st = (aula.progresso && aula.progresso[alunoId]) || [];
+  if (!st.length) return null;
+  const acertos = st.filter(x => x === "ok").length;
+  const erros   = st.filter(x => x === "err").length;
+  const pend    = st.filter(x => x === "pend").length;
+  return {
+    licoes: aula.licoes || [], temas: aula.temas || [], estado: st,
+    acertos, erros, pend,
+    feita: pend === 0,
+    nota: st.length ? Math.round(acertos / st.length * 100) : null
+  };
+}

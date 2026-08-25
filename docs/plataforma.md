@@ -136,6 +136,36 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Dash do aluno (aluno.html) — quarta e última tela
+Fecha a fila professor → aluno → RH → interna. Mesma linguagem visual, mesmo
+`dados-mock.js`. A regra de acesso aqui é a mais estrita das quatro: o aluno vê
+**apenas o que é dele**.
+
+Não vê: outro aluno (nem nome, nem nota, nem presença), as anotações internas
+que o professor escreve sobre ele, os alertas pedagógicos automáticos, nem os
+recados entre professor e gestão. Nem a lista de colegas no pop-up da turma.
+
+**Quatro abas:**
+- **Home** — cartão escuro com o nível e a descrição do que se consegue fazer
+  nele, barra de trilhas concluídas, o objetivo de 6 meses da turma, e quatro
+  números: presença, engajamento, média nas trilhas e aulas realizadas. Abaixo,
+  "Onde prestar atenção": os temas em que ele erra, com a contagem.
+- **Hoje** — a aula do dia com objetivo, vocabulário e ponto gramatical. A
+  trilha correspondente aparece como "liberada quando a aula terminar" — é
+  lição de casa, não material de estudo antecipado.
+- **Trilhas** — filtro "Já fiz" / "Vão chegar". As feitas mostram acertos,
+  erros, nota e os temas marcados por acerto ou erro. As futuras mostram só o
+  assunto, sem abrir.
+- **Aulas** — filtro "Já tive" / "Vão acontecer". As passadas mostram a própria
+  presença e engajamento, com link para rever o material.
+
+**Dado novo:** cada turma ganhou `futuras` — as aulas já agendadas com data,
+horário, título, resumo e temas previstos. Sem isso não havia como mostrar o
+que vem pela frente em nenhuma das dashes.
+
+**Decisão pedagógica embutida:** a trilha só existe depois da aula. Ela treina
+o que foi visto, então liberar antes inverteria a lógica do produto.
+
 ### 21/08/2026 — Dash do RH (manager.html)
 Terceira das quatro telas. Mesma linguagem visual e mesmo `dados-mock.js`; o que
 muda é o alcance e, principalmente, **o que fica de fora**.

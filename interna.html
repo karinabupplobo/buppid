@@ -828,6 +828,17 @@
   .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
           padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
 
+  .cel-at{ max-width: 230px; white-space: normal; }
+  .ats-cel{ display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag-at{
+    font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    white-space: nowrap;
+  }
+  .tag-at.recorrente{ background:#fbe0de; color:#a3312a; font-weight:800; }
+  .tag-at.isolado{ background:#fbf2d8; color:#8a6d1f; }
+  .tag-at.pend{ background:#f0eeec; color:#8d8781; }
+  .tag-at b{ font-weight: 800; }
+
   .estrelas-ro{ color: var(--amarelo-neon); font-size: 13px; letter-spacing: 1px; }
   .estrelas-ro b{ color: var(--teal-escuro); }
 
@@ -864,13 +875,6 @@
   .kpi .d{ font-size: 11.5px; color: var(--cinza-texto); margin-top: 2px; }
   @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(4,1fr); } }
 
-  /* Aviso de confidencialidade */
-  .confid{
-    background: var(--limao-claro); border-left: 4px solid var(--amarelo-neon);
-    border-radius: 0 10px 10px 0; padding: 11px 14px; margin-bottom: 16px;
-    font-size: 12px; line-height: 1.5; color: var(--texto);
-  }
-  .confid b{ display: block; font-weight: 800; margin-bottom: 2px; }
 </style>
 
 </head>
@@ -908,11 +912,6 @@
 
 <main>
   <section class="pane active" id="pane-planilha">
-    <div class="confid">
-      <b>Visão interna da Bupp</b>
-      Inclui as anotações que o professor escreve sobre cada aluno. O aluno e o
-      RH do cliente não têm acesso a esta tela.
-    </div>
     <div class="kpis" id="kpis"></div>
     <div class="barra-planilha">
       <select class="filtro" id="f-prof"></select>
@@ -948,6 +947,38 @@ function partesIdent(t){
   return { empresa: t.empresa, turma: resto, nivel: t.nivel };
 }
 
+// ── Onde o aluno errou nesta trilha ──
+// Cruza o resultado de cada lição com o TEMA daquela lição. Se o mesmo tema
+// já tinha sido errado antes, marca como recorrente — é o sinal que separa
+// "escorregou" de "não aprendeu".
+function analisarErros(a, t, h){
+  const st = (h.progresso && h.progresso[a.id]) || [];
+  const temas = h.temas || [];
+  const errouAgora = [];
+  st.forEach((x, i) => {
+    if (x === "err" && temas[i] && !errouAgora.includes(temas[i])) errouAgora.push(temas[i]);
+  });
+  if (!errouAgora.length){
+    const naoFez = st.filter(x => x === "pend").length;
+    if (naoFez === st.length && st.length) return [{ tema:"Não fez a trilha", vezes:0, tipo:"pend" }];
+    return [];
+  }
+
+  // quantas vezes o aluno já errou cada tema, em todas as trilhas
+  const contagem = {};
+  (t.historico || []).forEach(hh => {
+    const s2 = (hh.progresso && hh.progresso[a.id]) || [];
+    (hh.temas || []).forEach((tema, i) => {
+      if (s2[i] === "err") contagem[tema] = (contagem[tema] || 0) + 1;
+    });
+  });
+
+  return errouAgora.map(tema => ({
+    tema, vezes: contagem[tema] || 1,
+    tipo: (contagem[tema] || 1) >= 2 ? "recorrente" : "isolado"
+  })).sort((x, y) => y.vezes - x.vezes);
+}
+
 function montarLinhas(){
   const linhas = [];
   TURMAS.forEach(t => {
@@ -967,6 +998,7 @@ function montarLinhas(){
           presenca: (PRESENCA[h.id] || {})[a.id] || "",
           eng: (ENGAJAMENTO[h.id] || {})[a.id] || 0,
           licoes: st.length, feitas: feit, acertos: acer, erros: erro, nota,
+          atencao: analisarErros(a, t, h),
           anot: (NOTAS_ALUNO[h.id] || {})[a.id] || "",
           alunoId: a.id, turmaId: t.id, aulaId: h.id
         });
@@ -1005,7 +1037,18 @@ function classeNota(n){
 }
 
 const COLUNAS = ["Data","Empresa","Turma","Nível","Professor","Aula","Aluno",
-                 "Presença","Engaj.","Trilha","Certos","Erros","Anotação interna"];
+                 "Presença","Engaj.","Trilha","Certos","Erros","Atenção",
+                 "Anotação interna"];
+
+function htmlAtencao(lista){
+  if (!lista.length) return '<span class="sem">—</span>';
+  return `<span class="ats-cel">${lista.map(x => {
+    if (x.tipo === "pend") return `<span class="tag-at pend">${x.tema}</span>`;
+    const cls = x.tipo === "recorrente" ? "recorrente" : "isolado";
+    const nota = x.vezes >= 2 ? ` <b>${x.vezes}×</b>` : "";
+    return `<span class="tag-at ${cls}">${x.tema}${nota}</span>`;
+  }).join("")}</span>`;
+}
 
 function renderTabela(){
   const dados = filtradas();
@@ -1029,6 +1072,7 @@ function renderTabela(){
         <td class="col-nota nota ${classeNota(l.nota)}">${l.nota === null ? "–" : l.nota + "%"}</td>
         <td>${l.acertos}</td>
         <td>${l.erros}</td>
+        <td class="cel-at">${htmlAtencao(l.atencao)}</td>
         <td class="cel-anot">${l.anot || '<span class="sem">—</span>'}</td>
       </tr>`;
     }).join("")}</tbody>`;
@@ -1072,7 +1116,9 @@ function baixarCSV(){
   const linhas = [COLUNAS.map(esc).join(";")].concat(dados.map(l => [
     `${l.dia} ${l.data}`, l.empresa, l.turma, l.nivel, l.prof, l.aula, l.aluno,
     l.presenca === "p" ? "presente" : l.presenca === "a" ? "faltou" : "",
-    l.eng || "", l.nota === null ? "" : l.nota + "%", l.acertos, l.erros, l.anot
+    l.eng || "", l.nota === null ? "" : l.nota + "%", l.acertos, l.erros,
+    l.atencao.map(x => x.vezes >= 2 ? `${x.tema} (${x.vezes}x)` : x.tema).join(", "),
+    l.anot
   ].map(esc).join(";")));
   // BOM para o Excel abrir acentuação corretamente
   const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });

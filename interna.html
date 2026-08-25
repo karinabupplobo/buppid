@@ -1143,11 +1143,15 @@
   table.ra-tabela td{
     padding: 11px 12px; border-bottom: 1px solid #f4f2f0;
     vertical-align: middle; white-space: nowrap; color: var(--texto);
+    text-align: left;   /* padrão explícito: sem isto o td herdava center */
   }
   table.ra-tabela tbody tr:last-child td{ border-bottom: none; }
   table.ra-tabela tbody tr:hover td{ background: #faf9f7; }
-  table.ra-tabela th:nth-child(n+3), table.ra-tabela td:nth-child(n+3){ text-align: right; }
-  table.ra-tabela th:last-child, table.ra-tabela td:last-child{ text-align: left; }
+  /* Alinhamento por CLASSE, não por posição: as tabelas de Média, Usuários e
+     Docs têm número de colunas diferente, e alinhar por nth-child fazia o
+     cabeçalho e o valor caírem em lados opostos. */
+  table.ra-tabela th.num, table.ra-tabela td.num{ text-align: right; }
+  table.ra-tabela th:first-child, table.ra-tabela td:first-child{ text-align: left; }
   .ra-sub{ display: block; font-size: 11px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; }
   .md-titulo{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
 
@@ -1397,11 +1401,11 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=10" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=11" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=10" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=11" title="Leads"></iframe>
   </section>
 
   <section class="pane" id="pane-docs">
@@ -1417,7 +1421,7 @@
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=10" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=11" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -2160,16 +2164,16 @@ function renderMedias(dados){
       <table class="ra-tabela">
         <thead><tr>
           <th>${e.rot}</th><th>${ctxRot}</th>
-          <th>Presença</th><th>Engaj.</th><th>Trilhas</th>
-          <th>Certos</th><th>Erros</th><th>Onde mais erra</th>
+          <th class="num">Presença</th><th class="num">Engaj.</th><th class="num">Trilhas</th>
+          <th class="num">Certos</th><th class="num">Erros</th><th>Onde mais erra</th>
         </tr></thead>
         <tbody>
           ${grupos.map(x => { const c = cel(x); return `
             <tr>
               <td>${linkTitulo(x)}<span class="ra-sub">${x.sub}</span></td>
               <td class="rt-prof">${x.ctx}</td>
-              <td>${c.pres}</td><td>${c.eng}</td><td>${c.nota}</td>
-              <td>${x.acertos}</td><td>${x.erros}</td><td>${c.pior}</td>
+              <td class="num">${c.pres}</td><td class="num">${c.eng}</td><td class="num">${c.nota}</td>
+              <td class="num">${x.acertos}</td><td class="num">${x.erros}</td><td>${c.pior}</td>
             </tr>`; }).join("")}
         </tbody>
       </table>

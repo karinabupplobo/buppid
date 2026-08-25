@@ -764,8 +764,10 @@
   #leads-funnel{ max-width: 420px; margin: 0 auto; width: 100%; }
   body.leads-etapa-aberta #leads-main{ grid-template-columns: 232px 1fr; }
   body.leads-etapa-aberta #leads-funnel{ max-width: none; margin: 0; }
-  body:not(.leads-etapa-aberta) #leads-tabela{ display: none; }
-  body:not(.leads-etapa-aberta) #leads-voltar-funil{ display: none; }
+  /* O botão e a planilha vivem numa coluna só: soltos no grid, a planilha
+     caía na linha de baixo, embaixo do funil, deixando a direita em branco. */
+  #leads-lado{ min-width: 0; }
+  body:not(.leads-etapa-aberta) #leads-lado{ display: none; }
   #leads-voltar-funil{
     display: flex; align-items: center; gap: 7px;
     border: 1px solid var(--border); background: var(--panel); border-radius: 9px;
@@ -818,7 +820,7 @@
     /* No celular não há espaço para os dois lado a lado: ao escolher a etapa,
        o funil some por completo e a planilha ocupa a tela. */
     body.leads-etapa-aberta #leads-funnel { display: none; }
-    #leads-voltar-funil{ width: 100%; }
+    #leads-voltar-funil{ width: 100%; justify-content: center; }
     #leads-cabecalho{ display: none; }
     .lead-row > summary{
       grid-template-columns: 26px minmax(0,1fr) 54px 34px;
@@ -1071,6 +1073,7 @@
         <div id="funnel-msg" class="hidden"></div>
         <div id="funnel-hint"></div>
       </aside>
+      <div id="leads-lado">
       <button type="button" id="leads-voltar-funil">&lsaquo; Voltar ao funil</button>
       <div id="leads-tabela">
         <div id="leads-cabecalho">
@@ -1079,6 +1082,7 @@
           <span class="lc-num">Score</span><span></span><span>Etapa e sinais</span>
         </div>
         <div id="leads-list"></div>
+      </div>
       </div>
     </div>
       <div id="lead-hist-modal" class="hidden">

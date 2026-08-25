@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<!--
+  NOVA TURMA — formulário interno da Bupp
+  ========================================
+  Preenche as infos que o Gerador de Aulas precisa (pedagogico/GERADOR.md,
+  Passo 2) e grava direto no Supabase: empresas_cliente, turmas, alunos,
+  turma_alunos. Não pede professor — isso é atribuído depois na aba
+  "Turmas" do interna.html.
+
+  Mesma paleta da dash interna (Comb 2 — marrom + azul-bebê).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bupp — Nova Turma</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-escuro: #54402F;
+    --amarelo-neon: #A8D5F2;
+    --limao-claro: #E4F1FA;
+    --bg-dash: #F7F5F2;
+    --azul-intermediario: #8A7767;
+    --branco: #FFFFFF;
+    --texto: #54402F;
+    --cinza-texto: #8A7F76;
+    --borda: #E7E1DA;
+    --erro: #B3423C;
+  }
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; background: var(--bg-dash); font-family:'Inter',system-ui,sans-serif; color:var(--texto); }
+  .topo{ background: var(--teal-escuro); padding: 18px 20px; }
+  .topo h1{ color: var(--amarelo-neon); font-size: 15px; font-weight: 800; margin:0; letter-spacing:.02em; }
+  .topo p{ color: rgba(255,255,255,.75); font-size: 12.5px; margin: 3px 0 0; }
+  main{ max-width: 720px; margin: 0 auto; padding: 22px 18px 80px; }
+  .secao{ background: var(--branco); border:1px solid var(--borda); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .secao h2{ font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing:.06em; color: var(--azul-intermediario); margin: 0 0 14px; }
+  .campo{ margin-bottom: 13px; }
+  .campo label{ display:block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+  .campo .ajuda{ font-size: 11px; color: var(--cinza-texto); margin-top: 3px; }
+  .campo input, .campo select, .campo textarea{
+    width:100%; border:1px solid var(--borda); border-radius: 8px; padding: 9px 10px;
+    font-family:inherit; font-size: 13.5px; color: var(--texto); background: var(--branco);
+  }
+  .campo textarea{ resize: vertical; min-height: 56px; }
+  .campo input:focus, .campo select:focus, .campo textarea:focus{ outline: 2px solid var(--amarelo-neon); border-color: var(--azul-intermediario); }
+  .linha2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .linha3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px){ .linha2, .linha3{ grid-template-columns: 1fr; } }
+  .radio-grupo{ display:flex; gap: 14px; }
+  .radio-grupo label{ display:flex; align-items:center; gap: 6px; font-size: 13px; font-weight: 600; }
+  .radio-grupo input{ width:auto; }
+
+  .aluno-card{ border:1px solid var(--borda); border-radius: 9px; padding: 12px; margin-bottom: 8px; background: var(--limao-claro); }
+  .aluno-card .linha2{ margin-bottom: 8px; }
+  .aluno-rm{ background:none; border:none; color: var(--erro); font-size: 11.5px; font-weight: 700; cursor:pointer; padding: 0; }
+  .busca-aluno{ position: relative; }
+  .busca-resultados{
+    position:absolute; top: 100%; left:0; right:0; background: var(--branco); border:1px solid var(--borda);
+    border-radius: 8px; margin-top: 3px; max-height: 180px; overflow-y:auto; z-index: 5; box-shadow: 0 6px 18px rgba(0,0,0,.1);
+  }
+  .busca-resultados button{
+    display:block; width:100%; text-align:left; background:none; border:none; padding: 9px 10px; font-size: 13px;
+    font-family:inherit; cursor:pointer; border-bottom: 1px solid var(--borda);
+  }
+  .busca-resultados button:hover{ background: var(--limao-claro); }
+  .busca-resultados .vazio{ padding: 9px 10px; font-size: 12.5px; color: var(--cinza-texto); }
+
+  .modulos-lista{ display:flex; flex-direction:column; gap: 6px; margin-bottom: 8px; }
+  .modulos-lista input{ width:100%; }
+  .btn-add{ background: var(--limao-claro); border:1px dashed var(--azul-intermediario); color: var(--teal-escuro);
+    font-family:inherit; font-weight:700; font-size: 12.5px; padding: 8px 12px; border-radius: 8px; cursor:pointer; width:100%; }
+  .btn-add:hover{ background: var(--amarelo-neon); }
+
+  .rodape{ position: sticky; bottom:0; background: var(--branco); border-top:1px solid var(--borda);
+    padding: 14px 18px; display:flex; justify-content: flex-end; gap: 10px; }
+  .btn-salvar{ background: var(--teal-escuro); color:#fff; border:none; border-radius: 9px; padding: 12px 22px;
+    font-family:inherit; font-weight: 800; font-size: 14px; cursor:pointer; }
+  .btn-salvar:hover{ background: var(--azul-intermediario); }
+  .btn-salvar:disabled{ opacity:.55; cursor:not-allowed; }
+  #msg{ font-size: 12.5px; font-weight: 700; align-self:center; margin-right: auto; }
+  #msg.ok{ color: #2E7D46; }
+  #msg.erro{ color: var(--erro); }
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <h1>Nova turma</h1>
+  <p>Preenche o que o Gerador de Aulas precisa. Professor é atribuído depois, na aba Turmas.</p>
+</div>
+
+<main>
+  <form id="form-turma">
+
+    <div class="secao">
+      <h2>Turma</h2>
+      <div class="campo">
+        <label for="f-nome">Nome da turma</label>
+        <input id="f-nome" required placeholder="Ex.: Sertrading — Comex">
+      </div>
+      <div class="campo">
+        <label>Tipo</label>
+        <div class="radio-grupo">
+          <label><input type="radio" name="tipo" value="corporativa" checked> Corporativa</label>
+          <label><input type="radio" name="tipo" value="particular"> Particular</label>
+        </div>
+      </div>
+      <div class="campo" id="bloco-empresa">
+        <label for="f-empresa-busca">Empresa</label>
+        <div class="busca-aluno">
+          <input id="f-empresa-busca" placeholder="Buscar empresa existente ou digitar nova...">
+          <div class="busca-resultados" id="empresa-resultados" style="display:none;"></div>
+        </div>
+        <div class="ajuda" id="empresa-selecionada"></div>
+      </div>
+      <div class="linha2">
+        <div class="campo">
+          <label for="f-nivel">Nível CEFR</label>
+          <select id="f-nivel" required>
+            <option value="">Selecione</option>
+            <option>Pre-A1</option><option>A1</option><option>A2</option>
+            <option>B1</option><option>B2</option><option>C1</option><option>C2</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="f-tamanho">Tamanho da turma</label>
+          <input id="f-tamanho" type="number" min="1" placeholder="Nº de alunos previstos">
+        </div>
+      </div>
+      <div class="campo">
+        <label for="f-obj1">Objetivo 1 — resultado de negócio (não meta de idioma)</label>
+        <textarea id="f-obj1" required placeholder="Ex.: Em 6 meses, o time de Comex negocia frete em inglês do início ao fechamento."></textarea>
+      </div>
+      <div class="campo">
+        <label for="f-obj2">Objetivo 2 <span class="ajuda">(opcional, máximo 2 no total)</span></label>
+        <textarea id="f-obj2"></textarea>
+      </div>
+      <div class="linha3">
+        <div class="campo">
+          <label for="f-duracao">Duração da aula (min)</label>
+          <input id="f-duracao" type="number" min="1" placeholder="Ex.: 60">
+        </div>
+        <div class="campo">
+          <label for="f-formato">Formato</label>
+          <select id="f-formato">
+            <option value="">Selecione</option>
+            <option value="presencial">Presencial</option>
+            <option value="online">Online</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="f-frequencia">Aulas por semana</label>
+          <input id="f-frequencia" type="number" min="1" placeholder="Ex.: 2">
+        </div>
+      </div>
+    </div>
+
+    <div class="secao">
+      <h2>Alunos</h2>
+      <div id="alunos-lista"></div>
+      <button type="button" class="btn-add" id="btn-add-aluno">+ Aluno</button>
+    </div>
+
+    <div class="secao">
+      <h2>Curso</h2>
+      <div class="linha2">
+        <div class="campo">
+          <label for="f-qtd-modulos">Quantidade de módulos</label>
+          <input id="f-qtd-modulos" type="number" min="1">
+        </div>
+        <div class="campo">
+          <label for="f-aulas-modulo">Aulas por módulo</label>
+          <input id="f-aulas-modulo" type="number" min="1">
+        </div>
+      </div>
+      <div class="campo">
+        <label>Nomes dos módulos <span class="ajuda">(se já definidos)</span></label>
+        <div class="modulos-lista" id="modulos-lista"></div>
+        <button type="button" class="btn-add" id="btn-add-modulo">+ Módulo</button>
+      </div>
+    </div>
+
+    <div class="secao">
+      <h2>Cliente / Empresa</h2>
+      <div class="campo">
+        <label for="f-setor">Setor e operação</label>
+        <textarea id="f-setor" placeholder="Ex.: Trading de comércio exterior, foco em commodities agrícolas."></textarea>
+      </div>
+      <div class="campo">
+        <label for="f-contexto-ingles">Com quem falam inglês e por quê</label>
+        <textarea id="f-contexto-ingles" placeholder="Ex.: Fornecedores na Ásia, negociação de frete e prazo de pagamento."></textarea>
+      </div>
+      <div class="campo">
+        <label for="f-assuntos">Assuntos essenciais pedidos pelo RH</label>
+        <textarea id="f-assuntos" placeholder="O que precisa obrigatoriamente aparecer no curso."></textarea>
+      </div>
+    </div>
+
+    <div class="secao">
+      <h2>Restrições <span style="color:var(--erro);">— campo de risco</span></h2>
+      <div class="campo">
+        <label for="f-restricoes">O que NÃO pode aparecer</label>
+        <textarea id="f-restricoes" placeholder="Concorrente citado, caso interno, assunto sensível, cliente nominado..."></textarea>
+      </div>
+    </div>
+
+  </form>
+</main>
+
+<div class="rodape">
+  <span id="msg"></span>
+  <button type="button" class="btn-salvar" id="btn-salvar">Salvar turma</button>
+</div>
+
+<script>
+const SUPABASE_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
+const H = {
+  "apikey": SUPABASE_ANON_KEY,
+  "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+  "Content-Type": "application/json"
+};
+async function sbGet(tabela, query=""){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabela}${query}`, { headers: H });
+  if (!res.ok) throw new Error(`GET ${tabela} falhou`);
+  return res.json();
+}
+async function sbInsert(tabela, linha){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabela}`, {
+    method: "POST", headers: { ...H, "Prefer": "return=representation" }, body: JSON.stringify(linha)
+  });
+  if (!res.ok) throw new Error(`POST ${tabela} falhou: ${await res.text()}`);
+  return (await res.json())[0];
+}
+
+// ── Tipo turma: mostra/esconde bloco empresa ──
+document.querySelectorAll('input[name="tipo"]').forEach(r => {
+  r.onchange = () => {
+    document.getElementById("bloco-empresa").style.display =
+      document.querySelector('input[name="tipo"]:checked').value === "particular" ? "none" : "block";
+  };
+});
+
+// ── Busca de empresa existente ──
+let empresaSelecionada = null; // { id, nome } | { nome } se nova
+let empresasCache = null;
+async function empresas(){
+  if (!empresasCache) empresasCache = await sbGet("empresas_cliente", "?select=id,nome&order=nome");
+  return empresasCache;
+}
+const empBusca = document.getElementById("f-empresa-busca");
+const empRes = document.getElementById("empresa-resultados");
+empBusca.oninput = async () => {
+  empresaSelecionada = null;
+  document.getElementById("empresa-selecionada").textContent = "";
+  const q = empBusca.value.trim().toLowerCase();
+  if (!q){ empRes.style.display = "none"; return; }
+  const lista = (await empresas()).filter(e => e.nome.toLowerCase().includes(q));
+  empRes.innerHTML = lista.map(e =>
+    `<button type="button" data-id="${e.id}" data-nome="${e.nome}">${e.nome}</button>`
+  ).join("") + `<button type="button" data-nova="1">+ Criar "${empBusca.value.trim()}" como nova empresa</button>`;
+  empRes.style.display = "block";
+  empRes.querySelectorAll("button").forEach(b => b.onclick = () => {
+    if (b.dataset.nova){
+      empresaSelecionada = { nome: empBusca.value.trim() };
+      document.getElementById("empresa-selecionada").textContent = `Nova empresa: ${empresaSelecionada.nome}`;
+    } else {
+      empresaSelecionada = { id: b.dataset.id, nome: b.dataset.nome };
+      document.getElementById("empresa-selecionada").textContent = `Selecionada: ${empresaSelecionada.nome}`;
+    }
+    empBusca.value = empresaSelecionada.nome;
+    empRes.style.display = "none";
+  });
+};
+document.addEventListener("click", e => { if (!e.target.closest(".busca-aluno")) empRes.style.display = "none"; });
+
+// ── Alunos: adicionar novo ou buscar existente ──
+let alunosCache = null;
+async function todosAlunos(){
+  if (!alunosCache) alunosCache = await sbGet("alunos", "?select=id,nome,cargo,area_atuacao,responsabilidades&order=nome");
+  return alunosCache;
+}
+let alunosForm = []; // { existenteId|null, nome, cargo, areaAtuacao, responsabilidades }
+const alunosLista = document.getElementById("alunos-lista");
+
+function renderAlunos(){
+  alunosLista.innerHTML = alunosForm.map((a, i) => `
+    <div class="aluno-card" data-i="${i}">
+      <div class="linha2">
+        <div class="campo busca-aluno" style="margin-bottom:0;">
+          <label>Nome</label>
+          <input class="al-nome" value="${a.nome || ""}" placeholder="Buscar existente ou digitar novo...">
+          <div class="busca-resultados al-resultados" style="display:none;"></div>
+        </div>
+        <div class="campo" style="margin-bottom:0;">
+          <label>Cargo</label>
+          <input class="al-cargo" value="${a.cargo || ""}">
+        </div>
+      </div>
+      <div class="linha2" style="margin-top:8px;">
+        <div class="campo" style="margin-bottom:0;">
+          <label>Área de atuação</label>
+          <input class="al-area" value="${a.areaAtuacao || ""}">
+        </div>
+        <div class="campo" style="margin-bottom:0;">
+          <label>Responsabilidades</label>
+          <input class="al-resp" value="${a.responsabilidades || ""}">
+        </div>
+      </div>
+      <button type="button" class="aluno-rm">Remover aluno</button>
+    </div>
+  `).join("");
+
+  alunosLista.querySelectorAll(".aluno-card").forEach(card => {
+    const i = +card.dataset.i;
+    card.querySelector(".aluno-rm").onclick = () => { alunosForm.splice(i,1); renderAlunos(); };
+    card.querySelector(".al-cargo").oninput = e => alunosForm[i].cargo = e.target.value;
+    card.querySelector(".al-area").oninput = e => alunosForm[i].areaAtuacao = e.target.value;
+    card.querySelector(".al-resp").oninput = e => alunosForm[i].responsabilidades = e.target.value;
+
+    const nomeInput = card.querySelector(".al-nome");
+    const res = card.querySelector(".al-resultados");
+    nomeInput.oninput = async () => {
+      alunosForm[i].nome = nomeInput.value;
+      alunosForm[i].existenteId = null;
+      const q = nomeInput.value.trim().toLowerCase();
+      if (!q){ res.style.display = "none"; return; }
+      const lista = (await todosAlunos()).filter(a => a.nome.toLowerCase().includes(q));
+      res.innerHTML = (lista.length ? lista.map(a =>
+        `<button type="button" data-id="${a.id}" data-nome="${a.nome}" data-cargo="${a.cargo||""}" data-area="${a.area_atuacao||""}" data-resp="${a.responsabilidades||""}">${a.nome} <span style="color:var(--cinza-texto);">— ${a.cargo||"sem cargo"}</span></button>`
+      ).join("") : `<div class="vazio">Nenhum aluno existente com esse nome — vai ser criado novo.</div>`);
+      res.style.display = "block";
+      res.querySelectorAll("button").forEach(b => b.onclick = () => {
+        alunosForm[i] = {
+          existenteId: b.dataset.id, nome: b.dataset.nome, cargo: b.dataset.cargo,
+          areaAtuacao: b.dataset.area, responsabilidades: b.dataset.resp
+        };
+        renderAlunos();
+      });
+    };
+  });
+}
+document.getElementById("btn-add-aluno").onclick = () => {
+  alunosForm.push({ existenteId: null, nome: "", cargo: "", areaAtuacao: "", responsabilidades: "" });
+  renderAlunos();
+};
+renderAlunos();
+
+// ── Módulos: lista dinâmica de nomes ──
+let modulosForm = [];
+const modulosLista = document.getElementById("modulos-lista");
+function renderModulos(){
+  modulosLista.innerHTML = modulosForm.map((m, i) => `
+    <div style="display:flex; gap:6px;">
+      <input class="mod-nome" data-i="${i}" value="${m}" placeholder="Ex.: Módulo 1 — Negotiation Basics">
+      <button type="button" class="aluno-rm" data-rm="${i}">✕</button>
+    </div>
+  `).join("");
+  modulosLista.querySelectorAll(".mod-nome").forEach(inp => inp.oninput = e => modulosForm[+e.target.dataset.i] = e.target.value);
+  modulosLista.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { modulosForm.splice(+b.dataset.rm,1); renderModulos(); });
+}
+document.getElementById("btn-add-modulo").onclick = () => { modulosForm.push(""); renderModulos(); };
+
+// ── Salvar ──
+const msg = document.getElementById("msg");
+document.getElementById("btn-salvar").onclick = async () => {
+  const tipo = document.querySelector('input[name="tipo"]:checked').value;
+  const nome = document.getElementById("f-nome").value.trim();
+  const nivel = document.getElementById("f-nivel").value;
+  const obj1 = document.getElementById("f-obj1").value.trim();
+
+  if (!nome || !nivel || !obj1){
+    msg.textContent = "Preencha nome, nível e objetivo 1."; msg.className = "erro"; return;
+  }
+  if (tipo === "corporativa" && !empresaSelecionada){
+    msg.textContent = "Selecione ou crie a empresa."; msg.className = "erro"; return;
+  }
+
+  document.getElementById("btn-salvar").disabled = true;
+  msg.textContent = "Salvando..."; msg.className = "";
+
+  try{
+    let empresaClienteId = null;
+    if (tipo === "corporativa"){
+      empresaClienteId = empresaSelecionada.id;
+      if (!empresaClienteId){
+        const nova = await sbInsert("empresas_cliente", {
+          nome: empresaSelecionada.nome,
+          setor: document.getElementById("f-setor").value.trim() || null,
+          contexto_ingles: document.getElementById("f-contexto-ingles").value.trim() || null
+        });
+        empresaClienteId = nova.id;
+      } else {
+        // já existe — atualiza setor/contexto se foram preenchidos agora
+        const setor = document.getElementById("f-setor").value.trim();
+        const ctx = document.getElementById("f-contexto-ingles").value.trim();
+        if (setor || ctx){
+          await fetch(`${SUPABASE_URL}/rest/v1/empresas_cliente?id=eq.${empresaClienteId}`, {
+            method: "PATCH", headers: H,
+            body: JSON.stringify({ ...(setor && {setor}), ...(ctx && {contexto_ingles: ctx}) })
+          });
+        }
+      }
+    }
+
+    const turma = await sbInsert("turmas", {
+      nome, tipo, empresa_cliente_id: empresaClienteId, professor_id: null,
+      nivel_cefr: nivel,
+      objetivo_1: obj1,
+      objetivo_2: document.getElementById("f-obj2").value.trim() || null,
+      tamanho_turma: +document.getElementById("f-tamanho").value || null,
+      duracao_aula_min: +document.getElementById("f-duracao").value || null,
+      formato: document.getElementById("f-formato").value || null,
+      frequencia_semanal: +document.getElementById("f-frequencia").value || null,
+      qtd_modulos: +document.getElementById("f-qtd-modulos").value || null,
+      aulas_por_modulo: +document.getElementById("f-aulas-modulo").value || null,
+      nomes_modulos: modulosForm.filter(Boolean),
+      assuntos_essenciais: document.getElementById("f-assuntos").value.trim() || null,
+      restricoes: document.getElementById("f-restricoes").value.trim() || null
+    });
+
+    for (const a of alunosForm){
+      if (!a.nome || !a.nome.trim()) continue;
+      let alunoId = a.existenteId;
+      if (!alunoId){
+        const novo = await sbInsert("alunos", {
+          nome: a.nome.trim(), cargo: a.cargo || null,
+          area_atuacao: a.areaAtuacao || null, responsabilidades: a.responsabilidades || null,
+          empresa_cliente_id: empresaClienteId
+        });
+        alunoId = novo.id;
+      }
+      await sbInsert("turma_alunos", { turma_id: turma.id, aluno_id: alunoId });
+    }
+
+    msg.textContent = "Turma salva! Pode fechar esta aba ou criar outra."; msg.className = "ok";
+    document.getElementById("form-turma").reset();
+    alunosForm = []; modulosForm = []; empresaSelecionada = null;
+    renderAlunos(); renderModulos();
+    document.getElementById("empresa-selecionada").textContent = "";
+  } catch(err){
+    msg.textContent = "Erro ao salvar: " + err.message; msg.className = "erro";
+  } finally {
+    document.getElementById("btn-salvar").disabled = false;
+  }
+};
+</script>
+</body>
+</html>

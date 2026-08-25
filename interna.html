@@ -1320,7 +1320,6 @@
 
   <section class="pane" id="pane-alertas">
     <div class="barra-planilha">
-      <button class="btn-novo-doc" id="btn-aviso"><span class="mais">+</span> Aviso ao RH</button>
       <select class="filtro" id="a-emp"></select>
       <select class="filtro" id="a-turma" disabled></select>
       <select class="filtro" id="a-prof"></select>
@@ -2370,7 +2369,6 @@ function abrirNovoAviso(empresaPre){
     renderAlertas();
   };
 }
-document.getElementById("btn-aviso").onclick = () => abrirNovoAviso();
 
 // ── Exportar CSV ──
 function baixarCSV(){

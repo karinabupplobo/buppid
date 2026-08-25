@@ -755,8 +755,15 @@
   #leads-main { display: grid; grid-template-columns: 232px 1fr; gap: 16px; align-items: start; }
   #leads-funnel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px 13px; position: sticky; top: 18px; }
-  #leads-funnel h4 { margin: 0 0 12px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--accent); font-weight: 800; }
+  /* Faixa do topo do funil no padrão da dash: fundo marrom, texto branco,
+     sangrando até a borda do painel. */
+  #leads-funnel h4 {
+    margin: -14px -13px 12px; padding: 12px 13px;
+    background: var(--accent); color: #fff;
+    font-family: inherit; font-size: 10px; font-weight: 800;
+    letter-spacing: .12em; text-transform: uppercase;
+    border-radius: 11px 11px 0 0;
+  }
   .funnel-stage { display: block; width: 100%; border: none; color: #fff; cursor: pointer;
     margin: 0 auto 4px; padding: 9px 8px; border-radius: 7px; text-align: center;
     transition: transform .12s, filter .12s, box-shadow .12s; }
@@ -2313,7 +2320,10 @@ const FUNIL = [
   { k: "st:contatada",  h: 210,              r: "Contatada",        d: "mensagem enviada, aguardando resposta" },
   { k: "st:reuniao",    h: 188,              r: "Reunião",          d: "respondeu e marcou" },
   { k: "st:proposta",   h: 164,              r: "Proposta",         d: "proposta na mesa" },
-  { k: "st:cliente",    h: 140,              r: "Cliente",          d: "fechou" }
+  { k: "st:cliente",    h: 140,              r: "Cliente",          d: "fechou" },
+  // Lost fecha o funil por baixo, em vermelho: é o oposto de Cliente, não uma
+  // continuação da rampa. Cor fixa na mão, fora da rampa vermelho→verde.
+  { k: "st:lost",       h: 0, s: 62, l: 44,  r: "Lost",             d: "não avançou — perdida" }
 ];
 
 // HSL de cada etapa: cor calculada pela posição no funil (rampa vermelho→verde),
@@ -2340,7 +2350,7 @@ function rotuloDaEtapa(k) {
 }
 
 // Uma empresa mora em exatamente uma etapa.
-const ETAPAS_TRABALHO = ["contatada", "reuniao", "proposta", "cliente"];
+const ETAPAS_TRABALHO = ["contatada", "reuniao", "proposta", "cliente", "lost"];
 function etapaDoLead(x) {
   const st = x.e.st || "novo";
   if (ETAPAS_TRABALHO.includes(st)) return "st:" + st;

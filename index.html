@@ -682,9 +682,10 @@
   #leads-tabela{ min-width: 0; }
   #leads-cabecalho, .lead-row > summary{
     display: grid;
-    grid-template-columns: minmax(150px,2.4fr) minmax(110px,1.3fr) 92px 84px 40px;
+    grid-template-columns: minmax(140px,2.2fr) minmax(110px,1.2fr) 88px 84px 40px;
     align-items: center; gap: 12px;
   }
+  .lead-row > summary{ align-items: center; }
   #leads-cabecalho{
     padding: 10px 12px; background: var(--accent);
     border: 1px solid var(--accent); border-bottom: none;
@@ -698,9 +699,19 @@
   .lead-row > summary{ padding: 10px 12px; }
   .lc{ min-width: 0; font-size: 12.5px; color: var(--text); }
   .lc-i{ font-size: 11px; color: var(--text-muted); font-weight: 700; }
-  .lc-nome{ display: flex; flex-direction: column; gap: 1px; }
-  .lc-nome .lead-name{ font-size: 13.5px; font-weight: 700; }
-  .lc-nome .lead-meta{ font-size: 11px; color: var(--text-muted); }
+  .lc-nome{ display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  /* Nome comprido quebra em duas linhas em vez de invadir a coluna do setor:
+     .lead-name é `nowrap` no card antigo e vazava aqui. */
+  .lc-nome .lead-name{
+    font-size: 13.5px; font-weight: 700;
+    white-space: normal; overflow-wrap: anywhere; line-height: 1.25;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .lc-nome .lead-meta{
+    font-size: 11px; color: var(--text-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
   .lc-setor, .lc-porte{ color: var(--text-muted); font-size: 11.5px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lc-num{ text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }

@@ -2,6 +2,16 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2225-faixa-marrom-nivel-test — 25/08/2026
+- O que mudou: `<h2>Level Test</h2>` no topo do card de dados de
+  `nivel-test.html` ganhou fundo marrom (`--teal-escuro`) e texto branco,
+  sangrando até a borda do card com cantos arredondados só em cima — só
+  essa faixa, o resto do card (nome, e-mail, checkbox) continua branco.
+- Arquivos: nivel-test.html
+- Motivo: pedido da Karina em 25/08, com print de referência.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2210-historico-empresa-aluno
+
 ## v-20260825-2210-historico-empresa-aluno — 25/08/2026
 - O que mudou: dois cliques novos na aba Empresas de `interna.html`. (1)
   Clique no nome da empresa abre o histórico de comentários com a gestão

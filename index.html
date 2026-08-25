@@ -363,7 +363,15 @@
      útil. Abaixo disso cada linha vira um cartão empilhado com o rótulo de cada
      campo em cima, em vez de estourar a tela na horizontal. --- */
   @media (max-width: 1140px) {
-    .tasks-header-row { display: none; }
+    /* O cabeçalho deixa de ser uma grade de colunas e vira uma barra de
+       filtros: os títulos continuam visíveis (e clicáveis), mas fluem em
+       linha em vez de tentar alinhar com colunas que não existem mais. */
+    .tasks-header-row {
+      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      border-radius: 11px 11px 0 0;
+    }
+    .tasks-header-row > div:first-child,
+    .tasks-header-row > div:last-child { display: none; }
     /* Os campos fluem lado a lado e quebram sozinhos conforme a largura:
        2 por fileira num celular, 3 ou 4 numa janela estreita de desktop. */
     .tasks-row { display: flex; flex-wrap: wrap; gap: 8px 10px; padding: 10px 12px; }
@@ -946,7 +954,7 @@
 </head>
 <body>
 
-<div id="login-gate-backdrop">
+<div id="login-gate-backdrop" class="hidden">
   <div id="login-gate-box">
     <div id="login-gate-login-fields">
       <div class="login-gate-field">
@@ -995,7 +1003,7 @@
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
   </button>
 </nav>
-<div id="app" class="hidden">
+<div id="app">
   <div id="app-header">
     <div id="app-header-left">
       <div id="app-brand">bupp.</div>
@@ -3997,6 +4005,16 @@ document.getElementById("settings-add-user-btn").addEventListener("click", () =>
 initialCloudLoadPromise = loadFromCloud();
 
 (function restoreSessionOnLoad() {
+  // O gate nasce escondido no HTML e o app nasce visível: com a senha
+  // desligada, mostrar a porta e escondê-la logo depois fazia a tela de login
+  // piscar toda vez que a aba era aberta. Quando SEM_SENHA voltar a ser false,
+  // é este bloco que reabre a porta.
+  if (!SEM_SENHA && !tryRestoreSession()){
+    document.getElementById("app").classList.add("hidden");
+    document.getElementById("sidebar").classList.add("hidden");
+    document.getElementById("login-gate-backdrop").classList.remove("hidden");
+    return;
+  }
   if (SEM_SENHA) {
     // Entra direto. Se houver sessão salva, aproveita para manter o nome de
     // quem estava usando; senão, entra como usuário interno genérico.

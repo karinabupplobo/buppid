@@ -828,18 +828,28 @@
   .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
           padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
 
-  /* ── Resumo por turma: carrossel de dois cards por vez ── */
-  .resumo-turmas{ margin-bottom: 18px; }
+  /* ── Bloco "Média": planilha no desktop, carrossel no celular ── */
+  .resumo-medias{ margin-bottom: 18px; }
   .rt-titulo{
     font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
     color: var(--azul-intermediario); margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .rt-titulo::before{
     content: ""; width: 14px; height: 3px; border-radius: 2px;
     background: var(--amarelo-neon); flex-shrink: 0;
   }
+  .md-eixo{
+    border: 1px solid var(--borda); background: var(--branco); border-radius: 8px;
+    padding: 5px 9px; font-family: inherit; font-size: 11.5px; font-weight: 700;
+    color: var(--teal-escuro); cursor: pointer; outline: none;
+    letter-spacing: 0; text-transform: none;
+  }
+  .md-eixo:hover{ border-color: var(--azul-intermediario); }
+  .md-eixo:focus{ border-color: var(--teal-escuro); }
+
   .rt-nav{ margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .md-nav{ display: none; }
   .rt-seta{
     width: 28px; height: 28px; border-radius: 50%; padding: 0;
     border: 1px solid var(--borda); background: var(--branco);
@@ -854,30 +864,28 @@
     min-width: 30px; text-align: center; letter-spacing: 0;
   }
 
+  .md-viewport{ display: none; }
   .rt-viewport{ overflow: hidden; }
   .rt-trilho{
     display: flex; gap: 12px;
     transition: transform .38s cubic-bezier(.4,.1,.2,1);
     will-change: transform;
   }
-  /* Dois por página: cada card ocupa metade da janela menos metade do vão,
-     para que 2 cards + 1 vão somem exatamente a largura visível. */
   .rt-card{
-    flex: 0 0 calc((100% - 12px) / 2);
+    flex: 0 0 100%;
     background: var(--branco); border: 1px solid var(--borda);
     border-radius: 14px; padding: 0 16px 16px;
     display: flex; flex-direction: column; overflow: hidden;
   }
-  /* faixa marrom sangrando até a borda, igual aos cards da plataforma */
   .rt-card header{
     background: var(--teal-escuro);
     margin: 0 -16px 6px; padding: 14px 16px;
-    border-bottom: none;
   }
-  .rt-card .cel-link{
-    font-size: 14.5px; white-space: normal; text-align: left;
-    color: #fff; border-bottom-color: rgba(255,255,255,.45);
+  .rt-card .cel-link, .rt-card .md-titulo{
+    font-size: 14.5px; font-weight: 700; white-space: normal; text-align: left;
+    color: #fff;
   }
+  .rt-card .cel-link{ border-bottom-color: rgba(255,255,255,.45); }
   .rt-card .cel-link:hover{ color: var(--amarelo-neon); border-bottom-color: var(--amarelo-neon); }
   .rt-sub{ display: block; font-size: 11.5px; color: rgba(255,255,255,.72); font-weight: 500; margin-top: 3px; }
 
@@ -897,56 +905,8 @@
   }
   .rt-eng{ font-weight: 800; color: var(--teal-escuro); }
   .rt-eng.baixo{ color: #a3312a; }
-  .rt-ver{
-    margin-top: auto; width: 100%;
-    border: 1px solid var(--borda); background: var(--branco); border-radius: 8px;
-    padding: 9px; font-family: inherit; font-size: 11.5px; font-weight: 700;
-    color: var(--azul-intermediario); cursor: pointer;
-  }
-  .rt-ver:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
 
-  /* No celular, um card por vez ocupa a tela toda */
-  @media (max-width: 620px){
-    .rt-card{ flex: 0 0 100%; }
-  }
-
-  /* Planilha no celular: rolagem horizontal com a coluna do aluno fixa,
-     para não perder a referência de quem é a linha. */
-  @media (max-width: 760px){
-    .planilha-wrap{ max-height: 62vh; }
-    table.planilha th, table.planilha td{ padding: 9px 10px; font-size: 12px; }
-    table.planilha th:nth-child(7){ left: 0; z-index: 4; }
-    table.planilha td:nth-child(7){
-      position: sticky; left: 0; z-index: 2;
-      background: var(--branco); box-shadow: 2px 0 0 var(--borda);
-    }
-    table.planilha tbody tr:hover td:nth-child(7){ background: #faf9f7; }
-    table.planilha tbody tr.alerta td:nth-child(7){ background: #fffaf8; }
-    .cel-anot, .cel-at{ max-width: 200px; }
-    .barra-planilha{ gap: 7px; }
-    .filtro, input.filtro{ flex: 1; min-width: 0; }
-    .btn-csv{ margin-left: 0; flex: 1; }
-    .btn-limpar-col{ flex: 1 0 100%; }
-    .cont-linhas{ flex: 1 0 100%; }
-  }
-
-  /* Cards da aba Alertas: mesma faixa marrom no topo */
-  #lista-alertas .card{ padding: 0 18px 18px; overflow: hidden; }
-  #lista-alertas .card .ident{
-    background: var(--teal-escuro);
-    margin: 0 -18px 14px; padding: 14px 18px;
-    flex-wrap: wrap;
-  }
-  #lista-alertas .card .id-emp{ color: #fff; }
-  #lista-alertas .card .id-turma{ color: rgba(255,255,255,.72); }
-  #lista-alertas .card .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
-  #lista-alertas .card .id-hora{ color: rgba(255,255,255,.8); }
-
-  /* ── Resumo por aluno: tabela no desktop, carrossel no celular ── */
-  .resumo-alunos{ margin-bottom: 18px; }
-  .resumo-alunos .ra-nav{ display: none; }
-  .resumo-alunos .ra-viewport{ display: none; }
-
+  /* planilha do bloco Média (desktop) */
   .ra-wrap{
     background: var(--branco); border: 1px solid var(--borda);
     border-radius: 14px; overflow-x: auto;
@@ -964,91 +924,16 @@
   }
   table.ra-tabela tbody tr:last-child td{ border-bottom: none; }
   table.ra-tabela tbody tr:hover td{ background: #faf9f7; }
-  table.ra-tabela th:nth-child(n+4), table.ra-tabela td:nth-child(n+4){ text-align: right; }
-  table.ra-tabela th:nth-child(10), table.ra-tabela td:nth-child(10),
-  table.ra-tabela th:nth-child(11), table.ra-tabela td:nth-child(11){ text-align: left; }
+  table.ra-tabela th:nth-child(n+3), table.ra-tabela td:nth-child(n+3){ text-align: right; }
+  table.ra-tabela th:last-child, table.ra-tabela td:last-child{ text-align: left; }
   .ra-sub{ display: block; font-size: 11px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; }
-  .ra-anot{
-    font-size: 11px; font-weight: 800; background: var(--limao-claro);
-    color: var(--teal-escuro); padding: 3px 8px; border-radius: 999px;
-  }
+  .md-titulo{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
 
   @media (max-width: 760px){
-    .resumo-alunos .ra-wrap{ display: none; }
-    .resumo-alunos .ra-nav{ display: flex; }
-    .resumo-alunos .ra-viewport{ display: block; }
-    .resumo-alunos .rt-card{ flex: 0 0 100%; }
+    .resumo-medias .ra-wrap{ display: none; }
+    .resumo-medias .md-nav{ display: flex; }
+    .resumo-medias .md-viewport{ display: block; }
   }
-
-  /* ── Filtro no cabeçalho da planilha ── */
-  table.planilha th{ position: sticky; top: 0; z-index: 3; padding: 0; }
-  .th-btn{
-    width: 100%; display: flex; align-items: center; gap: 6px; justify-content: space-between;
-    background: none; border: none; cursor: pointer; font-family: inherit;
-    color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .07em;
-    text-transform: uppercase; padding: 11px 12px; white-space: nowrap;
-  }
-  .th-btn:hover{ background: rgba(255,255,255,.1); }
-  .funil{
-    width: 9px; height: 9px; flex-shrink: 0; opacity: .5;
-    clip-path: polygon(0 0, 100% 0, 62% 45%, 62% 100%, 38% 82%, 38% 45%);
-    background: #fff;
-  }
-  th.filtrado{ background: var(--azul-intermediario) !important; }
-  th.filtrado .funil{ opacity: 1; background: var(--amarelo-neon); }
-
-  .menu-col{
-    position: absolute; top: 100%; left: 0; z-index: 40; min-width: 240px; max-width: 300px;
-    background: var(--branco); border: 1px solid var(--borda); border-radius: 10px;
-    box-shadow: 0 14px 34px rgba(0,0,0,.18); overflow: hidden; white-space: normal;
-    text-transform: none; letter-spacing: 0;
-  }
-  .mc-topo{ padding: 9px; border-bottom: 1px solid var(--borda); }
-  .mc-busca{
-    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 7px 9px;
-    font-family: inherit; font-size: 12.5px; color: var(--texto); outline: none;
-  }
-  .mc-busca:focus{ border-color: var(--teal-escuro); }
-  .mc-acoes{ display: flex; gap: 6px; padding: 8px 9px 4px; }
-  .mc-acoes button{
-    flex: 1; border: 1px solid var(--borda); background: var(--branco); border-radius: 6px;
-    padding: 5px; font-family: inherit; font-size: 11px; font-weight: 700;
-    color: var(--azul-intermediario); cursor: pointer;
-  }
-  .mc-acoes button:hover{ border-color: var(--teal-escuro); color: var(--teal-escuro); }
-  .mc-lista{ max-height: 220px; overflow-y: auto; padding: 4px 9px 8px; }
-  .mc-item{
-    display: flex; align-items: center; gap: 8px; padding: 5px 4px; cursor: pointer;
-    font-size: 12.5px; font-weight: 500; color: var(--texto); border-radius: 5px;
-  }
-  .mc-item:hover{ background: #faf9f7; }
-  .mc-item input{ accent-color: var(--teal-escuro); cursor: pointer; flex-shrink: 0; }
-  .mc-vazio{ font-size: 12px; color: var(--cinza-texto); padding: 8px 4px; }
-  .mc-rodape{ padding: 8px 9px; border-top: 1px solid var(--borda); }
-  .mc-ok{
-    width: 100%; border: none; border-radius: 7px; background: var(--teal-escuro);
-    color: #fff; font-family: inherit; font-size: 12px; font-weight: 700;
-    padding: 8px; cursor: pointer;
-  }
-  .mc-ok:hover{ background: var(--azul-intermediario); }
-
-  /* Planilha no celular: rolagem horizontal com a coluna do aluno fixa,
-     para não perder a referência de quem é a linha. */
-  @media (max-width: 760px){
-    .planilha-wrap{ max-height: 62vh; }
-    table.planilha th, table.planilha td{ padding: 9px 10px; font-size: 12px; }
-    table.planilha th:nth-child(7){ left: 0; z-index: 4; }
-    table.planilha td:nth-child(7){
-      position: sticky; left: 0; z-index: 2;
-      background: var(--branco); box-shadow: 2px 0 0 var(--borda);
-    }
-    table.planilha tbody tr:hover td:nth-child(7){ background: #faf9f7; }
-    table.planilha tbody tr.alerta td:nth-child(7){ background: #fffaf8; }
-    .cel-anot, .cel-at{ max-width: 200px; }
-    .barra-planilha{ gap: 7px; }
-    .filtro, input.filtro{ flex: 1; min-width: 0; }
-    .btn-csv{ margin-left: 0; flex: 1; }
-    #titulo-geral{ margin-bottom: 10px; }
 
   /* ── Botão "+ Filtro" e painel em dois passos ── */
   .add-filtro{ position: relative; }
@@ -1261,8 +1146,7 @@
     <div class="chips-filtro" id="chips-filtro"></div>
     <div class="kpis" id="kpis"></div>
 
-    <div class="resumo-turmas" id="resumo-turmas"></div>
-    <div class="resumo-alunos" id="resumo-alunos"></div>
+    <div class="resumo-medias" id="resumo-medias"></div>
 
     <div class="rt-titulo" id="titulo-geral">Geral</div>
     <div class="planilha-wrap">
@@ -1674,8 +1558,7 @@ function renderTabela(){
   const tg = document.getElementById("titulo-geral");
   if (tg) tg.textContent = `Geral · ${dados.length}`;
   renderKPIs(dados);
-  renderResumoTurmas(dados);
-  renderResumoAlunos(dados);
+  renderMedias(dados);
   ligarCelulas();
 
   document.querySelectorAll(".th-btn").forEach(b => {
@@ -1901,163 +1784,66 @@ function renderKPIs(dados){
 }
 
 // ══════════════════════════════════════════════════════════
-//  RESUMO POR TURMA
-//  Uma linha por turma, com as médias do que está filtrado logo acima. Serve
-//  para achar a turma que precisa de atenção antes de descer para a planilha.
+//  MÉDIA
+//  Um bloco só, com um seletor que decide o eixo do agrupamento:
+//  empresa, turma, aluno ou professor. No desktop é planilha; no celular,
+//  carrossel de cards. Sempre calcula sobre o que está filtrado acima.
 // ══════════════════════════════════════════════════════════
-function renderResumoTurmas(dados){
-  const box = document.getElementById("resumo-turmas");
-  const porTurma = new Map();
-
-  dados.forEach(l => {
-    if (!porTurma.has(l.turmaId)) porTurma.set(l.turmaId, []);
-    porTurma.get(l.turmaId).push(l);
-  });
-
-  if (!porTurma.size){ box.innerHTML = ""; return; }
-
-  const linhas = [...porTurma.entries()].map(([id, ls]) => {
-    const t = TURMAS.find(x => x.id === id);
-    const p = partesIdent(t);
-
-    const comPres  = ls.filter(l => l.presenca);
-    const pctPres  = comPres.length
-      ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
-    const faltas   = ls.filter(l => l.presenca === "a").length;
-
-    const comEng = ls.filter(l => l.eng);
-    const medEng = comEng.length ? comEng.reduce((n,l) => n + l.eng, 0) / comEng.length : null;
-
-    const comNota = ls.filter(l => l.nota !== null);
-    const medNota = comNota.length
-      ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
-
-    // tema que mais aparece na coluna Atenção desta turma
-    const temas = {};
-    ls.forEach(l => l.atencao.forEach(x => {
-      if (x.tipo === "pend") return;
-      temas[x.tema] = (temas[x.tema] || 0) + 1;
-    }));
-    const pior = Object.entries(temas).sort((a,b) => b[1]-a[1])[0];
-
-    const aulas = new Set(ls.map(l => l.aulaId)).size;
-    const alunos = new Set(ls.map(l => l.alunoId)).size;
-
-    return { t, p, pctPres, faltas, medEng, medNota, pior, aulas, alunos, prof: ls[0].prof };
-  }).sort((a,b) => (a.medNota ?? 999) - (b.medNota ?? 999));   // pior primeiro
-
-  // Carrossel: dois cards por vez, setas nas laterais.
-  const cards = linhas.map(x => `
-    <article class="rt-card">
-      <header>
-        <button class="cel-link" data-turma-pop="${x.t.id}">${x.p.empresa} · ${x.p.turma}</button>
-        <span class="rt-sub">${x.t.nivel} · ${x.alunos} aluno${x.alunos!==1?"s":""} · ${x.aulas} aula${x.aulas!==1?"s":""}</span>
-      </header>
-      <div class="rt-linha"><span class="rt-rot">Professor</span>
-        <span class="rt-prof">${x.prof}</span></div>
-      <div class="rt-linha"><span class="rt-rot">Presença</span>
-        <span><span class="nota ${classeNota(x.pctPres)}">${x.pctPres===null?"–":x.pctPres+"%"}</span>${
-          x.faltas ? `<span class="rt-falta">${x.faltas} falta${x.faltas>1?"s":""}</span>` : ""}</span></div>
-      <div class="rt-linha"><span class="rt-rot">Engajamento</span>
-        <span>${x.medEng === null ? '<span class="sem">–</span>'
-          : `<span class="rt-eng ${x.medEng <= 1.5 ? "baixo" : ""}">${x.medEng.toFixed(1)}★</span>`}</span></div>
-      <div class="rt-linha"><span class="rt-rot">Trilhas</span>
-        <span class="nota ${classeNota(x.medNota)}">${x.medNota===null?"–":x.medNota+"%"}</span></div>
-      <div class="rt-linha"><span class="rt-rot">Onde mais erra</span>
-        <span>${x.pior
-          ? `<span class="tag-at ${x.pior[1] >= 3 ? "recorrente" : "isolado"}">${x.pior[0]} <b>${x.pior[1]}×</b></span>`
-          : '<span class="sem">—</span>'}</span></div>
-      <button class="rt-ver" data-turma-filtro="${x.t.id}">ver linhas</button>
-    </article>`).join("");
-
-  box.innerHTML = `
-    <div class="rt-titulo">
-      Por turma · ${linhas.length}
-      <span class="rt-nav">
-        <button class="rt-seta" data-ir="-1" aria-label="Anterior">‹</button>
-        <span class="rt-pos" id="rt-pos"></span>
-        <button class="rt-seta" data-ir="1" aria-label="Próximas">›</button>
-      </span>
-    </div>
-    <div class="rt-viewport">
-      <div class="rt-trilho" id="rt-trilho">${cards}</div>
-    </div>`;
-
-  // ── navegação de duas em duas ──
-  const trilho   = box.querySelector("#rt-trilho");
-  const viewport = box.querySelector(".rt-viewport");
-  const VAO = 12;   // precisa bater com o `gap` do .rt-trilho no CSS
-
-  // dois por vez no desktop, um por vez em tela estreita
-  const porVez  = () => (window.innerWidth <= 620 ? 1 : 2);
-  let paginas = Math.max(1, Math.ceil(linhas.length / porVez()));
-  let pag = 0;
-
-  function irPara(n){
-    pag = Math.max(0, Math.min(n, paginas - 1));
-    // O deslocamento é em PIXELS, medido pela janela visível. Em porcentagem
-    // ele seria relativo à largura do trilho (a soma de todos os cards), o que
-    // faz o carrossel pular longe demais e cortar os cards.
-    const passo = viewport.clientWidth + VAO;
-    trilho.style.transform = `translateX(-${pag * passo}px)`;
-    box.querySelector("#rt-pos").textContent = `${pag + 1}/${paginas}`;
-    box.querySelectorAll(".rt-seta").forEach(b => {
-      const dir = +b.dataset.ir;
-      b.disabled = (dir < 0 && pag === 0) || (dir > 0 && pag === paginas - 1);
-    });
+const EIXOS = {
+  empresa: {
+    rot: "Empresa",
+    chave:  l => l.empresa,
+    titulo: ls => ls[0].empresa,
+    sub:    ls => {
+      const turmas = new Set(ls.map(l => l.turmaId)).size;
+      const alunos = new Set(ls.map(l => l.turmaId + l.alunoId)).size;
+      return `${turmas} turma${turmas!==1?"s":""} · ${alunos} aluno${alunos!==1?"s":""}`;
+    },
+    ctx: ls => [...new Set(ls.map(l => l.prof))].join(", ")
+  },
+  turma: {
+    rot: "Turma",
+    chave:  l => l.turmaId,
+    titulo: ls => `${ls[0].empresa} · ${ls[0].turma}`,
+    sub:    ls => {
+      const alunos = new Set(ls.map(l => l.alunoId)).size;
+      const aulas  = new Set(ls.map(l => l.aulaId)).size;
+      return `${ls[0].nivel} · ${alunos} aluno${alunos!==1?"s":""} · ${aulas} aula${aulas!==1?"s":""}`;
+    },
+    ctx: ls => ls[0].prof
+  },
+  aluno: {
+    rot: "Aluno",
+    chave:  l => l.turmaId + "|" + l.alunoId,
+    titulo: ls => ls[0].aluno,
+    sub:    ls => `${ls[0].empresa} · ${ls[0].turma} · ${ls[0].nivel}`,
+    ctx: ls => ls[0].prof
+  },
+  professor: {
+    rot: "Professor",
+    chave:  l => l.prof,
+    titulo: ls => ls[0].prof,
+    sub:    ls => {
+      const turmas = new Set(ls.map(l => l.turmaId)).size;
+      const alunos = new Set(ls.map(l => l.turmaId + l.alunoId)).size;
+      return `${turmas} turma${turmas!==1?"s":""} · ${alunos} aluno${alunos!==1?"s":""}`;
+    },
+    ctx: ls => [...new Set(ls.map(l => l.empresa))].join(", ")
   }
-  box.querySelectorAll(".rt-seta").forEach(b => {
-    b.onclick = () => irPara(pag + (+b.dataset.ir));
-  });
+};
 
-  // arrastar com o dedo
-  let x0 = null;
-  box.querySelector(".rt-viewport").addEventListener("touchstart",
-    e => { x0 = e.touches[0].clientX; }, { passive:true });
-  box.querySelector(".rt-viewport").addEventListener("touchend", e => {
-    if (x0 === null) return;
-    const dx = e.changedTouches[0].clientX - x0;
-    if (Math.abs(dx) > 45) irPara(pag + (dx < 0 ? 1 : -1));
-    x0 = null;
-  }, { passive:true });
+let eixoAtual = "turma";
 
-  window.addEventListener("resize", () => {
-    paginas = Math.max(1, Math.ceil(linhas.length / porVez()));
-    irPara(Math.min(pag, paginas - 1));
-  });
-
-  irPara(0);
-
-  // "ver linhas" filtra a planilha naquela turma
-  box.querySelectorAll("[data-turma-filtro]").forEach(b => {
-    b.onclick = () => {
-      const t = TURMAS.find(x => x.id === b.dataset.turmaFiltro);
-      FILTROS_COL.turma = new Set([partesIdent(t).turma]);
-      FILTROS_COL.empresa = new Set([t.empresa]);
-      renderTabela();
-      const alvo = document.querySelector(".planilha-wrap");
-      if (alvo && alvo.scrollIntoView) alvo.scrollIntoView({ behavior:"smooth", block:"start" });
-    };
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-//  RESUMO POR ALUNO
-//  Uma linha por aluno com as médias de tudo. No desktop é tabela; no
-//  celular vira carrossel de cards, igual ao resumo por turma.
-// ══════════════════════════════════════════════════════════
-function renderResumoAlunos(dados){
-  const box = document.getElementById("resumo-alunos");
-  const porAluno = new Map();
+function agrupar(dados, eixo){
+  const e = EIXOS[eixo];
+  const mapa = new Map();
   dados.forEach(l => {
-    const k = l.turmaId + "|" + l.alunoId;   // aluno pertence a uma turma
-    if (!porAluno.has(k)) porAluno.set(k, []);
-    porAluno.get(k).push(l);
+    const k = e.chave(l);
+    if (!mapa.has(k)) mapa.set(k, []);
+    mapa.get(k).push(l);
   });
 
-  if (!porAluno.size){ box.innerHTML = ""; return; }
-
-  const linhas = [...porAluno.values()].map(ls => {
+  return [...mapa.values()].map(ls => {
     const comPres = ls.filter(l => l.presenca);
     const pctPres = comPres.length
       ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
@@ -2070,23 +1856,29 @@ function renderResumoAlunos(dados){
     const medNota = comNota.length
       ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
 
-    const acertos = ls.reduce((n,l) => n + l.acertos, 0);
-    const erros   = ls.reduce((n,l) => n + l.erros, 0);
-
     const temas = {};
     ls.forEach(l => l.atencao.forEach(x => {
       if (x.tipo === "pend") return;
       temas[x.tema] = (temas[x.tema] || 0) + 1;
     }));
     const pior = Object.entries(temas).sort((a,b) => b[1]-a[1])[0];
-    const anot = ls.filter(l => l.anot).length;
 
     return {
-      aluno: ls[0].aluno, cargo: ls[0].cargo, empresa: ls[0].empresa, turma: ls[0].turma,
-      nivel: ls[0].nivel, prof: ls[0].prof, turmaId: ls[0].turmaId, alunoId: ls[0].alunoId,
-      aulas: ls.length, pctPres, faltas, medEng, medNota, acertos, erros, pior, anot
+      titulo: e.titulo(ls), sub: e.sub(ls), ctx: e.ctx(ls),
+      pctPres, faltas, medEng, medNota, pior,
+      acertos: ls.reduce((n,l) => n + l.acertos, 0),
+      erros:   ls.reduce((n,l) => n + l.erros, 0),
+      turmaId: ls[0].turmaId, alunoId: ls[0].alunoId, linhas: ls
     };
   }).sort((a,b) => (a.medNota ?? 999) - (b.medNota ?? 999));   // pior primeiro
+}
+
+function renderMedias(dados){
+  const box = document.getElementById("resumo-medias");
+  const e = EIXOS[eixoAtual];
+  const grupos = agrupar(dados, eixoAtual);
+
+  if (!grupos.length){ box.innerHTML = ""; return; }
 
   const cel = x => ({
     pres: `<span class="nota ${classeNota(x.pctPres)}">${x.pctPres===null?"–":x.pctPres+"%"}</span>${
@@ -2096,47 +1888,47 @@ function renderResumoAlunos(dados){
     nota: `<span class="nota ${classeNota(x.medNota)}">${x.medNota===null?"–":x.medNota+"%"}</span>`,
     pior: x.pior
           ? `<span class="tag-at ${x.pior[1] >= 2 ? "recorrente" : "isolado"}">${x.pior[0]} <b>${x.pior[1]}×</b></span>`
-          : '<span class="sem">—</span>',
-    anot: x.anot ? `<span class="ra-anot">${x.anot}</span>` : '<span class="sem">—</span>'
+          : '<span class="sem">—</span>'
   });
 
-  // ── desktop: tabela ──
+  // link para a ficha, quando o eixo aponta para algo que tem ficha
+  const linkTitulo = x => {
+    if (eixoAtual === "turma")
+      return `<button class="cel-link" data-turma-pop="${x.turmaId}">${x.titulo}</button>`;
+    if (eixoAtual === "aluno")
+      return `<button class="cel-link" data-aluno-pop="${x.alunoId}" data-turma="${x.turmaId}">${x.titulo}</button>`;
+    return `<span class="md-titulo">${x.titulo}</span>`;
+  };
+
+  const ctxRot = { empresa:"Professores", turma:"Professor", aluno:"Professor", professor:"Empresas" }[eixoAtual];
+
   const tabela = `
     <div class="ra-wrap">
       <table class="ra-tabela">
         <thead><tr>
-          <th>Aluno</th><th>Turma</th><th>Professor</th><th>Aulas</th>
+          <th>${e.rot}</th><th>${ctxRot}</th>
           <th>Presença</th><th>Engaj.</th><th>Trilhas</th>
-          <th>Certos</th><th>Erros</th><th>Onde mais erra</th><th>Anot.</th>
+          <th>Certos</th><th>Erros</th><th>Onde mais erra</th>
         </tr></thead>
         <tbody>
-          ${linhas.map(x => { const c = cel(x); return `
+          ${grupos.map(x => { const c = cel(x); return `
             <tr>
-              <td><button class="cel-link" data-aluno-pop="${x.alunoId}" data-turma="${x.turmaId}">${x.aluno}</button>
-                  <span class="ra-sub">${x.cargo}</span></td>
-              <td>${x.empresa} · ${x.turma}<span class="ra-sub">${x.nivel}</span></td>
-              <td class="rt-prof">${x.prof}</td>
-              <td>${x.aulas}</td>
-              <td>${c.pres}</td>
-              <td>${c.eng}</td>
-              <td>${c.nota}</td>
-              <td>${x.acertos}</td>
-              <td>${x.erros}</td>
-              <td>${c.pior}</td>
-              <td>${c.anot}</td>
+              <td>${linkTitulo(x)}<span class="ra-sub">${x.sub}</span></td>
+              <td class="rt-prof">${x.ctx}</td>
+              <td>${c.pres}</td><td>${c.eng}</td><td>${c.nota}</td>
+              <td>${x.acertos}</td><td>${x.erros}</td><td>${c.pior}</td>
             </tr>`; }).join("")}
         </tbody>
       </table>
     </div>`;
 
-  // ── celular: carrossel de cards ──
-  const cards = linhas.map(x => { const c = cel(x); return `
+  const cards = grupos.map(x => { const c = cel(x); return `
     <article class="rt-card">
       <header>
-        <button class="cel-link" data-aluno-pop="${x.alunoId}" data-turma="${x.turmaId}">${x.aluno}</button>
-        <span class="rt-sub">${x.empresa} · ${x.turma} · ${x.nivel} · ${x.aulas} aula${x.aulas!==1?"s":""}</span>
+        ${linkTitulo(x)}
+        <span class="rt-sub">${x.sub}</span>
       </header>
-      <div class="rt-linha"><span class="rt-rot">Professor</span><span class="rt-prof">${x.prof}</span></div>
+      <div class="rt-linha"><span class="rt-rot">${ctxRot}</span><span class="rt-prof">${x.ctx}</span></div>
       <div class="rt-linha"><span class="rt-rot">Presença</span><span>${c.pres}</span></div>
       <div class="rt-linha"><span class="rt-rot">Engajamento</span><span>${c.eng}</span></div>
       <div class="rt-linha"><span class="rt-rot">Trilhas</span><span>${c.nota}</span></div>
@@ -2146,35 +1938,43 @@ function renderResumoAlunos(dados){
 
   box.innerHTML = `
     <div class="rt-titulo">
-      Por aluno · ${linhas.length}
-      <span class="rt-nav ra-nav">
+      Média · ${grupos.length}
+      <select class="md-eixo" id="md-eixo">
+        ${Object.entries(EIXOS).map(([k,v]) =>
+          `<option value="${k}" ${k===eixoAtual?"selected":""}>por ${v.rot.toLowerCase()}</option>`).join("")}
+      </select>
+      <span class="rt-nav md-nav">
         <button class="rt-seta" data-ir="-1" aria-label="Anterior">&lsaquo;</button>
-        <span class="rt-pos" id="ra-pos"></span>
+        <span class="rt-pos" id="md-pos"></span>
         <button class="rt-seta" data-ir="1" aria-label="Próximos">&rsaquo;</button>
       </span>
     </div>
     ${tabela}
-    <div class="rt-viewport ra-viewport">
-      <div class="rt-trilho" id="ra-trilho">${cards}</div>
+    <div class="rt-viewport md-viewport">
+      <div class="rt-trilho" id="md-trilho">${cards}</div>
     </div>`;
 
-  // carrossel só existe no celular; no desktop a tabela é que aparece
-  const trilho   = box.querySelector("#ra-trilho");
-  const viewport = box.querySelector(".ra-viewport");
-  const VAO = 12;
-  let paginas = linhas.length;
-  let pag = 0;
+  document.getElementById("md-eixo").onchange = ev => {
+    eixoAtual = ev.target.value;
+    renderTabela();
+  };
 
+  // carrossel (celular): um card por vez
+  const trilho   = box.querySelector("#md-trilho");
+  const viewport = box.querySelector(".md-viewport");
+  const VAO = 12;
+  const paginas = grupos.length;
+  let pag = 0;
   function irPara(n){
     pag = Math.max(0, Math.min(n, paginas - 1));
     trilho.style.transform = `translateX(-${pag * (viewport.clientWidth + VAO)}px)`;
-    box.querySelector("#ra-pos").textContent = `${pag + 1}/${paginas}`;
-    box.querySelectorAll(".ra-nav .rt-seta").forEach(b => {
+    box.querySelector("#md-pos").textContent = `${pag + 1}/${paginas}`;
+    box.querySelectorAll(".md-nav .rt-seta").forEach(b => {
       const dir = +b.dataset.ir;
       b.disabled = (dir < 0 && pag === 0) || (dir > 0 && pag === paginas - 1);
     });
   }
-  box.querySelectorAll(".ra-nav .rt-seta").forEach(b => {
+  box.querySelectorAll(".md-nav .rt-seta").forEach(b => {
     b.onclick = () => irPara(pag + (+b.dataset.ir));
   });
   let x0 = null;
@@ -2189,7 +1989,7 @@ function renderResumoAlunos(dados){
   irPara(0);
 }
 
-// ── Exportar CSV ──
+// ── Exportar CSV ──// ── Exportar CSV ──
 function baixarCSV(){
   const dados = filtradas();
   const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;

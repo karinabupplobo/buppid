@@ -882,7 +882,7 @@ let turmaAtual = TURMAS[0];
 // ══════════════════════════════════════════════════════════
 function metaTurma(t){
   const tipo = t.tipo === "particular" ? "Particular" : "Corporativa";
-  return `${tipo} · ${t.nivel} · ${t.modulo} · ${t.alunos.length} aluno${t.alunos.length>1?"s":""}`;
+  return `${tipo} · ${nivelL(t.nivel)} · ${t.modulo} · ${t.alunos.length} aluno${t.alunos.length>1?"s":""}`;
 }
 
 function renderTurmas(){
@@ -909,7 +909,7 @@ function abrirListaTurmas(){
       ${lista.map(t => `
         <button class="turma-item" data-turma-pop="${t.id}">
           <span class="ti-esq">
-            <span class="ti-nome">${partesIdent(t).turma} · ${t.nivel}</span>
+            <span class="ti-nome">${partesIdent(t).turma} · ${nivelL(t.nivel)}</span>
             <span class="ti-meta">${grade(t)} · ${t.modulo}</span>
           </span>
           <span class="ti-dir">
@@ -989,7 +989,7 @@ function abrirResumoTurma(t){
       <div class="mini"><b>${t.empresa}</b><span>${t.empresaDesc}</span></div>
     </div>
     <div class="bloco">
-      <div class="bt">Nível · ${t.nivel}</div>
+      <div class="bt">Nível · ${nivelL(t.nivel)}</div>
       <div class="mini"><span>${t.nivelDesc}</span></div>
     </div>
     <div class="bloco">
@@ -1388,7 +1388,7 @@ function partesIdent(t){
 // Identificação da turma em texto: EMPRESA · TURMA · NÍVEL.
 function identTexto(t){
   const p = partesIdent(t);
-  return `${p.empresa} · ${p.turma} · ${p.nivel}`;
+  return `${p.empresa} · ${p.turma} · ${nivelL(p.nivel)}`;
 }
 
 // Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
@@ -1400,7 +1400,7 @@ function htmlIdent(t, dia, hora, comMais){
   return `<div class="ident">
     <span class="id-emp">${p.empresa}</span>
     <span class="id-turma">${p.turma}</span>
-    <span class="id-niv">${p.nivel}</span>
+    <span class="id-niv">${nivelL(p.nivel)}</span>
     ${dia  ? `<span class="id-dia">${dia}</span>`   : ""}
     ${hora ? `<span class="id-hora">${hora}</span>` : ""}
     ${mais}
@@ -1773,7 +1773,7 @@ function renderTrilhaGeral(){
         <div class="ident">
           <span class="id-emp">${p.empresa}</span>
           <span class="id-turma">${p.turma}</span>
-          <span class="id-niv">${p.nivel}</span>
+          <span class="id-niv">${nivelL(p.nivel)}</span>
           ${grade ? `<span class="id-hora">${grade}</span>` : ""}
         </div>
         <div class="tc-sub">${trilhas.length} trilha${trilhas.length!==1?"s":""} · ${t.alunos.length} aluno${t.alunos.length!==1?"s":""}</div>
@@ -1875,7 +1875,7 @@ function renderPresenca(){
         <div class="ident">
           <span class="id-emp">${turma.empresa}</span>
           <span class="id-turma">${partesIdent(turma).turma}</span>
-          <span class="id-niv">${turma.nivel}</span>
+          <span class="id-niv">${nivelL(turma.nivel)}</span>
           <span class="id-dia">${aula.dia || ""}</span>
           <span class="id-hora">${aula.hora}</span>
         </div>

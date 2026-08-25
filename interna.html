@@ -1397,11 +1397,11 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=8" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=9" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=8" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=9" title="Leads"></iframe>
   </section>
 
   <section class="pane" id="pane-docs">
@@ -1417,7 +1417,7 @@
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=8" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=9" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -1679,7 +1679,7 @@ const COLUNAS = [
   { rot:"Data",             k:"data",     valores: l => [`${l.dia} ${l.data}`.trim()] },
   { rot:"Empresa",          k:"empresa",  valores: l => [l.empresa] },
   { rot:"Turma",            k:"turma",    valores: l => [l.turma] },
-  { rot:"Nível",            k:"nivel",    valores: l => [l.nivel] },
+  { rot:"Nível",            k:"nivel",    valores: l => [nivelL(l.nivel)] },
   { rot:"Professor",        k:"prof",     valores: l => [l.prof] },
   { rot:"Aula",             k:"aula",     valores: l => [l.aula] },
   { rot:"Aluno",            k:"aluno",    valores: l => [l.aluno] },
@@ -1803,7 +1803,7 @@ function renderTabela(){
         <td><button class="cel-link" data-aula="${l.aulaId}" data-turma="${l.turmaId}">${l.dia} ${l.data}</button></td>
         <td>${l.empresa}</td>
         <td><button class="cel-link" data-turma-pop="${l.turmaId}">${l.turma}</button></td>
-        <td>${l.nivel}</td>
+        <td>${nivelL(l.nivel)}</td>
         <td>${l.prof}</td>
         <td><button class="cel-link" data-aula="${l.aulaId}" data-turma="${l.turmaId}">${l.aula}</button></td>
         <td class="col-aluno">${l.aluno}</td>
@@ -1882,7 +1882,7 @@ function abrirAluno(t, a){
 
   const alertas = alertasDoAluno(a, t);
 
-  abrirModal(`${p.empresa} · ${p.turma} · ${t.nivel}`, a.nome, `
+  abrirModal(`${p.empresa} · ${p.turma} · ${nivelL(t.nivel)}`, a.nome, `
     <div class="nums">
       <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
       <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
@@ -1935,7 +1935,7 @@ function abrirTurma(t){
   const medEng = comEng.length
     ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
 
-  abrirModal("Turma", `${p.empresa} · ${p.turma} · ${t.nivel}${grade ? " · " + grade : ""}`, `
+  abrirModal("Turma", `${p.empresa} · ${p.turma} · ${nivelL(t.nivel)}${grade ? " · " + grade : ""}`, `
     <div class="nums">
       <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
       <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
@@ -1990,7 +1990,7 @@ function abrirAula(t, h){
   }));
   const temasTurma = Object.entries(porTema).sort((a,b) => b[1]-a[1]);
 
-  abrirModal(`${p.empresa} · ${p.turma} · ${t.nivel}`, `${h.titulo} — ${h.dia || ""} ${h.data}`, `
+  abrirModal(`${p.empresa} · ${p.turma} · ${nivelL(t.nivel)}`, `${h.titulo} — ${h.dia || ""} ${h.data}`, `
     <div class="nums">
       <div class="num"><span class="nv">${comPres ? presentes + "/" + comPres : "–"}</span><span class="nr">Presença</span></div>
       <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
@@ -2071,7 +2071,7 @@ const EIXOS = {
     rot: "Aluno",
     chave:  l => l.turmaId + "|" + l.alunoId,
     titulo: ls => ls[0].aluno,
-    sub:    ls => `${ls[0].empresa} · ${ls[0].turma} · ${ls[0].nivel}`,
+    sub:    ls => `${ls[0].empresa} · ${ls[0].turma} · ${nivelL(ls[0].nivel)}`,
     ctx: ls => ls[0].prof
   },
   professor: {
@@ -2269,7 +2269,7 @@ function usuariosFiltrados(){ return USUARIOS.filter(passaU); }
 
 function vinculoDe(u){
   const t = TURMAS.find(x => x.id === u.turmaId);
-  return t ? `${partesIdent(t).turma} · ${t.nivel}` : "—";
+  return t ? `${partesIdent(t).turma} · ${nivelL(t.nivel)}` : "—";
 }
 
 function renderUsuarios(){
@@ -2659,7 +2659,7 @@ function baixarCSV(){
   const dados = filtradas();
   const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
   const linhas = [COLUNAS.map(c => esc(c.rot)).join(";")].concat(dados.map(l => [
-    `${l.dia} ${l.data}`, l.empresa, l.turma, l.nivel, l.prof, l.aula, l.aluno,
+    `${l.dia} ${l.data}`, l.empresa, l.turma, nivelL(l.nivel), l.prof, l.aula, l.aluno,
     l.presenca === "p" ? "presente" : l.presenca === "a" ? "faltou" : "",
     l.eng || "", l.nota === null ? "" : l.nota + "%", l.acertos, l.erros,
     l.atencao.map(x => x.vezes >= 2 ? `${x.tema} (${x.vezes}x)` : x.tema).join(", "),
@@ -2745,7 +2745,7 @@ function opcoesTurma(){
   sel.disabled = false;
   const turmas = TURMAS.filter(t => t.empresa === emp);
   sel.innerHTML = `<option value="">Todas as turmas de ${emp}</option>` +
-    turmas.map(t => `<option value="${t.id}">${partesIdent(t).turma} · ${t.nivel}</option>`).join("");
+    turmas.map(t => `<option value="${t.id}">${partesIdent(t).turma} · ${nivelL(t.nivel)}</option>`).join("");
 }
 
 function renderAlertas(){
@@ -2808,7 +2808,7 @@ function renderAlertas(){
             <div class="ident">
               <span class="id-emp">${p.empresa}</span>
               <span class="id-turma">${p.turma}</span>
-              <span class="id-niv">${t.nivel}</span>
+              <span class="id-niv">${nivelL(t.nivel)}</span>
               <span class="id-hora">${professorDe(t).nome}</span>
             </div>
             <h2>${a.nome}</h2>
@@ -2907,7 +2907,7 @@ document.getElementById("btn-empresas").onclick = () => {
           const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
           return `<button class="turma-item" data-turma-pop="${t.id}">
             <span class="ti-esq">
-              <span class="ti-nome">${p.turma} · ${t.nivel}</span>
+              <span class="ti-nome">${p.turma} · ${nivelL(t.nivel)}</span>
               <span class="ti-meta">${grade || "sem aula hoje"} · ${professorDe(t).nome}</span>
             </span>
             <span class="ti-dir">

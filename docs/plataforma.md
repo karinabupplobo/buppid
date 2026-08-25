@@ -136,6 +136,26 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Nível exibido em faixas L0–L3
+Internamente o nível continua sendo **CEFR** (Pré-A1 … C2), que é o que os
+arquivos de `pedagogico/` e o gerador de aulas usam. Nas dashes, porém, o nível
+aparece agrupado em quatro faixas:
+
+| CEFR | Exibido |
+|---|---|
+| Pré-A1, A1 | **L0** |
+| A2, B1 | **L1** |
+| B2, C1 | **L2** |
+| C2 | **L3** |
+
+A tradução acontece só na exibição, por `nivelL()` em `dados-mock.js`. Guardar o
+CEFR e converter na hora de mostrar preserva a granularidade de que o gerador
+precisa — se o dado fosse gravado já em L, "A2" e "B1" virariam a mesma coisa e
+não haveria como voltar atrás.
+
+Vale nas quatro dashes, incluindo os filtros e a exportação em CSV. A descrição
+do nível (`nivelDesc`) continua sendo mostrada por extenso ao aluno.
+
 ### 21/08/2026 — Dash do aluno (aluno.html) — quarta e última tela
 Fecha a fila professor → aluno → RH → interna. Mesma linguagem visual, mesmo
 `dados-mock.js`. A regra de acesso aqui é a mais estrita das quatro: o aluno vê

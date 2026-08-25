@@ -490,3 +490,37 @@ function aulaTerminou(aulaId){
   const p = PRESENCA[aulaId];
   return !!p && Object.keys(p).length > 0;
 }
+
+// ══════════════════════════════════════════════════════════
+//  NÍVEL EXIBIDO
+//  Internamente o nível é CEFR (Pré-A1 … C2), que é o que o material
+//  pedagógico usa. Nas dashes, porém, o nível aparece agrupado em quatro
+//  faixas — é o que o aluno, o RH e o professor enxergam.
+//
+//    Pré-A1, A1  → L0
+//    A2, B1      → L1
+//    B2, C1      → L2
+//    C2          → L3
+//
+//  Guardar o CEFR e traduzir só na exibição evita perder a granularidade que
+//  o gerador de aulas precisa.
+// ══════════════════════════════════════════════════════════
+const FAIXAS_NIVEL = [
+  { l: "L0", cefr: ["Pré-A1", "Pre-A1", "PréA1", "A1"] },
+  { l: "L1", cefr: ["A2", "B1"] },
+  { l: "L2", cefr: ["B2", "C1"] },
+  { l: "L3", cefr: ["C2"] }
+];
+
+function nivelL(cefr){
+  if (!cefr) return "—";
+  const alvo = String(cefr).trim().toUpperCase();
+  const f = FAIXAS_NIVEL.find(x => x.cefr.some(c => c.toUpperCase() === alvo));
+  return f ? f.l : cefr;
+}
+
+// Quais CEFR cabem numa faixa — útil em filtro e em texto explicativo.
+function cefrDaFaixa(l){
+  const f = FAIXAS_NIVEL.find(x => x.l === l);
+  return f ? f.cefr.filter(c => !/^Pre|^PréA/.test(c)) : [];
+}

@@ -1491,7 +1491,7 @@ const TURMA   = TURMAS.find(t => t.id === USUARIO.turmaId);
 const EU      = TURMA.alunos.find(a => a.id === USUARIO.alunoId);
 
 document.getElementById("al-nome").textContent = "Hi, " + EU.nome.split(" ")[0];
-document.getElementById("bt-nivel").textContent = TURMA.nivel;
+document.getElementById("bt-nivel").textContent = nivelL(TURMA.nivel);
 
 function classeNota(n){
   return n === null ? "" : n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
@@ -1558,7 +1558,7 @@ function renderHome(){
   document.getElementById("home-nivel").innerHTML = `
     <div class="meu-nivel">
       <div class="mn-topo">
-        <span class="mn-nivel">${TURMA.nivel}</span>
+        <span class="mn-nivel">${nivelL(TURMA.nivel)}</span>
         <span class="mn-turma">${TURMA.empresa} · ${partesIdent(TURMA)} · ${TURMA.modulo}</span>
       </div>
       <div class="mn-desc">${TURMA.nivelDesc}</div>
@@ -1643,7 +1643,7 @@ function renderHoje(){
           ? '<span class="pill dada">Aula concluída</span>'
           : '<span class="pill hoje">Aula de hoje</span>'}
         <div class="ident">
-          <span class="id-niv">${TURMA.nivel}</span>
+          <span class="id-niv">${nivelL(TURMA.nivel)}</span>
           <span class="id-dia">${a.dia || ""}</span>
           <span class="id-hora">${a.hora}</span>
         </div>
@@ -1699,7 +1699,7 @@ function renderTrilhas(){
           ${t.feita ? '<span class="pill dada">Concluída</span>'
                     : `<span class="pill pendente">${t.pend} lição${t.pend>1?"ões":""} a fazer</span>`}
           <div class="ident">
-            <span class="id-niv">${TURMA.nivel}</span>
+            <span class="id-niv">${nivelL(TURMA.nivel)}</span>
             <span class="id-dia">${h.dia || ""}</span>
             <span class="id-hora">${h.data}</span>
           </div>
@@ -1736,7 +1736,7 @@ function renderTrilhas(){
       <div class="aula-topo">
         <span class="pill bloqueada">Libera depois da aula</span>
         <div class="ident">
-          <span class="id-niv">${TURMA.nivel}</span>
+          <span class="id-niv">${nivelL(TURMA.nivel)}</span>
           <span class="id-dia">${f.dia}</span>
           <span class="id-hora">${f.data}</span>
         </div>
@@ -1772,7 +1772,7 @@ function renderAulas(){
         <div class="aula-topo">
           <span class="pill dada">Aula dada</span>
           <div class="ident">
-            <span class="id-niv">${TURMA.nivel}</span>
+            <span class="id-niv">${nivelL(TURMA.nivel)}</span>
             <span class="id-dia">${h.dia || ""}</span>
             <span class="id-hora">${h.data}</span>
           </div>
@@ -1805,7 +1805,7 @@ function renderAulas(){
       <div class="aula-topo">
         <span class="pill futura">Agendada</span>
         <div class="ident">
-          <span class="id-niv">${TURMA.nivel}</span>
+          <span class="id-niv">${nivelL(TURMA.nivel)}</span>
           <span class="id-dia">${f.dia}</span>
           <span class="id-hora">${f.hora} · ${f.data}</span>
         </div>
@@ -1832,7 +1832,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(
 document.getElementById("btn-turma").onclick = () => {
   const grade = (TURMA.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
   // Sem lista de colegas: o aluno não vê os outros alunos.
-  abrirModal(TURMA.empresa, `${partesIdent(TURMA)} · ${TURMA.nivel}`, `
+  abrirModal(TURMA.empresa, `${partesIdent(TURMA)} · ${nivelL(TURMA.nivel)}`, `
     <div class="bloco">
       <div class="bt">Horário</div>
       <div class="mini"><b>${grade || "sem aula hoje"}</b><span>${TURMA.modulo}</span></div>

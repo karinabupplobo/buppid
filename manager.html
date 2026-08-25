@@ -1491,7 +1491,7 @@ function renderTabela(){
       <tr class="${l.presenca === "a" || (l.nota !== null && l.nota < 60) ? "alerta" : ""}">
         <td>${l.dia} ${l.data}</td>
         <td>${l.turma}</td>
-        <td>${l.nivel}</td>
+        <td>${nivelL(l.nivel)}</td>
         <td>${l.aula}</td>
         <td class="col-aluno">${l.aluno}</td>
         <td>${l.presenca === "p" ? '<span class="tag-p">presente</span>'
@@ -1535,10 +1535,10 @@ const EIXOS = {
     titulo: ls => ls[0].turma, sub: ls => {
       const al = new Set(ls.map(l => l.alunoId)).size;
       const au = new Set(ls.map(l => l.aulaId)).size;
-      return `${ls[0].nivel} · ${al} aluno${al!==1?"s":""} · ${au} aula${au!==1?"s":""}`;
+      return `${nivelL(ls[0].nivel)} · ${al} aluno${al!==1?"s":""} · ${au} aula${au!==1?"s":""}`;
     } },
   aluno: { rot:"Aluno", chave: l => l.turmaId + "|" + l.alunoId,
-    titulo: ls => ls[0].aluno, sub: ls => `${ls[0].cargo} · ${ls[0].turma} · ${ls[0].nivel}` }
+    titulo: ls => ls[0].aluno, sub: ls => `${ls[0].cargo} · ${ls[0].turma} · ${nivelL(ls[0].nivel)}` }
 };
 let eixoAtual = "turma";
 
@@ -1838,7 +1838,7 @@ document.getElementById("btn-turmas-rh").onclick = () => {
     const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
     return `
       <div class="bloco">
-        <div class="bt">${p.turma} · ${t.nivel}</div>
+        <div class="bt">${p.turma} · ${nivelL(t.nivel)}</div>
         <div class="mini"><b>${grade || "sem aula hoje"}</b><span>${t.modulo}</span></div>
         <div class="mini destaque"><span>${t.objetivoTurma}</span></div>
         ${t.alunos.map(a => `<div class="mini"><b>${a.nome}</b><span>${a.cargo}</span></div>`).join("")}

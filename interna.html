@@ -988,6 +988,21 @@
 
   /* Complementos da visão interna: a empresa identifica o documento. */
   .doc-emp{ font-weight: 800; color: var(--teal-escuro); }
+  .btn-edit{
+    width: 28px; height: 28px; border-radius: 8px; padding: 0;
+    border: 1px solid var(--borda); background: var(--branco);
+    color: var(--cinza-texto); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-edit svg{ width: 14px; height: 14px; }
+  .btn-edit:hover{ border-color: var(--amarelo-neon); background: var(--limao-claro); color: var(--teal-escuro); }
+  .btn-editar-card{
+    width: 100%; margin-top: 12px; border: 1px solid var(--borda);
+    background: var(--branco); border-radius: 8px; padding: 9px;
+    font-family: inherit; font-size: 11.5px; font-weight: 700;
+    color: var(--azul-intermediario); cursor: pointer;
+  }
+  .btn-editar-card:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
   .dc-emp{ font-size: 11.5px; font-weight: 800; color: #fff; margin-right: auto; }
   .doc-card h3{ letter-spacing: -.01em; color: var(--texto); }
   .doc-card .rt-linha{ font-size: 12.5px; }
@@ -1150,7 +1165,7 @@
   /* Alinhamento por CLASSE, não por posição: as tabelas de Média, Usuários e
      Docs têm número de colunas diferente, e alinhar por nth-child fazia o
      cabeçalho e o valor caírem em lados opostos. */
-  table.ra-tabela th.num, table.ra-tabela td.num{ text-align: right; }
+  table.ra-tabela th.col-num, table.ra-tabela td.col-num{ text-align: right; }
   table.ra-tabela th:first-child, table.ra-tabela td:first-child{ text-align: left; }
   .ra-sub{ display: block; font-size: 11px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; }
   .md-titulo{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
@@ -1401,11 +1416,11 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=11" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=12" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=11" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=12" title="Leads"></iframe>
   </section>
 
   <section class="pane" id="pane-docs">
@@ -1421,7 +1436,7 @@
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=11" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=12" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -2164,16 +2179,16 @@ function renderMedias(dados){
       <table class="ra-tabela">
         <thead><tr>
           <th>${e.rot}</th><th>${ctxRot}</th>
-          <th class="num">Presença</th><th class="num">Engaj.</th><th class="num">Trilhas</th>
-          <th class="num">Certos</th><th class="num">Erros</th><th>Onde mais erra</th>
+          <th class="col-num">Presença</th><th class="col-num">Engaj.</th><th class="col-num">Trilhas</th>
+          <th class="col-num">Certos</th><th class="col-num">Erros</th><th>Onde mais erra</th>
         </tr></thead>
         <tbody>
           ${grupos.map(x => { const c = cel(x); return `
             <tr>
               <td>${linkTitulo(x)}<span class="ra-sub">${x.sub}</span></td>
               <td class="rt-prof">${x.ctx}</td>
-              <td class="num">${c.pres}</td><td class="num">${c.eng}</td><td class="num">${c.nota}</td>
-              <td class="num">${x.acertos}</td><td class="num">${x.erros}</td><td>${c.pior}</td>
+              <td class="col-num">${c.pres}</td><td class="col-num">${c.eng}</td><td class="col-num">${c.nota}</td>
+              <td class="col-num">${x.acertos}</td><td class="col-num">${x.erros}</td><td>${c.pior}</td>
             </tr>`; }).join("")}
         </tbody>
       </table>
@@ -2506,11 +2521,11 @@ function renderDocs(){
       <table class="ra-tabela">
         <thead><tr>
           <th>Empresa</th><th>Tipo</th><th>Documento</th><th>Número</th>
-          <th>Emissão</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Arquivo</th>
+          <th>Emissão</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Arquivo</th><th></th>
         </tr></thead>
         <tbody>
           ${dados.map(d => `
-            <tr>
+            <tr class="doc-linha" data-doc="${d.id}">
               <td class="doc-emp">${d.empresa}</td>
               <td><span class="doc-tipo ${d.tipo}">${rotTipoDoc(d.tipo)}</span></td>
               <td><b>${d.titulo}</b>${d.obs ? `<span class="ra-sub">${d.obs}</span>` : ""}</td>
@@ -2522,8 +2537,13 @@ function renderDocs(){
               <td>${d.url
                 ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">${d.arquivo || "abrir"} ↗</a>`
                 : '<span class="sem">sem anexo</span>'}</td>
+              <td><button class="btn-edit" data-editar="${d.id}" title="Editar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              </button></td>
             </tr>`).join("") ||
-            `<tr><td colspan="9" style="color:var(--cinza-texto)">Nenhum documento com esses filtros.</td></tr>`}
+            `<tr><td colspan="10" style="color:var(--cinza-texto)">Nenhum documento com esses filtros.</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -2544,36 +2564,51 @@ function renderDocs(){
           <div class="rt-linha"><span class="rt-rot">Arquivo</span>
             ${d.url ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">${d.arquivo || "abrir"} ↗</a>`
                     : '<span class="sem">sem anexo</span>'}</div>
+          <button class="btn-editar-card" data-editar="${d.id}">Editar documento</button>
         </article>`).join("")}
     </div>`;
+
+  box.querySelectorAll("[data-editar]").forEach(b => {
+    b.onclick = e => {
+      e.stopPropagation();
+      abrirFormDoc(DOCS.find(x => x.id === b.dataset.editar));
+    };
+  });
 }
 
-document.getElementById("btn-novo-doc").onclick = () => {
+// O mesmo formulário serve para criar e para editar: `doc` vazio abre em
+// branco, `doc` preenchido abre com os valores e grava por cima.
+function abrirFormDoc(doc){
   const empresas = [...new Set(TURMAS.map(t => t.empresa))];
-  abrirModal("Documentos", "Novo documento", `
+  const d = doc || {};
+  const val = v => (v || "").replace(/"/g, "&quot;");
+  abrirModal("Documentos", doc ? "Editar documento" : "Novo documento", `
     <div class="form-linha">
       <label for="nd-emp">Empresa</label>
-      <select id="nd-emp">${empresas.map(e => `<option>${e}</option>`).join("")}</select>
+      <select id="nd-emp">${empresas.map(e =>
+        `<option ${e === d.empresa ? "selected" : ""}>${e}</option>`).join("")}</select>
     </div>
     <div class="form-linha">
       <label for="nd-tipo">Tipo</label>
-      <select id="nd-tipo">${TIPOS_DOC.map(t => `<option value="${t.k}">${t.rot}</option>`).join("")}</select>
+      <select id="nd-tipo">${TIPOS_DOC.map(t =>
+        `<option value="${t.k}" ${t.k === d.tipo ? "selected" : ""}>${t.rot}</option>`).join("")}</select>
     </div>
     <div class="form-linha">
       <label for="nd-titulo">Título</label>
-      <input id="nd-titulo" placeholder="Ex.: NF-e outubro/2026">
+      <input id="nd-titulo" value="${val(d.titulo)}" placeholder="Ex.: NF-e outubro/2026">
     </div>
     <div class="form-duplo">
-      <div class="form-linha"><label for="nd-numero">Número</label><input id="nd-numero" placeholder="NF 1090"></div>
-      <div class="form-linha"><label for="nd-valor">Valor</label><input id="nd-valor" placeholder="R$ 14.000,00"></div>
+      <div class="form-linha"><label for="nd-numero">Número</label><input id="nd-numero" value="${val(d.numero)}" placeholder="NF 1090"></div>
+      <div class="form-linha"><label for="nd-valor">Valor</label><input id="nd-valor" value="${val(d.valor)}" placeholder="R$ 14.000,00"></div>
     </div>
     <div class="form-duplo">
-      <div class="form-linha"><label for="nd-emissao">Emissão</label><input id="nd-emissao" placeholder="05/10"></div>
-      <div class="form-linha"><label for="nd-venc">Vencimento</label><input id="nd-venc" placeholder="15/10"></div>
+      <div class="form-linha"><label for="nd-emissao">Emissão</label><input id="nd-emissao" value="${val(d.emissao)}" placeholder="05/10"></div>
+      <div class="form-linha"><label for="nd-venc">Vencimento</label><input id="nd-venc" value="${val(d.vencimento)}" placeholder="15/10"></div>
     </div>
     <div class="form-linha">
       <label for="nd-status">Status</label>
-      <select id="nd-status">${STATUS_DOC.map(s => `<option>${s}</option>`).join("")}</select>
+      <select id="nd-status">${STATUS_DOC.map(s =>
+        `<option ${s === d.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     </div>
     <div class="form-linha">
       <label>Arquivo</label>
@@ -2582,19 +2617,20 @@ document.getElementById("btn-novo-doc").onclick = () => {
              stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>
-        <span class="au-tit">Escolher arquivo</span>
-        <span class="au-sub">PDF, imagem ou documento</span>
+        <span class="au-tit">${d.arquivo ? "Trocar arquivo" : "Escolher arquivo"}</span>
+        <span class="au-sub">${d.arquivo || "PDF, imagem ou documento"}</span>
         <input type="file" id="nd-arquivo" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xml">
       </label>
       <div class="au-escolhido" id="nd-arquivo-nome"></div>
     </div>
     <div class="form-linha">
       <label for="nd-obs">Observação</label>
-      <textarea id="nd-obs" placeholder="Prazo, condição especial, o que for útil lembrar…"></textarea>
+      <textarea id="nd-obs" placeholder="Prazo, condição especial, o que for útil lembrar…">${d.obs || ""}</textarea>
     </div>
     <div class="acoes-modal">
+      ${doc ? '<button class="btn cancelar" id="nd-excluir">Excluir</button>' : ""}
       <button class="btn ghost" id="nd-cancelar">Cancelar</button>
-      <button class="btn lime" id="nd-salvar">Adicionar</button>
+      <button class="btn lime" id="nd-salvar">${doc ? "Salvar" : "Adicionar"}</button>
     </div>
   `);
 
@@ -2616,21 +2652,36 @@ document.getElementById("btn-novo-doc").onclick = () => {
   };
 
   document.getElementById("nd-cancelar").onclick = fecharModal;
-  document.getElementById("nd-salvar").onclick = () => {
-    const v = id => (document.getElementById(id).value || "").trim();
-    if (!v("nd-titulo")){ document.getElementById("nd-titulo").focus(); return; }
-    DOCS.push({
-      id: "d" + Date.now(), empresa: v("nd-emp"),
-      tipo: v("nd-tipo"), titulo: v("nd-titulo"), numero: v("nd-numero"),
-      emissao: v("nd-emissao"), vencimento: v("nd-venc"), valor: v("nd-valor"),
-      status: v("nd-status"), obs: v("nd-obs"),
-      url: arquivoEscolhido ? arquivoEscolhido.url : "",
-      arquivo: arquivoEscolhido ? arquivoEscolhido.nome : ""
-    });
+
+  const btExcluir = document.getElementById("nd-excluir");
+  if (btExcluir) btExcluir.onclick = () => {
+    const i = DOCS.findIndex(x => x.id === doc.id);
+    if (i >= 0) DOCS.splice(i, 1);
     fecharModal();
     renderDocs();
   };
-};
+
+  document.getElementById("nd-salvar").onclick = () => {
+    const v = id => (document.getElementById(id).value || "").trim();
+    if (!v("nd-titulo")){ document.getElementById("nd-titulo").focus(); return; }
+    const campos = {
+      empresa: v("nd-emp"), tipo: v("nd-tipo"), titulo: v("nd-titulo"),
+      numero: v("nd-numero"), emissao: v("nd-emissao"), vencimento: v("nd-venc"),
+      valor: v("nd-valor"), status: v("nd-status"), obs: v("nd-obs")
+    };
+    // Trocar o arquivo é opcional na edição: sem novo upload, mantém o atual.
+    if (arquivoEscolhido){
+      campos.url = arquivoEscolhido.url;
+      campos.arquivo = arquivoEscolhido.nome;
+    }
+    if (doc) Object.assign(doc, campos);
+    else DOCS.push({ id: "d" + Date.now(), url: "", arquivo: "", ...campos });
+    fecharModal();
+    renderDocs();
+  };
+}
+
+document.getElementById("btn-novo-doc").onclick = () => abrirFormDoc(null);
 
 document.getElementById("btn-csv-docs").onclick = () => {
   const esc = v => `"${String(v==null?"":v).replace(/"/g,'""')}"`;

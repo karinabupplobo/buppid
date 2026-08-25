@@ -1058,7 +1058,7 @@
   }
   table.ra-tabela tbody tr:last-child td{ border-bottom: none; }
   table.ra-tabela tbody tr:hover td{ background: #faf9f7; }
-  table.ra-tabela th.num, table.ra-tabela td.num{ text-align: right; }
+  table.ra-tabela th.col-num, table.ra-tabela td.col-num{ text-align: right; }
   table.ra-tabela th:first-child, table.ra-tabela td:first-child{ text-align: left; }
   .ra-sub{ display: block; font-size: 11px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; }
   .md-titulo{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
@@ -1589,12 +1589,12 @@ function renderMedias(){
     </div>
     <div class="ra-wrap">
       <table class="ra-tabela">
-        <thead><tr><th>${e.rot}</th><th class="num">Presença</th><th class="num">Engaj.</th>
-          <th class="num">Trilhas</th><th class="num">Certos</th><th class="num">Erros</th></tr></thead>
+        <thead><tr><th>${e.rot}</th><th class="col-num">Presença</th><th class="col-num">Engaj.</th>
+          <th class="col-num">Trilhas</th><th class="col-num">Certos</th><th class="col-num">Erros</th></tr></thead>
         <tbody>${grupos.map(x => { const c = cel(x); return `
           <tr><td><span class="md-titulo">${x.titulo}</span><span class="ra-sub">${x.sub}</span></td>
-            <td class="num">${c.pres}</td><td class="num">${c.eng}</td><td class="num">${c.nota}</td>
-            <td class="num">${x.acertos}</td><td class="num">${x.erros}</td></tr>`; }).join("")}</tbody>
+            <td class="col-num">${c.pres}</td><td class="col-num">${c.eng}</td><td class="col-num">${c.nota}</td>
+            <td class="col-num">${x.acertos}</td><td class="col-num">${x.erros}</td></tr>`; }).join("")}</tbody>
       </table>
     </div>
     <div class="rt-viewport md-viewport">

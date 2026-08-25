@@ -51,6 +51,13 @@
       Karina).
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
       do resto da dash). Travar por role quando o Supabase Auth entrar.
+- [ ] TESTAR NO NAVEGADOR: sidebar do aluno sem overflow, bolinha ✓/✕
+      centralizada nas 4 dashes, aba Hoje do Bruno (deve aparecer vazia
+      numa terça-feira real, já que o mock só tem aula marcada pra Qui).
+- [ ] `diaHojeAbrev()` só está aplicado na aba Hoje de `aluno.html`. Se
+      `plataforma.html` (tela do professor) tiver uma visão equivalente
+      de "aula de hoje", provavelmente tem o mesmo problema — avaliar se
+      vale aplicar o mesmo filtro lá.
 - [ ] TESTAR NO NAVEGADOR: mudar um lead pra etapa "Cliente" e conferir se
       a empresa aparece em Empresas; abrir histórico de uma empresa com
       lead de origem e sem lead de origem; abrir ficha de aluno e testar

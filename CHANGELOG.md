@@ -2,6 +2,38 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2325-bolinha-e-hoje-real — 25/08/2026
+- O que mudou: dois bugs visuais/lógicos reportados pela Karina com
+  print. (1) `.st` (bolinha verde/vermelha de acerto/erro na trilha)
+  usava `line-height` pra centralizar o ✓/✕ — centraliza só no eixo
+  vertical, o glifo ficava desalinhado pro canto horizontalmente.
+  Trocado pra `inline-flex` + `align-items`/`justify-content: center`.
+  Existia idêntico em `aluno.html`, `interna.html`, `manager.html` e
+  `plataforma.html` — corrigido nas 4. (2) A aba Hoje do aluno decidia
+  "Aula concluída"/"Aula de hoje" só pela presença fechada (`PRESENCA`),
+  sem checar se o dia da aula batia com o dia real — uma aula marcada
+  "Qui" no mock aparecia como "de hoje" numa terça-feira de verdade.
+  `renderHoje()` agora filtra por `diaHojeAbrev()` (helper novo em
+  `dados-mock.js`, calcula o dia real via `Date().getDay()`).
+- Arquivos: aluno.html, interna.html, manager.html, plataforma.html,
+  dados-mock.js
+- Motivo: pedido da Karina em 25/08, com 2 prints de referência.
+  Consequência esperada e aceita: com o mock de hoje marcado só pra Qui,
+  a aba Hoje do Bruno mostra vazio numa terça-feira real.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2320-sidebar-minha-turma
+
+## v-20260825-2320-sidebar-minha-turma — 25/08/2026
+- O que mudou: "· minha turma" removido do link da sidebar do aluno —
+  o texto deixava o bloco `whoami` mais largo que a coluna fixa de 282px
+  da sidebar (ambos `flex-shrink:0` dentro do `topo-sidebar`) e vazava
+  visualmente por cima do conteúdo. Fica só o nível ("Intermediate ›"),
+  continua clicável, abre o mesmo modal de detalhe da turma.
+- Arquivos: aluno.html
+- Motivo: pedido da Karina em 25/08, com print do bug.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2315-dias-aula-e-autor-automatico
+
 ## v-20260825-2315-dias-aula-e-autor-automatico — 25/08/2026
 - O que mudou: duas mudanças, uma no form de turma e outra na anotação de
   aluno. (1) `nova-turma.html` perdeu os campos "Tamanho da turma" e

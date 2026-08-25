@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<!--
+  DASH INTERNA DA BUPP
+  ====================
+  Mesma linguagem visual da plataforma do professor (plataforma.html), mesmo
+  arquivo de dados (dados-mock.js). A diferença é o QUE se vê:
+
+    · o professor vê as turmas dele;
+    · a dash interna vê TODOS os professores, TODAS as turmas, TODAS as aulas,
+      e as ANOTAÇÕES INTERNAS por aluno — que nem o aluno nem o RH do cliente
+      têm acesso.
+
+  A tela central é uma PLANILHA: uma linha por aluno por aula, com presença,
+  engajamento, desempenho na trilha e a anotação do professor. Filtros por
+  professor, empresa e busca livre, mais exportação em CSV.
+
+  Selo de papel: "internal" (ver regra de idioma em docs/plataforma.md).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bupp — Interna</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* COMB 2 — MARROM #54402F + AZUL-BEBÊ #A8D5F2 + branco.
+       Comb 1 (limão + cinza): git checkout comb-1-limao-cinza
+       Comb 3 (cinza + azul):  git checkout comb-3-cinza-azul
+
+       Azul-bebê é acento de PREENCHIMENTO: sobre branco tem 1,56:1, nunca
+       é texto. Texto sobre azul é sempre o marrom (6,3:1).
+       O fundo da página é levemente quente, para acompanhar o marrom. */
+    --teal-escuro: #54402F;         /* cor escura: marrom */
+    --amarelo-neon: #A8D5F2;        /* acento: azul-bebê */
+    --limao-claro: #E4F1FA;         /* azul lavado, para fundos suaves */
+    --bg-dash: #F7F5F2;             /* fundo levemente quente */
+    --azul-intermediario: #8A7767;  /* apoio: marrom claro */
+    --branco: #FFFFFF;
+    --texto: #54402F;
+    --cinza-texto: #8A7F76;
+    --borda: #E7E1DA;
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: rgba(60,110,120,0.45); }
+
+  html, body{
+    margin: 0; padding: 0; min-height: 100%;
+    background: var(--bg-dash);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ===== Topo ===== */
+  /* Faixa do logo em teal — devolve ao logo a aplicação padrão do manual
+     (limão sobre teal escuro), sem perder a sidebar branca. */
+  /* Faixa de topo: largura total, logo ao centro, aplicação padrão do
+     manual — limão sobre teal escuro. */
+  /* O PNG foi recortado nas margens brancas, então a borda esquerda da imagem
+     é a borda esquerda do "b" — alinha com o nome do professor abaixo. */
+  .logo{ display: block; width: 118px; height: auto; flex-shrink: 0; }
+
+  /* Sidebar inteira em marrom: logo, usuário e abas sobre fundo escuro.
+     Voltar ao topo marrom com abas claras:
+     git checkout v-20260821-1415-ANTES-sidebar-toda-marrom */
+  .topo-sidebar{
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+
+  /* Nome do usuário. REGRA DE IDIOMA (21/08): a plataforma inteira é em
+     português — abas, botões, rótulos — para os quatro papéis. As únicas
+     exceções são a saudação "Hi, Nome" e o selo de papel, que ficam em inglês
+     como aceno ao produto. Todo o resto: português.
+
+     Selos por papel:
+       professor      -> teacher
+       aluno          -> student
+       RH do cliente  -> manager
+       equipe Bupp    -> internal                                             */
+  .whoami{
+    font-size: 11.5px; color: rgba(255,255,255,.7); font-weight: 500;
+    line-height: 1.3; text-align: right; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+  }
+  .whoami strong{
+    color: #fff; display: block; font-weight: 700; font-size: 13px;
+    letter-spacing: -0.01em;
+  }
+  .whoami span{
+    display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--teal-escuro);
+    background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
+  }
+
+  /* Link pequeno "N turmas", logo abaixo do selo do usuário */
+  .link-turmas{
+    background: none; border: none; padding: 2px 0 0; cursor: pointer;
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    color: var(--azul-intermediario); white-space: nowrap;
+  }
+  .link-turmas{ color: rgba(255,255,255,.72); }
+  .link-turmas b{ font-weight: 800; color: #fff; }
+  .link-turmas:hover{ color: #fff; text-decoration: underline; }
+
+  /* item de turma no pop-up */
+  .turma-item{
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; background: #fafbf7; border: 1px solid transparent; border-radius: 9px;
+    padding: 11px 12px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: background .13s, border-color .13s;
+  }
+  .turma-item:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .ti-esq{ display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ti-nome{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
+  .ti-meta{ font-size: 11.5px; color: var(--cinza-texto); }
+  .ti-dir{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .ti-grade{ font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario); white-space: nowrap; }
+
+  /* ===== Abas: sobre a sidebar escura ===== */
+  .tabs{
+    display: flex; gap: 6px; overflow-x: auto; padding: 14px 18px 0;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar{ display: none; }
+  .tab{
+    flex-shrink: 0; cursor: pointer; font-family: inherit;
+    background: rgba(255,255,255,.08); border: 1px solid transparent;
+    color: rgba(255,255,255,.78);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 10px 14px; border-radius: 9px;
+    transition: background .14s, color .14s;
+  }
+  .tab:hover{ background: rgba(255,255,255,.16); color: #fff; }
+  .tab.active{
+    background: var(--amarelo-neon); border-color: var(--amarelo-neon);
+    color: var(--teal-escuro);
+    box-shadow: none;
+  }
+
+  /* ===== Conteúdo ===== */
+  main{ padding: 18px 18px 60px; }
+  .pane{ display: none; }
+  .pane.active{ display: block; }
+
+  .card{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 18px;
+    margin-bottom: 14px; color: var(--texto);
+  }
+  .card-kicker{
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--azul-intermediario); margin-bottom: 8px;
+  }
+  .card h2{ margin: 0 0 4px; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+  .card p{ margin: 0; font-size: 13.5px; color: var(--cinza-texto); line-height: 1.5; }
+
+  .btn{
+    display: inline-flex; align-items: center; gap: 7px; justify-content: center;
+    width: 100%; margin-top: 14px; border: none; border-radius: 10px;
+    background: var(--teal-escuro); color: #fff; font-family: inherit;
+    font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer;
+    text-decoration: none; transition: background .15s;
+  }
+  .btn:hover{ background: var(--azul-intermediario); color: #fff; }
+  .btn.lime{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .btn.ghost{
+    background: transparent; color: var(--azul-intermediario);
+    border: 1.5px solid var(--borda); font-weight: 600;
+  }
+
+  .pill{
+    display: inline-block; font-size: 10.5px; font-weight: 800;
+    letter-spacing: .07em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .pill.hoje{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .pill.dada{ background: #e8efe3; color: #3f6b45; }
+
+  .section-title{
+    color: var(--teal-escuro); font-size: 11.5px; font-weight: 800;
+    letter-spacing: 0.13em; text-transform: uppercase; margin: 4px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before{
+    content: ""; width: 14px; height: 3px; border-radius: 2px;
+    background: var(--amarelo-neon); flex-shrink: 0;
+  }
+
+  /* ===== Trilha & performance ===== */
+  .switch{
+    display: flex; gap: 4px; background: var(--limao-claro);
+    border-radius: 10px; padding: 4px; margin-bottom: 14px;
+  }
+  .switch button{
+    flex: 1; border: none; background: transparent; cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 700;
+    color: #5a635f; padding: 9px; border-radius: 7px;
+    transition: background .15s, color .15s;
+  }
+  .switch button.active{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .switch button:hover:not(.active){ color: var(--teal-escuro); }
+
+  .grid-wrap{ overflow-x: auto; background: var(--branco); border: 1px solid var(--borda); border-radius: 14px; padding: 4px; }
+  table{ border-collapse: collapse; width: 100%; font-size: 12.5px; color: var(--texto); }
+  th, td{ padding: 10px 8px; text-align: center; white-space: nowrap; }
+  th{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--azul-intermediario);
+    border-bottom: 1.5px solid var(--borda);
+  }
+  td.aluno-nome, th.aluno-nome{
+    text-align: left; position: sticky; left: 0; background: var(--branco);
+    font-weight: 600; padding-left: 12px;
+  }
+  tbody tr{ border-bottom: 1px solid #f2f4f0; cursor: pointer; }
+  tbody tr:last-child{ border-bottom: none; }
+  tbody tr:hover td{ background: #fafbf7; }
+  tbody tr:hover td.aluno-nome{ background: #fafbf7; }
+
+  .st{ display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; font-size: 11px; font-weight: 800; }
+  .st.ok{ background: #dff0d8; color: #3f6b45; }
+  .st.err{ background: #fbe0de; color: #a3312a; }
+  .st.pend{ background: #eef0ec; color: #9aa39f; }
+  .nota{ font-weight: 800; }
+  .nota.alta{ color: #3f6b45; }
+  .nota.media{ color: #8a6d1f; }
+  .nota.baixa{ color: #a3312a; }
+
+  /* Perfil do aluno */
+  .aluno-lista .card{ display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .aluno-lista .card:hover{ outline: 2px solid var(--amarelo-neon); }
+  .aluno-lista h3{ margin: 0; font-size: 15.5px; font-weight: 700; }
+  .aluno-lista .sub{ font-size: 12px; color: var(--cinza-texto); margin-top: 2px; }
+  .barra{ height: 6px; border-radius: 3px; background: #eef0ec; overflow: hidden; margin-top: 9px; }
+  .barra i{ display: block; height: 100%; background: var(--azul-intermediario); }
+
+  .voltar{
+    background: none; border: none; color: var(--azul-intermediario); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 700; padding: 0 0 12px;
+  }
+  .kv{ display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #f2f4f0; font-size: 13.5px; }
+  .kv:last-child{ border-bottom: none; }
+  .kv span:first-child{ color: var(--cinza-texto); }
+  .kv span:last-child{ font-weight: 700; }
+
+  /* ===== Linhas expansíveis do resumo ===== */
+  .exp{ border-bottom: 1px solid #f2f4f0; }
+  .exp:last-child{ border-bottom: none; }
+  .exp-cab{
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    padding: 11px 0; text-align: left; transition: color .13s;
+  }
+  .exp-rot{ font-size: 13.5px; color: var(--cinza-texto); }
+  .exp-cab:hover .exp-rot{ color: var(--texto); }
+  .exp-val{
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+  }
+  .seta{
+    width: 7px; height: 7px; border-right: 2px solid var(--azul-intermediario);
+    border-bottom: 2px solid var(--azul-intermediario);
+    transform: rotate(45deg) translate(-1px,-1px); transition: transform .18s;
+  }
+  .exp.aberta .seta{ transform: rotate(-135deg) translate(-2px,-2px); }
+  .exp-corpo{ display: none; padding: 2px 0 12px; }
+  .exp.aberta .exp-corpo{ display: block; }
+
+  .mini{
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 8px 10px; background: #fafbf7; border-radius: 8px; margin-bottom: 6px;
+  }
+  .mini:last-child{ margin-bottom: 0; }
+  .mini b{ font-size: 13px; font-weight: 700; color: var(--texto); }
+  .mini span{ font-size: 12px; color: var(--cinza-texto); line-height: 1.45; }
+  .mini.obj{ flex-direction: row; gap: 8px; align-items: flex-start; }
+  .mini.obj b{ color: var(--azul-intermediario); flex-shrink: 0; }
+
+  .mini.linha-acao{ flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
+  .trilha-linha .tl-topo{ display: flex; align-items: center; justify-content: space-between; }
+  .trilha-linha .tl-bolas{ display: flex; gap: 4px; margin: 6px 0 3px; flex-wrap: wrap; }
+  .trilha-linha .tl-sub{ font-size: 11px; }
+
+  .estrelas{ display: flex; gap: 2px; }
+  .estrela{
+    background: none; border: none; cursor: pointer; padding: 2px;
+    font-size: 17px; line-height: 1; color: #d8dcd2; transition: color .12s, transform .12s;
+  }
+  .estrela:hover{ transform: scale(1.15); }
+  .estrela.on{ color: var(--amarelo-neon); text-shadow: 0 0 1px var(--azul-intermediario); }
+
+  /* Aula e pontos de atenção num card só: retângulo horizontal no desktop,
+     vertical no celular. */
+  .par{ margin-bottom: 16px; }
+  .card.unico{ padding: 0; overflow: hidden; margin-bottom: 0; }
+  .lado-aula{ padding: 18px; }
+  .lado-pontos{ padding: 18px; border-top: 1px solid var(--borda); background: #fcfcfa; }
+
+  /* aula do dia / histórico */
+  .aula-topo{
+    display: flex; align-items: center; gap: 9px; margin-bottom: 10px;
+    flex-wrap: wrap; min-width: 0;
+  }
+  .aula-topo .pill{ white-space: nowrap; margin-bottom: 0; flex-shrink: 0; }
+  .aula-topo .ident{ margin-bottom: 0; }
+
+  /* ===== Chip do resumo da turma ===== */
+
+  /* ===== Vocabulário e alertas ===== */
+  .vocs{ display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0 4px; }
+  .tagv{
+    font-size: 12.5px; font-weight: 600; color: var(--teal-escuro);
+    background: var(--limao-claro); padding: 5px 10px; border-radius: 7px;
+  }
+
+  .aluno-alerta{
+    width: 100%; display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+    background: #fafbf7; border: 1px solid transparent; border-radius: 8px;
+    padding: 9px 10px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: border-color .13s, background .13s;
+  }
+  .aluno-alerta:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .aluno-alerta .an{
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; color: var(--texto);
+  }
+  .seta-r{
+    width: 5px; height: 5px; border-right: 2px solid var(--azul-intermediario);
+    border-top: 2px solid var(--azul-intermediario); transform: rotate(45deg);
+  }
+  .ats{ display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag-al{
+    font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px;
+  }
+  .tag-al.vermelho{ background: #fbe0de; color: #a3312a; }
+  .tag-al.ambar{ background: #fbf0d8; color: #8a6d1f; }
+  .tag-al.lavanda{ background: #ece9f0; color: var(--azul-intermediario); }
+
+  /* ===== Pop-up ===== */
+  .modal{
+    position: fixed; inset: 0; z-index: 80; display: none;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(24,16,26,0.5);
+  }
+  .modal.on{ display: flex; }
+  .modal-cx{
+    background: var(--branco); border-radius: 16px; width: 100%; max-width: 560px;
+    max-height: 84vh; display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(24,16,26,0.3);
+  }
+  .modal-topo{
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+    padding: 20px 20px 14px; border-bottom: 1px solid var(--borda);
+  }
+  .modal-kicker{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--azul-intermediario); margin-bottom: 3px;
+  }
+  .modal-topo h3{ margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--texto); }
+  .modal-x{
+    background: none; border: none; cursor: pointer; font-size: 24px; line-height: 1;
+    color: var(--cinza-texto); padding: 0 2px; flex-shrink: 0;
+  }
+  .modal-x:hover{ color: var(--texto); }
+  .modal-corpo{ padding: 16px 20px 22px; overflow-y: auto; }
+  .modal-corpo .bloco{ margin-bottom: 18px; }
+  .modal-corpo .bloco:last-child{ margin-bottom: 0; }
+  .modal-corpo .bt{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--azul-intermediario); margin-bottom: 8px;
+  }
+
+  /* linha do tempo do aluno */
+  .ev{
+    border-left: 3px solid var(--borda); padding: 0 0 14px 13px; position: relative;
+  }
+  .ev:last-child{ padding-bottom: 0; }
+  .ev.pendente{ border-left-color: var(--amarelo-neon); }
+  .ev-topo{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+  .ev-data{ font-size: 11px; font-weight: 800; color: var(--azul-intermediario); letter-spacing: .04em; }
+  .ev-de{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); }
+  .ev-txt{ font-size: 13.5px; color: var(--texto); line-height: 1.5; }
+  .ev.pendente .ev-txt{
+    background: var(--limao-claro); padding: 8px 10px; border-radius: 8px; font-weight: 500;
+  }
+  .selo-pend{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: var(--amarelo-neon); color: var(--teal-escuro);
+    padding: 3px 7px; border-radius: 999px;
+  }
+  /* botão de aluno no resumo da turma */
+  .aluno-link{
+    width: 100%; display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    background: #fafbf7; border: 1px solid transparent; border-radius: 8px;
+    padding: 10px 11px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: border-color .13s, background .13s;
+  }
+  .aluno-link:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .al-nome{
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+  }
+  .al-cargo{ font-size: 12px; color: var(--cinza-texto); }
+  .aluno-link .tag-al{ margin-top: 4px; }
+
+  /* números consolidados da ficha */
+  .nums{
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px;
+  }
+  .num{
+    background: #fafbf7; border-radius: 10px; padding: 11px 10px;
+    display: flex; flex-direction: column; gap: 1px; text-align: center;
+  }
+  .nv{ font-size: 20px; font-weight: 800; color: var(--texto); letter-spacing: -0.02em; }
+  .nv.alta{ color: #3f6b45; } .nv.media{ color: #8a6d1f; } .nv.baixa{ color: #a3312a; }
+  .nr{ font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--azul-intermediario); }
+  .nd{ font-size: 10.5px; color: var(--cinza-texto); }
+  .pres-rot{ font-size: 12px; color: var(--cinza-texto); }
+
+  .voltar-turma{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding: 0 0 12px;
+  }
+  .voltar-turma:hover{ color: var(--teal-escuro); }
+
+  /* Identificação da aula: Empresa · Nível · Dia · Horário · [+] */
+  .ident{
+    display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
+    margin-bottom: 9px; font-size: 12px; min-width: 0;
+  }
+  .id-emp{
+    font-weight: 800; color: var(--teal-escuro); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .id-turma{
+    font-weight: 600; color: var(--cinza-texto); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .id-niv{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em; flex-shrink: 0;
+    background: var(--limao-claro); color: var(--teal-escuro);
+    padding: 2px 7px; border-radius: 999px;
+  }
+  /* identificação dentro do card de trilha */
+  .ident-tr{ margin: 2px 0 1px; font-size: 11.5px; }
+  .id-dia, .id-hora{
+    font-weight: 700; color: var(--cinza-texto); white-space: nowrap; flex-shrink: 0;
+  }
+  .id-hora{ color: var(--azul-intermediario); }
+  .id-mais{
+    flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; padding: 0;
+    border: 1px solid var(--borda); background: var(--branco);
+    color: var(--teal-escuro); font-family: inherit; font-size: 16px;
+    line-height: 1; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background .13s, border-color .13s;
+  }
+  .id-mais:hover{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); }
+  .painel-aula{
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+    margin: -4px 0 10px; letter-spacing: -0.01em;
+  }
+
+  /* ===== Trilhas ===== */
+  /* topo do card de trilhas: faixa na cor escura, sangrando até a borda.
+     Como o fundo agora é escuro, o texto vira branco e o acento fica no
+     selo do nível. */
+  .trilha-cab{
+    background: var(--teal-escuro);
+    margin: -18px -18px 6px; padding: 14px 18px;
+    border-radius: 13px 13px 0 0;
+  }
+  .trilha-cab .ident{ margin-bottom: 3px; }
+  .trilha-cab .id-emp{ color: #fff; }
+  .trilha-cab .id-turma{ color: rgba(255,255,255,.72); }
+  .trilha-cab .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .trilha-cab .id-hora{ color: rgba(255,255,255,.8); }
+  .tc-sub{ font-size: 11.5px; color: rgba(255,255,255,.7); font-weight: 700; }
+
+  .trilha-item{ border-bottom: 1px solid #f2f4f0; }
+  .trilha-item:last-child{ border-bottom: none; }
+  .tr-cab-esq{ display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+  .tr-tit{ font-size: 14.5px; font-weight: 700; color: var(--texto); letter-spacing: -0.01em; }
+  .tr-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+  .trilha-item .exp-cab{ padding: 13px 0; }
+
+  .tr-aluno{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+  }
+  .tr-aluno:last-child{ margin-bottom: 0; }
+  .tr-nome{
+    display: flex; align-items: center; gap: 6px; background: none; border: none;
+    cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700;
+    color: var(--texto); padding: 0; margin-bottom: 6px;
+  }
+  .tr-nome:hover{ color: var(--azul-intermediario); }
+  .tr-bolas{ display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tr-num{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 11.5px; font-weight: 700; }
+  .tr-num .ok{ color: #3f6b45; }
+  .tr-num .er{ color: #a3312a; }
+  .tr-num .pe{ color: #9aa39f; }
+  .tr-num .nota{ margin-left: auto; font-size: 13px; }
+
+  /* itens do bloco "Precisa ser tratado" */
+  .item-trat{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+    display: flex; align-items: flex-start; gap: 9px;
+  }
+  .item-trat:last-child{ margin-bottom: 0; }
+  .item-trat .it-txt{ font-size: 13px; color: var(--texto); line-height: 1.45; }
+  .item-trat .tag-al{ flex-shrink: 0; margin-top: 1px; }
+
+  .item-trat.recado{
+    flex-direction: column; gap: 6px;
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 9px 9px 0;
+  }
+  .rec-cab{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rec-de{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); }
+  .item-trat.recado .btn-tratar{ margin-top: 2px; align-self: flex-start; }
+
+  .selo-ok{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: #e8efe3; color: #3f6b45; padding: 3px 7px; border-radius: 999px;
+  }
+  .btn-tratar{
+    margin-top: 8px; background: none; border: 1.5px solid var(--borda);
+    border-radius: 7px; padding: 6px 11px; font-family: inherit; font-size: 11.5px;
+    font-weight: 700; color: var(--azul-intermediario); cursor: pointer;
+    transition: background .13s, border-color .13s;
+  }
+  .btn-tratar:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+
+  .responder textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 70px; outline: none; line-height: 1.45;
+  }
+  .responder textarea:focus{ border-color: var(--azul-intermediario); }
+  .responder .btn{ margin-top: 9px; }
+
+  .mini.destaque{
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 8px 8px 0; padding: 11px 12px;
+  }
+  .mini.destaque span{ color: var(--texto); font-size: 13.5px; font-weight: 500; }
+
+  .mini.alerta-turma{
+    border-left: 3px solid var(--amarelo-neon); border-radius: 0 8px 8px 0;
+    background: var(--limao-claro);
+  }
+  .mini.alerta-turma span{ color: var(--texto); }
+
+  .aviso-visao{
+    font-size: 11.5px; color: var(--cinza-texto); line-height: 1.5;
+    border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 4px;
+  }
+
+  /* ===== Ações da aula: Iniciar / Cancelar ===== */
+  .acoes-aula{ display: flex; gap: 8px; margin-top: 14px; }
+  .acoes-aula .btn{ margin-top: 0; }
+  .acoes-aula .btn:first-child{ flex: 1; }
+  .btn.cancelar{
+    background: transparent; color: #a3312a; border: 1.5px solid #eab5b1;
+    flex-shrink: 0; width: auto; padding: 12px 16px;
+  }
+  .btn.cancelar:hover{ background: #fbe0de; color: #a3312a; }
+
+  .pill.cancelada{ background: #fbe0de; color: #a3312a; }
+
+  .cancel-aviso{
+    background: #fbe0de; border-radius: 10px; padding: 11px 13px; margin-top: 14px;
+  }
+  .cancel-aviso .ct{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: #a3312a; margin-bottom: 2px;
+  }
+  .cancel-aviso .cm{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  .ctx-aula{
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .pa-corpo{ margin-bottom: 18px; }
+  .pa-corpo .card-kicker{ display: none; }
+
+  .motivos{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .mot{
+    border: 1.5px solid var(--borda); background: var(--branco); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--texto);
+    padding: 8px 12px; border-radius: 8px; transition: all .13s;
+  }
+  .mot:hover{ border-color: var(--azul-intermediario); }
+  .mot.on{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); font-weight: 700; }
+
+  .acoes-modal{ display: flex; gap: 8px; }
+  .acoes-modal .btn{ margin-top: 0; }
+
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .bloco-aula.cancelada .ba-hora{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  /* ===== Fechar o dia ===== */
+  .bloco-aula{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  }
+  .bloco-aula.ok{ border-color: #b6d7ac; }
+
+  /* cabeçalho na cor escura, sangrando até a borda — mesmo tratamento das
+     trilhas. Texto branco, e o acento fica no selo do nível. */
+  .ba-cab{
+    background: var(--teal-escuro);
+    margin: -18px -18px 16px; padding: 14px 18px;
+    border-radius: 13px 13px 0 0;
+  }
+  .ba-cab .ident{ margin-bottom: 7px; }
+  .ba-cab .id-emp{ color: #fff; }
+  .ba-cab .id-turma{ color: rgba(255,255,255,.72); }
+  .ba-cab .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .ba-cab .id-dia, .ba-cab .id-hora{ color: rgba(255,255,255,.8); }
+
+  .ba-linha{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ba-aula{
+    font-size: 17px; font-weight: 800; color: #fff;
+    letter-spacing: -0.02em; min-width: 0;
+  }
+  .ba-status{
+    font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: rgba(255,255,255,.75); background: rgba(255,255,255,.14);
+    padding: 5px 10px; border-radius: 999px;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
+
+  /* Uma LINHA por aluno: nome · presença · engajamento · ícone de anotação */
+  .linha-aluno{
+    border-bottom: 1px solid #f2f4f0;
+  }
+  .linha-aluno:last-child{ border-bottom: none; }
+
+  .la-linha{
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 2px;
+  }
+  .la-nome{
+    flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--texto);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .linha-aluno.marcado .la-nome{ font-weight: 700; }
+
+  .toggle{ display: flex; gap: 5px; flex-shrink: 0; }
+  .toggle button{
+    border: 1.5px solid var(--borda); background: var(--branco); border-radius: 7px;
+    padding: 6px 11px; font-family: inherit; font-size: 11.5px; font-weight: 700;
+    cursor: pointer; color: var(--cinza-texto); transition: all .13s; white-space: nowrap;
+  }
+  .toggle button:hover{ border-color: var(--azul-intermediario); }
+  .toggle button.on-p{ background: #dff0d8; border-color: #b6d7ac; color: #3f6b45; }
+  .toggle button.on-a{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
+
+  .estrelas{ display: flex; gap: 1px; flex-shrink: 0; }
+  .estrelas.off{ opacity: .3; }
+
+  .ico-nota{
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px; padding: 0;
+    border: 1.5px solid var(--borda); background: var(--branco);
+    color: var(--cinza-texto); cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center; transition: all .13s;
+  }
+  .ico-nota svg{ width: 15px; height: 15px; }
+  .ico-nota:hover{ border-color: var(--azul-intermediario); color: var(--azul-intermediario); }
+  .ico-nota.aberto{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
+  .ico-nota.tem{ color: var(--teal-escuro); border-color: var(--amarelo-neon); }
+  .ico-nota.tem::after{
+    content: ""; position: absolute; top: -3px; right: -3px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amarelo-neon); border: 1.5px solid var(--branco);
+  }
+
+  .nota-box{ display: none; padding: 0 2px 12px; }
+  .nota-box.open{ display: block; }
+  .nota-box textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 66px; outline: none; line-height: 1.45;
+  }
+  .nota-box textarea:focus{ border-color: var(--azul-intermediario); }
+  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 5px; font-weight: 600; }
+
+  @media (max-width: 620px){
+    .la-linha{ flex-wrap: wrap; gap: 9px; padding: 12px 2px; }
+    .la-nome{ flex: 1 0 100%; }
+    .toggle{ flex: 1; }
+    .toggle button{ flex: 1; }
+  }
+
+  /* cancelada */
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; padding-top: 2px; }
+
+  /* ===== Histórico ===== */
+  .hist-item{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-left: 4px solid var(--amarelo-neon);
+    border-radius: 0 12px 12px 0; padding: 15px 16px; margin-bottom: 10px;
+  }
+  .hist-item .data{ font-size: 11px; font-weight: 700; color: var(--azul-intermediario); letter-spacing: .05em; }
+  .hist-item .titulo{ font-size: 15px; font-weight: 700; margin: 3px 0 5px; color: var(--texto); }
+  .hist-item .resumo{ font-size: 12.5px; color: var(--cinza-texto); line-height: 1.45; }
+  .hist-tags{ display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+  .htag{ font-size: 10.5px; font-weight: 700; background: #eef0ec; color: var(--cinza-texto); padding: 4px 8px; border-radius: 6px; }
+
+  /* ===== Desktop: sidebar fixa + conteúdo largo ===== */
+  @media (min-width: 900px){
+    body{ display: grid; grid-template-columns: 282px 1fr; align-items: start; }
+
+    /* Sidebar ocupa o lado inteiro, do topo ao rodapé */
+    .sidebar{
+      grid-column: 1;
+      background: var(--teal-escuro);
+      border-right: none;
+      margin: 0; border-radius: 0;
+      padding: 26px 20px 24px;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .tabs{
+      flex-direction: column; gap: 5px; padding: 0; overflow: visible;
+      border-top: none; padding-top: 4px;
+    }
+    .tab{
+      width: 100%; text-align: left; padding: 12px 14px;
+      letter-spacing: .04em; font-size: 12.5px;
+    }
+
+    main{
+      grid-column: 2;
+      padding: 30px 34px 60px; max-width: 1180px; width: 100%;
+    }
+
+    .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
+    .cols > .card{ margin-bottom: 0; }
+
+    /* retângulo horizontal: aula à esquerda, pontos de atenção à direita */
+    .par{ margin-bottom: 18px; }
+    .card.unico{
+      display: grid; grid-template-columns: 1.3fr 1fr; align-items: stretch;
+    }
+    .lado-aula{ padding: 22px; display: flex; flex-direction: column; }
+    .lado-aula .btn{ margin-top: auto; }
+    .lado-pontos{
+      padding: 22px; border-top: none; border-left: 1px solid var(--borda);
+    }
+
+    .aluno-lista{ display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    .aluno-lista .card{ margin-bottom: 0; }
+
+
+
+    .switch{ max-width: 380px; }
+    table{ font-size: 13.5px; }
+    th, td{ padding: 13px 12px; }
+
+  }
+
+  @media (min-width: 1280px){
+    main{ padding: 30px 44px 70px 26px; }
+  }
+
+  /* Mobile: mantém empilhado */
+  @media (max-width: 899px){
+    .sidebar{
+      background: var(--teal-escuro); border-bottom: none;
+      border-radius: 0; margin: 0; padding: 18px 18px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .topo-sidebar{ padding-bottom: 14px; }
+    .logo{ width: 112px; }
+    main{ padding-top: 18px; }
+  }
+</style>
+<style>
+  /* ═══════════ Específico da dash interna ═══════════ */
+
+  /* Planilha: tabela larga, com rolagem horizontal e cabeçalho fixo */
+  .planilha-wrap{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; overflow: auto; max-height: 72vh;
+  }
+  table.planilha{
+    border-collapse: separate; border-spacing: 0; width: 100%;
+    font-size: 12.5px; color: var(--texto); white-space: nowrap;
+  }
+  table.planilha th{
+    position: sticky; top: 0; z-index: 3;
+    background: var(--teal-escuro); color: #fff;
+    font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    padding: 11px 12px; text-align: left; white-space: nowrap;
+  }
+  table.planilha td{
+    padding: 10px 12px; border-bottom: 1px solid #f2f0ee; text-align: left;
+    vertical-align: middle;
+  }
+  table.planilha tbody tr:hover td{ background: #faf9f7; }
+  table.planilha tbody tr.alerta td{ background: #fffaf8; }
+  table.planilha tbody tr.alerta:hover td{ background: #fff4f0; }
+
+  .col-aluno{ font-weight: 700; }
+  .col-nota{ font-weight: 800; }
+  .cel-anot{
+    max-width: 260px; white-space: normal; font-size: 12px;
+    color: var(--cinza-texto); line-height: 1.4;
+  }
+  .sem{ color: #b9b4af; }
+
+  .tag-p{ background:#dff0d8; color:#3f6b45; font-size:10.5px; font-weight:800;
+          padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
+  .tag-f{ background:#fbe0de; color:#a3312a; font-size:10.5px; font-weight:800;
+          padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
+  .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
+          padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
+
+  .estrelas-ro{ color: var(--amarelo-neon); font-size: 13px; letter-spacing: 1px; }
+  .estrelas-ro b{ color: var(--teal-escuro); }
+
+  /* Barra de filtros e ações */
+  .barra-planilha{
+    display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .filtro{
+    border: 1px solid var(--borda); background: var(--branco); border-radius: 9px;
+    padding: 9px 12px; font-family: inherit; font-size: 12.5px; color: var(--texto);
+    outline: none; cursor: pointer;
+  }
+  .filtro:focus{ border-color: var(--teal-escuro); }
+  input.filtro{ cursor: text; min-width: 190px; }
+  .btn-csv{
+    margin-left: auto; border: none; border-radius: 9px; cursor: pointer;
+    background: var(--teal-escuro); color: #fff; font-family: inherit;
+    font-size: 12.5px; font-weight: 700; padding: 10px 15px;
+  }
+  .btn-csv:hover{ background: var(--azul-intermediario); }
+  .cont-linhas{
+    font-size: 11.5px; font-weight: 700; color: var(--cinza-texto);
+  }
+
+  /* Cartões de número no topo */
+  .kpis{ display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 16px; }
+  .kpi{
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 12px;
+    padding: 14px 15px;
+  }
+  .kpi .v{ font-size: 24px; font-weight: 800; color: var(--teal-escuro); letter-spacing: -0.02em; }
+  .kpi .r{ font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+           color: var(--azul-intermediario); margin-top: 2px; }
+  .kpi .d{ font-size: 11.5px; color: var(--cinza-texto); margin-top: 2px; }
+  @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(4,1fr); } }
+
+  /* Aviso de confidencialidade */
+  .confid{
+    background: var(--limao-claro); border-left: 4px solid var(--amarelo-neon);
+    border-radius: 0 10px 10px 0; padding: 11px 14px; margin-bottom: 16px;
+    font-size: 12px; line-height: 1.5; color: var(--texto);
+  }
+  .confid b{ display: block; font-weight: 800; margin-bottom: 2px; }
+</style>
+
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="topo-sidebar">
+    <img class="logo" src="assets/logo-bupp-marrom-azul-claro.png" alt="bupp idiomas">
+    <div class="whoami">
+      <strong>Hi, Karina</strong>
+      <span>internal</span>
+      <button class="link-turmas" id="btn-professores"><b id="bt-prof-n"></b> professores ›</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-pane="planilha">Planilha</button>
+    <button class="tab" data-pane="alertas">Alertas</button>
+    <button class="tab" data-pane="turmas">Turmas</button>
+  </div>
+</aside>
+
+<div class="modal" id="modal">
+  <div class="modal-cx" role="dialog" aria-modal="true">
+    <div class="modal-topo">
+      <div>
+        <div class="modal-kicker" id="modal-kicker"></div>
+        <h3 id="modal-titulo"></h3>
+      </div>
+      <button class="modal-x" id="modal-x" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="modal-corpo" id="modal-corpo"></div>
+  </div>
+</div>
+
+<main>
+  <section class="pane active" id="pane-planilha">
+    <div class="confid">
+      <b>Visão interna da Bupp</b>
+      Inclui as anotações que o professor escreve sobre cada aluno. O aluno e o
+      RH do cliente não têm acesso a esta tela.
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="barra-planilha">
+      <select class="filtro" id="f-prof"></select>
+      <select class="filtro" id="f-emp"></select>
+      <input class="filtro" id="f-busca" type="search" placeholder="Buscar aluno, aula, anotação…">
+      <span class="cont-linhas" id="cont-linhas"></span>
+      <button class="btn-csv" id="btn-csv">Exportar CSV</button>
+    </div>
+    <div class="planilha-wrap">
+      <table class="planilha" id="tabela"></table>
+    </div>
+  </section>
+
+  <section class="pane" id="pane-alertas">
+    <div id="lista-alertas"></div>
+  </section>
+
+  <section class="pane" id="pane-turmas">
+    <div id="lista-turmas"></div>
+  </section>
+</main>
+
+<script src="dados-mock.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════
+//  LINHAS DA PLANILHA
+//  Uma linha por ALUNO por AULA JÁ DADA. É o menor grão que existe: tudo o
+//  que o professor registra acontece nesse cruzamento.
+// ══════════════════════════════════════════════════════════
+function partesIdent(t){
+  const jaTem = t.nome.toLowerCase().startsWith(t.empresa.toLowerCase());
+  const resto = jaTem ? t.nome.slice(t.empresa.length).replace(/^\s*[—\-·]\s*/, "") : t.nome;
+  return { empresa: t.empresa, turma: resto, nivel: t.nivel };
+}
+
+function montarLinhas(){
+  const linhas = [];
+  TURMAS.forEach(t => {
+    const p = partesIdent(t);
+    const prof = professorDe(t);
+    (t.historico || []).forEach(h => {
+      t.alunos.forEach(a => {
+        const st   = (h.progresso && h.progresso[a.id]) || [];
+        const feit = st.filter(x => x !== "pend").length;
+        const acer = st.filter(x => x === "ok").length;
+        const erro = st.filter(x => x === "err").length;
+        const nota = st.length ? Math.round(acer / st.length * 100) : null;
+        linhas.push({
+          data: h.data, dia: h.dia || "", empresa: p.empresa, turma: p.turma,
+          nivel: t.nivel, prof: prof.nome, aula: h.titulo,
+          aluno: a.nome, cargo: a.cargo,
+          presenca: (PRESENCA[h.id] || {})[a.id] || "",
+          eng: (ENGAJAMENTO[h.id] || {})[a.id] || 0,
+          licoes: st.length, feitas: feit, acertos: acer, erros: erro, nota,
+          anot: (NOTAS_ALUNO[h.id] || {})[a.id] || "",
+          alunoId: a.id, turmaId: t.id, aulaId: h.id
+        });
+      });
+    });
+  });
+  const chave = d => { const [dd,mm] = (d||"").split("/"); return (mm||"") + (dd||""); };
+  return linhas.sort((x,y) =>
+    chave(y.data).localeCompare(chave(x.data)) || x.aluno.localeCompare(y.aluno));
+}
+
+const LINHAS = montarLinhas();
+
+// ── Filtros ──
+function filtradas(){
+  const fp = document.getElementById("f-prof").value;
+  const fe = document.getElementById("f-emp").value;
+  const q  = (document.getElementById("f-busca").value || "").trim().toLowerCase();
+  return LINHAS.filter(l => {
+    if (fp && l.prof !== fp) return false;
+    if (fe && l.empresa !== fe) return false;
+    if (q){
+      const alvo = `${l.aluno} ${l.aula} ${l.anot} ${l.empresa} ${l.turma}`.toLowerCase();
+      if (!alvo.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function estrelasRO(n){
+  if (!n) return '<span class="sem">–</span>';
+  return `<span class="estrelas-ro">${"★".repeat(n)}<b>${"☆".repeat(3-n)}</b></span>`;
+}
+function classeNota(n){
+  return n === null ? "" : n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
+}
+
+const COLUNAS = ["Data","Empresa","Turma","Nível","Professor","Aula","Aluno",
+                 "Presença","Engaj.","Trilha","Certos","Erros","Anotação interna"];
+
+function renderTabela(){
+  const dados = filtradas();
+  const tb = document.getElementById("tabela");
+  tb.innerHTML =
+    `<thead><tr>${COLUNAS.map(c => `<th>${c}</th>`).join("")}</tr></thead>` +
+    `<tbody>${dados.map(l => {
+      const risco = l.presenca === "a" || (l.nota !== null && l.nota < 60) || (l.eng && l.eng <= 1);
+      return `<tr class="${risco ? "alerta" : ""}">
+        <td>${l.dia} ${l.data}</td>
+        <td>${l.empresa}</td>
+        <td>${l.turma}</td>
+        <td>${l.nivel}</td>
+        <td>${l.prof}</td>
+        <td>${l.aula}</td>
+        <td class="col-aluno">${l.aluno}</td>
+        <td>${l.presenca === "p" ? '<span class="tag-p">presente</span>'
+             : l.presenca === "a" ? '<span class="tag-f">faltou</span>'
+             : '<span class="tag-x">—</span>'}</td>
+        <td>${estrelasRO(l.eng)}</td>
+        <td class="col-nota nota ${classeNota(l.nota)}">${l.nota === null ? "–" : l.nota + "%"}</td>
+        <td>${l.acertos}</td>
+        <td>${l.erros}</td>
+        <td class="cel-anot">${l.anot || '<span class="sem">—</span>'}</td>
+      </tr>`;
+    }).join("")}</tbody>`;
+
+  document.getElementById("cont-linhas").textContent =
+    `${dados.length} de ${LINHAS.length} linhas`;
+  renderKPIs(dados);
+}
+
+function renderKPIs(dados){
+  const comPres = dados.filter(l => l.presenca);
+  const presentes = comPres.filter(l => l.presenca === "p").length;
+  const pctPres = comPres.length ? Math.round(presentes / comPres.length * 100) : null;
+
+  const comEng = dados.filter(l => l.eng);
+  const medEng = comEng.length
+    ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
+
+  const comNota = dados.filter(l => l.nota !== null);
+  const medNota = comNota.length
+    ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+
+  const anot = dados.filter(l => l.anot).length;
+
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi"><div class="v">${pctPres === null ? "–" : pctPres + "%"}</div>
+      <div class="r">Presença</div><div class="d">${presentes} de ${comPres.length} registros</div></div>
+    <div class="kpi"><div class="v">${medEng === null ? "–" : medEng + "★"}</div>
+      <div class="r">Engajamento</div><div class="d">média de ${comEng.length} avaliações</div></div>
+    <div class="kpi"><div class="v">${medNota === null ? "–" : medNota + "%"}</div>
+      <div class="r">Trilhas</div><div class="d">média de ${comNota.length} registros</div></div>
+    <div class="kpi"><div class="v">${anot}</div>
+      <div class="r">Anotações</div><div class="d">escritas pelo professor</div></div>
+  `;
+}
+
+// ── Exportar CSV ──
+function baixarCSV(){
+  const dados = filtradas();
+  const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const linhas = [COLUNAS.map(esc).join(";")].concat(dados.map(l => [
+    `${l.dia} ${l.data}`, l.empresa, l.turma, l.nivel, l.prof, l.aula, l.aluno,
+    l.presenca === "p" ? "presente" : l.presenca === "a" ? "faltou" : "",
+    l.eng || "", l.nota === null ? "" : l.nota + "%", l.acertos, l.erros, l.anot
+  ].map(esc).join(";")));
+  // BOM para o Excel abrir acentuação corretamente
+  const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "bupp-acompanhamento.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ══════════════════════════════════════════════════════════
+//  ALERTAS — mesma lógica da plataforma do professor, mas de todos
+// ══════════════════════════════════════════════════════════
+function alertasDoAluno(a, t){
+  const out = [];
+  let totalLic = 0, totalErr = 0;
+  (t.historico || []).forEach(h => {
+    const st = (h.progresso && h.progresso[a.id]) || [];
+    if (!st.length) return;
+    totalLic += st.length;
+    totalErr += st.filter(x => x === "err").length;
+    const erros = st.filter(x => x === "err").length;
+    if (erros / st.length >= 0.40){
+      out.push({ tipo:"trilha", texto:`Errou ${erros} de ${st.length} em <b>${h.titulo}</b>.` });
+    }
+  });
+
+  const porTema = {};
+  (t.historico || []).forEach(h => {
+    const st = (h.progresso && h.progresso[a.id]) || [];
+    (h.temas || []).forEach((tema, i) => {
+      if (!st[i]) return;
+      const d = porTema[tema] = porTema[tema] || { total:0, erros:0 };
+      d.total++;
+      if (st[i] === "err") d.erros++;
+    });
+  });
+  const temas = Object.entries(porTema)
+    .filter(([, d]) => d.total >= 2 && d.erros / d.total >= 0.40)
+    .map(([tema, d]) => `<b>${tema}</b> (${d.erros}/${d.total})`);
+  if (temas.length) out.push({ tipo:"tema", texto:`Trava em ${temas.join(", ")}.` });
+
+  const notas = (t.historico || []).map(h => (ENGAJAMENTO[h.id] || {})[a.id]).filter(Boolean);
+  if (notas.length){
+    const m = notas.reduce((x,y) => x+y, 0) / notas.length;
+    if (m <= 1.5) out.push({ tipo:"eng", texto:`Engajamento médio ${m.toFixed(1)} de 3.` });
+  }
+
+  const faltas = (t.historico || []).filter(h => (PRESENCA[h.id] || {})[a.id] === "a").length;
+  if (faltas >= 2) out.push({ tipo:"falta", texto:`${faltas} faltas registradas.` });
+
+  (a.historico || []).filter(h => !h.tratado).forEach(h => {
+    const de = { rh:"RH do cliente", gestao:"Gestão Bupp", aluno:"O próprio aluno", prof:"Professor" }[h.tipo] || h.tipo;
+    out.push({ tipo:"msg", texto:`<b>${de}</b> deixou recado em ${h.data}, não tratado.` });
+  });
+  return out;
+}
+
+const ROT = {
+  trilha:{ r:"Errou muito",     c:"vermelho" },
+  tema:  { r:"Trava num tema",  c:"vermelho" },
+  eng:   { r:"Engajamento",     c:"ambar"    },
+  falta: { r:"Faltas",          c:"ambar"    },
+  msg:   { r:"Recado pendente", c:"lavanda"  }
+};
+
+function renderAlertas(){
+  const box = document.getElementById("lista-alertas");
+  const itens = [];
+  TURMAS.forEach(t => t.alunos.forEach(a => {
+    const al = alertasDoAluno(a, t);
+    if (al.length) itens.push({ t, a, al });
+  }));
+  itens.sort((x,y) => y.al.length - x.al.length);
+
+  box.innerHTML = `<div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção</div>`;
+  if (!itens.length){
+    box.innerHTML += `<div class="card"><p>Nenhum aluno em atenção agora.</p></div>`;
+    return;
+  }
+
+  itens.forEach(({t, a, al}) => {
+    const p = partesIdent(t);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="ident">
+        <span class="id-emp">${p.empresa}</span>
+        <span class="id-turma">${p.turma}</span>
+        <span class="id-niv">${t.nivel}</span>
+        <span class="id-hora">${professorDe(t).nome}</span>
+      </div>
+      <h2>${a.nome}</h2>
+      <p>${a.cargo}</p>
+      <div style="margin-top:12px;">
+        ${al.map(x => {
+          const r = ROT[x.tipo] || { r:x.tipo, c:"lavanda" };
+          return `<div class="item-trat">
+            <span class="tag-al ${r.c}">${r.r}</span>
+            <span class="it-txt">${x.texto}</span></div>`;
+        }).join("")}
+      </div>`;
+    box.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  TURMAS — visão de carteira
+// ══════════════════════════════════════════════════════════
+function renderTurmas(){
+  const box = document.getElementById("lista-turmas");
+  box.innerHTML = `<div class="section-title">${TURMAS.length} turmas · ${PROFESSORES.length} professores</div>`;
+
+  TURMAS.forEach(t => {
+    const p = partesIdent(t);
+    const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+    const linhasT = LINHAS.filter(l => l.turmaId === t.id);
+    const comPres = linhasT.filter(l => l.presenca);
+    const pctPres = comPres.length
+      ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+    const comNota = linhasT.filter(l => l.nota !== null);
+    const medNota = comNota.length
+      ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+    const comEng = linhasT.filter(l => l.eng);
+    const medEng = comEng.length
+      ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="ident">
+        <span class="id-emp">${p.empresa}</span>
+        <span class="id-turma">${p.turma}</span>
+        <span class="id-niv">${t.nivel}</span>
+        ${grade ? `<span class="id-hora">${grade}</span>` : ""}
+      </div>
+      <h2>${professorDe(t).nome}</h2>
+      <p>${t.alunos.length} aluno${t.alunos.length>1?"s":""} · ${t.modulo} · ${(t.historico||[]).length} aula${(t.historico||[]).length!==1?"s":""} dada${(t.historico||[]).length!==1?"s":""}</p>
+      <div class="nums" style="margin-top:14px;margin-bottom:0;">
+        <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
+        <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
+        <div class="num"><span class="nv ${classeNota(medNota)}">${medNota===null?"–":medNota+"%"}</span><span class="nr">Trilhas</span></div>
+      </div>
+      <div class="mini destaque" style="margin-top:12px;"><span>${t.objetivoTurma}</span></div>`;
+    box.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  Pop-up de professores
+// ══════════════════════════════════════════════════════════
+function abrirModal(kicker, titulo, html){
+  document.getElementById("modal-kicker").textContent = kicker;
+  document.getElementById("modal-titulo").textContent = titulo;
+  document.getElementById("modal-corpo").innerHTML = html;
+  document.getElementById("modal").classList.add("on");
+}
+function fecharModal(){ document.getElementById("modal").classList.remove("on"); }
+document.getElementById("modal-x").onclick = fecharModal;
+document.getElementById("modal").onclick = e => { if (e.target.id === "modal") fecharModal(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
+
+document.getElementById("bt-prof-n").textContent = PROFESSORES.length;
+document.getElementById("btn-professores").onclick = () => {
+  const corpo = PROFESSORES.map(pr => {
+    const suas = TURMAS.filter(t => t.profId === pr.id);
+    const alunos = suas.reduce((n,t) => n + t.alunos.length, 0);
+    return `
+      <div class="bloco">
+        <div class="bt">${pr.nome}</div>
+        <div class="mini"><b>${suas.length} turma${suas.length!==1?"s":""} · ${alunos} aluno${alunos!==1?"s":""}</b><span>${pr.email}</span></div>
+        ${suas.map(t => {
+          const p = partesIdent(t);
+          return `<div class="mini"><b>${p.empresa} · ${p.turma}</b><span>${t.nivel} · ${t.modulo}</span></div>`;
+        }).join("")}
+      </div>`;
+  }).join("");
+  abrirModal("Equipe", `${PROFESSORES.length} professores`, corpo);
+};
+
+// ══════════════════════════════════════════════════════════
+//  Filtros e navegação
+// ══════════════════════════════════════════════════════════
+const fProf = document.getElementById("f-prof");
+fProf.innerHTML = `<option value="">Todos os professores</option>` +
+  PROFESSORES.map(p => `<option>${p.nome}</option>`).join("");
+
+const fEmp = document.getElementById("f-emp");
+fEmp.innerHTML = `<option value="">Todas as empresas</option>` +
+  [...new Set(TURMAS.map(t => t.empresa))].map(e => `<option>${e}</option>`).join("");
+
+fProf.onchange = renderTabela;
+fEmp.onchange  = renderTabela;
+document.getElementById("f-busca").oninput = renderTabela;
+document.getElementById("btn-csv").onclick = baixarCSV;
+
+document.querySelectorAll(".tab").forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
+    document.querySelectorAll(".pane").forEach(p =>
+      p.classList.toggle("active", p.id === "pane-" + t.dataset.pane));
+    window.scrollTo(0, 0);
+  };
+});
+
+renderTabela();
+renderAlertas();
+renderTurmas();
+</script>
+</body>
+</html>

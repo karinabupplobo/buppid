@@ -136,6 +136,38 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Dash interna da Bupp
+Criada a `interna.html`, quarta e última tela da fila (professor → aluno → RH →
+interna). Mesma linguagem visual da plataforma do professor, mesmo arquivo de
+dados — o que muda é o alcance:
+
+| | Professor | Interna |
+|---|---|---|
+| Turmas | as dele | todas |
+| Professores | — | todos |
+| Anotações internas por aluno | escreve as dele | **lê todas** |
+| Recados prof ↔ gestão | seu lado | os dois lados |
+
+**A tela central é uma planilha.** Uma linha por **aluno × aula dada** — o menor
+grão que existe, porque é nesse cruzamento que tudo o que o professor registra
+acontece. Colunas: data, empresa, turma, nível, professor, aula, aluno,
+presença, engajamento, nota da trilha, certos, erros e a anotação interna.
+
+Filtros por professor, por empresa e busca livre (que varre também o texto das
+anotações). Exportação em CSV com BOM, para o Excel abrir a acentuação certa.
+Linhas com falta, nota abaixo de 60% ou engajamento ≤1 ficam destacadas.
+
+Além da planilha, duas abas: **Alertas** (todos os alunos em atenção, de todas as
+turmas, com o motivo) e **Turmas** (carteira, com presença, engajamento e média
+de trilha por turma).
+
+**Dados compartilhados:** as duas dashes passaram a ler de `dados-mock.js`. Antes
+os dados eram inline no `plataforma.html`; com duas telas consumindo os mesmos
+objetos, manter duas cópias garantiria divergência. O arquivo também semeia
+presença, engajamento e anotações das aulas já dadas — sem isso a dash interna
+nasceria vazia, já que esses dados só existem depois que o professor fecha a
+aula.
+
 ### 21/08/2026 — Sem seletor: tudo do professor numa tela
 Passou por duas versões no mesmo dia. Primeiro o seletor de turma virou seletor
 de **empresa**; depois o seletor foi **removido de vez**. As quatro telas (Hoje,

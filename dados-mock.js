@@ -1,0 +1,263 @@
+// ══════════════════════════════════════════════════════════
+//  DADOS COMPARTILHADOS — plataforma do professor e dash interna
+//
+//  As duas dashes leem daqui para não divergirem. Quando o Supabase entrar,
+//  este arquivo vira a camada de fetch; a forma dos objetos continua a mesma.
+//
+//  Tudo aqui é FICTÍCIO.
+// ══════════════════════════════════════════════════════════
+
+// Professores da Bupp. Cada turma aponta para um professor por `profId`.
+const PROFESSORES = [
+  { id: "pr1", nome: "Ana Ribeiro",   email: "ana@buppidiomas.com.br" },
+  { id: "pr2", nome: "Rafael Guedes", email: "rafael@buppidiomas.com.br" }
+];
+
+const TURMAS = [
+  {
+    id: "t1",
+    nome: "Sertrading — Comex",
+    tipo: "corporativa",
+    nivel: "B1",
+    nivelDesc: "Intermediário — conduz conversas de trabalho com apoio, ainda erra em estruturas complexas.",
+    empresa: "Sertrading",
+    empresaDesc: "Trading de comércio exterior, São Paulo/SP. Contrato fechado com RH em jun/2026.",
+    modulo: "Módulo 3 — Negociação",
+    objetivoTurma: "Em 6 meses, o time de Comex negocia frete em inglês do início ao fechamento — sem tradutor e sem escalar para a diretoria.",
+    alunos: [
+      { id:"a1", nome:"Bruno Tavares",  cargo:"Analista de Comex",
+        historico:[
+          { data:"13/08", tipo:"prof", autor:"Prof. Ana", texto:"Participou bem, mas trava em past simple na hora de contar o que já foi negociado.", tratado:true }
+        ] },
+      { id:"a2", nome:"Camila Reis",    cargo:"Coord. de Importação",
+        historico:[
+          { data:"19/08", tipo:"rh", autor:"RH — Sertrading", texto:"Camila assumiu a conta da Ásia e vai precisar de call semanal em inglês a partir de setembro. Priorizar negociação por telefone.", tratado:false },
+          { data:"06/08", tipo:"prof", autor:"Prof. Ana", texto:"Faltou por viagem a trabalho. Enviei a trilha por e-mail.", tratado:true }
+        ] },
+      { id:"a3", nome:"Diego Nunes",    cargo:"Analista Pleno",
+        historico:[] },
+      { id:"a4", nome:"Fernanda Lopes", cargo:"Supervisora",
+        historico:[
+          { data:"18/08", tipo:"aluno", autor:"Fernanda Lopes", texto:"Professora, estou perdida nos condicionais. Consegue retomar antes de avançar?", tratado:false },
+          { data:"15/08", tipo:"gestao", autor:"Gestão Bupp", texto:"Engajamento em queda há 3 aulas. Combinar conversa individual e reportar ao RH se não melhorar até 30/08.", tratado:false }
+        ] }
+    ],
+    licoes: ["L1","L2","L3","L4","L5"],
+    progresso: {
+      a1: ["ok","ok","ok","err","ok"],
+      a2: ["ok","ok","err","pend","pend"],
+      a3: ["ok","ok","ok","ok","ok"],
+      a4: ["ok","err","pend","pend","pend"]
+    },
+    // Podem existir várias aulas no mesmo dia para a mesma turma.
+    aulasHoje: [
+      { id:"h1", hora:"08:00", dia:"Qui", titulo:"Negotiation Phrases", data:"Hoje, 20/08",
+        resumo:"Vocabulário e estruturas para conduzir uma negociação: abertura, contraproposta e fechamento.",
+        objetivo:"Ao fim da aula, o aluno abre uma negociação, faz uma contraproposta e fecha o acordo em inglês.",
+        vocab:["counteroffer","to meet halfway","deadline","terms and conditions","to close a deal"],
+        gramatica:"Condicional de 1º tipo em oferta: <em>If you can lower the price, we'll increase the volume.</em>" },
+      { id:"h2", hora:"17:30", dia:"Qui", titulo:"Follow-up Emails", data:"Hoje, 20/08",
+        resumo:"Retomar uma negociação por escrito depois da call: resumo, próximo passo e prazo.",
+        objetivo:"O aluno escreve um e-mail de follow-up com resumo do combinado, próximo passo e prazo claro.",
+        vocab:["as discussed","next steps","by the end of the week","to confirm","attached"],
+        gramatica:"Futuro com <em>will</em> para compromisso: <em>I'll send the revised proposal by Friday.</em>" }
+    ],
+    historico: [
+      { id:"p1", data:"13/08", dia:"Qui", titulo:"Email Etiquette",
+        resumo:"Estruturas de abertura e fechamento de e-mail formal.",
+        progresso: { a1:["ok","ok","ok","ok"], a2:["ok","ok","err","ok"],
+                     a3:["ok","ok","ok","ok"], a4:["ok","err","ok","pend"] },
+        licoes: ["L1","L2","L3","L4"],
+        temas:  ["Vocabulário","Condicionais","Formalidade","Vocabulário"] },
+      { id:"p2", data:"06/08", dia:"Qui", titulo:"Small Talk at Work",
+        resumo:"Conversa informal antes de reunião com cliente estrangeiro.",
+        progresso: { a1:["ok","ok","err"], a2:["ok","err","pend"],
+                     a3:["ok","ok","ok"], a4:["pend","pend","pend"] },
+        licoes: ["L1","L2","L3"],
+        temas:  ["Vocabulário","Condicionais","Past simple"] },
+      { id:"p3", data:"30/07", dia:"Qui", titulo:"Describing Processes",
+        resumo:"Sequenciadores e voz passiva para explicar fluxo logístico.",
+        progresso: { a1:["ok","ok","ok","ok"], a2:["ok","ok","ok","err"],
+                     a3:["ok","ok","ok","ok"], a4:["ok","ok","err","pend"] },
+        licoes: ["L1","L2","L3","L4"],
+        temas:  ["Sequenciadores","Vocabulário","Voz passiva","Voz passiva"] }
+    ]
+  },
+  {
+    id: "t4",
+    nome: "Sertrading — Diretoria",
+    tipo: "corporativa",
+    nivel: "B2",
+    nivelDesc: "Intermediário alto — argumenta e sustenta posição em reunião, ainda trava em registro formal.",
+    empresa: "Sertrading",
+    empresaDesc: "Trading de comércio exterior, São Paulo/SP. Contrato fechado com RH em jun/2026.",
+    modulo: "Módulo 2 — Reuniões",
+    objetivoTurma: "Em 6 meses, a diretoria conduz reunião de resultado com a matriz em inglês, sem material traduzido.",
+    alunos: [
+      { id:"d1", nome:"Ricardo Menezes", cargo:"Diretor Comercial", historico:[] },
+      { id:"d2", nome:"Patrícia Vlach",  cargo:"Diretora de Operações",
+        historico:[
+          { data:"20/08", tipo:"rh", autor:"RH — Sertrading", texto:"Patrícia viaja para a matriz em outubro. Reforçar reunião de resultado.", tratado:false }
+        ] }
+    ],
+    licoes: ["L1","L2","L3","L4"],
+    progresso: { d1:["ok","ok","ok","err"], d2:["ok","err","err","pend"] },
+    aulasHoje: [
+      { id:"h5", hora:"10:00", dia:"Qui", titulo:"Reporting Results", data:"Hoje, 20/08",
+        resumo:"Apresentar número de resultado e explicar variação para a matriz.",
+        objetivo:"O aluno apresenta o resultado do trimestre e explica a variação sem ler o slide.",
+        vocab:["revenue","forecast","gap","to break down","quarter"],
+        gramatica:"Comparativos para variação: <em>Revenue was 12% higher than forecast.</em>" }
+    ],
+    historico: [
+      { id:"p7", data:"13/08", dia:"Qui", titulo:"Running a Meeting",
+        resumo:"Abrir, conduzir e encerrar reunião com agenda.",
+        progresso: { d1:["ok","ok","ok"], d2:["ok","err","err"] },
+        licoes: ["L1","L2","L3"],
+        temas:  ["Vocabulário","Conectivos","Conectivos"] }
+    ]
+  },
+  {
+    id: "t2",
+    nome: "Tirolez — Liderança",
+    tipo: "corporativa",
+    nivel: "A2",
+    nivelDesc: "Básico — entende e usa frases do dia a dia, precisa de apoio em assunto novo.",
+    empresa: "Tirolez",
+    empresaDesc: "Indústria de laticínios, São Paulo/SP. Turma de supervisão de fábrica.",
+    modulo: "Módulo 1 — Fundamentos",
+    objetivoTurma: "Em 6 meses, a supervisão conduz uma visita de auditoria estrangeira na planta em inglês, sem intérprete.",
+    alunos: [
+      { id:"b1", nome:"Gisele Piernikarz", cargo:"Gerente de DHO", historico:[] },
+      { id:"b2", nome:"Rafael Souza",      cargo:"Supervisor de Produção",
+        historico:[
+          { data:"14/08", tipo:"prof", autor:"Prof. Ana", texto:"Confunde must e should. Retomar com exemplos do chão de fábrica.", tratado:true }
+        ] },
+      { id:"b3", nome:"Marina Alves",      cargo:"Coord. de Qualidade",
+        historico:[
+          { data:"20/08", tipo:"gestao", autor:"Gestão Bupp", texto:"Não fez nenhuma trilha desde o início do módulo. Verificar se tem acesso à plataforma antes de tratar como desengajamento.", tratado:false }
+        ] }
+    ],
+    licoes: ["L1","L2","L3","L4"],
+    progresso: {
+      b1: ["ok","ok","ok","ok"],
+      b2: ["ok","err","ok","pend"],
+      b3: ["pend","pend","pend","pend"]
+    },
+    aulasHoje: [
+      { id:"h3", hora:"07:00", dia:"Qui", titulo:"Safety Rules", data:"Hoje, 20/08",
+        resumo:"Regras de segurança na fábrica: sinalização, EPI e instruções diretas.",
+        objetivo:"O aluno dá uma instrução de segurança direta para um visitante que não fala português.",
+        vocab:["safety goggles","warning sign","forbidden","emergency exit","to wear"],
+        gramatica:"Imperativo e <em>must / must not</em> para regra: <em>You must wear a helmet.</em>" }
+    ],
+    historico: [
+      { id:"p4", data:"13/08", dia:"Qui", titulo:"Numbers & Quantities",
+        resumo:"Números, medidas e quantidades no chão de fábrica.",
+        progresso: { b1:["ok","err","ok"], b2:["ok","err","ok"], b3:["ok","err","pend"] },
+        licoes: ["L1","L2","L3"],
+        temas:  ["Números","Plural irregular","Vocabulário"] },
+      { id:"p5", data:"06/08", dia:"Qui", titulo:"Daily Routine",
+        resumo:"Rotina de turno e verbos no presente simples.",
+        progresso: { b1:["ok","ok"], b2:["ok","ok"], b3:["pend","pend"] },
+        licoes: ["L1","L2"],
+        temas:  ["Presente simples","Vocabulário"] }
+    ]
+  },
+  {
+    id: "t3",
+    nome: "Particular — Marcos B.",
+    tipo: "particular",
+    nivel: "B2",
+    nivelDesc: "Intermediário alto — argumenta e sustenta posição, ainda trava em registro formal.",
+    empresa: "Nelogica",
+    empresaDesc: "Software para mercado financeiro, Porto Alegre/RS. Aula particular do CEO.",
+    modulo: "Módulo 5 — Apresentações",
+    objetivoTurma: "Em 6 meses, apresentar a empresa e sustentar o Q&A com investidor estrangeiro, sem leitura de slide.",
+    alunos: [ { id:"c1", nome:"Marcos Boschetti", cargo:"CEO e cofundador",
+        historico:[
+          { data:"17/08", tipo:"aluno", autor:"Marcos Boschetti", texto:"Tenho pitch real para investidor dia 05/09. Dá para focar nisso nas próximas aulas?", tratado:false }
+        ] } ],
+    licoes: ["L1","L2","L3","L4","L5","L6"],
+    progresso: { c1: ["ok","ok","ok","ok","err","pend"] },
+    aulasHoje: [
+      { id:"h4", hora:"12:00", dia:"Qui", titulo:"Pitching to Investors", data:"Hoje, 20/08",
+        resumo:"Estrutura de pitch: problema, solução, tração e pedido.",
+        objetivo:"O aluno apresenta a empresa em 10 minutos, sem ler slide, e sustenta o pedido final.",
+        vocab:["runway","traction","market fit","to scale","funding round"],
+        gramatica:"Presente perfeito para tração: <em>We've grown 40% since January.</em>" }
+    ],
+    historico: [
+      { id:"p6", data:"13/08", dia:"Qui", titulo:"Data Storytelling",
+        resumo:"Apresentar números sem ler o slide.",
+        progresso: { c1:["ok","ok","ok","ok","ok"] },
+        licoes: ["L1","L2","L3","L4","L5"],
+        temas:  ["Números","Presente perfeito","Vocabulário","Conectivos","Presente perfeito"] }
+    ]
+  }
+];
+
+// Vincula cada turma a um professor.
+TURMAS[0].profId = "pr1";   // Sertrading — Comex
+TURMAS[1].profId = "pr1";   // Sertrading — Diretoria
+TURMAS[2].profId = "pr2";   // Tirolez — Liderança
+TURMAS[3].profId = "pr1";   // Nelogica — Particular
+
+function professorDe(t){
+  return PROFESSORES.find(p => p.id === t.profId) || PROFESSORES[0];
+}
+
+// ══════════════════════════════════════════════════════════
+//  ESTADO POR AULA
+//  Presença, engajamento e anotação interna são gravados por AULA, não por
+//  turma — a mesma turma tem várias aulas.
+//    PRESENCA[aulaId][alunoId]    = "p" | "a"
+//    ENGAJAMENTO[aulaId][alunoId] = 1 | 2 | 3
+//    NOTAS_ALUNO[aulaId][alunoId] = texto  ← INTERNO, só a Bupp vê
+//    CANCELADAS[aulaId]           = { motivo, obs, quando }
+// ══════════════════════════════════════════════════════════
+const PRESENCA    = {};
+const ENGAJAMENTO = {};
+const NOTAS_ALUNO = {};
+const CANCELADAS  = {};
+function estado(store, aulaId){ return (store[aulaId] = store[aulaId] || {}); }
+
+// ── Semente das aulas já dadas ──
+// Sem isto a dash interna nasceria vazia: presença e engajamento só existem
+// depois que o professor fecha a aula.
+Object.assign(PRESENCA, {
+  p1: { a1:"p", a2:"p", a3:"p", a4:"a" },
+  p2: { a1:"p", a2:"a", a3:"p", a4:"a" },
+  p3: { a1:"p", a2:"p", a3:"p", a4:"p" },
+  p7: { d1:"p", d2:"p" },
+  p4: { b1:"p", b2:"p", b3:"a" },
+  p5: { b1:"p", b2:"p", b3:"a" },
+  p6: { c1:"p" }
+});
+
+Object.assign(ENGAJAMENTO, {
+  p1: { a1:3, a2:2, a3:3, a4:1 },
+  p2: { a1:2, a2:1, a3:3, a4:1 },
+  p3: { a1:3, a2:2, a3:3, a4:2 },
+  p7: { d1:3, d2:2 },
+  p4: { b1:3, b2:2, b3:1 },
+  p5: { b1:3, b2:3, b3:1 },
+  p6: { c1:3 }
+});
+
+Object.assign(NOTAS_ALUNO, {
+  p1: {
+    a4: "Chegou 20 min atrasada e ficou calada. Perguntei se estava tudo bem, disse que a rotina apertou.",
+    a2: "Puxou o assunto da conta da Ásia sozinha — já está pensando no uso real."
+  },
+  p2: {
+    a4: "Faltou sem avisar. Segunda falta seguida.",
+    a3: "Está bem à frente da turma. Vale material extra para não desanimar."
+  },
+  p4: {
+    b3: "Não abriu a plataforma nenhuma vez. Confirmar se recebeu o acesso."
+  },
+  p6: {
+    c1: "Trouxe o deck real do pitch. Aula rendeu muito mais que o previsto."
+  }
+});

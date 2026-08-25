@@ -491,6 +491,15 @@ function aulaTerminou(aulaId){
   return !!p && Object.keys(p).length > 0;
 }
 
+// Dia real de hoje, na mesma abreviação usada em `dia:` nos dados mock
+// (Seg/Ter/Qua/Qui/Sex/Sáb/Dom). A aba Hoje do aluno usa isso pra só
+// mostrar/marcar como aula do dia o que realmente é de hoje — sem isso,
+// uma aula marcada "Qui" nos dados aparecia como "de hoje" mesmo numa
+// terça-feira de verdade.
+function diaHojeAbrev(){
+  return ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][new Date().getDay()];
+}
+
 // ══════════════════════════════════════════════════════════
 //  NÍVEL EXIBIDO
 //  Internamente o nível é CEFR (Pré-A1 … C2), que é o que o material

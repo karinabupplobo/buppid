@@ -29,33 +29,30 @@
 
 ## Próximo
 
-- [ ] TESTAR NO NAVEGADOR o fluxo de `nova-turma.html` → aba Turmas
-      (v-20260825-1940/1941/1942): abrir `nova-turma.html`, criar uma
-      turma de teste (empresa nova + 1 aluno novo), confirmar que ela
-      aparece na aba Turmas do `interna.html`, atribuir professor pelo
-      select e confirmar que salvou (recarregar a aba e ver se persistiu).
-      Só rodou validação de sintaxe e teste direto no Supabase via MCP
-      até agora — o REST com a anon key não pôde ser testado nesta sessão
-      porque o subdomínio novo não estava no allowlist do bash (mesma
-      pegadinha já registrada mais abaixo neste arquivo).
+- [ ] TESTAR NO NAVEGADOR o fluxo completo: aba Empresas → "+ Nova Empresa" →
+      "+ Turma" (confirmar que abre com a empresa certa travada) → preencher e
+      salvar → voltar pra aba Empresas e conferir se a turma aparece dentro do
+      card certo → atribuir professor pelo select → recarregar e confirmar que
+      persistiu. Ainda não testado no REST com a anon key nesta sessão (mesma
+      pegadinha do allowlist do subdomínio novo do Supabase).
 - [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; só 4
       foram criadas até agora (`professores`, `empresas_cliente`, `turmas`,
-      `alunos`, mais a ponte `turma_alunos`) — as que o formulário de nova
-      turma precisava. Faltam: `aulas_assigned`, `lousas_aula`,
-      `anotacoes_aluno`, `trilha_licoes`, `progresso_aluno`, `presenca`,
-      `profiles`. Criar conforme as dashes forem pedindo esses dados (regra
-      permanente da Karina — nunca deixar dado novo só no front sem tabela
-      correspondente).
+      `alunos`, mais a ponte `turma_alunos`). Faltam: `aulas_assigned`,
+      `lousas_aula`, `anotacoes_aluno`, `trilha_licoes`, `progresso_aluno`,
+      `presenca`, `profiles`. Criar conforme as dashes forem pedindo esses
+      dados (regra permanente da Karina).
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
-      do resto da dash). Travar por role quando o Supabase Auth entrar,
-      como já previsto em `docs/plataforma.md`.
+      do resto da dash). Travar por role quando o Supabase Auth entrar.
+- [ ] Onde o "teste de nível" que cadastra o aluno no sistema vai morar.
+      Hoje `nova-turma.html` já assume que alunos podem existir antes da
+      turma (por isso a lista sempre visível), mas o teste em si ainda não
+      foi desenhado nem tem tela.
 - [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
       Aulas (`pedagogico/GERADOR.md`, Passo 2) — hoje o gerador ainda
-      pergunta tudo de novo no chat; o formulário deveria alimentar direto
-      essas respostas quando a turma já existir no Supabase.
+      pergunta tudo de novo no chat.
 - [ ] Popular `empresas_cliente` e `alunos` com os dados fictícios que já
       existem no `dados-mock.js` (Sertrading, Tirolez, Nelogica...), se for
-      útil ter exemplos pra testar a aba Turmas sem depender só de dados
+      útil ter exemplos pra testar a aba Empresas sem depender só de dados
       criados na mão.
 - [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead
       vira "Cliente" no funil (manual vs. automático) — pendência aberta

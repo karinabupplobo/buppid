@@ -2,6 +2,39 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2010-aba-empresas — 25/08/2026
+- O que mudou: a aba "Turmas" do `interna.html` virou **Empresas**. Antes era uma
+  lista simples de turma; agora agrupa por empresa — cada card mostra setor e
+  contexto de inglês (quando preenchidos), as turmas daquela empresa com
+  atribuição de professor inline, e um botão **+ Turma** que abre o
+  `nova-turma.html` já com a empresa travada (via `?empresa_id=`). Empresa sem
+  turma nenhuma também aparece no card, com a lista vazia visível. Turmas sem
+  empresa (`empresa_cliente_id` nulo) ficam agrupadas num card **Particular**.
+  Botão **+ Nova Empresa** cria empresa direto, sem passar pelo formulário de
+  turma — reaproveita o `#modal` que já existia na dash.
+- Arquivos: interna.html
+- Motivo: pedido da Karina — a unidade de organização natural da carteira é a
+  empresa, não a turma solta, e o professor precisa ser atribuído olhando o
+  conjunto de turmas de um cliente, não turma por turma numa lista plana.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2005-form-sem-curso
+
+## v-20260825-2005-form-sem-curso — 25/08/2026
+- O que mudou: `nova-turma.html` — seção "Curso" (módulos, aulas por módulo,
+  nomes dos módulos) removida do formulário. Busca de aluno agora mostra a
+  lista inteira de alunos já cadastrados assim que o campo recebe foco, não só
+  quando alguma coisa é digitada — filtra conforme digita, mas a lista
+  completa fica sempre navegável. Também: suporte a `?empresa_id=` +
+  `?empresa_nome=` na URL (trava o campo Empresa, usado pelo "+ Turma" do card
+  em Empresas) e `?tipo=particular` (pré-seleciona o tipo, usado pelo card
+  Particular).
+- Arquivos: nova-turma.html
+- Motivo: Curso saiu por pedido direto da Karina. A lista sempre visível de
+  alunos é porque eles entram no sistema pelo teste de nível — precisa dar
+  pra ver quem já está cadastrado sem precisar saber o nome de cor.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-1942-kpi-empresas
+
 ## v-20260825-1942-kpi-empresas — 25/08/2026
 - O que mudou: novo card "Empresas" na aba Dados do `interna.html`, antes do card de
   Presença. Mostra `EMPRESAS.length` (já usado no link "N empresas ›" da sidebar). Grid

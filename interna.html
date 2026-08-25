@@ -860,9 +860,10 @@
     transition: transform .38s cubic-bezier(.4,.1,.2,1);
     will-change: transform;
   }
-  /* dois por página: cada card ocupa metade da largura menos o vão */
+  /* Dois por página: cada card ocupa metade da janela menos metade do vão,
+     para que 2 cards + 1 vão somem exatamente a largura visível. */
   .rt-card{
-    flex: 0 0 calc(50% - 6px);
+    flex: 0 0 calc((100% - 12px) / 2);
     background: var(--branco); border: 1px solid var(--borda);
     border-radius: 14px; padding: 16px;
     display: flex; flex-direction: column;
@@ -1552,15 +1553,22 @@ function renderResumoTurmas(dados){
     </div>`;
 
   // ── navegação de duas em duas ──
-  const trilho = box.querySelector("#rt-trilho");
+  const trilho   = box.querySelector("#rt-trilho");
+  const viewport = box.querySelector(".rt-viewport");
+  const VAO = 12;   // precisa bater com o `gap` do .rt-trilho no CSS
+
   // dois por vez no desktop, um por vez em tela estreita
-  const porVez = () => (window.innerWidth <= 620 ? 1 : 2);
+  const porVez  = () => (window.innerWidth <= 620 ? 1 : 2);
   let paginas = Math.max(1, Math.ceil(linhas.length / porVez()));
   let pag = 0;
 
   function irPara(n){
     pag = Math.max(0, Math.min(n, paginas - 1));
-    trilho.style.transform = `translateX(-${pag * 100}%)`;
+    // O deslocamento é em PIXELS, medido pela janela visível. Em porcentagem
+    // ele seria relativo à largura do trilho (a soma de todos os cards), o que
+    // faz o carrossel pular longe demais e cortar os cards.
+    const passo = viewport.clientWidth + VAO;
+    trilho.style.transform = `translateX(-${pag * passo}px)`;
     box.querySelector("#rt-pos").textContent = `${pag + 1}/${paginas}`;
     box.querySelectorAll(".rt-seta").forEach(b => {
       const dir = +b.dataset.ir;

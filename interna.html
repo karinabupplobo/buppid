@@ -1445,6 +1445,7 @@
   .ec-cab{ display:flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
   .ec-cab h3{ margin: 0 0 3px; font-size: 15.5px; font-weight: 800; color: var(--texto); }
   .ec-meta{ font-size: 12px; color: var(--cinza-texto); line-height: 1.4; max-width: 520px; }
+  .ec-btns{ flex-shrink: 0; display:flex; gap: 8px; }
   .btn-mini{
     flex-shrink: 0; background: var(--teal-escuro); color: #fff; border: none; border-radius: 7px;
     padding: 7px 13px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none;
@@ -1534,7 +1535,6 @@
       </div>
       <button class="btn-limpar-col" id="limpar-col" style="display:none;"></button>
       <span class="cont-linhas" id="cont-linhas"></span>
-      <a class="btn-csv" id="btn-nova-turma" href="nova-turma.html" target="_blank" rel="noopener" style="text-decoration:none;">+ Nova Turma</a>
       <button class="btn-csv" id="btn-csv">Exportar CSV</button>
     </div>
     <div class="chips-filtro" id="chips-filtro"></div>
@@ -3352,8 +3352,11 @@ function renderTurmas(){
 
   document.getElementById("tu-limpar").style.display = fEmp ? "inline-flex" : "none";
   const totalTurmas = TURMAS_SB.length;
+  // "Particular" não é uma empresa (é gente sem vínculo empresarial) — não pode
+  // entrar na contagem de empresa(s), senão diverge do card de KPI e da
+  // contagem real de empresas_cliente (bug reportado pela Karina em 25/08).
   document.getElementById("tu-cont").textContent =
-    `${grupos.length + (mostrarParticular && particulares.length ? 1 : 0)} empresa(s) · ${totalTurmas} turma(s) no total`;
+    `${grupos.length} empresa(s) · ${totalTurmas} turma(s) no total`;
 
   const wrap = document.getElementById("turmas-wrap");
   if (!grupos.length && !(mostrarParticular && particulares.length)){
@@ -3371,7 +3374,10 @@ function renderTurmas(){
             <h3>${e.nome}</h3>
             ${meta ? `<div class="ec-meta">${meta}</div>` : ""}
           </div>
-          <a class="btn-mini" href="nova-turma.html?empresa_id=${e.id}&empresa_nome=${encodeURIComponent(e.nome)}" target="_blank" rel="noopener">+ Turma</a>
+          <div class="ec-btns">
+            <a class="btn-mini" href="nova-turma.html?empresa_id=${e.id}&empresa_nome=${encodeURIComponent(e.nome)}" target="_blank" rel="noopener">+ Turma</a>
+            <a class="btn-mini" href="nivel-test.html?empresa_id=${e.id}&empresa_nome=${encodeURIComponent(e.nome)}" target="_blank" rel="noopener">+ Aluno</a>
+          </div>
         </div>
         <div class="ec-turmas">
           ${g.turmas.length ? g.turmas.map(turmaLinhaHtml).join("") : `<div class="sem-turmas">Nenhuma turma cadastrada ainda pra esta empresa.</div>`}

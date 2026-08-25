@@ -682,8 +682,8 @@
   #leads-tabela{ min-width: 0; }
   #leads-cabecalho, .lead-row > summary{
     display: grid;
-    grid-template-columns: 32px minmax(150px,2.2fr) minmax(96px,1fr) 74px 46px 46px 54px 34px;
-    align-items: center; gap: 10px;
+    grid-template-columns: minmax(150px,2.4fr) minmax(110px,1.3fr) 92px 84px 40px;
+    align-items: center; gap: 12px;
   }
   #leads-cabecalho{
     padding: 10px 12px; background: var(--accent);
@@ -715,10 +715,44 @@
   .lc-hist svg{ width: 15px; height: 15px; }
   .lc-hist:hover{ border-color: var(--accent); color: var(--accent); background: var(--focus-bg); }
 
-  /* as tags e o seletor de etapa passam para uma segunda linha da grade */
-  .lead-row > summary .lead-tags-topo{
-    grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px;
+  /* As tags e o seletor de etapa saem da linha: continuam no DOM (o seletor
+     ainda grava a etapa), mas só aparecem com a ficha aberta. */
+  .lead-row > summary .lead-tags-topo.oculto{ display: none; }
+  .lead-row[open] > summary .lead-tags-topo.oculto{
+    grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px;
   }
+
+  /* Temperatura como botão */
+  .lc-temp{
+    border: none; cursor: pointer; font-family: inherit;
+    font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    padding: 6px 10px; border-radius: 999px; text-align: center; white-space: nowrap;
+  }
+  .lc-temp:hover{ filter: brightness(.94); }
+
+  /* Ícone de contato: vermelho quando não há ninguém mapeado */
+  .lc-contato{
+    width: 32px; height: 32px; border-radius: 9px; padding: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid transparent; transition: filter .12s;
+  }
+  .lc-contato svg{ width: 16px; height: 16px; }
+  .lc-contato.tem{ background: #dff0d8; border-color: #b6d7ac; color: #2f5c37; }
+  .lc-contato.sem{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
+  .lc-contato:hover{ filter: brightness(.95); }
+
+  /* campos do contato no pop-up */
+  .lh-ev.contato .ct-campos{
+    margin-top: 8px; display: flex; flex-direction: column; gap: 5px;
+    font-size: 12.5px; color: var(--text);
+  }
+  .lh-ev.contato .ct-campos > div{ display: flex; gap: 8px; }
+  .lh-ev.contato .ct-campos span{
+    font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-muted); min-width: 76px; flex-shrink: 0; padding-top: 2px;
+  }
+  .lh-ev.contato .ct-campos i{ color: var(--text-muted); font-style: italic; }
+  .lh-ev.alerta-vazio{ background: #fbe0de; }
 
   /* ── Modal de histórico do lead ── */
   #lead-hist-modal{ position: fixed; inset: 0; z-index: 320; background: rgba(40,30,22,.45);
@@ -823,9 +857,9 @@
     #leads-voltar-funil{ width: 100%; justify-content: center; }
     #leads-cabecalho{ display: none; }
     .lead-row > summary{
-      grid-template-columns: 26px minmax(0,1fr) 54px 34px;
+      grid-template-columns: minmax(0,1fr) 78px 36px;
     }
-    .lc-setor, .lc-porte, .lc-num:not(.lc-total){ display: none; }
+    .lc-setor, .lc-porte{ display: none; }
   }
   @media (min-width: 1500px) {
     #leads-main { grid-template-columns: 264px 1fr; gap: 20px; }
@@ -1077,9 +1111,8 @@
       <button type="button" id="leads-voltar-funil">&lsaquo; Voltar ao funil</button>
       <div id="leads-tabela">
         <div id="leads-cabecalho">
-          <span>#</span><span>Empresa</span><span>Setor</span><span>Porte</span>
-          <span class="lc-num">Fit</span><span class="lc-num">Int.</span>
-          <span class="lc-num">Score</span><span></span><span>Etapa e sinais</span>
+          <span>Empresa</span><span>Setor</span><span>Porte</span>
+          <span>Temperatura</span><span>Contato</span>
         </div>
         <div id="leads-list"></div>
       </div>
@@ -2159,23 +2192,25 @@ function renderLeads() {
       style="border-left-color:${corDaEtapa(etapaDoLead({ e, c }))}"
       title="${escAttr(rotuloDaEtapa(etapaDoLead({ e, c })))}"${leadsAbertos.has(e.n) ? " open" : ""}>
       <summary draggable="true">
-        <span class="lc lc-i">${i + 1}</span>
         <span class="lc lc-nome">
           <span class="lead-name">${e.n}</span>
-          <span class="lead-meta">${e.m || "—"}/${e.u || "—"} · ${c.vinc.d}${e.p ? " (" + e.p + ")" : ""}</span>
+          <span class="lead-meta">${e.m || "—"}/${e.u || "—"}</span>
         </span>
         <span class="lc lc-setor">${c.setor.d}</span>
         <span class="lc lc-porte">${e.h || "—"}</span>
-        <span class="lc lc-num" title="Fit ${c.fit}/100">${c.fit}</span>
-        <span class="lc lc-num" title="Intenção ${c.intencao}">${c.intencao}</span>
-        <span class="lc lc-num lc-total" title="Score total">${c.total}</span>
-        <button type="button" class="lc lc-hist" data-hist="${escAttr(e.n)}"
-                title="Histórico de interações e notas">
+        <button type="button" class="lc lc-temp tag-${c.temperatura}" data-temp="${escAttr(e.n)}"
+                title="Por que está ${c.temperatura}">
+          ${c.temperatura.charAt(0).toUpperCase() + c.temperatura.slice(1)}
+        </button>
+        <button type="button" class="lc lc-contato ${(e.ct || []).length ? "tem" : "sem"}"
+                data-contato="${escAttr(e.n)}"
+                title="${(e.ct || []).length ? (e.ct.length + " contato(s)") : "Sem contato mapeado"}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/></svg>
         </button>
-        <div class="lead-tags-topo">
+        <div class="lead-tags-topo oculto">
           ${leadTags(e, c).map(t => `<button type="button"
             class="tag ${t.cls}${leadsCatAberta.get(e.n) === t.k ? " aberta" : ""}"
             data-cat="${t.k}" data-cat-lead="${escAttr(e.n)}" title="${escAttr(t.t)}">
@@ -2544,12 +2579,92 @@ document.getElementById("lead-hist-modal").addEventListener("click", ev => {
   if (ev.target.id === "lead-hist-modal") ev.currentTarget.classList.add("hidden");
 });
 
+// ── Por que está quente ──
+// Mostra os gatilhos que sustentam a temperatura, com data, frescor e pontos.
+function abrirTemperatura(nome){
+  const e = leadsData.find(x => x.n === nome);
+  if (!e) return;
+  const c = calcularLead(e);
+
+  const sinais = (c.sinais || []).length
+    ? c.sinais.map(s => `
+        <div class="lh-ev ${s.vivo ? "vivo" : ""}">
+          <div class="lh-top">
+            <span class="lh-data">${s.dt}</span>
+            <span class="lh-de">${s.rotulo}</span>
+            ${s.vivo ? `<span class="lh-selo">+${s.pts || 0} pts</span>`
+                     : '<span class="lh-selo morto">expirado</span>'}
+          </div>
+          <div class="lh-txt">${esc(s.ds || "—")}
+            ${s.url ? ` <a href="${escAttr(s.url)}" target="_blank" rel="noopener">ver fonte ↗</a>` : ""}</div>
+        </div>`).join("")
+    : '<div class="lh-vazio">Nenhum gatilho registrado — por isso está frio.</div>';
+
+  document.getElementById("lead-hist-kicker").textContent =
+    `${c.temperatura.toUpperCase()} · intenção ${c.intencao} · score ${c.total}`;
+  document.getElementById("lead-hist-titulo").textContent = e.n;
+  document.getElementById("lead-hist-corpo").innerHTML = `
+    <div class="lh-bloco">
+      <div class="lh-bt">O que aquece</div>
+      ${sinais}
+    </div>
+    ${e.bcr ? `<div class="lh-bloco"><div class="lh-bt">Por onde entrar</div>
+      <div class="lh-ev destaque"><div class="lh-txt">${esc(e.bcr)}</div></div></div>` : ""}
+    <div class="lh-bloco">
+      <div class="lh-bt">Como o score se forma</div>
+      <div class="lh-ev"><div class="lh-txt">
+        Fit <b>${c.fit}</b> (setor, porte, vínculo) + intenção <b>${c.intencao}</b>
+        (gatilhos vivos) = <b>${c.total}</b>.
+      </div></div>
+    </div>`;
+  document.getElementById("lead-hist-modal").classList.remove("hidden");
+}
+
+// ── Quem é o contato ──
+function abrirContatos(nome){
+  const e = leadsData.find(x => x.n === nome);
+  if (!e) return;
+  const lista = e.ct || [];
+
+  const corpo = lista.length
+    ? lista.map(ct => `
+        <div class="lh-ev contato">
+          <div class="lh-top">
+            <span class="lh-de">${esc(ct.nome)}</span>
+            ${ct.persona ? `<span class="lh-selo">${esc(ct.persona)}</span>` : ""}
+          </div>
+          <div class="lh-txt">${esc(ct.cargo || "cargo não informado")}</div>
+          <div class="ct-campos">
+            <div><span>Telefone</span>${ct.tel ? `<a href="tel:${escAttr(ct.tel)}">${esc(ct.tel)}</a>`
+              : '<i>não mapeado</i>'}</div>
+            <div><span>E-mail</span>${ct.email ? `<a href="mailto:${escAttr(ct.email)}">${esc(ct.email)}</a>`
+              : '<i>não mapeado</i>'}</div>
+            <div><span>Observação</span>${ct.obs ? esc(ct.obs) : '<i>—</i>'}</div>
+            ${ct.fonte ? `<div><span>Fonte</span><a href="${escAttr(ct.fonte)}" target="_blank" rel="noopener">abrir ↗</a></div>` : ""}
+          </div>
+        </div>`).join("")
+    : `<div class="lh-ev alerta-vazio">
+         <div class="lh-txt"><b>Ninguém mapeado ainda.</b><br>
+         Só entram contatos com e-mail verificado — nunca padrão deduzido nem
+         endereço genérico da empresa.</div>
+       </div>`;
+
+  document.getElementById("lead-hist-kicker").textContent =
+    lista.length ? `${lista.length} contato${lista.length>1?"s":""} mapeado${lista.length>1?"s":""}`
+                 : "Sem contato";
+  document.getElementById("lead-hist-titulo").textContent = e.n;
+  document.getElementById("lead-hist-corpo").innerHTML =
+    `<div class="lh-bloco">${corpo}</div>`;
+  document.getElementById("lead-hist-modal").classList.remove("hidden");
+}
+
 document.getElementById("leads-list").addEventListener("click", ev => {
+  const bt = ev.target.closest("[data-temp]");
+  if (bt){ ev.preventDefault(); ev.stopPropagation(); abrirTemperatura(bt.dataset.temp); return; }
+  const bc = ev.target.closest("[data-contato]");
+  if (bc){ ev.preventDefault(); ev.stopPropagation(); abrirContatos(bc.dataset.contato); return; }
   const b = ev.target.closest("[data-hist]");
-  if (!b) return;
-  ev.preventDefault();
-  ev.stopPropagation();
-  abrirHistoricoLead(b.dataset.hist);
+  if (b){ ev.preventDefault(); ev.stopPropagation(); abrirHistoricoLead(b.dataset.hist); }
 });
 
 // No celular, escolher uma etapa do funil abre a planilha daquela etapa.

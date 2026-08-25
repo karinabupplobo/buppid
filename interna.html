@@ -1048,7 +1048,58 @@
     .barra-planilha{ gap: 7px; }
     .filtro, input.filtro{ flex: 1; min-width: 0; }
     .btn-csv{ margin-left: 0; flex: 1; }
-    .btn-limpar-col{
+    /* ── Filtro único com sugestões e chips ── */
+  .busca-uni{ position: relative; flex: 1; min-width: 260px; }
+  .busca-uni input{ width: 100%; }
+  .bu-sugestoes{
+    position: absolute; top: calc(100% + 5px); left: 0; right: 0; z-index: 45;
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 10px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.16); overflow: hidden;
+    max-height: 300px; overflow-y: auto; display: none;
+  }
+  .bu-sugestoes.on{ display: block; }
+  .bu-item{
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    padding: 9px 12px; text-align: left; border-bottom: 1px solid #f4f2f0;
+  }
+  .bu-item:last-child{ border-bottom: none; }
+  .bu-item:hover{ background: var(--limao-claro); }
+  .bu-cat{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--azul-intermediario); background: #f4f2f0;
+    padding: 3px 7px; border-radius: 5px; flex-shrink: 0; min-width: 66px; text-align: center;
+  }
+  .bu-val{ flex: 1; font-size: 13px; font-weight: 600; color: var(--texto); }
+  .bu-n{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); flex-shrink: 0; }
+
+  .chips-filtro{ display: flex; flex-wrap: wrap; gap: 7px; margin: -6px 0 14px; }
+  .chips-filtro:empty{ margin: 0; }
+  .chip{
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--limao-claro); border: 1px solid var(--amarelo-neon);
+    border-radius: 999px; padding: 5px 6px 5px 10px; font-size: 12px;
+  }
+  .chip-cat{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--azul-intermediario);
+  }
+  .chip-val{ font-weight: 700; color: var(--teal-escuro); }
+  .chip-x{
+    width: 17px; height: 17px; border-radius: 50%; border: none; padding: 0;
+    background: rgba(84,64,47,.14); color: var(--teal-escuro);
+    font-size: 13px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chip-x:hover{ background: var(--teal-escuro); color: #fff; }
+  .chip-limpar{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario);
+    text-decoration: underline; padding: 0 6px;
+  }
+  .chip-limpar:hover{ color: var(--teal-escuro); }
+
+  .btn-limpar-col{
     border: 1px solid var(--borda); background: var(--limao-claro); border-radius: 9px;
     padding: 9px 12px; font-family: inherit; font-size: 12px; font-weight: 700;
     color: var(--teal-escuro); cursor: pointer; align-items: center;
@@ -1147,13 +1198,16 @@
 <main>
   <section class="pane active" id="pane-planilha">
     <div class="barra-planilha">
-      <select class="filtro" id="f-emp"></select>
-      <select class="filtro" id="f-prof"></select>
-      <input class="filtro" id="f-busca" type="search" placeholder="Buscar aluno, aula, anotação…">
+      <div class="busca-uni" id="busca-uni">
+        <input class="filtro" id="f-busca" type="search" autocomplete="off"
+               placeholder="Filtrar por empresa, turma, aula, dia, aluno ou professor…">
+        <div class="bu-sugestoes" id="bu-sugestoes"></div>
+      </div>
       <button class="btn-limpar-col" id="limpar-col" style="display:none;"></button>
       <span class="cont-linhas" id="cont-linhas"></span>
       <button class="btn-csv" id="btn-csv">Exportar CSV</button>
     </div>
+    <div class="chips-filtro" id="chips-filtro"></div>
     <div class="kpis" id="kpis"></div>
 
     <div class="resumo-turmas" id="resumo-turmas"></div>
@@ -1256,17 +1310,109 @@ function montarLinhas(){
 const LINHAS = montarLinhas();
 
 // ── Filtros ──
+// ══════════════════════════════════════════════════════════
+//  FILTRO ÚNICO
+//  Um campo só, que reconhece a que categoria pertence o que se digita:
+//  empresa, turma, aula, dia, aluno ou professor. Cada escolha vira um chip;
+//  chips de categorias diferentes se somam (E), da mesma categoria são
+//  alternativas (OU) — é o que se espera de "Sertrading e Tirolez".
+// ══════════════════════════════════════════════════════════
+const CATEGORIAS = [
+  { k:"empresa",   rot:"Empresa",   campo: l => l.empresa },
+  { k:"turma",     rot:"Turma",     campo: l => l.turma },
+  { k:"aula",      rot:"Aula",      campo: l => l.aula },
+  { k:"dia",       rot:"Dia",       campo: l => `${l.dia} ${l.data}`.trim() },
+  { k:"aluno",     rot:"Aluno",     campo: l => l.aluno },
+  { k:"professor", rot:"Professor", campo: l => l.prof }
+];
+
+// [{ k, rot, valor }]
+const CHIPS = [];
+
 function passaFiltrosBasicos(l){
-  const fp = document.getElementById("f-prof").value;
-  const fe = document.getElementById("f-emp").value;
-  const q  = (document.getElementById("f-busca").value || "").trim().toLowerCase();
-  if (fp && l.prof !== fp) return false;
-  if (fe && l.empresa !== fe) return false;
-  if (q){
-    const alvo = `${l.aluno} ${l.aula} ${l.anot} ${l.empresa} ${l.turma}`.toLowerCase();
-    if (!alvo.includes(q)) return false;
+  return CATEGORIAS.every(c => {
+    const doTipo = CHIPS.filter(ch => ch.k === c.k);
+    if (!doTipo.length) return true;
+    return doTipo.some(ch => c.campo(l) === ch.valor);
+  });
+}
+
+function sugestoesPara(txt){
+  const q = txt.trim().toLowerCase();
+  if (!q) return [];
+  const out = [];
+  CATEGORIAS.forEach(c => {
+    const vistos = new Set();
+    LINHAS.forEach(l => {
+      const v = c.campo(l);
+      if (!v || vistos.has(v)) return;
+      if (!v.toLowerCase().includes(q)) return;
+      if (CHIPS.some(ch => ch.k === c.k && ch.valor === v)) return;
+      vistos.add(v);
+      // Quantas linhas esse valor traria SOMANDO aos chips já postos. Ignora
+      // os chips da própria categoria, que são alternativas entre si.
+      const n = LINHAS.filter(x =>
+        c.campo(x) === v && passaFiltrosColuna(x) && passaChipsExceto(x, c.k)).length;
+      if (n) out.push({ k:c.k, rot:c.rot, valor:v, n });   // sem resultado, não sugere
+    });
+  });
+  return out.sort((a,b) => b.n - a.n).slice(0, 12);
+}
+
+function passaChipsExceto(l, katual){
+  return CATEGORIAS.every(c => {
+    if (c.k === katual) return true;
+    const doTipo = CHIPS.filter(ch => ch.k === c.k);
+    if (!doTipo.length) return true;
+    return doTipo.some(ch => c.campo(l) === ch.valor);
+  });
+}
+
+function renderSugestoes(){
+  const cx  = document.getElementById("bu-sugestoes");
+  const txt = document.getElementById("f-busca").value;
+  const lista = sugestoesPara(txt);
+  if (!lista.length){
+    cx.classList.remove("on");
+    cx.innerHTML = "";
+    return;
   }
-  return true;
+  cx.innerHTML = lista.map((s, i) => `
+    <button class="bu-item" data-i="${i}">
+      <span class="bu-cat">${s.rot}</span>
+      <span class="bu-val">${s.valor}</span>
+      <span class="bu-n">${s.n}</span>
+    </button>`).join("");
+  cx.classList.add("on");
+  cx.querySelectorAll(".bu-item").forEach(b => {
+    b.onclick = () => {
+      const s = lista[+b.dataset.i];
+      CHIPS.push({ k:s.k, rot:s.rot, valor:s.valor });
+      document.getElementById("f-busca").value = "";
+      cx.classList.remove("on");
+      renderChips();
+      renderTabela();
+    };
+  });
+}
+
+function renderChips(){
+  const box = document.getElementById("chips-filtro");
+  if (!CHIPS.length){ box.innerHTML = ""; return; }
+  box.innerHTML = CHIPS.map((c, i) => `
+    <span class="chip">
+      <span class="chip-cat">${c.rot}</span>
+      <span class="chip-val">${c.valor}</span>
+      <button class="chip-x" data-i="${i}" aria-label="Remover">&times;</button>
+    </span>`).join("") +
+    `<button class="chip-limpar" id="chip-limpar">limpar tudo</button>`;
+
+  box.querySelectorAll(".chip-x").forEach(b => {
+    b.onclick = () => { CHIPS.splice(+b.dataset.i, 1); renderChips(); renderTabela(); };
+  });
+  document.getElementById("chip-limpar").onclick = () => {
+    CHIPS.length = 0; renderChips(); renderTabela();
+  };
 }
 
 function filtradas(){
@@ -2182,14 +2328,6 @@ document.getElementById("btn-empresas").onclick = () => {
 // ══════════════════════════════════════════════════════════
 //  Filtros e navegação
 // ══════════════════════════════════════════════════════════
-const fProf = document.getElementById("f-prof");
-fProf.innerHTML = `<option value="">Todos os professores</option>` +
-  PROFESSORES.map(p => `<option>${p.nome}</option>`).join("");
-
-const fEmp = document.getElementById("f-emp");
-fEmp.innerHTML = `<option value="">Todas as empresas</option>` +
-  [...new Set(TURMAS.map(t => t.empresa))].map(e => `<option>${e}</option>`).join("");
-
 // ── Filtros da aba Alertas ──
 const aEmp  = document.getElementById("a-emp");
 const aProf = document.getElementById("a-prof");
@@ -2207,9 +2345,23 @@ document.getElementById("a-limpar").onclick = () => {
   renderAlertas();
 };
 
-fProf.onchange = renderTabela;
-fEmp.onchange  = renderTabela;
-document.getElementById("f-busca").oninput = renderTabela;
+const campoBusca = document.getElementById("f-busca");
+campoBusca.oninput = renderSugestoes;
+campoBusca.onfocus = renderSugestoes;
+campoBusca.onkeydown = e => {
+  if (e.key === "Escape"){ document.getElementById("bu-sugestoes").classList.remove("on"); }
+  if (e.key === "Enter"){
+    const primeiro = document.querySelector(".bu-item");
+    if (primeiro) primeiro.click();
+  }
+  // Backspace no campo vazio remove o último chip
+  if (e.key === "Backspace" && !campoBusca.value && CHIPS.length){
+    CHIPS.pop(); renderChips(); renderTabela();
+  }
+};
+document.addEventListener("click", e => {
+  if (!e.target.closest("#busca-uni")) document.getElementById("bu-sugestoes").classList.remove("on");
+});
 document.getElementById("btn-csv").onclick = baixarCSV;
 document.getElementById("limpar-col").onclick = () => {
   Object.keys(FILTROS_COL).forEach(k => delete FILTROS_COL[k]);
@@ -2225,6 +2377,7 @@ document.querySelectorAll(".tab").forEach(t => {
   };
 });
 
+renderChips();
 renderTabela();
 opcoesTurma();
 renderAlertas();

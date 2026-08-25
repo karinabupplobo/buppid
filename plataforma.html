@@ -1460,6 +1460,12 @@ function abrirPontosAtencao(a, t){
   const corpo = document.getElementById("modal-corpo");
   ligarExp(corpo);
   ligarNomes(corpo, false, t);
+  // O que ele vai ENSINAR abre por padrão — é o conteúdo da aula, não um
+  // detalhe opcional. É a mesma informação que o aluno vê na dash dele.
+  ["obj-", "voc-", "gram-"].forEach(pref => {
+    const el = corpo.querySelector(`.exp[data-exp^="${pref}"]`);
+    if (el) el.classList.add("aberta");
+  });
   document.getElementById("pa-voltar").onclick = fecharModal;
   document.getElementById("pa-ir").onclick = () => setTimeout(fecharModal, 60);
 }

@@ -1371,6 +1371,7 @@
     color: var(--azul-intermediario); margin-bottom: 6px;
   }
   .bc-txt{ font-size: 13.5px; line-height: 1.5; color: var(--texto); }
+  .bloco-conteudo .btn{ margin-top: 10px; }
   .bc-vocab{ display: flex; flex-wrap: wrap; gap: 6px; }
   .tagv{
     font-size: 12.5px; font-weight: 600; color: var(--teal-escuro);
@@ -1638,7 +1639,9 @@ function renderHoje(){
     d.className = "card card-aula";
     d.innerHTML = `
       <div class="aula-topo">
-        <span class="pill hoje">Aula de hoje</span>
+        ${aulaTerminou(a.id)
+          ? '<span class="pill dada">Aula concluída</span>'
+          : '<span class="pill hoje">Aula de hoje</span>'}
         <div class="ident">
           <span class="id-niv">${TURMA.nivel}</span>
           <span class="id-dia">${a.dia || ""}</span>
@@ -1650,8 +1653,11 @@ function renderHoje(){
       ${htmlConteudoAula(a)}
       <div class="bloco-conteudo">
         <div class="bc-rot">Trilha desta aula</div>
-        <div class="bc-txt">A trilha é liberada quando a aula terminar. Ela treina
-          exatamente o que foi visto aqui — por isso não abre antes.</div>
+        ${aulaTerminou(a.id)
+          ? `<div class="bc-txt">Liberada. Faça enquanto a aula está fresca.</div>
+             <a class="btn" href="templatetrilha.html?modo=aluno&aula=${encodeURIComponent(a.titulo)}"
+                target="_blank">Fazer a trilha →</a>`
+          : `<div class="bc-txt">A trilha é liberada quando a aula terminar.</div>`}
       </div>`;
     box.appendChild(d);
   });

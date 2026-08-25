@@ -226,6 +226,9 @@ function estado(store, aulaId){ return (store[aulaId] = store[aulaId] || {}); }
 // Sem isto a dash interna nasceria vazia: presença e engajamento só existem
 // depois que o professor fecha a aula.
 Object.assign(PRESENCA, {
+  // h1 é a aula das 08:00 de hoje: já aconteceu e o professor fechou. É o que
+  // libera a trilha para o aluno. h2 (17:30) ainda não aconteceu.
+  h1: { a1:"p", a2:"p", a3:"p", a4:"p" },
   p1: { a1:"p", a2:"p", a3:"p", a4:"a" },
   p2: { a1:"p", a2:"a", a3:"p", a4:"a" },
   p3: { a1:"p", a2:"p", a3:"p", a4:"p" },
@@ -236,6 +239,7 @@ Object.assign(PRESENCA, {
 });
 
 Object.assign(ENGAJAMENTO, {
+  h1: { a1:3, a2:2, a3:3, a4:2 },
   p1: { a1:3, a2:2, a3:3, a4:1 },
   p2: { a1:2, a2:1, a3:3, a4:1 },
   p3: { a1:3, a2:2, a3:3, a4:2 },
@@ -477,4 +481,12 @@ function trilhaDoAluno(turma, aula, alunoId){
     feita: pend === 0,
     nota: st.length ? Math.round(acertos / st.length * 100) : null
   };
+}
+
+
+// Uma aula "terminou" quando o professor fechou a presença dela. É esse
+// fechamento que libera a trilha para o aluno — não o relógio.
+function aulaTerminou(aulaId){
+  const p = PRESENCA[aulaId];
+  return !!p && Object.keys(p).length > 0;
 }

@@ -746,18 +746,46 @@
   .lc-contato.sem{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
   .lc-contato:hover{ filter: brightness(.95); }
 
-  /* campos do contato no pop-up */
-  .lh-ev.contato .ct-campos{
-    margin-top: 8px; display: flex; flex-direction: column; gap: 5px;
-    font-size: 12.5px; color: var(--text);
+  /* ── Ficha de contato editável ── */
+  .ct-card{
+    background: var(--land-default); border-radius: 11px; padding: 12px 14px; margin-bottom: 10px;
   }
-  .lh-ev.contato .ct-campos > div{ display: flex; gap: 8px; }
-  .lh-ev.contato .ct-campos span{
-    font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--text-muted); min-width: 76px; flex-shrink: 0; padding-top: 2px;
+  .ct-cab{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .ct-n{
+    font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--accent);
   }
-  .lh-ev.contato .ct-campos i{ color: var(--text-muted); font-style: italic; }
-  .lh-ev.alerta-vazio{ background: #fbe0de; }
+  .ct-x{
+    width: 22px; height: 22px; border-radius: 50%; border: none; padding: 0;
+    background: rgba(84,64,47,.12); color: var(--accent); cursor: pointer;
+    font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .ct-x:hover{ background: #fbe0de; color: #a3312a; }
+
+  .ct-linha{ display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .ct-linha:last-child{ margin-bottom: 0; }
+  .ct-linha > span{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-muted); min-width: 58px; flex-shrink: 0;
+  }
+  .ct-linha input{
+    flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-family: inherit; font-size: 13.5px; color: var(--text);
+    background: var(--panel); outline: none;
+  }
+  .ct-linha input:focus{ border-color: var(--accent); }
+  .ct-linha input::placeholder{ color: #b9b4af; }
+
+  .ct-vazio{
+    background: var(--focus-bg); border-radius: 11px; padding: 14px;
+    font-size: 13px; line-height: 1.55; color: var(--text); margin-bottom: 10px;
+  }
+  .ct-add{
+    width: 100%; border: 1.5px dashed var(--accent); background: none;
+    border-radius: 10px; padding: 11px; cursor: pointer; font-family: inherit;
+    font-size: 12.5px; font-weight: 700; color: var(--accent);
+  }
+  .ct-add:hover{ background: var(--focus-bg); }
 
   /* ── Modal de histórico do lead ── */
   #lead-hist-modal{ position: fixed; inset: 0; z-index: 320; background: rgba(40,30,22,.45);
@@ -2625,42 +2653,81 @@ function abrirTemperatura(nome){
   document.getElementById("lead-hist-modal").classList.remove("hidden");
 }
 
-// ── Quem é o contato ──
+// ── Contatos da empresa ──
+// Ficha simples e editável: nome, cargo, área, celular e e-mail. Dá para ter
+// mais de um contato por empresa. Sem rótulos automáticos — quem qualifica o
+// contato é quem escreve, no campo de área ou de cargo.
+let leadContatosAberto = null;
+
 function abrirContatos(nome){
   const e = leadsData.find(x => x.n === nome);
   if (!e) return;
+  leadContatosAberto = e;
+  e.ct = e.ct || [];
+  pintarContatos();
+  document.getElementById("lead-hist-modal").classList.remove("hidden");
+}
+
+function pintarContatos(){
+  const e = leadContatosAberto;
+  if (!e) return;
   const lista = e.ct || [];
 
-  const corpo = lista.length
-    ? lista.map(ct => `
-        <div class="lh-ev contato">
-          <div class="lh-top">
-            <span class="lh-de">${esc(ct.nome)}</span>
-            ${ct.persona ? `<span class="lh-selo">${esc(ct.persona)}</span>` : ""}
-          </div>
-          <div class="lh-txt">${esc(ct.cargo || "cargo não informado")}</div>
-          <div class="ct-campos">
-            <div><span>Telefone</span>${ct.tel ? `<a href="tel:${escAttr(ct.tel)}">${esc(ct.tel)}</a>`
-              : '<i>não mapeado</i>'}</div>
-            <div><span>E-mail</span>${ct.email ? `<a href="mailto:${escAttr(ct.email)}">${esc(ct.email)}</a>`
-              : '<i>não mapeado</i>'}</div>
-            <div><span>Observação</span>${ct.obs ? esc(ct.obs) : '<i>—</i>'}</div>
-            ${ct.fonte ? `<div><span>Fonte</span><a href="${escAttr(ct.fonte)}" target="_blank" rel="noopener">abrir ↗</a></div>` : ""}
-          </div>
-        </div>`).join("")
-    : `<div class="lh-ev alerta-vazio">
-         <div class="lh-txt"><b>Ninguém mapeado ainda.</b><br>
-         Só entram contatos com e-mail verificado — nunca padrão deduzido nem
-         endereço genérico da empresa.</div>
-       </div>`;
+  const campo = (i, k, rot, tipo) => `
+    <label class="ct-linha">
+      <span>${rot}</span>
+      <input type="${tipo || "text"}" data-i="${i}" data-k="${k}"
+             value="${escAttr(lista[i][k] || "")}" placeholder="—">
+    </label>`;
 
   document.getElementById("lead-hist-kicker").textContent =
-    lista.length ? `${lista.length} contato${lista.length>1?"s":""} mapeado${lista.length>1?"s":""}`
-                 : "Sem contato";
+    lista.length ? `${lista.length} contato${lista.length > 1 ? "s" : ""}` : "Sem contato";
   document.getElementById("lead-hist-titulo").textContent = e.n;
-  document.getElementById("lead-hist-corpo").innerHTML =
-    `<div class="lh-bloco">${corpo}</div>`;
-  document.getElementById("lead-hist-modal").classList.remove("hidden");
+
+  document.getElementById("lead-hist-corpo").innerHTML = `
+    ${lista.length ? lista.map((ct, i) => `
+      <div class="ct-card">
+        <div class="ct-cab">
+          <span class="ct-n">Contato ${i + 1}</span>
+          <button type="button" class="ct-x" data-remover="${i}" title="Remover">&times;</button>
+        </div>
+        ${campo(i, "nome",  "Nome")}
+        ${campo(i, "cargo", "Cargo")}
+        ${campo(i, "area",  "Área")}
+        ${campo(i, "cel",   "Cel", "tel")}
+        ${campo(i, "email", "E-mail", "email")}
+      </div>`).join("")
+    : `<div class="ct-vazio">Ninguém mapeado ainda.<br>
+        <b>Só entram contatos com e-mail verificado</b> — nunca padrão deduzido
+        nem endereço genérico da empresa.</div>`}
+    <button type="button" class="ct-add" id="ct-add">+ Adicionar contato</button>`;
+
+  const corpo = document.getElementById("lead-hist-corpo");
+
+  // grava a cada tecla: sem botão de salvar, sem estado intermediário
+  corpo.querySelectorAll("input[data-k]").forEach(inp => {
+    inp.oninput = () => {
+      e.ct[+inp.dataset.i][inp.dataset.k] = inp.value;
+      saveLeadsData();
+      renderLeads();
+    };
+  });
+
+  corpo.querySelectorAll("[data-remover]").forEach(b => {
+    b.onclick = () => {
+      e.ct.splice(+b.dataset.remover, 1);
+      saveLeadsData();
+      pintarContatos();
+      renderLeads();
+    };
+  });
+
+  document.getElementById("ct-add").onclick = () => {
+    e.ct.push({ nome:"", cargo:"", area:"", cel:"", email:"" });
+    saveLeadsData();
+    pintarContatos();
+    renderLeads();
+  };
 }
 
 document.getElementById("leads-list").addEventListener("click", ev => {

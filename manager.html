@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<!--
+  DASH DO RH (manager)
+  ====================
+  Mesma linguagem visual da plataforma do professor e da dash interna, mesmo
+  arquivo de dados (dados-mock.js). O que muda é o ALCANCE e, principalmente,
+  o que fica de fora:
+
+    · só a EMPRESA do gestor logado — nunca outras empresas;
+    · Dados sem as ANOTAÇÕES INTERNAS por aluno. Elas existem no banco e
+      aparecem na dash interna, mas o RH do cliente nunca as vê: são
+      observações da Bupp sobre pessoas identificadas do time dele;
+    · Alertas mostra apenas os AVISOS que a gestão da Bupp escreveu para ele.
+      Os alertas pedagógicos automáticos (trilha zerada, engajamento baixo,
+      recado pendente) são de uso interno e do professor.
+
+  Selo de papel: "manager" (ver regra de idioma em docs/plataforma.md).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bupp — RH</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* COMB 2 — MARROM #54402F + AZUL-BEBÊ #A8D5F2 + branco.
+       Comb 1 (limão + cinza): git checkout comb-1-limao-cinza
+       Comb 3 (cinza + azul):  git checkout comb-3-cinza-azul
+
+       Azul-bebê é acento de PREENCHIMENTO: sobre branco tem 1,56:1, nunca
+       é texto. Texto sobre azul é sempre o marrom (6,3:1).
+       O fundo da página é levemente quente, para acompanhar o marrom. */
+    --teal-escuro: #54402F;         /* cor escura: marrom */
+    --amarelo-neon: #A8D5F2;        /* acento: azul-bebê */
+    --limao-claro: #E4F1FA;         /* azul lavado, para fundos suaves */
+    --bg-dash: #F7F5F2;             /* fundo levemente quente */
+    --azul-intermediario: #8A7767;  /* apoio: marrom claro */
+    --branco: #FFFFFF;
+    --texto: #54402F;
+    --cinza-texto: #8A7F76;
+    --borda: #E7E1DA;
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: rgba(60,110,120,0.45); }
+
+  html, body{
+    margin: 0; padding: 0; min-height: 100%;
+    background: var(--bg-dash);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ===== Topo ===== */
+  /* Faixa do logo em teal — devolve ao logo a aplicação padrão do manual
+     (limão sobre teal escuro), sem perder a sidebar branca. */
+  /* Faixa de topo: largura total, logo ao centro, aplicação padrão do
+     manual — limão sobre teal escuro. */
+  /* O PNG foi recortado nas margens brancas, então a borda esquerda da imagem
+     é a borda esquerda do "b" — alinha com o nome do professor abaixo. */
+  .logo{ display: block; width: 118px; height: auto; flex-shrink: 0; }
+
+  /* Sidebar inteira em marrom: logo, usuário e abas sobre fundo escuro.
+     Voltar ao topo marrom com abas claras:
+     git checkout v-20260821-1415-ANTES-sidebar-toda-marrom */
+  .topo-sidebar{
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+
+  /* Nome do usuário. REGRA DE IDIOMA (21/08): a plataforma inteira é em
+     português — abas, botões, rótulos — para os quatro papéis. As únicas
+     exceções são a saudação "Hi, Nome" e o selo de papel, que ficam em inglês
+     como aceno ao produto. Todo o resto: português.
+
+     Selos por papel:
+       professor      -> teacher
+       aluno          -> student
+       RH do cliente  -> manager
+       equipe Bupp    -> internal                                             */
+  .whoami{
+    font-size: 11.5px; color: rgba(255,255,255,.7); font-weight: 500;
+    line-height: 1.3; text-align: right; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+  }
+  .whoami strong{
+    color: #fff; display: block; font-weight: 700; font-size: 13px;
+    letter-spacing: -0.01em;
+  }
+  .whoami span{
+    display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--teal-escuro);
+    background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
+  }
+
+  /* Link pequeno "N turmas", logo abaixo do selo do usuário */
+  .link-turmas{
+    background: none; border: none; padding: 2px 0 0; cursor: pointer;
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    color: var(--azul-intermediario); white-space: nowrap;
+  }
+  .link-turmas{ color: rgba(255,255,255,.72); }
+  .link-turmas b{ font-weight: 800; color: #fff; }
+  .link-turmas:hover{ color: #fff; text-decoration: underline; }
+
+  /* item de turma no pop-up */
+  .turma-item{
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; background: #fafbf7; border: 1px solid transparent; border-radius: 9px;
+    padding: 11px 12px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: background .13s, border-color .13s;
+  }
+  .turma-item:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .ti-esq{ display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ti-nome{ font-size: 13.5px; font-weight: 700; color: var(--texto); }
+  .ti-meta{ font-size: 11.5px; color: var(--cinza-texto); }
+  .ti-dir{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .ti-grade{ font-size: 11.5px; font-weight: 700; color: var(--azul-intermediario); white-space: nowrap; }
+
+  /* ===== Abas: sobre a sidebar escura ===== */
+  .tabs{
+    display: flex; gap: 6px; overflow-x: auto; padding: 14px 18px 0;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar{ display: none; }
+  .tab{
+    flex-shrink: 0; cursor: pointer; font-family: inherit;
+    background: rgba(255,255,255,.08); border: 1px solid transparent;
+    color: rgba(255,255,255,.78);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 10px 14px; border-radius: 9px;
+    transition: background .14s, color .14s;
+  }
+  .tab:hover{ background: rgba(255,255,255,.16); color: #fff; }
+  .tab.active{
+    background: var(--amarelo-neon); border-color: var(--amarelo-neon);
+    color: var(--teal-escuro);
+    box-shadow: none;
+  }
+
+  /* ===== Conteúdo ===== */
+  main{ padding: 18px 18px 60px; }
+  .pane{ display: none; }
+  .pane.active{ display: block; }
+
+  .card{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 18px;
+    margin-bottom: 14px; color: var(--texto);
+  }
+  .card-kicker{
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--azul-intermediario); margin-bottom: 8px;
+  }
+  .card h2{ margin: 0 0 4px; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+  .card p{ margin: 0; font-size: 13.5px; color: var(--cinza-texto); line-height: 1.5; }
+
+  .btn{
+    display: inline-flex; align-items: center; gap: 7px; justify-content: center;
+    width: 100%; margin-top: 14px; border: none; border-radius: 10px;
+    background: var(--teal-escuro); color: #fff; font-family: inherit;
+    font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer;
+    text-decoration: none; transition: background .15s;
+  }
+  .btn:hover{ background: var(--azul-intermediario); color: #fff; }
+  .btn.lime{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .btn.ghost{
+    background: transparent; color: var(--azul-intermediario);
+    border: 1.5px solid var(--borda); font-weight: 600;
+  }
+
+  .pill{
+    display: inline-block; font-size: 10.5px; font-weight: 800;
+    letter-spacing: .07em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .pill.hoje{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .pill.dada{ background: #e8efe3; color: #3f6b45; }
+
+  .section-title{
+    color: var(--teal-escuro); font-size: 11.5px; font-weight: 800;
+    letter-spacing: 0.13em; text-transform: uppercase; margin: 4px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before{
+    content: ""; width: 14px; height: 3px; border-radius: 2px;
+    background: var(--amarelo-neon); flex-shrink: 0;
+  }
+
+  /* ===== Trilha & performance ===== */
+  .switch{
+    display: flex; gap: 4px; background: var(--limao-claro);
+    border-radius: 10px; padding: 4px; margin-bottom: 14px;
+  }
+  .switch button{
+    flex: 1; border: none; background: transparent; cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 700;
+    color: #5a635f; padding: 9px; border-radius: 7px;
+    transition: background .15s, color .15s;
+  }
+  .switch button.active{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .switch button:hover:not(.active){ color: var(--teal-escuro); }
+
+  .grid-wrap{ overflow-x: auto; background: var(--branco); border: 1px solid var(--borda); border-radius: 14px; padding: 4px; }
+  table{ border-collapse: collapse; width: 100%; font-size: 12.5px; color: var(--texto); }
+  th, td{ padding: 10px 8px; text-align: center; white-space: nowrap; }
+  th{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--azul-intermediario);
+    border-bottom: 1.5px solid var(--borda);
+  }
+  td.aluno-nome, th.aluno-nome{
+    text-align: left; position: sticky; left: 0; background: var(--branco);
+    font-weight: 600; padding-left: 12px;
+  }
+  tbody tr{ border-bottom: 1px solid #f2f4f0; cursor: pointer; }
+  tbody tr:last-child{ border-bottom: none; }
+  tbody tr:hover td{ background: #fafbf7; }
+  tbody tr:hover td.aluno-nome{ background: #fafbf7; }
+
+  .st{ display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; font-size: 11px; font-weight: 800; }
+  .st.ok{ background: #dff0d8; color: #3f6b45; }
+  .st.err{ background: #fbe0de; color: #a3312a; }
+  .st.pend{ background: #eef0ec; color: #9aa39f; }
+  .nota{ font-weight: 800; }
+  .nota.alta{ color: #3f6b45; }
+  .nota.media{ color: #8a6d1f; }
+  .nota.baixa{ color: #a3312a; }
+
+  /* Perfil do aluno */
+  .aluno-lista .card{ display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .aluno-lista .card:hover{ outline: 2px solid var(--amarelo-neon); }
+  .aluno-lista h3{ margin: 0; font-size: 15.5px; font-weight: 700; }
+  .aluno-lista .sub{ font-size: 12px; color: var(--cinza-texto); margin-top: 2px; }
+  .barra{ height: 6px; border-radius: 3px; background: #eef0ec; overflow: hidden; margin-top: 9px; }
+  .barra i{ display: block; height: 100%; background: var(--azul-intermediario); }
+
+  .voltar{
+    background: none; border: none; color: var(--azul-intermediario); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 700; padding: 0 0 12px;
+  }
+  .kv{ display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #f2f4f0; font-size: 13.5px; }
+  .kv:last-child{ border-bottom: none; }
+  .kv span:first-child{ color: var(--cinza-texto); }
+  .kv span:last-child{ font-weight: 700; }
+
+  /* ===== Linhas expansíveis do resumo ===== */
+  .exp{ border-bottom: 1px solid #f2f4f0; }
+  .exp:last-child{ border-bottom: none; }
+  .exp-cab{
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    padding: 11px 0; text-align: left; transition: color .13s;
+  }
+  .exp-rot{ font-size: 13.5px; color: var(--cinza-texto); }
+  .exp-cab:hover .exp-rot{ color: var(--texto); }
+  .exp-val{
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+  }
+  .seta{
+    width: 7px; height: 7px; border-right: 2px solid var(--azul-intermediario);
+    border-bottom: 2px solid var(--azul-intermediario);
+    transform: rotate(45deg) translate(-1px,-1px); transition: transform .18s;
+  }
+  .exp.aberta .seta{ transform: rotate(-135deg) translate(-2px,-2px); }
+  .exp-corpo{ display: none; padding: 2px 0 12px; }
+  .exp.aberta .exp-corpo{ display: block; }
+
+  .mini{
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 8px 10px; background: #fafbf7; border-radius: 8px; margin-bottom: 6px;
+  }
+  .mini:last-child{ margin-bottom: 0; }
+  .mini b{ font-size: 13px; font-weight: 700; color: var(--texto); }
+  .mini span{ font-size: 12px; color: var(--cinza-texto); line-height: 1.45; }
+  .mini.obj{ flex-direction: row; gap: 8px; align-items: flex-start; }
+  .mini.obj b{ color: var(--azul-intermediario); flex-shrink: 0; }
+
+  .mini.linha-acao{ flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
+  .trilha-linha .tl-topo{ display: flex; align-items: center; justify-content: space-between; }
+  .trilha-linha .tl-bolas{ display: flex; gap: 4px; margin: 6px 0 3px; flex-wrap: wrap; }
+  .trilha-linha .tl-sub{ font-size: 11px; }
+
+  .estrelas{ display: flex; gap: 2px; }
+  .estrela{
+    background: none; border: none; cursor: pointer; padding: 2px;
+    font-size: 17px; line-height: 1; color: #d8dcd2; transition: color .12s, transform .12s;
+  }
+  .estrela:hover{ transform: scale(1.15); }
+  .estrela.on{ color: var(--amarelo-neon); text-shadow: 0 0 1px var(--azul-intermediario); }
+
+  /* Aula e pontos de atenção num card só: retângulo horizontal no desktop,
+     vertical no celular. */
+  .par{ margin-bottom: 16px; }
+  .card.unico{ padding: 0; overflow: hidden; margin-bottom: 0; }
+  .lado-aula{ padding: 18px; }
+  .lado-pontos{ padding: 18px; border-top: 1px solid var(--borda); background: #fcfcfa; }
+
+  /* aula do dia / histórico */
+  .aula-topo{
+    display: flex; align-items: center; gap: 9px; margin-bottom: 10px;
+    flex-wrap: wrap; min-width: 0;
+  }
+  .aula-topo .pill{ white-space: nowrap; margin-bottom: 0; flex-shrink: 0; }
+  .aula-topo .ident{ margin-bottom: 0; }
+
+  /* ===== Chip do resumo da turma ===== */
+
+  /* ===== Vocabulário e alertas ===== */
+  .vocs{ display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0 4px; }
+  .tagv{
+    font-size: 12.5px; font-weight: 600; color: var(--teal-escuro);
+    background: var(--limao-claro); padding: 5px 10px; border-radius: 7px;
+  }
+
+  .aluno-alerta{
+    width: 100%; display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+    background: #fafbf7; border: 1px solid transparent; border-radius: 8px;
+    padding: 9px 10px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: border-color .13s, background .13s;
+  }
+  .aluno-alerta:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .aluno-alerta .an{
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; color: var(--texto);
+  }
+  .seta-r{
+    width: 5px; height: 5px; border-right: 2px solid var(--azul-intermediario);
+    border-top: 2px solid var(--azul-intermediario); transform: rotate(45deg);
+  }
+  .ats{ display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag-al{
+    font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px;
+  }
+  .tag-al.vermelho{ background: #fbe0de; color: #a3312a; }
+  .tag-al.ambar{ background: #fbf0d8; color: #8a6d1f; }
+  .tag-al.lavanda{ background: #ece9f0; color: var(--azul-intermediario); }
+
+  /* ===== Pop-up ===== */
+  .modal{
+    position: fixed; inset: 0; z-index: 80; display: none;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(24,16,26,0.5);
+  }
+  .modal.on{ display: flex; }
+  .modal-cx{
+    background: var(--branco); border-radius: 16px; width: 100%; max-width: 560px;
+    max-height: 84vh; display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(24,16,26,0.3);
+  }
+  .modal-topo{
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+    padding: 20px 20px 14px; border-bottom: 1px solid var(--borda);
+  }
+  .modal-kicker{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--azul-intermediario); margin-bottom: 3px;
+  }
+  .modal-topo h3{ margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--texto); }
+  .modal-x{
+    background: none; border: none; cursor: pointer; font-size: 24px; line-height: 1;
+    color: var(--cinza-texto); padding: 0 2px; flex-shrink: 0;
+  }
+  .modal-x:hover{ color: var(--texto); }
+  .modal-corpo{ padding: 16px 20px 22px; overflow-y: auto; }
+  .modal-corpo .bloco{ margin-bottom: 18px; }
+  .modal-corpo .bloco:last-child{ margin-bottom: 0; }
+  .modal-corpo .bt{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--azul-intermediario); margin-bottom: 8px;
+  }
+
+  /* linha do tempo do aluno */
+  .ev{
+    border-left: 3px solid var(--borda); padding: 0 0 14px 13px; position: relative;
+  }
+  .ev:last-child{ padding-bottom: 0; }
+  .ev.pendente{ border-left-color: var(--amarelo-neon); }
+  .ev-topo{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+  .ev-data{ font-size: 11px; font-weight: 800; color: var(--azul-intermediario); letter-spacing: .04em; }
+  .ev-de{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); }
+  .ev-txt{ font-size: 13.5px; color: var(--texto); line-height: 1.5; }
+  .ev.pendente .ev-txt{
+    background: var(--limao-claro); padding: 8px 10px; border-radius: 8px; font-weight: 500;
+  }
+  .selo-pend{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: var(--amarelo-neon); color: var(--teal-escuro);
+    padding: 3px 7px; border-radius: 999px;
+  }
+  /* botão de aluno no resumo da turma */
+  .aluno-link{
+    width: 100%; display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    background: #fafbf7; border: 1px solid transparent; border-radius: 8px;
+    padding: 10px 11px; margin-bottom: 6px; cursor: pointer; font-family: inherit;
+    text-align: left; transition: border-color .13s, background .13s;
+  }
+  .aluno-link:hover{ background: #fff; border-color: var(--amarelo-neon); }
+  .al-nome{
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+  }
+  .al-cargo{ font-size: 12px; color: var(--cinza-texto); }
+  .aluno-link .tag-al{ margin-top: 4px; }
+
+  /* números consolidados da ficha */
+  .nums{
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px;
+  }
+  .num{
+    background: #fafbf7; border-radius: 10px; padding: 11px 10px;
+    display: flex; flex-direction: column; gap: 1px; text-align: center;
+  }
+  .nv{ font-size: 20px; font-weight: 800; color: var(--texto); letter-spacing: -0.02em; }
+  .nv.alta{ color: #3f6b45; } .nv.media{ color: #8a6d1f; } .nv.baixa{ color: #a3312a; }
+  .nr{ font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--azul-intermediario); }
+  .nd{ font-size: 10.5px; color: var(--cinza-texto); }
+  .pres-rot{ font-size: 12px; color: var(--cinza-texto); }
+
+  .voltar-turma{
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding: 0 0 12px;
+  }
+  .voltar-turma:hover{ color: var(--teal-escuro); }
+
+  /* Identificação da aula: Empresa · Nível · Dia · Horário · [+] */
+  .ident{
+    display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
+    margin-bottom: 9px; font-size: 12px; min-width: 0;
+  }
+  .id-emp{
+    font-weight: 800; color: var(--teal-escuro); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .id-turma{
+    font-weight: 600; color: var(--cinza-texto); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .id-niv{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em; flex-shrink: 0;
+    background: var(--limao-claro); color: var(--teal-escuro);
+    padding: 2px 7px; border-radius: 999px;
+  }
+  /* identificação dentro do card de trilha */
+  .ident-tr{ margin: 2px 0 1px; font-size: 11.5px; }
+  .id-dia, .id-hora{
+    font-weight: 700; color: var(--cinza-texto); white-space: nowrap; flex-shrink: 0;
+  }
+  .id-hora{ color: var(--azul-intermediario); }
+  .id-mais{
+    flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; padding: 0;
+    border: 1px solid var(--borda); background: var(--branco);
+    color: var(--teal-escuro); font-family: inherit; font-size: 16px;
+    line-height: 1; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background .13s, border-color .13s;
+  }
+  .id-mais:hover{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); }
+  .painel-aula{
+    font-size: 13.5px; font-weight: 700; color: var(--texto);
+    margin: -4px 0 10px; letter-spacing: -0.01em;
+  }
+
+  /* ===== Trilhas ===== */
+  /* topo do card de trilhas: faixa na cor escura, sangrando até a borda.
+     Como o fundo agora é escuro, o texto vira branco e o acento fica no
+     selo do nível. */
+  .trilha-cab{
+    background: var(--teal-escuro);
+    margin: -18px -18px 6px; padding: 14px 18px;
+    border-radius: 13px 13px 0 0;
+  }
+  .trilha-cab .ident{ margin-bottom: 3px; }
+  .trilha-cab .id-emp{ color: #fff; }
+  .trilha-cab .id-turma{ color: rgba(255,255,255,.72); }
+  .trilha-cab .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .trilha-cab .id-hora{ color: rgba(255,255,255,.8); }
+  .tc-sub{ font-size: 11.5px; color: rgba(255,255,255,.7); font-weight: 700; }
+
+  .trilha-item{ border-bottom: 1px solid #f2f4f0; }
+  .trilha-item:last-child{ border-bottom: none; }
+  .tr-cab-esq{ display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+  .tr-tit{ font-size: 14.5px; font-weight: 700; color: var(--texto); letter-spacing: -0.01em; }
+  .tr-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+  .trilha-item .exp-cab{ padding: 13px 0; }
+
+  .tr-aluno{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+  }
+  .tr-aluno:last-child{ margin-bottom: 0; }
+  .tr-nome{
+    display: flex; align-items: center; gap: 6px; background: none; border: none;
+    cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700;
+    color: var(--texto); padding: 0; margin-bottom: 6px;
+  }
+  .tr-nome:hover{ color: var(--azul-intermediario); }
+  .tr-bolas{ display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tr-num{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 11.5px; font-weight: 700; }
+  .tr-num .ok{ color: #3f6b45; }
+  .tr-num .er{ color: #a3312a; }
+  .tr-num .pe{ color: #9aa39f; }
+  .tr-num .nota{ margin-left: auto; font-size: 13px; }
+
+  /* itens do bloco "Precisa ser tratado" */
+  .item-trat{
+    background: #fafbf7; border-radius: 9px; padding: 10px 11px; margin-bottom: 7px;
+    display: flex; align-items: flex-start; gap: 9px;
+  }
+  .item-trat:last-child{ margin-bottom: 0; }
+  .item-trat .it-txt{ font-size: 13px; color: var(--texto); line-height: 1.45; }
+  .item-trat .tag-al{ flex-shrink: 0; margin-top: 1px; }
+
+  .item-trat.recado{
+    flex-direction: column; gap: 6px;
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 9px 9px 0;
+  }
+  .rec-cab{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rec-de{ font-size: 11px; font-weight: 700; color: var(--cinza-texto); }
+  .item-trat.recado .btn-tratar{ margin-top: 2px; align-self: flex-start; }
+
+  .selo-ok{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: #e8efe3; color: #3f6b45; padding: 3px 7px; border-radius: 999px;
+  }
+  .btn-tratar{
+    margin-top: 8px; background: none; border: 1.5px solid var(--borda);
+    border-radius: 7px; padding: 6px 11px; font-family: inherit; font-size: 11.5px;
+    font-weight: 700; color: var(--azul-intermediario); cursor: pointer;
+    transition: background .13s, border-color .13s;
+  }
+  .btn-tratar:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+
+  .responder textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 70px; outline: none; line-height: 1.45;
+  }
+  .responder textarea:focus{ border-color: var(--azul-intermediario); }
+  .responder .btn{ margin-top: 9px; }
+
+  .mini.destaque{
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 8px 8px 0; padding: 11px 12px;
+  }
+  .mini.destaque span{ color: var(--texto); font-size: 13.5px; font-weight: 500; }
+
+  .mini.alerta-turma{
+    border-left: 3px solid var(--amarelo-neon); border-radius: 0 8px 8px 0;
+    background: var(--limao-claro);
+  }
+  .mini.alerta-turma span{ color: var(--texto); }
+
+  .aviso-visao{
+    font-size: 11.5px; color: var(--cinza-texto); line-height: 1.5;
+    border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 4px;
+  }
+
+  /* ===== Ações da aula: Iniciar / Cancelar ===== */
+  .acoes-aula{ display: flex; gap: 8px; margin-top: 14px; }
+  .acoes-aula .btn{ margin-top: 0; }
+  .acoes-aula .btn:first-child{ flex: 1; }
+  .btn.cancelar{
+    background: transparent; color: #a3312a; border: 1.5px solid #eab5b1;
+    flex-shrink: 0; width: auto; padding: 12px 16px;
+  }
+  .btn.cancelar:hover{ background: #fbe0de; color: #a3312a; }
+
+  .pill.cancelada{ background: #fbe0de; color: #a3312a; }
+
+  .cancel-aviso{
+    background: #fbe0de; border-radius: 10px; padding: 11px 13px; margin-top: 14px;
+  }
+  .cancel-aviso .ct{
+    font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: #a3312a; margin-bottom: 2px;
+  }
+  .cancel-aviso .cm{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  .ctx-aula{
+    font-size: 12px; font-weight: 700; color: var(--azul-intermediario);
+    padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .pa-corpo{ margin-bottom: 18px; }
+  .pa-corpo .card-kicker{ display: none; }
+
+  .motivos{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .mot{
+    border: 1.5px solid var(--borda); background: var(--branco); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--texto);
+    padding: 8px 12px; border-radius: 8px; transition: all .13s;
+  }
+  .mot:hover{ border-color: var(--azul-intermediario); }
+  .mot.on{ background: var(--amarelo-neon); border-color: var(--amarelo-neon); font-weight: 700; }
+
+  .acoes-modal{ display: flex; gap: 8px; }
+  .acoes-modal .btn{ margin-top: 0; }
+
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .bloco-aula.cancelada .ba-hora{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; }
+
+  /* ===== Fechar o dia ===== */
+  .bloco-aula{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  }
+  .bloco-aula.ok{ border-color: #b6d7ac; }
+
+  /* cabeçalho na cor escura, sangrando até a borda — mesmo tratamento das
+     trilhas. Texto branco, e o acento fica no selo do nível. */
+  .ba-cab{
+    background: var(--teal-escuro);
+    margin: -18px -18px 16px; padding: 14px 18px;
+    border-radius: 13px 13px 0 0;
+  }
+  .ba-cab .ident{ margin-bottom: 7px; }
+  .ba-cab .id-emp{ color: #fff; }
+  .ba-cab .id-turma{ color: rgba(255,255,255,.72); }
+  .ba-cab .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .ba-cab .id-dia, .ba-cab .id-hora{ color: rgba(255,255,255,.8); }
+
+  .ba-linha{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ba-aula{
+    font-size: 17px; font-weight: 800; color: #fff;
+    letter-spacing: -0.02em; min-width: 0;
+  }
+  .ba-status{
+    font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: rgba(255,255,255,.75); background: rgba(255,255,255,.14);
+    padding: 5px 10px; border-radius: 999px;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .bloco-aula.ok .ba-status{ background: #dff0d8; color: #3f6b45; }
+
+  /* Uma LINHA por aluno: nome · presença · engajamento · ícone de anotação */
+  .linha-aluno{
+    border-bottom: 1px solid #f2f4f0;
+  }
+  .linha-aluno:last-child{ border-bottom: none; }
+
+  .la-linha{
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 2px;
+  }
+  .la-nome{
+    flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--texto);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .linha-aluno.marcado .la-nome{ font-weight: 700; }
+
+  .toggle{ display: flex; gap: 5px; flex-shrink: 0; }
+  .toggle button{
+    border: 1.5px solid var(--borda); background: var(--branco); border-radius: 7px;
+    padding: 6px 11px; font-family: inherit; font-size: 11.5px; font-weight: 700;
+    cursor: pointer; color: var(--cinza-texto); transition: all .13s; white-space: nowrap;
+  }
+  .toggle button:hover{ border-color: var(--azul-intermediario); }
+  .toggle button.on-p{ background: #dff0d8; border-color: #b6d7ac; color: #3f6b45; }
+  .toggle button.on-a{ background: #fbe0de; border-color: #eab5b1; color: #a3312a; }
+
+  .estrelas{ display: flex; gap: 1px; flex-shrink: 0; }
+  .estrelas.off{ opacity: .3; }
+
+  .ico-nota{
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px; padding: 0;
+    border: 1.5px solid var(--borda); background: var(--branco);
+    color: var(--cinza-texto); cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center; transition: all .13s;
+  }
+  .ico-nota svg{ width: 15px; height: 15px; }
+  .ico-nota:hover{ border-color: var(--azul-intermediario); color: var(--azul-intermediario); }
+  .ico-nota.aberto{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
+  .ico-nota.tem{ color: var(--teal-escuro); border-color: var(--amarelo-neon); }
+  .ico-nota.tem::after{
+    content: ""; position: absolute; top: -3px; right: -3px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amarelo-neon); border: 1.5px solid var(--branco);
+  }
+
+  .nota-box{ display: none; padding: 0 2px 12px; }
+  .nota-box.open{ display: block; }
+  .nota-box textarea{
+    width: 100%; border: 1.5px solid var(--borda); border-radius: 9px;
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    resize: vertical; min-height: 66px; outline: none; line-height: 1.45;
+  }
+  .nota-box textarea:focus{ border-color: var(--azul-intermediario); }
+  .nota-box .hint{ font-size: 10.5px; color: #9aa39f; margin-top: 5px; font-weight: 600; }
+
+  @media (max-width: 620px){
+    .la-linha{ flex-wrap: wrap; gap: 9px; padding: 12px 2px; }
+    .la-nome{ flex: 1 0 100%; }
+    .toggle{ flex: 1; }
+    .toggle button{ flex: 1; }
+  }
+
+  /* cancelada */
+  .bloco-aula.cancelada{ border-color: #eab5b1; background: #fffafa; }
+  .bloco-aula.cancelada .ba-status{ background: #fbe0de; color: #a3312a; }
+  .ba-cancel{ font-size: 13px; color: #6d2620; line-height: 1.45; padding-top: 2px; }
+
+  /* ===== Histórico ===== */
+  .hist-item{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-left: 4px solid var(--amarelo-neon);
+    border-radius: 0 12px 12px 0; padding: 15px 16px; margin-bottom: 10px;
+  }
+  .hist-item .data{ font-size: 11px; font-weight: 700; color: var(--azul-intermediario); letter-spacing: .05em; }
+  .hist-item .titulo{ font-size: 15px; font-weight: 700; margin: 3px 0 5px; color: var(--texto); }
+  .hist-item .resumo{ font-size: 12.5px; color: var(--cinza-texto); line-height: 1.45; }
+  .hist-tags{ display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+  .htag{ font-size: 10.5px; font-weight: 700; background: #eef0ec; color: var(--cinza-texto); padding: 4px 8px; border-radius: 6px; }
+
+  /* ===== Desktop: sidebar fixa + conteúdo largo ===== */
+  @media (min-width: 900px){
+    body{ display: grid; grid-template-columns: 282px 1fr; align-items: start; }
+
+    /* Sidebar ocupa o lado inteiro, do topo ao rodapé */
+    .sidebar{
+      grid-column: 1;
+      background: var(--teal-escuro);
+      border-right: none;
+      margin: 0; border-radius: 0;
+      padding: 26px 20px 24px;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .tabs{
+      flex-direction: column; gap: 5px; padding: 0; overflow: visible;
+      border-top: none; padding-top: 4px;
+    }
+    .tab{
+      width: 100%; text-align: left; padding: 12px 14px;
+      letter-spacing: .04em; font-size: 12.5px;
+    }
+
+    main{
+      grid-column: 2;
+      padding: 30px 34px 60px; max-width: 1180px; width: 100%;
+    }
+
+    .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
+    .cols > .card{ margin-bottom: 0; }
+
+    /* retângulo horizontal: aula à esquerda, pontos de atenção à direita */
+    .par{ margin-bottom: 18px; }
+    .card.unico{
+      display: grid; grid-template-columns: 1.3fr 1fr; align-items: stretch;
+    }
+    .lado-aula{ padding: 22px; display: flex; flex-direction: column; }
+    .lado-aula .btn{ margin-top: auto; }
+    .lado-pontos{
+      padding: 22px; border-top: none; border-left: 1px solid var(--borda);
+    }
+
+    .aluno-lista{ display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    .aluno-lista .card{ margin-bottom: 0; }
+
+
+
+    .switch{ max-width: 380px; }
+    table{ font-size: 13.5px; }
+    th, td{ padding: 13px 12px; }
+
+  }
+
+  @media (min-width: 1280px){
+    main{ padding: 30px 44px 70px 26px; }
+  }
+
+  /* Mobile: mantém empilhado */
+  @media (max-width: 899px){
+    .sidebar{
+      background: var(--teal-escuro); border-bottom: none;
+      border-radius: 0; margin: 0; padding: 18px 18px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .topo-sidebar{ padding-bottom: 14px; }
+    .logo{ width: 112px; }
+    main{ padding-top: 18px; }
+  }
+</style>
+<style>
+  /* ═══════════ Específico da dash do RH ═══════════ */
+
+  /* Avisos da Bupp */
+  .aviso-card{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; padding: 0 18px 18px; margin-bottom: 12px; overflow: hidden;
+  }
+  .aviso-cab{
+    background: var(--teal-escuro); margin: 0 -18px 14px; padding: 13px 18px;
+    display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  }
+  .av-tipo{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .av-tipo.info{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .av-tipo.atencao{ background: #f4c98a; color: #5c3d10; }
+  .av-tipo.risco{ background: #e8877c; color: #4a1410; }
+  .av-de{ font-size: 11.5px; color: rgba(255,255,255,.72); font-weight: 600; }
+  .av-data{ font-size: 11.5px; color: rgba(255,255,255,.9); font-weight: 800; }
+  .av-novo{
+    margin-left: auto; font-size: 9.5px; font-weight: 800; letter-spacing: .07em;
+    text-transform: uppercase; background: #fff; color: var(--teal-escuro);
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .aviso-card h2{ margin: 0 0 6px; font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+  .aviso-card p{ margin: 0; font-size: 13.5px; color: var(--texto); line-height: 1.55; }
+  .aviso-card.lido{ opacity: .72; }
+
+  /* Documentos */
+  .doc-tipo{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px; background: #f2f0ee; color: var(--cinza-texto);
+  }
+  .doc-tipo.contrato{ background: var(--limao-claro); color: var(--teal-escuro); }
+  .doc-tipo.aditivo{ background: #eae4f0; color: #57407a; }
+  .doc-tipo.nf{ background: #e8efe3; color: #3f6b45; }
+  .doc-status{
+    font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .doc-status.vigente{ background: #dff0d8; color: #3f6b45; }
+  .doc-status.pago{ background: #dff0d8; color: #3f6b45; }
+  .doc-status\.em{ }
+  .doc-status.em-aberto{ background: #fbf2d8; color: #8a6d1f; }
+  .doc-status.vencido{ background: #fbe0de; color: #a3312a; }
+  .doc-status.encerrado{ background: #f0eeec; color: #8d8781; }
+  .doc-valor{ font-weight: 800; font-variant-numeric: tabular-nums; }
+  .doc-cards{ display: none; }
+  .doc-card{
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 14px;
+    padding: 0 16px 16px; margin-bottom: 10px; overflow: hidden;
+  }
+  .doc-card .dc-cab{
+    background: var(--teal-escuro); margin: 0 -16px 12px; padding: 13px 16px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .doc-card h3{ margin: 0 0 3px; font-size: 15.5px; font-weight: 800; }
+  .doc-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+
+  .btn-novo-doc{
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 1px dashed var(--azul-intermediario); background: var(--branco);
+    border-radius: 9px; padding: 9px 14px; cursor: pointer; font-family: inherit;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
+  }
+  .btn-novo-doc:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); border-style: solid; }
+
+  /* formulário dentro do pop-up */
+  .form-linha{ margin-bottom: 12px; }
+  .form-linha label{
+    display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--azul-intermediario); margin-bottom: 5px;
+  }
+  .form-linha input, .form-linha select, .form-linha textarea{
+    width: 100%; border: 1px solid var(--borda); border-radius: 9px;
+    padding: 9px 11px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    outline: none; background: var(--branco);
+  }
+  .form-linha input:focus, .form-linha select:focus, .form-linha textarea:focus{
+    border-color: var(--teal-escuro);
+  }
+  .form-linha textarea{ resize: vertical; min-height: 84px; line-height: 1.45; }
+  .form-duplo{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  @media (max-width: 760px){
+    .doc-wrap .ra-wrap{ display: none; }
+    .doc-cards{ display: block; }
+  }
+</style>
+
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="topo-sidebar">
+    <img class="logo" src="assets/logo-bupp-marrom-azul-claro.png" alt="bupp idiomas">
+    <div class="whoami">
+      <strong id="rh-nome"></strong>
+      <span>manager</span>
+      <button class="link-turmas" id="btn-turmas-rh"><b id="bt-turmas-n"></b> turmas ›</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-pane="dados">Dados</button>
+    <button class="tab" data-pane="alertas">Alertas</button>
+    <button class="tab" data-pane="docs">Docs</button>
+  </div>
+</aside>
+
+<div class="modal" id="modal">
+  <div class="modal-cx" role="dialog" aria-modal="true">
+    <div class="modal-topo">
+      <div>
+        <div class="modal-kicker" id="modal-kicker"></div>
+        <h3 id="modal-titulo"></h3>
+      </div>
+      <button class="modal-x" id="modal-x" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="modal-corpo" id="modal-corpo"></div>
+  </div>
+</div>
+
+<main>
+  <section class="pane active" id="pane-dados">
+    <div class="kpis" id="kpis"></div>
+    <div class="resumo-medias" id="resumo-medias"></div>
+    <div class="rt-titulo" id="titulo-geral">Geral</div>
+    <div class="planilha-wrap">
+      <table class="planilha" id="tabela"></table>
+    </div>
+  </section>
+
+  <section class="pane" id="pane-alertas">
+    <div class="rt-titulo" id="titulo-avisos">Avisos da Bupp</div>
+    <div id="lista-avisos"></div>
+  </section>
+
+  <section class="pane" id="pane-docs">
+    <div class="barra-planilha">
+      <button class="btn-novo-doc" id="btn-novo-doc"><span class="mais">+</span> Novo documento</button>
+      <span class="cont-linhas" id="cont-docs"></span>
+      <button class="btn-csv" id="btn-csv-docs">Exportar CSV</button>
+    </div>
+    <div class="rt-titulo" id="titulo-docs">Documentos</div>
+    <div class="doc-wrap" id="doc-wrap"></div>
+  </section>
+</main>
+
+<script src="dados-mock.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════
+//  QUEM ESTÁ LOGADO
+//  Numa versão real isto vem da sessão. Aqui, o primeiro usuário com papel de
+//  gestor — a empresa dele define TUDO o que esta dash mostra.
+// ══════════════════════════════════════════════════════════
+const GESTOR = USUARIOS.find(u => u.papel === "gestor") || USUARIOS[0];
+const EMPRESA = GESTOR.empresa;
+const MINHAS_TURMAS = TURMAS.filter(t => t.empresa === EMPRESA);
+
+document.getElementById("rh-nome").textContent = "Hi, " + GESTOR.nome.split(" ")[0];
+document.getElementById("bt-turmas-n").textContent = MINHAS_TURMAS.length;
+
+function partesIdent(t){
+  const jaTem = t.nome.toLowerCase().startsWith(t.empresa.toLowerCase());
+  const resto = jaTem ? t.nome.slice(t.empresa.length).replace(/^\s*[—\-·]\s*/, "") : t.nome;
+  return { empresa: t.empresa, turma: resto, nivel: t.nivel };
+}
+function classeNota(n){
+  return n === null ? "" : n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
+}
+function estrelasRO(n){
+  if (!n) return '<span class="sem">–</span>';
+  return `<span class="estrelas-ro">${"★".repeat(n)}<b>${"☆".repeat(3-n)}</b></span>`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  LINHAS — uma por aluno por aula dada, SEM a anotação interna
+// ══════════════════════════════════════════════════════════
+function montarLinhas(){
+  const linhas = [];
+  MINHAS_TURMAS.forEach(t => {
+    const p = partesIdent(t);
+    (t.historico || []).forEach(h => {
+      t.alunos.forEach(a => {
+        const st   = (h.progresso && h.progresso[a.id]) || [];
+        const acer = st.filter(x => x === "ok").length;
+        const erro = st.filter(x => x === "err").length;
+        const nota = st.length ? Math.round(acer / st.length * 100) : null;
+        linhas.push({
+          data: h.data, dia: h.dia || "", turma: p.turma, nivel: t.nivel,
+          aula: h.titulo, aluno: a.nome, cargo: a.cargo,
+          presenca: (PRESENCA[h.id] || {})[a.id] || "",
+          eng: (ENGAJAMENTO[h.id] || {})[a.id] || 0,
+          acertos: acer, erros: erro, nota,
+          alunoId: a.id, turmaId: t.id, aulaId: h.id
+        });
+      });
+    });
+  });
+  const chave = d => { const [dd,mm] = (d||"").split("/"); return (mm||"") + (dd||""); };
+  return linhas.sort((x,y) =>
+    chave(y.data).localeCompare(chave(x.data)) || x.aluno.localeCompare(y.aluno));
+}
+const LINHAS = montarLinhas();
+
+const COLUNAS = ["Data","Turma","Nível","Aula","Aluno","Presença","Engaj.","Trilha","Certos","Erros"];
+
+function renderTabela(){
+  const tb = document.getElementById("tabela");
+  tb.innerHTML =
+    `<thead><tr>${COLUNAS.map(c => `<th>${c}</th>`).join("")}</tr></thead>` +
+    `<tbody>${LINHAS.map(l => `
+      <tr class="${l.presenca === "a" || (l.nota !== null && l.nota < 60) ? "alerta" : ""}">
+        <td>${l.dia} ${l.data}</td>
+        <td>${l.turma}</td>
+        <td>${l.nivel}</td>
+        <td>${l.aula}</td>
+        <td class="col-aluno">${l.aluno}</td>
+        <td>${l.presenca === "p" ? '<span class="tag-p">presente</span>'
+             : l.presenca === "a" ? '<span class="tag-f">faltou</span>'
+             : '<span class="tag-x">—</span>'}</td>
+        <td>${estrelasRO(l.eng)}</td>
+        <td class="col-nota nota ${classeNota(l.nota)}">${l.nota === null ? "–" : l.nota + "%"}</td>
+        <td>${l.acertos}</td>
+        <td>${l.erros}</td>
+      </tr>`).join("")}</tbody>`;
+
+  document.getElementById("titulo-geral").textContent = `Geral · ${LINHAS.length}`;
+  renderKPIs();
+  renderMedias();
+}
+
+function renderKPIs(){
+  const comPres = LINHAS.filter(l => l.presenca);
+  const pctPres = comPres.length
+    ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+  const comEng = LINHAS.filter(l => l.eng);
+  const medEng = comEng.length ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
+  const comNota = LINHAS.filter(l => l.nota !== null);
+  const medNota = comNota.length ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+  const alunos = new Set(LINHAS.map(l => l.turmaId + l.alunoId)).size;
+
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi"><div class="v">${alunos}</div><div class="r">Alunos</div>
+      <div class="d">em ${MINHAS_TURMAS.length} turma${MINHAS_TURMAS.length!==1?"s":""}</div></div>
+    <div class="kpi"><div class="v">${pctPres===null?"–":pctPres+"%"}</div><div class="r">Presença</div>
+      <div class="d">${comPres.length} registros</div></div>
+    <div class="kpi"><div class="v">${medEng===null?"–":medEng+"★"}</div><div class="r">Engajamento</div>
+      <div class="d">média das aulas</div></div>
+    <div class="kpi"><div class="v">${medNota===null?"–":medNota+"%"}</div><div class="r">Trilhas</div>
+      <div class="d">média de acerto</div></div>`;
+}
+
+// ── Média por turma ou por aluno ──
+const EIXOS = {
+  turma: { rot:"Turma", chave: l => l.turmaId,
+    titulo: ls => ls[0].turma, sub: ls => {
+      const al = new Set(ls.map(l => l.alunoId)).size;
+      const au = new Set(ls.map(l => l.aulaId)).size;
+      return `${ls[0].nivel} · ${al} aluno${al!==1?"s":""} · ${au} aula${au!==1?"s":""}`;
+    } },
+  aluno: { rot:"Aluno", chave: l => l.turmaId + "|" + l.alunoId,
+    titulo: ls => ls[0].aluno, sub: ls => `${ls[0].cargo} · ${ls[0].turma} · ${ls[0].nivel}` }
+};
+let eixoAtual = "turma";
+
+function renderMedias(){
+  const box = document.getElementById("resumo-medias");
+  const e = EIXOS[eixoAtual];
+  const mapa = new Map();
+  LINHAS.forEach(l => {
+    const k = e.chave(l);
+    if (!mapa.has(k)) mapa.set(k, []);
+    mapa.get(k).push(l);
+  });
+
+  const grupos = [...mapa.values()].map(ls => {
+    const comPres = ls.filter(l => l.presenca);
+    const pctPres = comPres.length
+      ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+    const faltas = ls.filter(l => l.presenca === "a").length;
+    const comEng = ls.filter(l => l.eng);
+    const medEng = comEng.length ? comEng.reduce((n,l) => n + l.eng, 0) / comEng.length : null;
+    const comNota = ls.filter(l => l.nota !== null);
+    const medNota = comNota.length ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+    return { titulo: e.titulo(ls), sub: e.sub(ls), pctPres, faltas, medEng, medNota,
+             acertos: ls.reduce((n,l) => n + l.acertos, 0), erros: ls.reduce((n,l) => n + l.erros, 0) };
+  }).sort((a,b) => (a.medNota ?? 999) - (b.medNota ?? 999));
+
+  const cel = x => ({
+    pres: `<span class="nota ${classeNota(x.pctPres)}">${x.pctPres===null?"–":x.pctPres+"%"}</span>${
+            x.faltas ? `<span class="rt-falta">${x.faltas}</span>` : ""}`,
+    eng:  x.medEng === null ? '<span class="sem">–</span>'
+          : `<span class="rt-eng ${x.medEng <= 1.5 ? "baixo" : ""}">${x.medEng.toFixed(1)}★</span>`,
+    nota: `<span class="nota ${classeNota(x.medNota)}">${x.medNota===null?"–":x.medNota+"%"}</span>`
+  });
+
+  box.innerHTML = `
+    <div class="rt-titulo">
+      Média · ${grupos.length}
+      <select class="md-eixo" id="md-eixo">
+        ${Object.entries(EIXOS).map(([k,v]) =>
+          `<option value="${k}" ${k===eixoAtual?"selected":""}>por ${v.rot.toLowerCase()}</option>`).join("")}
+      </select>
+      <span class="rt-nav md-nav">
+        <button class="rt-seta" data-ir="-1">&lsaquo;</button>
+        <span class="rt-pos" id="md-pos"></span>
+        <button class="rt-seta" data-ir="1">&rsaquo;</button>
+      </span>
+    </div>
+    <div class="ra-wrap">
+      <table class="ra-tabela">
+        <thead><tr><th>${e.rot}</th><th>Presença</th><th>Engaj.</th><th>Trilhas</th><th>Certos</th><th>Erros</th></tr></thead>
+        <tbody>${grupos.map(x => { const c = cel(x); return `
+          <tr><td><span class="md-titulo">${x.titulo}</span><span class="ra-sub">${x.sub}</span></td>
+            <td>${c.pres}</td><td>${c.eng}</td><td>${c.nota}</td>
+            <td>${x.acertos}</td><td>${x.erros}</td></tr>`; }).join("")}</tbody>
+      </table>
+    </div>
+    <div class="rt-viewport md-viewport">
+      <div class="rt-trilho" id="md-trilho">
+        ${grupos.map(x => { const c = cel(x); return `
+          <article class="rt-card">
+            <header><span class="md-titulo">${x.titulo}</span><span class="rt-sub">${x.sub}</span></header>
+            <div class="rt-linha"><span class="rt-rot">Presença</span><span>${c.pres}</span></div>
+            <div class="rt-linha"><span class="rt-rot">Engajamento</span><span>${c.eng}</span></div>
+            <div class="rt-linha"><span class="rt-rot">Trilhas</span><span>${c.nota}</span></div>
+            <div class="rt-linha"><span class="rt-rot">Certos / erros</span><span><b>${x.acertos}</b> / ${x.erros}</span></div>
+          </article>`; }).join("")}
+      </div>
+    </div>`;
+
+  document.getElementById("md-eixo").onchange = ev => { eixoAtual = ev.target.value; renderMedias(); };
+
+  const trilho = box.querySelector("#md-trilho");
+  const vp = box.querySelector(".md-viewport");
+  let pag = 0;
+  const paginas = grupos.length;
+  function irPara(n){
+    pag = Math.max(0, Math.min(n, paginas - 1));
+    trilho.style.transform = `translateX(-${pag * (vp.clientWidth + 12)}px)`;
+    box.querySelector("#md-pos").textContent = `${pag + 1}/${paginas}`;
+    box.querySelectorAll(".md-nav .rt-seta").forEach(b => {
+      const dir = +b.dataset.ir;
+      b.disabled = (dir < 0 && pag === 0) || (dir > 0 && pag === paginas - 1);
+    });
+  }
+  box.querySelectorAll(".md-nav .rt-seta").forEach(b => b.onclick = () => irPara(pag + (+b.dataset.ir)));
+  window.addEventListener("resize", () => irPara(pag));
+  irPara(0);
+}
+
+// ══════════════════════════════════════════════════════════
+//  AVISOS DA BUPP — o único conteúdo da aba Alertas
+// ══════════════════════════════════════════════════════════
+const ROT_AVISO = { info:"Informativo", atencao:"Atenção", risco:"Risco" };
+
+function renderAvisos(){
+  const box = document.getElementById("lista-avisos");
+  const meus = AVISOS_RH.filter(a => a.empresa === EMPRESA);
+  const novos = meus.filter(a => !a.lido).length;
+
+  document.getElementById("titulo-avisos").textContent =
+    `Avisos da Bupp · ${meus.length}${novos ? ` · ${novos} não lido${novos>1?"s":""}` : ""}`;
+
+  if (!meus.length){
+    box.innerHTML = `<div class="card"><p>Nenhum aviso da Bupp por enquanto.</p></div>`;
+    return;
+  }
+
+  box.innerHTML = meus.map(a => `
+    <article class="aviso-card ${a.lido ? "lido" : ""}" data-aviso="${a.id}">
+      <div class="aviso-cab">
+        <span class="av-tipo ${a.tipo}">${ROT_AVISO[a.tipo] || a.tipo}</span>
+        <span class="av-data">${a.data}</span>
+        <span class="av-de">${a.autor} · Bupp Idiomas</span>
+        ${a.lido ? "" : '<span class="av-novo">novo</span>'}
+      </div>
+      <h2>${a.assunto}</h2>
+      <p>${a.texto}</p>
+      ${a.lido ? "" : `<button class="btn-tratar" data-lido="${a.id}">Marcar como lido</button>`}
+    </article>`).join("");
+
+  box.querySelectorAll("[data-lido]").forEach(b => {
+    b.onclick = () => {
+      const a = AVISOS_RH.find(x => x.id === b.dataset.lido);
+      if (a){ a.lido = true; renderAvisos(); }
+    };
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  DOCUMENTOS — contratos, aditivos e notas fiscais
+// ══════════════════════════════════════════════════════════
+function rotTipoDoc(k){ return (TIPOS_DOC.find(t => t.k === k) || {}).rot || k; }
+function classeStatus(s){ return s.replace(/\s+/g, "-"); }
+
+function renderDocs(){
+  const box = document.getElementById("doc-wrap");
+  const meus = DOCS.filter(d => d.empresa === EMPRESA);
+
+  document.getElementById("titulo-docs").textContent = `Documentos · ${meus.length}`;
+  document.getElementById("cont-docs").textContent =
+    `${meus.length} documento${meus.length!==1?"s":""}`;
+
+  box.innerHTML = `
+    <div class="ra-wrap">
+      <table class="ra-tabela">
+        <thead><tr>
+          <th>Tipo</th><th>Documento</th><th>Número</th><th>Emissão</th>
+          <th>Vencimento</th><th>Valor</th><th>Status</th><th>Arquivo</th>
+        </tr></thead>
+        <tbody>
+          ${meus.map(d => `
+            <tr>
+              <td><span class="doc-tipo ${d.tipo}">${rotTipoDoc(d.tipo)}</span></td>
+              <td><b>${d.titulo}</b>${d.obs ? `<span class="ra-sub">${d.obs}</span>` : ""}</td>
+              <td>${d.numero || "—"}</td>
+              <td>${d.emissao || "—"}</td>
+              <td>${d.vencimento || "—"}</td>
+              <td class="doc-valor">${d.valor || "—"}</td>
+              <td><span class="doc-status ${classeStatus(d.status)}">${d.status}</span></td>
+              <td>${d.url ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">abrir ↗</a>`
+                          : '<span class="sem">—</span>'}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-cards">
+      ${meus.map(d => `
+        <article class="doc-card">
+          <div class="dc-cab">
+            <span class="doc-tipo ${d.tipo}">${rotTipoDoc(d.tipo)}</span>
+            <span class="doc-status ${classeStatus(d.status)}">${d.status}</span>
+          </div>
+          <h3>${d.titulo}</h3>
+          <div class="doc-sub">${d.numero || "—"}</div>
+          <div class="rt-linha"><span class="rt-rot">Emissão</span><span>${d.emissao || "—"}</span></div>
+          <div class="rt-linha"><span class="rt-rot">Vencimento</span><span>${d.vencimento || "—"}</span></div>
+          <div class="rt-linha"><span class="rt-rot">Valor</span><span class="doc-valor">${d.valor || "—"}</span></div>
+          ${d.url ? `<div class="rt-linha"><span class="rt-rot">Arquivo</span>
+            <a class="u-link" href="${d.url}" target="_blank" rel="noopener">abrir ↗</a></div>` : ""}
+        </article>`).join("")}
+    </div>`;
+}
+
+function abrirModal(kicker, titulo, html){
+  document.getElementById("modal-kicker").textContent = kicker;
+  document.getElementById("modal-titulo").textContent = titulo;
+  document.getElementById("modal-corpo").innerHTML = html;
+  document.getElementById("modal").classList.add("on");
+}
+function fecharModal(){ document.getElementById("modal").classList.remove("on"); }
+document.getElementById("modal-x").onclick = fecharModal;
+document.getElementById("modal").onclick = e => { if (e.target.id === "modal") fecharModal(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
+
+document.getElementById("btn-novo-doc").onclick = () => {
+  abrirModal("Documentos", "Novo documento", `
+    <div class="form-linha">
+      <label for="nd-tipo">Tipo</label>
+      <select id="nd-tipo">${TIPOS_DOC.map(t => `<option value="${t.k}">${t.rot}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label for="nd-titulo">Título</label>
+      <input id="nd-titulo" placeholder="Ex.: NF-e outubro/2026">
+    </div>
+    <div class="form-duplo">
+      <div class="form-linha"><label for="nd-numero">Número</label><input id="nd-numero" placeholder="NF 1090"></div>
+      <div class="form-linha"><label for="nd-valor">Valor</label><input id="nd-valor" placeholder="R$ 14.000,00"></div>
+    </div>
+    <div class="form-duplo">
+      <div class="form-linha"><label for="nd-emissao">Emissão</label><input id="nd-emissao" placeholder="05/10"></div>
+      <div class="form-linha"><label for="nd-venc">Vencimento</label><input id="nd-venc" placeholder="15/10"></div>
+    </div>
+    <div class="form-linha">
+      <label for="nd-status">Status</label>
+      <select id="nd-status">${STATUS_DOC.map(s => `<option>${s}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label for="nd-url">Link do arquivo</label>
+      <input id="nd-url" placeholder="https://…">
+    </div>
+    <div class="form-linha">
+      <label for="nd-obs">Observação</label>
+      <textarea id="nd-obs" placeholder="Prazo, condição especial, o que for útil lembrar…"></textarea>
+    </div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="nd-cancelar">Cancelar</button>
+      <button class="btn lime" id="nd-salvar">Adicionar</button>
+    </div>
+  `);
+  document.getElementById("nd-cancelar").onclick = fecharModal;
+  document.getElementById("nd-salvar").onclick = () => {
+    const v = id => (document.getElementById(id).value || "").trim();
+    if (!v("nd-titulo")){ document.getElementById("nd-titulo").focus(); return; }
+    DOCS.push({
+      id: "d" + Date.now(), empresa: EMPRESA,
+      tipo: v("nd-tipo"), titulo: v("nd-titulo"), numero: v("nd-numero"),
+      emissao: v("nd-emissao"), vencimento: v("nd-venc"), valor: v("nd-valor"),
+      status: v("nd-status"), url: v("nd-url"), obs: v("nd-obs")
+    });
+    fecharModal();
+    renderDocs();
+  };
+};
+
+document.getElementById("btn-csv-docs").onclick = () => {
+  const esc = v => `"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  const cols = ["Tipo","Documento","Número","Emissão","Vencimento","Valor","Status","Arquivo","Observação"];
+  const linhas = [cols.map(esc).join(";")].concat(
+    DOCS.filter(d => d.empresa === EMPRESA).map(d =>
+      [rotTipoDoc(d.tipo), d.titulo, d.numero, d.emissao, d.vencimento,
+       d.valor, d.status, d.url, d.obs].map(esc).join(";")));
+  const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "bupp-documentos.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// ── Pop-up de turmas ──
+document.getElementById("btn-turmas-rh").onclick = () => {
+  const corpo = MINHAS_TURMAS.map(t => {
+    const p = partesIdent(t);
+    const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+    return `
+      <div class="bloco">
+        <div class="bt">${p.turma} · ${t.nivel}</div>
+        <div class="mini"><b>${grade || "sem aula hoje"}</b><span>${t.modulo}</span></div>
+        <div class="mini destaque"><span>${t.objetivoTurma}</span></div>
+        ${t.alunos.map(a => `<div class="mini"><b>${a.nome}</b><span>${a.cargo}</span></div>`).join("")}
+      </div>`;
+  }).join("");
+  abrirModal(EMPRESA, `${MINHAS_TURMAS.length} turma${MINHAS_TURMAS.length!==1?"s":""}`, corpo);
+};
+
+// ── Navegação ──
+document.querySelectorAll(".tab").forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
+    document.querySelectorAll(".pane").forEach(p =>
+      p.classList.toggle("active", p.id === "pane-" + t.dataset.pane));
+    window.scrollTo(0, 0);
+  };
+});
+
+renderTabela();
+renderAvisos();
+renderDocs();
+</script>
+</body>
+</html>

@@ -1,5 +1,17 @@
 # NEXT STEPS
 
+- [ ] **ENVIO DE E-MAILS — lembrar de criar.** Hoje nada sai da plataforma por
+      e-mail: o RH só vê o aviso se abrir a dash, e o professor só vê o recado
+      da gestão se entrar na ficha do aluno. Falta construir:
+      · relatório periódico por e-mail para o RH (mensal ou bimestral, com
+        presença, engajamento e desempenho por turma);
+      · notificação ao RH quando a Bupp envia um aviso novo;
+      · notificação ao professor quando há recado da gestão ou do aluno;
+      · lembrete de vencimento de nota fiscal e de fim de contrato;
+      · resumo diário ou semanal para os responsáveis internos.
+      Caminho provável: Edge Function do Supabase + serviço de envio
+      (Resend, Postmark ou similar). Depende de a plataforma sair do mock.
+
 - [ ] **SEGURANÇA — voltar a senha antes dos dados reais.** A dash interna
       (`interna.html`) está pública no GitHub Pages sem login, e desde 21/08 o
       `index.html` em modo `?embed=1` também entra sem senha. Os dados da

@@ -877,6 +877,50 @@
     .u-card .rt-linha:first-of-type{ margin-top: 8px; }
   }
 
+  /* ── Avisos enviados ao RH ── */
+  .btn-novo-doc{
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 1px dashed var(--azul-intermediario); background: var(--branco);
+    border-radius: 9px; padding: 9px 14px; cursor: pointer; font-family: inherit;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
+  }
+  .btn-novo-doc:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); border-style: solid; }
+  .btn-novo-doc .mais{ font-size: 15px; line-height: 1; font-weight: 800; }
+
+  .aviso-enviado{ padding: 0 18px 18px; overflow: hidden; }
+  .aviso-enviado .ident{
+    background: var(--teal-escuro); margin: 0 -18px 14px; padding: 14px 18px; flex-wrap: wrap;
+  }
+  .aviso-enviado .id-emp{ color: #fff; }
+  .aviso-enviado .id-turma{ color: rgba(255,255,255,.72); }
+  .aviso-enviado .id-hora{ color: rgba(255,255,255,.8); }
+  .id-niv.av-info{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .id-niv.av-atencao{ background: #f4c98a; color: #5c3d10; }
+  .id-niv.av-risco{ background: #e8877c; color: #4a1410; }
+  .av-status{
+    margin-top: 10px; font-size: 11px; font-weight: 800; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--cinza-texto);
+  }
+  .aviso-privacidade{
+    background: var(--limao-claro); border-left: 3px solid var(--amarelo-neon);
+    border-radius: 0 9px 9px 0; padding: 10px 12px; margin-bottom: 14px;
+    font-size: 12px; line-height: 1.5; color: var(--texto);
+  }
+  .form-linha{ margin-bottom: 12px; }
+  .form-linha label{
+    display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--azul-intermediario); margin-bottom: 5px;
+  }
+  .form-linha input, .form-linha select, .form-linha textarea{
+    width: 100%; border: 1px solid var(--borda); border-radius: 9px;
+    padding: 9px 11px; font-family: inherit; font-size: 13.5px; color: var(--texto);
+    outline: none; background: var(--branco);
+  }
+  .form-linha input:focus, .form-linha select:focus, .form-linha textarea:focus{
+    border-color: var(--teal-escuro);
+  }
+  .form-linha textarea{ resize: vertical; min-height: 84px; line-height: 1.45; }
+
   /* ── Abas embutidas (Tasks, Leads, Mercado) ──
      São a dash do index.html dentro de um iframe: mesmo código, sempre em
      sincronia. Quando o index for aposentado, o conteúdo migra para cá e
@@ -1254,6 +1298,7 @@
 
   <section class="pane" id="pane-alertas">
     <div class="barra-planilha">
+      <button class="btn-novo-doc" id="btn-aviso"><span class="mais">+</span> Aviso ao RH</button>
       <select class="filtro" id="a-emp"></select>
       <select class="filtro" id="a-turma" disabled></select>
       <select class="filtro" id="a-prof"></select>
@@ -2251,6 +2296,59 @@ document.getElementById("btn-csv-u").onclick = () => {
   URL.revokeObjectURL(a.href);
 };
 
+// ══════════════════════════════════════════════════════════
+//  AVISO AO RH
+//  Canal de mão única para o RH do cliente. É o único conteúdo que aparece
+//  na aba Alertas da dash do manager — os alertas pedagógicos automáticos e
+//  as anotações internas nunca saem daqui.
+// ══════════════════════════════════════════════════════════
+function abrirNovoAviso(){
+  const empresas = [...new Set(TURMAS.map(t => t.empresa))];
+  abrirModal("Avisos", "Novo aviso ao RH", `
+    <div class="form-linha">
+      <label for="av-emp">Empresa</label>
+      <select id="av-emp">${empresas.map(e => `<option>${e}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label for="av-tipo">Tipo</label>
+      <select id="av-tipo">
+        <option value="info">Informativo</option>
+        <option value="atencao">Atenção</option>
+        <option value="risco">Risco</option>
+      </select>
+    </div>
+    <div class="form-linha">
+      <label for="av-assunto">Assunto</label>
+      <input id="av-assunto" placeholder="Ex.: Frequência abaixo do combinado">
+    </div>
+    <div class="form-linha">
+      <label for="av-texto">Mensagem</label>
+      <textarea id="av-texto" placeholder="O que o RH precisa saber, e o que se espera dele…"></textarea>
+    </div>
+    <div class="aviso-privacidade">
+      Este aviso aparece na dash do RH daquela empresa. Escreva pensando nisso:
+      nada do que estiver aqui é interno.
+    </div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="av-cancelar">Cancelar</button>
+      <button class="btn lime" id="av-enviar">Enviar ao RH</button>
+    </div>
+  `);
+  document.getElementById("av-cancelar").onclick = fecharModal;
+  document.getElementById("av-enviar").onclick = () => {
+    const v = id => (document.getElementById(id).value || "").trim();
+    if (!v("av-assunto")){ document.getElementById("av-assunto").focus(); return; }
+    AVISOS_RH.unshift({
+      id: "av" + Date.now(), empresa: v("av-emp"), data: hojeCurto(),
+      autor: "Karina Bupp", tipo: v("av-tipo"),
+      assunto: v("av-assunto"), texto: v("av-texto"), lido: false
+    });
+    fecharModal();
+    renderAlertas();
+  };
+}
+document.getElementById("btn-aviso").onclick = abrirNovoAviso;
+
 // ── Exportar CSV ──
 function baixarCSV(){
   const dados = filtradas();
@@ -2373,7 +2471,23 @@ function renderAlertas(){
   document.getElementById("a-cont").textContent =
     nFiltros ? `${itens.length} de ${total} alunos` : `${total} aluno${total!==1?"s":""}`;
 
-  box.innerHTML = `<div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção</div>`;
+  const avisos = AVISOS_RH.filter(a => !fEmp || a.empresa === fEmp);
+  box.innerHTML = `
+    <div class="section-title">${avisos.length} aviso${avisos.length!==1?"s":""} enviado${avisos.length!==1?"s":""} ao RH</div>
+    ${avisos.length ? avisos.map(a => `
+      <div class="card aviso-enviado">
+        <div class="ident">
+          <span class="id-emp">${a.empresa}</span>
+          <span class="id-turma">${a.autor}</span>
+          <span class="id-niv av-${a.tipo}">${{info:"Informativo",atencao:"Atenção",risco:"Risco"}[a.tipo] || a.tipo}</span>
+          <span class="id-hora">${a.data}</span>
+        </div>
+        <h2>${a.assunto}</h2>
+        <p>${a.texto}</p>
+        <div class="av-status">${a.lido ? "Lido pelo RH" : "Ainda não lido"}</div>
+      </div>`).join("")
+    : `<div class="card"><p>Nenhum aviso enviado ainda.</p></div>`}
+    <div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção</div>`;
   if (!itens.length){
     box.innerHTML += `<div class="card"><p>${nFiltros
       ? "Nenhum aluno em atenção com esses filtros."
@@ -2409,6 +2523,12 @@ function renderAlertas(){
 // ══════════════════════════════════════════════════════════
 //  Pop-up de professores
 // ══════════════════════════════════════════════════════════
+// Data curta dd/mm — usada ao registrar avisos e recados criados agora.
+function hojeCurto(){
+  const d = new Date();
+  return String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0");
+}
+
 function abrirModal(kicker, titulo, html){
   document.getElementById("modal-kicker").textContent = kicker;
   document.getElementById("modal-titulo").textContent = titulo;

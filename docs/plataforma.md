@@ -136,6 +136,40 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Dash do RH (manager.html)
+Terceira das quatro telas. Mesma linguagem visual e mesmo `dados-mock.js`; o que
+muda é o alcance e, principalmente, **o que fica de fora**.
+
+| | Professor | Interna | **RH (manager)** |
+|---|---|---|---|
+| Empresas | as turmas dele | todas | **só a dele** |
+| Anotações internas por aluno | escreve as dele | lê todas | **nunca vê** |
+| Alertas pedagógicos automáticos | vê os dele | vê todos | **nunca vê** |
+| Avisos escritos pela Bupp | — | escreve | **é o destinatário** |
+| Contratos e notas fiscais | — | — | **vê e adiciona** |
+
+**Três abas:**
+- **Dados** — a mesma planilha da interna, filtrada pela empresa do gestor e
+  **sem a coluna de anotação interna**. Mais os quatro números do topo e o
+  bloco Média (por turma ou por aluno).
+- **Alertas** — só os avisos que a gestão da Bupp escreveu para aquela empresa,
+  com tipo (informativo, atenção, risco) e botão de marcar como lido. Os
+  alertas pedagógicos automáticos não aparecem: são de uso interno e do
+  professor.
+- **Docs** — planilha de contratos, aditivos e notas fiscais da empresa, com
+  número, emissão, vencimento, valor, status e link do arquivo. Dá para
+  adicionar novos pelo próprio RH.
+
+**Envio de avisos:** a aba Alertas da dash interna ganhou o botão "+ Aviso ao
+RH". A gestão escolhe a empresa, o tipo e escreve; o aviso aparece na dash
+daquele RH. A interna mostra os avisos já enviados com o status de leitura.
+Canal de mão única, de propósito — o RH responde pelos canais de sempre.
+
+**Por que a separação é rígida:** as anotações internas são observações da Bupp
+sobre pessoas identificadas do time do cliente. Se vazassem para o RH, o
+professor deixaria de escrevê-las com honestidade, e o valor do registro
+morreria junto.
+
 ### 21/08/2026 — Tasks, Leads e Mercado dentro da interna
 As três telas do `index.html` (Tasks, Leads, Mercado) ganharam abas na dash
 interna, **embutidas por iframe** em vez de copiadas.

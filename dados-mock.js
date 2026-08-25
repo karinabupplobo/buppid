@@ -362,3 +362,63 @@ PROFESSORES.forEach(p => USUARIOS.push({
   cargo: p.cargo,
   alunoId: null
 }));
+
+// ══════════════════════════════════════════════════════════
+//  AVISOS PARA O RH
+//  Canal de mão única: a gestão da Bupp escreve, o RH do cliente lê. É o
+//  ÚNICO conteúdo que aparece na aba Alertas da dash do manager — ele nunca
+//  vê os alertas pedagógicos automáticos nem as anotações internas sobre
+//  cada aluno.
+//    tipo: "info" | "atencao" | "risco"
+// ══════════════════════════════════════════════════════════
+const AVISOS_RH = [
+  { id:"av1", empresa:"Sertrading", data:"20/08", autor:"Karina Bupp",
+    tipo:"atencao", assunto:"Frequência da turma B1 abaixo do combinado",
+    texto:"A turma de Comex fechou agosto com 75% de presença. O contrato prevê 85% para a garantia de resultado em 6 meses. Sugerimos reforçar internamente a reserva de agenda nas quintas.",
+    lido:false },
+  { id:"av2", empresa:"Sertrading", data:"14/08", autor:"Karina Bupp",
+    tipo:"info", assunto:"Relatório do primeiro bimestre disponível",
+    texto:"O consolidado de julho e agosto já está na aba Dados: presença, engajamento e desempenho nas trilhas por turma.",
+    lido:true },
+  { id:"av3", empresa:"Tirolez", data:"20/08", autor:"Karina Bupp",
+    tipo:"risco", assunto:"Aluna sem acesso à plataforma",
+    texto:"Marina Alves não abriu nenhuma trilha desde o início do módulo. Antes de tratarmos como desengajamento, precisamos confirmar com o RH se o acesso chegou até ela.",
+    lido:false }
+];
+
+// ══════════════════════════════════════════════════════════
+//  DOCUMENTOS
+//  Contratos, notas fiscais e aditivos de cada empresa. Fica visível para o
+//  RH daquela empresa e para a Bupp — é o lugar de manter tudo organizado
+//  sem depender de e-mail.
+//    tipo: "contrato" | "nf" | "aditivo" | "outro"
+//    status: "vigente" | "pago" | "em aberto" | "vencido" | "encerrado"
+// ══════════════════════════════════════════════════════════
+const DOCS = [
+  { id:"d1", empresa:"Sertrading", tipo:"contrato", titulo:"Contrato de prestação de serviço",
+    numero:"CT-2026-014", emissao:"12/06", vencimento:"12/12", valor:"R$ 84.000,00",
+    status:"vigente", url:"", obs:"6 meses, 2 turmas, renovação automática salvo aviso em 30 dias." },
+  { id:"d2", empresa:"Sertrading", tipo:"nf", titulo:"NF-e agosto/2026",
+    numero:"NF 1042", emissao:"05/08", vencimento:"15/08", valor:"R$ 14.000,00",
+    status:"pago", url:"", obs:"" },
+  { id:"d3", empresa:"Sertrading", tipo:"nf", titulo:"NF-e setembro/2026",
+    numero:"NF 1067", emissao:"05/09", vencimento:"15/09", valor:"R$ 14.000,00",
+    status:"em aberto", url:"", obs:"" },
+  { id:"d4", empresa:"Sertrading", tipo:"aditivo", titulo:"Aditivo — turma de Diretoria",
+    numero:"AD-2026-003", emissao:"01/08", vencimento:"12/12", valor:"R$ 28.000,00",
+    status:"vigente", url:"", obs:"Inclui a segunda turma no mesmo contrato." },
+  { id:"d5", empresa:"Tirolez", tipo:"contrato", titulo:"Contrato de prestação de serviço",
+    numero:"CT-2026-019", emissao:"20/06", vencimento:"20/12", valor:"R$ 42.000,00",
+    status:"vigente", url:"", obs:"6 meses, 1 turma." },
+  { id:"d6", empresa:"Tirolez", tipo:"nf", titulo:"NF-e agosto/2026",
+    numero:"NF 1045", emissao:"05/08", vencimento:"15/08", valor:"R$ 7.000,00",
+    status:"pago", url:"", obs:"" }
+];
+
+const TIPOS_DOC = [
+  { k:"contrato", rot:"Contrato" },
+  { k:"aditivo",  rot:"Aditivo" },
+  { k:"nf",       rot:"Nota fiscal" },
+  { k:"outro",    rot:"Outro" }
+];
+const STATUS_DOC = ["vigente", "pago", "em aberto", "vencido", "encerrado"];

@@ -1048,7 +1048,9 @@
     .barra-planilha{ gap: 7px; }
     .filtro, input.filtro{ flex: 1; min-width: 0; }
     .btn-csv{ margin-left: 0; flex: 1; }
-    /* ── Filtro único com sugestões e chips ── */
+    #titulo-geral{ margin-bottom: 10px; }
+
+  /* ── Filtro único com sugestões e chips ── */
   .busca-uni{ position: relative; flex: 1; min-width: 260px; }
   .busca-uni input{ width: 100%; }
   .bu-sugestoes{
@@ -1213,6 +1215,7 @@
     <div class="resumo-turmas" id="resumo-turmas"></div>
     <div class="resumo-alunos" id="resumo-alunos"></div>
 
+    <div class="rt-titulo" id="titulo-geral">Geral</div>
     <div class="planilha-wrap">
       <table class="planilha" id="tabela"></table>
     </div>
@@ -1580,6 +1583,8 @@ function renderTabela(){
 
   document.getElementById("cont-linhas").textContent =
     `${dados.length} de ${LINHAS.length} linhas`;
+  const tg = document.getElementById("titulo-geral");
+  if (tg) tg.textContent = `Geral · ${dados.length}`;
   renderKPIs(dados);
   renderResumoTurmas(dados);
   renderResumoAlunos(dados);

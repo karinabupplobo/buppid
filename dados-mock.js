@@ -261,3 +261,104 @@ Object.assign(NOTAS_ALUNO, {
     c1: "Trouxe o deck real do pitch. Aula rendeu muito mais que o previsto."
   }
 });
+
+
+// ══════════════════════════════════════════════════════════
+//  USUÁRIOS
+//  Todo mundo que tem (ou terá) login na plataforma. O papel decide o que a
+//  pessoa vê:
+//    aluno          → só a própria turma e o próprio progresso
+//    gestor         → área do RH da empresa dele, visão agregada
+//    aluno_gestor   → os dois: estuda e acompanha o time
+//    teacher        → a plataforma do professor
+//    interno        → esta dash
+//  Um mesmo CPF pode acumular papéis (o gerente de DHO que também estuda), por
+//  isso "aluno e gestor" é um papel próprio, não duas contas.
+// ══════════════════════════════════════════════════════════
+const PAPEIS = [
+  { k:"aluno",        rot:"Aluno" },
+  { k:"gestor",       rot:"Gestor (RH)" },
+  { k:"aluno_gestor", rot:"Aluno e gestor" },
+  { k:"teacher",      rot:"Teacher" },
+  { k:"interno",      rot:"Interno" }
+];
+
+function primeiroNome(n){ return n.split(" ")[0].toLowerCase()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+
+function dominioDe(empresa){
+  return empresa.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z]/g,"") + ".com.br";
+}
+
+// wpp fictício, estável por pessoa
+function wppFake(seed){
+  let h = 0;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) % 100000000;
+  const n = String(h).padStart(8, "0");
+  return `(11) 9${n.slice(0,4)}-${n.slice(4,8)}`;
+}
+
+const USUARIOS = [];
+
+// alunos das turmas
+TURMAS.forEach(t => t.alunos.forEach(a => {
+  const ehGestor = /gerente|diretor|head|coord/i.test(a.cargo) && /dho|rh|pessoas|human/i.test(a.cargo);
+  USUARIOS.push({
+    id: "u-" + a.id,
+    nome: a.nome,
+    email: `${primeiroNome(a.nome)}.${a.nome.split(" ").slice(-1)[0].toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")}@${dominioDe(t.empresa)}`,
+    wpp: wppFake(a.nome),
+    papel: ehGestor ? "aluno_gestor" : "aluno",
+    empresa: t.empresa,
+    turmaId: t.id,
+    cargo: a.cargo,
+    alunoId: a.id
+  });
+}));
+
+// RH de cada empresa (não estuda, só acompanha)
+[
+  { nome:"Renata Barcellos", cargo:"Gerente de RH",  empresa:"Sertrading" },
+  { nome:"Paulo Menegatti",  cargo:"Head de T&D",    empresa:"Tirolez" }
+].forEach((r, i) => USUARIOS.push({
+  id: "u-rh" + i,
+  nome: r.nome,
+  email: `${primeiroNome(r.nome)}.${r.nome.split(" ").slice(-1)[0].toLowerCase()}@${dominioDe(r.empresa)}`,
+  wpp: wppFake(r.nome),
+  papel: "gestor",
+  empresa: r.empresa,
+  turmaId: null,
+  cargo: r.cargo,
+  alunoId: null
+}));
+
+// professores
+PROFESSORES.forEach(p => USUARIOS.push({
+  id: "u-" + p.id,
+  nome: p.nome,
+  email: p.email,
+  wpp: wppFake(p.nome),
+  papel: "teacher",
+  empresa: "Bupp Idiomas",
+  turmaId: null,
+  cargo: "Professor",
+  alunoId: null
+}));
+
+// equipe interna
+[
+  { nome:"Karina Bupp",   cargo:"Sócia-fundadora" },
+  { nome:"Livia Rodrigues", cargo:"Sócia" }
+].forEach((p, i) => USUARIOS.push({
+  id: "u-in" + i,
+  nome: p.nome,
+  email: `${primeiroNome(p.nome)}@buppidiomas.com.br`,
+  wpp: wppFake(p.nome),
+  papel: "interno",
+  empresa: "Bupp Idiomas",
+  turmaId: null,
+  cargo: p.cargo,
+  alunoId: null
+}));

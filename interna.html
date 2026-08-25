@@ -828,6 +828,34 @@
   .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
           padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
 
+  /* ── Aba Usuários ── */
+  .usuarios-wrap .u-cards{ display: none; }
+  .u-nome{ font-weight: 700; }
+  .u-link{ color: var(--azul-intermediario); text-decoration: none; font-weight: 600; }
+  .u-link:hover{ color: var(--teal-escuro); text-decoration: underline; }
+  table.tab-u th:nth-child(n+3), table.tab-u td:nth-child(n+3){ text-align: left; }
+
+  .sel-papel{
+    border: 1px solid var(--borda); border-radius: 7px; padding: 5px 8px;
+    font-family: inherit; font-size: 11.5px; font-weight: 700;
+    color: var(--teal-escuro); background: var(--branco); cursor: pointer; outline: none;
+  }
+  .sel-papel:focus{ border-color: var(--teal-escuro); }
+  .sel-papel.papel-aluno{ background: #f2f4ee; }
+  .sel-papel.papel-gestor{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+  .sel-papel.papel-aluno_gestor{ background: #fbf2d8; border-color: #e6d08a; }
+  .sel-papel.papel-teacher{ background: #e8efe3; border-color: #b6d7ac; }
+  .sel-papel.papel-interno{ background: var(--teal-escuro); color: #fff; border-color: var(--teal-escuro); }
+
+  @media (max-width: 760px){
+    .usuarios-wrap .ra-wrap{ display: none; }
+    .usuarios-wrap .u-cards{ display: block; }
+    .u-card{ padding: 16px; }
+    .u-card h2{ font-size: 17px; margin-bottom: 2px; }
+    .u-card .ident{ margin-bottom: 8px; }
+    .u-card .rt-linha:first-of-type{ margin-top: 8px; }
+  }
+
   /* ── Abas embutidas (Tasks, Leads, Mercado) ──
      São a dash do index.html dentro de um iframe: mesmo código, sempre em
      sincronia. Quando o index for aposentado, o conteúdo migra para cá e
@@ -1134,6 +1162,7 @@
   <div class="tabs">
     <button class="tab active" data-pane="planilha">Dados</button>
     <button class="tab" data-pane="alertas">Alertas</button>
+    <button class="tab" data-pane="usuarios">Usuários</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="leads">Leads</button>
     <button class="tab" data-pane="mercado">Mercado</button>
@@ -1173,6 +1202,21 @@
     <div class="planilha-wrap">
       <table class="planilha" id="tabela"></table>
     </div>
+  </section>
+
+  <section class="pane" id="pane-usuarios">
+    <div class="barra-planilha">
+      <div class="add-filtro" id="add-filtro-u">
+        <button class="btn-add" id="btn-add-u"><span class="mais">+</span> Filtro</button>
+        <div class="af-painel" id="af-painel-u"></div>
+      </div>
+      <button class="btn-limpar-col" id="limpar-u" style="display:none;">Limpar filtros</button>
+      <span class="cont-linhas" id="cont-u"></span>
+      <button class="btn-csv" id="btn-csv-u">Exportar CSV</button>
+    </div>
+    <div class="chips-filtro" id="chips-u"></div>
+    <div class="rt-titulo" id="titulo-u">Usuários</div>
+    <div class="usuarios-wrap" id="usuarios-wrap"></div>
   </section>
 
   <section class="pane emb" id="pane-tasks">
@@ -2009,7 +2053,184 @@ function renderMedias(dados){
   irPara(0);
 }
 
-// ── Exportar CSV ──// ── Exportar CSV ──
+// ══════════════════════════════════════════════════════════
+//  USUÁRIOS
+//  Quem tem login e com que papel. O papel é editável direto na planilha —
+//  é a operação mais comum aqui (aluno vira aluno-e-gestor, professor sai).
+// ══════════════════════════════════════════════════════════
+const CAT_U = [
+  { k:"papel",   rot:"Papel",   campo: u => (PAPEIS.find(p => p.k === u.papel) || {}).rot || u.papel },
+  { k:"empresa", rot:"Empresa", campo: u => u.empresa },
+  { k:"turma",   rot:"Turma",   campo: u => {
+      const t = TURMAS.find(x => x.id === u.turmaId);
+      return t ? `${t.empresa} · ${partesIdent(t).turma}` : "—";
+    } }
+];
+const CHIPS_U = [];
+
+function passaU(u){
+  return CAT_U.every(c => {
+    const doTipo = CHIPS_U.filter(ch => ch.k === c.k);
+    if (!doTipo.length) return true;
+    return doTipo.some(ch => c.campo(u) === ch.valor);
+  });
+}
+
+function usuariosFiltrados(){ return USUARIOS.filter(passaU); }
+
+function vinculoDe(u){
+  const t = TURMAS.find(x => x.id === u.turmaId);
+  return t ? `${partesIdent(t).turma} · ${t.nivel}` : "—";
+}
+
+function renderUsuarios(){
+  const dados = usuariosFiltrados();
+  const box = document.getElementById("usuarios-wrap");
+
+  const selPapel = u => `
+    <select class="sel-papel papel-${u.papel}" data-u="${u.id}">
+      ${PAPEIS.map(p => `<option value="${p.k}" ${p.k===u.papel?"selected":""}>${p.rot}</option>`).join("")}
+    </select>`;
+
+  box.innerHTML = `
+    <div class="ra-wrap">
+      <table class="ra-tabela tab-u">
+        <thead><tr>
+          <th>Nome completo</th><th>WhatsApp</th><th>E-mail</th>
+          <th>Empresa</th><th>Turma</th><th>Cargo</th><th>Papel</th>
+        </tr></thead>
+        <tbody>
+          ${dados.map(u => `
+            <tr>
+              <td class="u-nome">${u.nome}</td>
+              <td><a class="u-link" href="https://wa.me/55${u.wpp.replace(/\D/g,"")}" target="_blank" rel="noopener">${u.wpp}</a></td>
+              <td><a class="u-link" href="mailto:${u.email}">${u.email}</a></td>
+              <td>${u.empresa}</td>
+              <td>${vinculoDe(u)}</td>
+              <td class="rt-prof">${u.cargo}</td>
+              <td>${selPapel(u)}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="u-cards">
+      ${dados.map(u => `
+        <article class="card u-card">
+          <div class="ident">
+            <span class="id-emp">${u.empresa}</span>
+            ${u.turmaId ? `<span class="id-turma">${vinculoDe(u)}</span>` : ""}
+          </div>
+          <h2>${u.nome}</h2>
+          <p>${u.cargo}</p>
+          <div class="rt-linha"><span class="rt-rot">WhatsApp</span>
+            <a class="u-link" href="https://wa.me/55${u.wpp.replace(/\D/g,"")}" target="_blank" rel="noopener">${u.wpp}</a></div>
+          <div class="rt-linha"><span class="rt-rot">E-mail</span>
+            <a class="u-link" href="mailto:${u.email}">${u.email}</a></div>
+          <div class="rt-linha"><span class="rt-rot">Papel</span>${selPapel(u)}</div>
+        </article>`).join("")}
+    </div>`;
+
+  box.querySelectorAll(".sel-papel").forEach(sel => {
+    sel.onchange = () => {
+      const u = USUARIOS.find(x => x.id === sel.dataset.u);
+      if (u){ u.papel = sel.value; renderUsuarios(); }
+    };
+  });
+
+  document.getElementById("cont-u").textContent =
+    CHIPS_U.length ? `${dados.length} de ${USUARIOS.length} usuários`
+                   : `${USUARIOS.length} usuário${USUARIOS.length!==1?"s":""}`;
+  document.getElementById("titulo-u").textContent = `Usuários · ${dados.length}`;
+  document.getElementById("limpar-u").style.display = CHIPS_U.length ? "inline-flex" : "none";
+}
+
+function renderChipsU(){
+  const box = document.getElementById("chips-u");
+  if (!CHIPS_U.length){ box.innerHTML = ""; return; }
+  box.innerHTML = CHIPS_U.map((c,i) => `
+    <span class="chip"><span class="chip-cat">${c.rot}</span>
+      <span class="chip-val">${c.valor}</span>
+      <button class="chip-x" data-i="${i}">&times;</button></span>`).join("");
+  box.querySelectorAll(".chip-x").forEach(b => {
+    b.onclick = () => { CHIPS_U.splice(+b.dataset.i,1); renderChipsU(); renderUsuarios(); };
+  });
+}
+
+let catU = null;
+function pintarPainelU(){
+  const p = document.getElementById("af-painel-u");
+  if (!catU){
+    p.innerHTML = `<div class="af-tit">Filtrar por</div>` +
+      CAT_U.map(c => {
+        const total = new Set(USUARIOS.map(u => c.campo(u))).size;
+        const usados = CHIPS_U.filter(ch => ch.k === c.k).length;
+        return `<button class="af-cat" data-k="${c.k}">
+          <span class="af-rot">${c.rot}</span>
+          <span class="af-n">${usados ? `${usados} de ${total}` : total}</span>
+          <span class="af-seta"></span></button>`;
+      }).join("");
+    p.querySelectorAll(".af-cat").forEach(b => {
+      b.onclick = e => { e.stopPropagation(); catU = b.dataset.k; pintarPainelU(); };
+    });
+    return;
+  }
+  const c = CAT_U.find(x => x.k === catU);
+  const marcados = new Set(CHIPS_U.filter(ch => ch.k === c.k).map(ch => ch.valor));
+  const vals = [...new Set(USUARIOS.map(u => c.campo(u)))].sort((a,b) => a.localeCompare(b,"pt-BR"))
+    .map(v => ({ v, n: USUARIOS.filter(u => c.campo(u) === v).length }));
+
+  p.innerHTML = `
+    <div class="af-topo"><button class="af-voltar" data-voltar>&lsaquo;</button>
+      <span class="af-tit">${c.rot}</span></div>
+    <div class="af-lista">
+      ${vals.map(x => `<label class="af-item">
+        <input type="checkbox" value="${x.v.replace(/"/g,'&quot;')}" ${marcados.has(x.v)?"checked":""}>
+        <span class="af-val">${x.v}</span><span class="af-n">${x.n}</span></label>`).join("")}
+    </div>
+    <div class="af-rodape"><button class="af-ok" data-aplicar>Aplicar</button></div>`;
+
+  p.querySelector("[data-voltar]").onclick = e => { e.stopPropagation(); catU = null; pintarPainelU(); };
+  p.querySelector("[data-aplicar]").onclick = e => {
+    e.stopPropagation();
+    const esc = [...p.querySelectorAll(".af-item input")].filter(i => i.checked).map(i => i.value);
+    for (let i = CHIPS_U.length-1; i >= 0; i--) if (CHIPS_U[i].k === c.k) CHIPS_U.splice(i,1);
+    esc.forEach(v => CHIPS_U.push({ k:c.k, rot:c.rot, valor:v }));
+    p.classList.remove("on");
+    catU = null;
+    renderChipsU(); renderUsuarios();
+  };
+}
+
+document.getElementById("btn-add-u").onclick = e => {
+  e.stopPropagation();
+  const p = document.getElementById("af-painel-u");
+  if (p.classList.contains("on")){ p.classList.remove("on"); catU = null; }
+  else { catU = null; pintarPainelU(); p.classList.add("on"); }
+};
+document.getElementById("af-painel-u").onclick = e => e.stopPropagation();
+document.addEventListener("click", e => {
+  if (!e.target.closest("#add-filtro-u"))
+    document.getElementById("af-painel-u").classList.remove("on");
+});
+document.getElementById("limpar-u").onclick = () => {
+  CHIPS_U.length = 0; renderChipsU(); renderUsuarios();
+};
+document.getElementById("btn-csv-u").onclick = () => {
+  const esc = v => `"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  const cols = ["Nome completo","WhatsApp","E-mail","Empresa","Turma","Cargo","Papel"];
+  const linhas = [cols.map(esc).join(";")].concat(usuariosFiltrados().map(u =>
+    [u.nome, u.wpp, u.email, u.empresa, vinculoDe(u), u.cargo,
+     (PAPEIS.find(p => p.k === u.papel) || {}).rot || u.papel].map(esc).join(";")));
+  const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "bupp-usuarios.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// ── Exportar CSV ──
 function baixarCSV(){
   const dados = filtradas();
   const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
@@ -2293,6 +2514,8 @@ document.querySelectorAll(".tab").forEach(t => {
 
 renderChips();
 renderTabela();
+renderChipsU();
+renderUsuarios();
 opcoesTurma();
 renderAlertas();
 </script>

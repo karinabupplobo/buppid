@@ -58,6 +58,11 @@
       `plataforma.html` (tela do professor) tiver uma visão equivalente
       de "aula de hoje", provavelmente tem o mesmo problema — avaliar se
       vale aplicar o mesmo filtro lá.
+- [ ] TESTAR NO NAVEGADOR (de verdade, não só jsdom): fluxo completo de
+      "+ Turma" a partir de uma empresa até salvar com dias+horário; "+
+      Aluno" funcionando nesse mesmo fluxo; trocar Formato no modal de
+      detalhe e ver salvar sozinho; escrever anotação de aluno logado
+      (via Tasks/Leads) e deslogado (deve bloquear com aviso).
 - [ ] TESTAR NO NAVEGADOR: mudar um lead pra etapa "Cliente" e conferir se
       a empresa aparece em Empresas; abrir histórico de uma empresa com
       lead de origem e sem lead de origem; abrir ficha de aluno e testar
@@ -72,6 +77,18 @@
       do lead for alterado por outro caminho no futuro (import em massa,
       API), essa criação automática não dispara — vale revisitar se
       aparecer um jeito novo de mudar etapa.
+- [ ] **LOGIN DE VERDADE — pedido explícito da Karina em 25/08.** Todas as
+      telas (`interna.html`, `plataforma.html`, `aluno.html`, `manager.html`)
+      precisam de login de verdade, cada uma sabendo sempre quem está
+      escrevendo/agindo — EXCETO os forms públicos (`nova-turma.html`,
+      `nivel-test.html`), que continuam sem login (são preenchidos por
+      quem ainda não tem conta: lead virando turma, aluno fazendo teste).
+      Hoje só `index.html` tem login de verdade (usuário/senha,
+      `currentUser`); as outras 3 dashes são "Hi, Nome" hardcoded sem
+      sessão nenhuma. `interna.html` ganhou um jeito provisório de ler a
+      sessão do `index.html` via localStorage compartilhado (mesma
+      origem) só pra saber quem escreve uma anotação de aluno — não é
+      login de verdade, é atalho até isso ser construído direito.
 - [ ] **SENSÍVEL — anotacoes_aluno e RH.** Hoje o RH não tem acesso
       técnico nenhum (manager.html nem tem chave do Supabase ainda), mas
       quando o RH migrar pra dados reais isso muda. Antes disso acontecer,

@@ -2,6 +2,47 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2345-formato-material-autor-login — 25/08/2026
+- O que mudou: três mudanças em `interna.html`, todas dentro do modal de
+  detalhe de turma/aluno. (1) Formato vira editável (select Live/Online,
+  salva sozinho ao trocar); Frequência passa a calcular ao vivo em vez
+  de confiar no valor gravado; seção nova "Material" entre Objetivo e
+  Alunos (hoje só aviso — depende de `aulas_assigned`, tabela pendente).
+  (2) Autor de anotação de aluno para de ser texto livre — passa a vir
+  do login de verdade: `interna.html` lê a sessão que `index.html` já
+  grava em localStorage (mesma origem, sem duplicar login). Sem login
+  feito nas abas Tasks/Leads/Mercado, o form de anotação fica
+  desabilitado com aviso. Rodapé mostra "Nome - papel" (ex.: "Ana Ribeiro
+  - teacher"), com "adm" no lugar de "internal" pra quem escreve pela
+  interna. (3) `diaTexto()` — cobre os dois formatos de `dias_semana`
+  (string antiga, `{dia,hora}` novo).
+- Arquivos: interna.html
+- Motivo: pedidos da Karina em 25/08, com prints de referência.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2340-fix-btn-aluno-dias-hora
+
+## v-20260825-2340-fix-btn-aluno-dias-hora — 25/08/2026
+- O que mudou: bug crítico + feature nova em `nova-turma.html`. **Bug:**
+  quando a turma vem de "+ Turma" no card da empresa (`?empresa_id=...`),
+  o código sobrescrevia o innerHTML de `#bloco-empresa`, destruindo o
+  input `#f-empresa-busca`. Um trecho mais abaixo fazia
+  `document.getElementById('f-empresa-busca').oninput = ...` sem checar
+  null, lançava `TypeError` e travava a execução do script ali — por
+  isso o botão "+ Aluno", cujo listener é definido mais adiante no
+  arquivo, nunca era registrado, e clicar nele não fazia nada. Só
+  acontecia nesse fluxo específico (vindo de uma empresa), reproduzido e
+  confirmado com `jsdom` antes de corrigir. **Feature:** dias da aula
+  (Seg-Dom) agora têm horário próprio — cada dia marcado libera um campo
+  de horário; limite de 5 dias por turma. `dias_semana` grava
+  `[{dia,hora}, ...]` em vez de `[dia, ...]`. Validação: pelo menos 1 dia
+  marcado, todo dia marcado precisa de horário. `interna.html`
+  atualizado pra exibir dia+horário.
+- Arquivos: nova-turma.html, interna.html
+- Motivo: bug reportado pela Karina com print (empresa "Sertrading",
+  fluxo real que ela estava usando); dias com horário, pedido junto.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2325-bolinha-e-hoje-real
+
 ## v-20260825-2325-bolinha-e-hoje-real — 25/08/2026
 - O que mudou: dois bugs visuais/lógicos reportados pela Karina com
   print. (1) `.st` (bolinha verde/vermelha de acerto/erro na trilha)

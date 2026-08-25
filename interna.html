@@ -872,6 +872,48 @@
   }
   .rt-ver:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
 
+  /* alinhamento das colunas numéricas */
+  table.rt-tabela th:nth-child(3), table.rt-tabela td:nth-child(3),
+  table.rt-tabela th:nth-child(4), table.rt-tabela td:nth-child(4),
+  table.rt-tabela th:nth-child(5), table.rt-tabela td:nth-child(5){ text-align: right; }
+  table.rt-tabela th:last-child,  table.rt-tabela td:last-child{ text-align: right; }
+  table.rt-tabela td:first-child{ min-width: 210px; }
+
+  /* No celular a tabela vira cartões empilhados — tabela larga em tela
+     estreita corta as pontas e desalinha tudo. */
+  @media (max-width: 760px){
+    .rt-wrap{ background: none; border: none; border-radius: 0; overflow: visible; }
+    table.rt-tabela, table.rt-tabela tbody, table.rt-tabela tr, table.rt-tabela td{
+      display: block; width: 100%;
+    }
+    table.rt-tabela thead{ display: none; }
+    table.rt-tabela tr{
+      background: var(--branco); border: 1px solid var(--borda);
+      border-radius: 12px; padding: 14px; margin-bottom: 10px;
+    }
+    table.rt-tabela tr:hover td{ background: none; }
+    table.rt-tabela td{
+      border: none; padding: 0; white-space: normal;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 7px 0; border-bottom: 1px solid #f4f2f0; text-align: left !important;
+    }
+    table.rt-tabela td:first-child{
+      display: block; min-width: 0; padding: 0 0 10px;
+      border-bottom: 1px solid var(--borda); margin-bottom: 4px;
+    }
+    table.rt-tabela td::before{
+      content: attr(data-rot);
+      font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--azul-intermediario); flex-shrink: 0;
+    }
+    table.rt-tabela td:first-child::before{ display: none; }
+    table.rt-tabela td.rt-acao{ border-bottom: none; padding-top: 11px; }
+    table.rt-tabela td.rt-acao::before{ display: none; }
+    .rt-ver{ width: 100%; padding: 10px; font-size: 12px; }
+    .cel-link{ font-size: 14px; white-space: normal; text-align: left; }
+    .rt-sub{ margin-top: 3px; }
+  }
+
   /* ── Filtro no cabeçalho da planilha ── */
   table.planilha th{ position: sticky; top: 0; z-index: 3; padding: 0; }
   .th-btn{
@@ -923,6 +965,26 @@
     padding: 8px; cursor: pointer;
   }
   .mc-ok:hover{ background: var(--azul-intermediario); }
+
+  /* Planilha no celular: rolagem horizontal com a coluna do aluno fixa,
+     para não perder a referência de quem é a linha. */
+  @media (max-width: 760px){
+    .planilha-wrap{ max-height: 62vh; }
+    table.planilha th, table.planilha td{ padding: 9px 10px; font-size: 12px; }
+    table.planilha th:nth-child(7){ left: 0; z-index: 4; }
+    table.planilha td:nth-child(7){
+      position: sticky; left: 0; z-index: 2;
+      background: var(--branco); box-shadow: 2px 0 0 var(--borda);
+    }
+    table.planilha tbody tr:hover td:nth-child(7){ background: #faf9f7; }
+    table.planilha tbody tr.alerta td:nth-child(7){ background: #fffaf8; }
+    .cel-anot, .cel-at{ max-width: 200px; }
+    .barra-planilha{ gap: 7px; }
+    .filtro, input.filtro{ flex: 1; min-width: 0; }
+    .btn-csv{ margin-left: 0; flex: 1; }
+    .btn-limpar-col{ flex: 1 0 100%; }
+    .cont-linhas{ flex: 1 0 100%; }
+  }
 
   .btn-limpar-col{
     border: 1px solid var(--borda); background: var(--limao-claro); border-radius: 9px;
@@ -1527,22 +1589,22 @@ function renderResumoTurmas(dados){
         <tbody>
           ${linhas.map(x => `
             <tr>
-              <td>
+              <td data-rot="Turma">
                 <button class="cel-link" data-turma-pop="${x.t.id}">${x.p.empresa} · ${x.p.turma}</button>
                 <span class="rt-sub">${x.t.nivel} · ${x.alunos} aluno${x.alunos!==1?"s":""} · ${x.aulas} aula${x.aulas!==1?"s":""}</span>
               </td>
-              <td class="rt-prof">${x.prof}</td>
-              <td>
+              <td data-rot="Professor" class="rt-prof">${x.prof}</td>
+              <td data-rot="Presença">
                 <span class="nota ${classeNota(x.pctPres)}">${x.pctPres===null?"–":x.pctPres+"%"}</span>
                 ${x.faltas ? `<span class="rt-falta">${x.faltas} falta${x.faltas>1?"s":""}</span>` : ""}
               </td>
-              <td>${x.medEng === null ? '<span class="sem">–</span>'
+              <td data-rot="Engajamento">${x.medEng === null ? '<span class="sem">–</span>'
                    : `<span class="rt-eng ${x.medEng <= 1.5 ? "baixo" : ""}">${x.medEng.toFixed(1)}★</span>`}</td>
-              <td><span class="nota ${classeNota(x.medNota)}">${x.medNota===null?"–":x.medNota+"%"}</span></td>
-              <td>${x.pior
+              <td data-rot="Trilhas"><span class="nota ${classeNota(x.medNota)}">${x.medNota===null?"–":x.medNota+"%"}</span></td>
+              <td data-rot="Onde mais erra">${x.pior
                    ? `<span class="tag-at ${x.pior[1] >= 3 ? "recorrente" : "isolado"}">${x.pior[0]} <b>${x.pior[1]}×</b></span>`
                    : '<span class="sem">—</span>'}</td>
-              <td><button class="rt-ver" data-turma-filtro="${x.t.id}">ver linhas</button></td>
+              <td class="rt-acao"><button class="rt-ver" data-turma-filtro="${x.t.id}">ver linhas</button></td>
             </tr>`).join("")}
         </tbody>
       </table>

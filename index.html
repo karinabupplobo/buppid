@@ -2811,8 +2811,36 @@ document.getElementById("leads-add-btn").addEventListener("click", () => {
 document.getElementById("leads-list").addEventListener("change", ev => {
   const nome = ev.target.dataset.leadStatus; if (!nome) return;
   const e = leadsData.find(x => x.n === nome); if (!e) return;
+  const antes = e.st;
   e.st = ev.target.value; saveLeadsData(); renderLeads();
+  if (e.st === "cliente" && antes !== "cliente") criarEmpresaClienteDoLead(e);
 });
+
+// Lead que chega em "Cliente" precisa existir na aba Empresas de interna.html
+// (empresas_cliente no Supabase) — sem isso, fechar negócio não desbloqueia
+// criar turma pra empresa. Checa duplicata por nome antes de criar: o lead
+// pode ir e voltar de etapa, ou alguém já pode ter cadastrado a empresa na
+// mão via "+ Nova Empresa".
+async function criarEmpresaClienteDoLead(lead) {
+  try {
+    const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/empresas_cliente?nome=eq.${encodeURIComponent(lead.n)}&select=id`, { headers: SUPABASE_HEADERS });
+    if (!checkRes.ok) throw new Error(await checkRes.text());
+    const existentes = await checkRes.json();
+    if (existentes.length) { funilMsg(`<b>${esc(lead.n)}</b> já existe na aba Empresas.`); return; }
+
+    const setor = (LEAD_SETORES[lead.s] || {}).d || lead.s || null;
+    const operacao = [lead.m, lead.u].filter(Boolean).join("/") || null;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/empresas_cliente`, {
+      method: "POST",
+      headers: { ...SUPABASE_HEADERS, "Prefer": "return=representation" },
+      body: JSON.stringify({ nome: lead.n, setor, operacao, lead_origem_id: lead.n })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    funilMsg(`<b>${esc(lead.n)}</b> virou empresa cliente — já aparece na aba Empresas.`);
+  } catch (err) {
+    funilMsg(`Erro ao criar empresa cliente pra <b>${esc(lead.n)}</b>: ${esc(err.message)}`);
+  }
+}
 // Abrir o formulário de contato em branco, a partir do botão "+ contato".
 document.getElementById("leads-list").addEventListener("click", ev => {
   const nome = ev.target.dataset.leadContato; if (!nome) return;

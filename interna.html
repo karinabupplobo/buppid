@@ -996,14 +996,13 @@
     <div class="whoami">
       <strong>Hi, Karina</strong>
       <span>internal</span>
-      <button class="link-turmas" id="btn-professores"><b id="bt-prof-n"></b> professores ›</button>
+      <button class="link-turmas" id="btn-empresas"><b id="bt-emp-n"></b> empresas ›</button>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-pane="planilha">Planilha</button>
+    <button class="tab active" data-pane="planilha">Dados</button>
     <button class="tab" data-pane="alertas">Alertas</button>
-    <button class="tab" data-pane="turmas">Turmas</button>
   </div>
 </aside>
 
@@ -1050,9 +1049,6 @@
     <div id="lista-alertas"></div>
   </section>
 
-  <section class="pane" id="pane-turmas">
-    <div id="lista-turmas"></div>
-  </section>
 </main>
 
 <script src="dados-mock.js"></script>
@@ -1774,48 +1770,6 @@ function renderAlertas(){
 }
 
 // ══════════════════════════════════════════════════════════
-//  TURMAS — visão de carteira
-// ══════════════════════════════════════════════════════════
-function renderTurmas(){
-  const box = document.getElementById("lista-turmas");
-  box.innerHTML = `<div class="section-title">${TURMAS.length} turmas · ${PROFESSORES.length} professores</div>`;
-
-  TURMAS.forEach(t => {
-    const p = partesIdent(t);
-    const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
-    const linhasT = LINHAS.filter(l => l.turmaId === t.id);
-    const comPres = linhasT.filter(l => l.presenca);
-    const pctPres = comPres.length
-      ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
-    const comNota = linhasT.filter(l => l.nota !== null);
-    const medNota = comNota.length
-      ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
-    const comEng = linhasT.filter(l => l.eng);
-    const medEng = comEng.length
-      ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
-
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="ident">
-        <span class="id-emp">${p.empresa}</span>
-        <span class="id-turma">${p.turma}</span>
-        <span class="id-niv">${t.nivel}</span>
-        ${grade ? `<span class="id-hora">${grade}</span>` : ""}
-      </div>
-      <h2>${professorDe(t).nome}</h2>
-      <p>${t.alunos.length} aluno${t.alunos.length>1?"s":""} · ${t.modulo} · ${(t.historico||[]).length} aula${(t.historico||[]).length!==1?"s":""} dada${(t.historico||[]).length!==1?"s":""}</p>
-      <div class="nums" style="margin-top:14px;margin-bottom:0;">
-        <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
-        <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
-        <div class="num"><span class="nv ${classeNota(medNota)}">${medNota===null?"–":medNota+"%"}</span><span class="nr">Trilhas</span></div>
-      </div>
-      <div class="mini destaque" style="margin-top:12px;"><span>${t.objetivoTurma}</span></div>`;
-    box.appendChild(card);
-  });
-}
-
-// ══════════════════════════════════════════════════════════
 //  Pop-up de professores
 // ══════════════════════════════════════════════════════════
 function abrirModal(kicker, titulo, html){
@@ -1829,22 +1783,64 @@ document.getElementById("modal-x").onclick = fecharModal;
 document.getElementById("modal").onclick = e => { if (e.target.id === "modal") fecharModal(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
 
-document.getElementById("bt-prof-n").textContent = PROFESSORES.length;
-document.getElementById("btn-professores").onclick = () => {
-  const corpo = PROFESSORES.map(pr => {
-    const suas = TURMAS.filter(t => t.profId === pr.id);
-    const alunos = suas.reduce((n,t) => n + t.alunos.length, 0);
+// ── Pop-up de empresas ──
+// Uma empresa é o cliente; as turmas dela são o que a Bupp entrega. O
+// pop-up mostra a carteira: quantas turmas, quantos alunos e quem dá aula.
+function empresasAgrupadas(){
+  const m = new Map();
+  TURMAS.forEach(t => {
+    if (!m.has(t.empresa)) m.set(t.empresa, { nome:t.empresa, desc:t.empresaDesc, turmas:[] });
+    m.get(t.empresa).turmas.push(t);
+  });
+  return [...m.values()];
+}
+
+const EMPRESAS = empresasAgrupadas();
+document.getElementById("bt-emp-n").textContent = EMPRESAS.length;
+
+document.getElementById("btn-empresas").onclick = () => {
+  const corpo = EMPRESAS.map(e => {
+    const alunos = e.turmas.reduce((n,t) => n + t.alunos.length, 0);
+    const profs  = [...new Set(e.turmas.map(t => professorDe(t).nome))];
+    const ls     = LINHAS.filter(l => l.empresa === e.nome);
+    const comNota = ls.filter(l => l.nota !== null);
+    const medNota = comNota.length
+      ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+    const comPres = ls.filter(l => l.presenca);
+    const pctPres = comPres.length
+      ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+
     return `
       <div class="bloco">
-        <div class="bt">${pr.nome}</div>
-        <div class="mini"><b>${suas.length} turma${suas.length!==1?"s":""} · ${alunos} aluno${alunos!==1?"s":""}</b><span>${pr.email}</span></div>
-        ${suas.map(t => {
+        <div class="bt">${e.nome}</div>
+        <div class="mini"><span>${e.desc}</span></div>
+        <div class="nums" style="margin:10px 0;">
+          <div class="num"><span class="nv">${e.turmas.length}</span><span class="nr">Turmas</span></div>
+          <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
+          <div class="num"><span class="nv ${classeNota(medNota)}">${medNota===null?"–":medNota+"%"}</span><span class="nr">Trilhas</span></div>
+        </div>
+        ${e.turmas.map(t => {
           const p = partesIdent(t);
-          return `<div class="mini"><b>${p.empresa} · ${p.turma}</b><span>${t.nivel} · ${t.modulo}</span></div>`;
+          const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+          return `<button class="turma-item" data-turma-pop="${t.id}">
+            <span class="ti-esq">
+              <span class="ti-nome">${p.turma} · ${t.nivel}</span>
+              <span class="ti-meta">${grade || "sem aula hoje"} · ${professorDe(t).nome}</span>
+            </span>
+            <span class="ti-dir">
+              <span class="ti-grade">${t.alunos.length} aluno${t.alunos.length!==1?"s":""}</span>
+            </span>
+          </button>`;
         }).join("")}
+        <div class="mini" style="margin-top:6px;"><span>${alunos} aluno${alunos!==1?"s":""} · ${profs.join(", ")}</span></div>
       </div>`;
   }).join("");
-  abrirModal("Equipe", `${PROFESSORES.length} professores`, corpo);
+
+  abrirModal("Carteira", `${EMPRESAS.length} empresas`, corpo);
+
+  document.querySelectorAll("[data-turma-pop]").forEach(b => {
+    b.onclick = () => abrirTurma(TURMAS.find(t => t.id === b.dataset.turmaPop));
+  });
 };
 
 // ══════════════════════════════════════════════════════════
@@ -1896,7 +1892,6 @@ document.querySelectorAll(".tab").forEach(t => {
 renderTabela();
 opcoesTurma();
 renderAlertas();
-renderTurmas();
 </script>
 </body>
 </html>

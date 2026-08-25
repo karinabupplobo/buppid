@@ -3309,7 +3309,7 @@ async function atribuirProfessor(turmaId, professorId, elSalvo){
 }
 
 function turmaLinhaHtml(t){
-  const meta = [t.nivel_cefr, t.formato, t.tamanho_turma ? `${t.tamanho_turma} alunos` : null]
+  const meta = [t.nivel, t.formato, t.tamanho_turma ? `${t.tamanho_turma} alunos` : null]
     .filter(Boolean).join(" · ");
   return `
     <div class="turma-linha">

@@ -828,6 +828,65 @@
   .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
           padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
 
+  /* ── Filtro no cabeçalho da planilha ── */
+  table.planilha th{ position: sticky; top: 0; z-index: 3; padding: 0; }
+  .th-btn{
+    width: 100%; display: flex; align-items: center; gap: 6px; justify-content: space-between;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .07em;
+    text-transform: uppercase; padding: 11px 12px; white-space: nowrap;
+  }
+  .th-btn:hover{ background: rgba(255,255,255,.1); }
+  .funil{
+    width: 9px; height: 9px; flex-shrink: 0; opacity: .5;
+    clip-path: polygon(0 0, 100% 0, 62% 45%, 62% 100%, 38% 82%, 38% 45%);
+    background: #fff;
+  }
+  th.filtrado{ background: var(--azul-intermediario) !important; }
+  th.filtrado .funil{ opacity: 1; background: var(--amarelo-neon); }
+
+  .menu-col{
+    position: absolute; top: 100%; left: 0; z-index: 40; min-width: 240px; max-width: 300px;
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 10px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.18); overflow: hidden; white-space: normal;
+    text-transform: none; letter-spacing: 0;
+  }
+  .mc-topo{ padding: 9px; border-bottom: 1px solid var(--borda); }
+  .mc-busca{
+    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 7px 9px;
+    font-family: inherit; font-size: 12.5px; color: var(--texto); outline: none;
+  }
+  .mc-busca:focus{ border-color: var(--teal-escuro); }
+  .mc-acoes{ display: flex; gap: 6px; padding: 8px 9px 4px; }
+  .mc-acoes button{
+    flex: 1; border: 1px solid var(--borda); background: var(--branco); border-radius: 6px;
+    padding: 5px; font-family: inherit; font-size: 11px; font-weight: 700;
+    color: var(--azul-intermediario); cursor: pointer;
+  }
+  .mc-acoes button:hover{ border-color: var(--teal-escuro); color: var(--teal-escuro); }
+  .mc-lista{ max-height: 220px; overflow-y: auto; padding: 4px 9px 8px; }
+  .mc-item{
+    display: flex; align-items: center; gap: 8px; padding: 5px 4px; cursor: pointer;
+    font-size: 12.5px; font-weight: 500; color: var(--texto); border-radius: 5px;
+  }
+  .mc-item:hover{ background: #faf9f7; }
+  .mc-item input{ accent-color: var(--teal-escuro); cursor: pointer; flex-shrink: 0; }
+  .mc-vazio{ font-size: 12px; color: var(--cinza-texto); padding: 8px 4px; }
+  .mc-rodape{ padding: 8px 9px; border-top: 1px solid var(--borda); }
+  .mc-ok{
+    width: 100%; border: none; border-radius: 7px; background: var(--teal-escuro);
+    color: #fff; font-family: inherit; font-size: 12px; font-weight: 700;
+    padding: 8px; cursor: pointer;
+  }
+  .mc-ok:hover{ background: var(--azul-intermediario); }
+
+  .btn-limpar-col{
+    border: 1px solid var(--borda); background: var(--limao-claro); border-radius: 9px;
+    padding: 9px 12px; font-family: inherit; font-size: 12px; font-weight: 700;
+    color: var(--teal-escuro); cursor: pointer; align-items: center;
+  }
+  .btn-limpar-col:hover{ border-color: var(--teal-escuro); }
+
   .cel-link{
     background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
     font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
@@ -923,6 +982,7 @@
       <select class="filtro" id="f-emp"></select>
       <select class="filtro" id="f-prof"></select>
       <input class="filtro" id="f-busca" type="search" placeholder="Buscar aluno, aula, anotação…">
+      <button class="btn-limpar-col" id="limpar-col" style="display:none;"></button>
       <span class="cont-linhas" id="cont-linhas"></span>
       <button class="btn-csv" id="btn-csv">Exportar CSV</button>
     </div>
@@ -1020,19 +1080,21 @@ function montarLinhas(){
 const LINHAS = montarLinhas();
 
 // ── Filtros ──
-function filtradas(){
+function passaFiltrosBasicos(l){
   const fp = document.getElementById("f-prof").value;
   const fe = document.getElementById("f-emp").value;
   const q  = (document.getElementById("f-busca").value || "").trim().toLowerCase();
-  return LINHAS.filter(l => {
-    if (fp && l.prof !== fp) return false;
-    if (fe && l.empresa !== fe) return false;
-    if (q){
-      const alvo = `${l.aluno} ${l.aula} ${l.anot} ${l.empresa} ${l.turma}`.toLowerCase();
-      if (!alvo.includes(q)) return false;
-    }
-    return true;
-  });
+  if (fp && l.prof !== fp) return false;
+  if (fe && l.empresa !== fe) return false;
+  if (q){
+    const alvo = `${l.aluno} ${l.aula} ${l.anot} ${l.empresa} ${l.turma}`.toLowerCase();
+    if (!alvo.includes(q)) return false;
+  }
+  return true;
+}
+
+function filtradas(){
+  return LINHAS.filter(l => passaFiltrosBasicos(l) && passaFiltrosColuna(l));
 }
 
 function estrelasRO(n){
@@ -1043,9 +1105,114 @@ function classeNota(n){
   return n === null ? "" : n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
 }
 
-const COLUNAS = ["Data","Empresa","Turma","Nível","Professor","Aula","Aluno",
-                 "Presença","Engaj.","Trilha","Certos","Erros","Atenção",
-                 "Anotação interna"];
+// ══════════════════════════════════════════════════════════
+//  COLUNAS E FILTRO POR CABEÇALHO
+//  Cada título da planilha abre um menu com os valores daquela coluna.
+//  `valores` devolve uma lista porque há coluna multivalorada (Atenção pode
+//  ter mais de um tema na mesma linha) — a linha passa se QUALQUER valor dela
+//  estiver marcado.
+// ══════════════════════════════════════════════════════════
+const COLUNAS = [
+  { rot:"Data",             k:"data",     valores: l => [`${l.dia} ${l.data}`.trim()] },
+  { rot:"Empresa",          k:"empresa",  valores: l => [l.empresa] },
+  { rot:"Turma",            k:"turma",    valores: l => [l.turma] },
+  { rot:"Nível",            k:"nivel",    valores: l => [l.nivel] },
+  { rot:"Professor",        k:"prof",     valores: l => [l.prof] },
+  { rot:"Aula",             k:"aula",     valores: l => [l.aula] },
+  { rot:"Aluno",            k:"aluno",    valores: l => [l.aluno] },
+  { rot:"Presença",         k:"presenca", valores: l => [l.presenca === "p" ? "Presente"
+                                                       : l.presenca === "a" ? "Faltou" : "Não marcada"] },
+  { rot:"Engaj.",           k:"eng",      valores: l => [l.eng ? `${l.eng} estrela${l.eng>1?"s":""}` : "Não avaliado"] },
+  { rot:"Trilha",           k:"nota",     valores: l => [l.nota === null ? "Sem nota"
+                                                       : l.nota >= 80 ? "80% ou mais"
+                                                       : l.nota >= 60 ? "60 a 79%" : "Abaixo de 60%"] },
+  { rot:"Certos",           k:"acertos",  valores: l => [String(l.acertos)] },
+  { rot:"Erros",            k:"erros",    valores: l => [String(l.erros)] },
+  { rot:"Atenção",          k:"atencao",  valores: l => l.atencao.length
+                                                       ? l.atencao.map(x => x.tema) : ["Sem apontamento"] },
+  { rot:"Anotação interna", k:"anot",     valores: l => [l.anot ? "Com anotação" : "Sem anotação"] }
+];
+
+// { chaveDaColuna: Set de valores marcados }  — coluna ausente = sem filtro
+const FILTROS_COL = {};
+
+function passaFiltrosColuna(l){
+  return COLUNAS.every(c => {
+    const sel = FILTROS_COL[c.k];
+    if (!sel || !sel.size) return true;
+    return c.valores(l).some(v => sel.has(v));
+  });
+}
+
+// Valores possíveis de uma coluna, considerando os OUTROS filtros já aplicados
+// (é o comportamento de planilha: a lista encolhe conforme você filtra).
+function valoresDaColuna(c){
+  const base = LINHAS.filter(l => {
+    const guarda = FILTROS_COL[c.k];
+    delete FILTROS_COL[c.k];
+    const ok = passaFiltrosBasicos(l) && passaFiltrosColuna(l);
+    if (guarda) FILTROS_COL[c.k] = guarda;
+    return ok;
+  });
+  const set = new Set();
+  base.forEach(l => c.valores(l).forEach(v => set.add(v)));
+  return [...set].sort((a,b) => a.localeCompare(b, "pt-BR", { numeric:true }));
+}
+
+function abrirMenuColuna(c, th){
+  fecharMenuColuna();
+  const sel = FILTROS_COL[c.k] || new Set();
+  const vals = valoresDaColuna(c);
+
+  const menu = document.createElement("div");
+  menu.className = "menu-col";
+  menu.innerHTML = `
+    <div class="mc-topo">
+      <input class="mc-busca" type="search" placeholder="Filtrar ${c.rot.toLowerCase()}…">
+    </div>
+    <div class="mc-acoes">
+      <button data-todos>Marcar todos</button>
+      <button data-nenhum>Limpar</button>
+    </div>
+    <div class="mc-lista">
+      ${vals.map(v => `
+        <label class="mc-item">
+          <input type="checkbox" value="${v.replace(/"/g,'&quot;')}" ${sel.size===0 || sel.has(v) ? "checked" : ""}>
+          <span>${v}</span>
+        </label>`).join("") || '<div class="mc-vazio">Nada para filtrar</div>'}
+    </div>
+    <div class="mc-rodape">
+      <button class="mc-ok" data-aplicar>Aplicar</button>
+    </div>`;
+
+  th.appendChild(menu);
+  const busca = menu.querySelector(".mc-busca");
+  busca.oninput = () => {
+    const q = busca.value.trim().toLowerCase();
+    menu.querySelectorAll(".mc-item").forEach(it => {
+      it.style.display = it.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+  };
+  menu.querySelector("[data-todos]").onclick = () =>
+    menu.querySelectorAll(".mc-item:not([style*='none']) input").forEach(i => i.checked = true);
+  menu.querySelector("[data-nenhum]").onclick = () =>
+    menu.querySelectorAll(".mc-item input").forEach(i => i.checked = false);
+  menu.querySelector("[data-aplicar]").onclick = () => {
+    const marcados = [...menu.querySelectorAll(".mc-item input")].filter(i => i.checked).map(i => i.value);
+    if (marcados.length === vals.length) delete FILTROS_COL[c.k];   // todos = sem filtro
+    else FILTROS_COL[c.k] = new Set(marcados);
+    fecharMenuColuna();
+    renderTabela();
+  };
+  menu.onclick = e => e.stopPropagation();
+  setTimeout(() => busca.focus(), 30);
+}
+
+function fecharMenuColuna(){
+  document.querySelectorAll(".menu-col").forEach(m => m.remove());
+}
+document.addEventListener("click", fecharMenuColuna);
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharMenuColuna(); });
 
 function htmlAtencao(lista){
   if (!lista.length) return '<span class="sem">—</span>';
@@ -1061,7 +1228,12 @@ function renderTabela(){
   const dados = filtradas();
   const tb = document.getElementById("tabela");
   tb.innerHTML =
-    `<thead><tr>${COLUNAS.map(c => `<th>${c}</th>`).join("")}</tr></thead>` +
+    `<thead><tr>${COLUNAS.map(c => {
+      const ativo = FILTROS_COL[c.k] && FILTROS_COL[c.k].size;
+      return `<th class="${ativo ? "filtrado" : ""}">
+        <button class="th-btn" data-col="${c.k}">${c.rot}<i class="funil"></i></button>
+      </th>`;
+    }).join("")}</tr></thead>` +
     `<tbody>${dados.map(l => {
       const risco = l.presenca === "a" || (l.nota !== null && l.nota < 60) || (l.eng && l.eng <= 1);
       return `<tr class="${risco ? "alerta" : ""}">
@@ -1088,6 +1260,23 @@ function renderTabela(){
     `${dados.length} de ${LINHAS.length} linhas`;
   renderKPIs(dados);
   ligarCelulas();
+
+  document.querySelectorAll(".th-btn").forEach(b => {
+    b.onclick = e => {
+      e.stopPropagation();
+      const c = COLUNAS.find(x => x.k === b.dataset.col);
+      const jaAberto = b.parentElement.querySelector(".menu-col");
+      if (jaAberto){ fecharMenuColuna(); return; }
+      abrirMenuColuna(c, b.parentElement);
+    };
+  });
+
+  const nFiltros = Object.keys(FILTROS_COL).length;
+  const lim = document.getElementById("limpar-col");
+  if (lim){
+    lim.style.display = nFiltros ? "inline-flex" : "none";
+    lim.textContent = `Limpar ${nFiltros} filtro${nFiltros!==1?"s":""} de coluna`;
+  }
 }
 
 // ── Células clicáveis da planilha ──
@@ -1237,7 +1426,7 @@ function renderKPIs(dados){
 function baixarCSV(){
   const dados = filtradas();
   const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
-  const linhas = [COLUNAS.map(esc).join(";")].concat(dados.map(l => [
+  const linhas = [COLUNAS.map(c => esc(c.rot)).join(";")].concat(dados.map(l => [
     `${l.dia} ${l.data}`, l.empresa, l.turma, l.nivel, l.prof, l.aula, l.aluno,
     l.presenca === "p" ? "presente" : l.presenca === "a" ? "faltou" : "",
     l.eng || "", l.nota === null ? "" : l.nota + "%", l.acertos, l.erros,
@@ -1438,6 +1627,10 @@ fProf.onchange = renderTabela;
 fEmp.onchange  = renderTabela;
 document.getElementById("f-busca").oninput = renderTabela;
 document.getElementById("btn-csv").onclick = baixarCSV;
+document.getElementById("limpar-col").onclick = () => {
+  Object.keys(FILTROS_COL).forEach(k => delete FILTROS_COL[k]);
+  renderTabela();
+};
 
 document.querySelectorAll(".tab").forEach(t => {
   t.onclick = () => {

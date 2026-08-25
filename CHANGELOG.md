@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-0050-seletor-aluno — 26/08/2026
+- O que mudou: a seção Alunos do `nova-turma.html` foi refeita. Antes era
+  um card só com quatro campos (nome, cargo, área de atuação,
+  responsabilidades) e busca inline no campo de nome, misturando
+  "escolher quem já existe" com "cadastrar alguém novo". Agora são dois
+  caminhos separados: (1) um seletor "Selecionar aluno já cadastrado",
+  agrupado por empresa (os da empresa dessa turma primeiro), onde
+  escolher põe a pessoa como chip compacto e a remove do seletor; (2) um
+  botão "+ Aluno novo" que pede só nome e cargo. Área de atuação e
+  responsabilidades saíram do formulário — as colunas seguem no banco,
+  só não são mais preenchidas por aqui. Trocar a empresa reagrupa o
+  seletor. CSS e listener da busca inline antiga removidos.
+- Arquivos: nova-turma.html
+- Motivo: pedido da Karina em 25/08, com print — não gostou do layout de
+  card com quatro campos.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-0035-pontos-atencao-so-erros
+
 ## v-20260826-0035-pontos-atencao-so-erros — 26/08/2026
 - O que mudou: a seção "Onde prestar atenção" (`aluno.html`, aba Início)
   tinha dois problemas. (1) Tema acertado por inteiro aparecia com tag

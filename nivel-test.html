@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<!--
+  LEVEL TEST — formulário público, preenchido pelo próprio aluno/lead
+  ========================================
+  Recebe ?empresa_id=X&empresa_nome=Y (vem do botão "+ Aluno" no card da
+  empresa em interna.html > Empresas). Determina o nível do aluno e grava
+  direto em `alunos` (nivel_cefr, nivel_banda, nivel_sub) — sem turma_alunos,
+  o aluno fica "sem turma" até alguém alocar depois na aba Empresas.
+
+  Teste sequencial começando em A1, 3 perguntas por nível, precisa 2/3 pra
+  subir. Falhou no nível → resultado é o último nível que passou (ou Pré-A1
+  se falhar já em A1). Checkbox de pular pra quem se autoavalia zero.
+
+  O aluno NUNCA vê o nível — nem CEFR, nem banda, nem Low/High. Só uma tela
+  de confirmação no fim.
+
+  Mesma paleta e helpers Supabase do nova-turma.html.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bupp — Level Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-escuro: #54402F;
+    --amarelo-neon: #A8D5F2;
+    --limao-claro: #E4F1FA;
+    --bg-dash: #F7F5F2;
+    --azul-intermediario: #8A7767;
+    --branco: #FFFFFF;
+    --texto: #54402F;
+    --cinza-texto: #8A7F76;
+    --borda: #E7E1DA;
+    --erro: #B3423C;
+    --ok: #2E7D46;
+  }
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; background: var(--bg-dash); font-family:'Inter',system-ui,sans-serif; color:var(--texto); }
+  .logo-topo{ display:flex; justify-content:center; padding: 28px 20px 6px; }
+  .logo-topo img{ height: 46px; width:auto; }
+  main{ max-width: 560px; margin: 0 auto; padding: 10px 18px 60px; }
+  .secao{ background: var(--branco); border:1px solid var(--borda); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+  .secao h2{ font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing:.06em; color: var(--azul-intermediario); margin: 0 0 14px; }
+  .campo{ margin-bottom: 13px; }
+  .campo label{ display:block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+  .campo .ajuda{ font-size: 11px; color: var(--cinza-texto); margin-top: 3px; }
+  .campo input{
+    width:100%; border:1px solid var(--borda); border-radius: 8px; padding: 9px 10px;
+    font-family:inherit; font-size: 13.5px; color: var(--texto); background: var(--branco);
+  }
+  .campo input:focus{ outline: 2px solid var(--amarelo-neon); border-color: var(--azul-intermediario); }
+  .linha2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px){ .linha2{ grid-template-columns: 1fr; } }
+
+  .pular-card{ display:flex; align-items:flex-start; gap: 10px; padding: 13px 14px; border:1px dashed var(--azul-intermediario);
+    border-radius: 9px; background: var(--limao-claro); margin-top: 10px; cursor:pointer; }
+  .pular-card input{ width:auto; margin-top: 2px; }
+  .pular-card span{ font-size: 13px; font-weight: 600; line-height: 1.4; }
+
+  .progresso{ display:flex; gap: 5px; margin-bottom: 18px; }
+  .progresso .ponto{ flex:1; height: 5px; border-radius: 3px; background: var(--borda); }
+  .progresso .ponto.ativo{ background: var(--teal-escuro); }
+
+  .pergunta-txt{ font-size: 16px; font-weight: 700; line-height: 1.5; margin: 0 0 16px; }
+  .opcoes{ display:flex; flex-direction:column; gap: 8px; }
+  .opcao{ text-align:left; width:100%; border:1px solid var(--borda); background: var(--branco); border-radius: 9px;
+    padding: 12px 14px; font-family:inherit; font-size: 13.5px; font-weight: 600; color: var(--texto); cursor:pointer; }
+  .opcao:hover{ background: var(--limao-claro); border-color: var(--azul-intermediario); }
+  .opcao:disabled{ cursor:default; }
+  .opcao.certa{ background: #E3F3E8; border-color: var(--ok); color: var(--ok); }
+  .opcao.errada{ background: #FBEBEA; border-color: var(--erro); color: var(--erro); }
+
+  .rodape{ position: sticky; bottom:0; background: var(--branco); border-top:1px solid var(--borda);
+    padding: 14px 18px; display:flex; justify-content: flex-end; gap: 10px; }
+  .btn-salvar{ background: var(--teal-escuro); color:#fff; border:none; border-radius: 9px; padding: 12px 22px;
+    font-family:inherit; font-weight: 800; font-size: 14px; cursor:pointer; }
+  .btn-salvar:hover{ background: var(--azul-intermediario); }
+  .btn-salvar:disabled{ opacity:.55; cursor:not-allowed; }
+  #msg{ font-size: 12.5px; font-weight: 700; align-self:center; margin-right: auto; }
+  #msg.ok{ color: var(--ok); }
+  #msg.erro{ color: var(--erro); }
+
+  .final{ text-align:center; padding: 40px 20px; }
+  .final h2{ font-size: 20px; margin: 0 0 10px; text-transform:none; letter-spacing:normal; color: var(--texto); }
+  .final p{ color: var(--cinza-texto); font-size: 14px; line-height: 1.6; }
+
+  #tela-dados, #tela-teste, #tela-final{ display:none; }
+  #tela-dados.on, #tela-teste.on, #tela-final.on{ display:block; }
+</style>
+</head>
+<body>
+
+<div class="logo-topo">
+  <img src="assets/logo-bupp-marrom-azul.png" alt="Bupp Idiomas">
+</div>
+
+<main>
+
+  <!-- ── Tela 1: dados do aluno ── -->
+  <div class="secao" id="tela-dados">
+    <h2>Level Test</h2>
+    <div class="campo">
+      <label for="f-nome">Nome</label>
+      <input id="f-nome" required placeholder="Seu nome completo">
+    </div>
+    <div class="campo">
+      <label for="f-email">E-mail</label>
+      <input id="f-email" type="email" required placeholder="seu@email.com">
+    </div>
+
+    <label class="pular-card">
+      <input type="checkbox" id="f-pular">
+      <span>Não tenho conhecimento de inglês, quero começar do nível básico.</span>
+    </label>
+    <div class="ajuda" style="margin-top:8px;">Marcando essa opção, você não precisa fazer o teste — vai direto pro nível inicial.</div>
+
+    <div style="margin-top:18px; display:flex; justify-content:flex-end;">
+      <button type="button" class="btn-salvar" id="btn-comecar">Começar</button>
+    </div>
+    <div id="msg-dados" style="font-size:12.5px; font-weight:700; margin-top:8px; text-align:right;"></div>
+  </div>
+
+  <!-- ── Tela 2: perguntas ── -->
+  <div class="secao" id="tela-teste">
+    <div class="progresso" id="progresso"></div>
+    <p class="pergunta-txt" id="pergunta-txt"></p>
+    <div class="opcoes" id="opcoes"></div>
+  </div>
+
+  <!-- ── Tela 3: confirmação (nunca mostra nível) ── -->
+  <div class="secao final" id="tela-final">
+    <h2>Teste concluído!</h2>
+    <p>Obrigado, <span id="final-nome"></span>. A Bupp já recebeu suas respostas e entra em contato em breve pra combinar os próximos passos.</p>
+  </div>
+
+</main>
+
+<script>
+const SUPABASE_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
+const H = {
+  "apikey": SUPABASE_ANON_KEY,
+  "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+  "Content-Type": "application/json"
+};
+async function sbInsert(tabela, linha){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabela}`, {
+    method: "POST", headers: { ...H, "Prefer": "return=representation" }, body: JSON.stringify(linha)
+  });
+  if (!res.ok) throw new Error(`POST ${tabela} falhou: ${await res.text()}`);
+  return (await res.json())[0];
+}
+
+// ── Empresa vem travada da URL (botão "+ Aluno" no card) ──
+const paramsUrl = new URLSearchParams(location.search);
+const empresaId = paramsUrl.get("empresa_id");
+const empresaNome = paramsUrl.get("empresa_nome");
+
+// ── Banco de perguntas: 3 por nível, A1 a C2. Pré-A1 é o piso (sem pergunta própria). ──
+const NIVEIS_ORDEM = ["A1","A2","B1","B2","C1","C2"];
+const PERGUNTAS = {
+  A1: [
+    { q:"Our office ___ open on Saturdays.", op:["is","are","am","be"], certa:0 },
+    { q:"She ___ to the client every morning.", op:["write","writes","writing","wrote"], certa:1 },
+    { q:"There ___ two meetings today.", op:["is","are","be","was"], certa:1 }
+  ],
+  A2: [
+    { q:"I ___ this report yesterday.", op:["finish","finished","finishing","finishes"], certa:1 },
+    { q:"He usually ___ the invoices, but this week Ana is doing it.", op:["send","sends","sent","is send"], certa:1 },
+    { q:"We ___ a new supplier next month.", op:["visit","visited","are going to visit","visits"], certa:2 }
+  ],
+  B1: [
+    { q:"If the client ___ tomorrow, we'll confirm the order.", op:["call","calls","will call","called"], certa:1 },
+    { q:"I've ___ worked with a team this size before.", op:["ever","already","never","still"], certa:2 },
+    { q:"By the time you arrive, the meeting ___.", op:["will start","will have started","starts","started"], certa:1 }
+  ],
+  B2: [
+    { q:"The report ___ by the finance team before the deadline.", op:["will finish","will be finished","is finishing","finished"], certa:1 },
+    { q:"___ we'd already signed the contract, they asked to renegotiate the price.", op:["Despite","Although","Because of","Even"], certa:1 },
+    { q:"He suggested ___ the proposal before the board meeting.", op:["to revise","revising","revise","revised"], certa:1 }
+  ],
+  C1: [
+    { q:"___ the delays, the project was delivered on time.", op:["Despite of","Although","Despite","Even though of"], certa:2 },
+    { q:"Had we known about the budget cut, we ___ the project differently.", op:["would plan","would have planned","had planned","will have planned"], certa:1 },
+    { q:"The client's feedback was, ___, hard to act on — too vague to guide the next version.", op:["to put it mildly","putting mildly","to put mild","put it mild"], certa:0 }
+  ],
+  C2: [
+    { q:"She's been ___ the negotiation for weeks — nothing seems to move her.", op:["stonewalling","holding back","dragging on","falling through"], certa:0 },
+    { q:"The board's decision was, for all intents and ___, final.", op:["reasons","purposes","matters","effects"], certa:1 },
+    { q:"His argument, ___ as it was, still failed to sway the committee.", op:["compelling","compel","compellingly","compellable"], certa:0 }
+  ]
+};
+
+// CEFR alcançado → banda que o aluno vê + sub-nível só interno.
+const MAPA_NIVEL = {
+  "Pré-A1": { banda:"Basic",        sub:"Low"  },
+  "A1":     { banda:"Basic",        sub:"High" },
+  "A2":     { banda:"Intermediate", sub:"Low"  },
+  "B1":     { banda:"Intermediate", sub:"High" },
+  "B2":     { banda:"Advanced",     sub:"Low"  },
+  "C1":     { banda:"Advanced",     sub:"High" },
+  "C2":     { banda:"Proficient",   sub:null   }
+};
+
+let nivelIdx = 0;      // índice em NIVEIS_ORDEM
+let acertosNivel = 0;
+let perguntaIdx = 0;   // 0,1,2 dentro do nível atual
+let ultimoNivelPassado = null; // null = nem A1 passou → Pré-A1
+
+function telaAtual(id){
+  ["tela-dados","tela-teste","tela-final"].forEach(t =>
+    document.getElementById(t).classList.toggle("on", t === id));
+}
+telaAtual("tela-dados");
+
+document.getElementById("btn-comecar").onclick = () => {
+  const nome = document.getElementById("f-nome").value.trim();
+  const email = document.getElementById("f-email").value.trim();
+  const msg = document.getElementById("msg-dados");
+  if (!nome || !email){
+    msg.textContent = "Preencha nome e e-mail."; msg.style.color = "var(--erro)"; return;
+  }
+  if (document.getElementById("f-pular").checked){
+    salvarResultado(nome, email, "Pré-A1");
+  } else {
+    iniciarTeste(nome, email);
+  }
+};
+
+function iniciarTeste(nome, email){
+  telaAtual("tela-teste");
+  renderPergunta(nome, email);
+}
+
+function renderProgresso(){
+  const total = NIVEIS_ORDEM.length;
+  document.getElementById("progresso").innerHTML = NIVEIS_ORDEM.map((_, i) =>
+    `<div class="ponto ${i < nivelIdx || (i === nivelIdx) ? "ativo" : ""}"></div>`).join("");
+}
+
+function renderPergunta(nome, email){
+  renderProgresso();
+  const nivel = NIVEIS_ORDEM[nivelIdx];
+  const p = PERGUNTAS[nivel][perguntaIdx];
+  document.getElementById("pergunta-txt").textContent = p.q;
+  const opWrap = document.getElementById("opcoes");
+  opWrap.innerHTML = p.op.map((o, i) => `<button type="button" class="opcao" data-i="${i}">${o}</button>`).join("");
+  opWrap.querySelectorAll(".opcao").forEach(btn => {
+    btn.onclick = () => {
+      opWrap.querySelectorAll(".opcao").forEach(b => b.disabled = true);
+      const i = +btn.dataset.i;
+      if (i === p.certa){ acertosNivel++; btn.classList.add("certa"); }
+      else {
+        btn.classList.add("errada");
+        opWrap.children[p.certa].classList.add("certa");
+      }
+      setTimeout(() => avancar(nome, email), 700);
+    };
+  });
+}
+
+function avancar(nome, email){
+  perguntaIdx++;
+  if (perguntaIdx < 3){
+    renderPergunta(nome, email);
+    return;
+  }
+  // Fim do nível — passou (2/3+) ou não.
+  const passou = acertosNivel >= 2;
+  if (passou) ultimoNivelPassado = NIVEIS_ORDEM[nivelIdx];
+  perguntaIdx = 0;
+  acertosNivel = 0;
+
+  if (!passou || nivelIdx === NIVEIS_ORDEM.length - 1){
+    // Falhou nesse nível, ou chegou no topo (C2) e passou — teste acabou.
+    const resultado = ultimoNivelPassado || "Pré-A1";
+    salvarResultado(nome, email, resultado);
+    return;
+  }
+  nivelIdx++;
+  renderPergunta(nome, email);
+}
+
+async function salvarResultado(nome, email, nivelCefr){
+  telaAtual("tela-final");
+  document.getElementById("final-nome").textContent = nome;
+  const m = MAPA_NIVEL[nivelCefr];
+  try{
+    await sbInsert("alunos", {
+      nome, email,
+      empresa_cliente_id: empresaId || null,
+      nivel_cefr: nivelCefr,
+      nivel_banda: m.banda,
+      nivel_sub: m.sub
+    });
+  } catch(err){
+    document.getElementById("tela-final").innerHTML =
+      `<h2 style="color:var(--erro);">Deu erro ao salvar</h2><p>${err.message}</p>`;
+  }
+}
+</script>
+</body>
+</html>

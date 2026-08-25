@@ -1616,12 +1616,15 @@ async function loadFromCloud() {
   // Cloud data just landed — usersList may have changed, so re-check the
   // session against the freshest list before it's too late to bounce a
   // now-invalid one back to the login screen.
-  if (currentUser) {
+  // No modo embutido não há sessão em localStorage para revalidar — o acesso
+  // vem da dash interna, não de um login. Sem esta guarda, o carregamento da
+  // nuvem expulsava o usuário embutido de volta para a tela de senha.
+  if (currentUser && !EMBED) {
     const restored = tryRestoreSession();
     if (!restored) {
       currentUser = null;
       document.getElementById("app").classList.add("hidden");
-  document.getElementById("sidebar").classList.add("hidden");
+      document.getElementById("sidebar").classList.add("hidden");
       document.getElementById("login-gate-backdrop").classList.remove("hidden");
     }
   }

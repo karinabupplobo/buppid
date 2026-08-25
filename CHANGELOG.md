@@ -2,6 +2,17 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2235-faixa-h2-nova-turma — 25/08/2026
+- O que mudou: a faixa-titulo flutuante "Formulário de Nova Turma" (bloco
+  separado abaixo do logo, v-20260825-2148) foi removida. No lugar, o
+  `<h2>Turma</h2>` do primeiro card ganhou fundo marrom (`--teal-escuro`)
+  e texto branco, sangrando até a borda do card com cantos arredondados
+  só em cima — mesmo padrão do `nivel-test.html` (v-20260825-2225).
+- Arquivos: nova-turma.html
+- Motivo: pedido da Karina em 25/08 — unificar o visual dos dois forms.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2225-faixa-marrom-nivel-test
+
 ## v-20260825-2225-faixa-marrom-nivel-test — 25/08/2026
 - O que mudou: `<h2>Level Test</h2>` no topo do card de dados de
   `nivel-test.html` ganhou fundo marrom (`--teal-escuro`) e texto branco,

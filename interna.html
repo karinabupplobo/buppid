@@ -961,6 +961,7 @@
     outline: none; cursor: pointer;
   }
   .filtro:focus{ border-color: var(--teal-escuro); }
+  .filtro:disabled{ opacity: .5; cursor: not-allowed; background: var(--bg-dash); }
   input.filtro{ cursor: text; min-width: 190px; }
   .btn-csv{
     margin-left: auto; border: none; border-radius: 9px; cursor: pointer;
@@ -1039,6 +1040,13 @@
   </section>
 
   <section class="pane" id="pane-alertas">
+    <div class="barra-planilha">
+      <select class="filtro" id="a-emp"></select>
+      <select class="filtro" id="a-turma" disabled></select>
+      <select class="filtro" id="a-prof"></select>
+      <button class="btn-limpar-col" id="a-limpar" style="display:none;">Limpar filtros</button>
+      <span class="cont-linhas" id="a-cont"></span>
+    </div>
     <div id="lista-alertas"></div>
   </section>
 
@@ -1686,18 +1694,57 @@ const ROT = {
   msg:   { r:"Recado pendente", c:"lavanda"  }
 };
 
+// ── Filtros da aba Alertas ──
+// Empresa e professor são independentes. Turma só destrava depois que uma
+// empresa é escolhida — sem isso a lista misturaria turmas homônimas de
+// empresas diferentes e não diria nada.
+function opcoesTurma(){
+  const emp = document.getElementById("a-emp").value;
+  const sel = document.getElementById("a-turma");
+  if (!emp){
+    sel.disabled = true;
+    sel.innerHTML = `<option value="">Turma (escolha a empresa)</option>`;
+    return;
+  }
+  sel.disabled = false;
+  const turmas = TURMAS.filter(t => t.empresa === emp);
+  sel.innerHTML = `<option value="">Todas as turmas de ${emp}</option>` +
+    turmas.map(t => `<option value="${t.id}">${partesIdent(t).turma} · ${t.nivel}</option>`).join("");
+}
+
 function renderAlertas(){
   const box = document.getElementById("lista-alertas");
+  const fEmp   = document.getElementById("a-emp").value;
+  const fTurma = document.getElementById("a-turma").value;
+  const fProf  = document.getElementById("a-prof").value;
+
   const itens = [];
-  TURMAS.forEach(t => t.alunos.forEach(a => {
-    const al = alertasDoAluno(a, t);
-    if (al.length) itens.push({ t, a, al });
-  }));
+  TURMAS.forEach(t => {
+    if (fEmp && t.empresa !== fEmp) return;
+    if (fTurma && t.id !== fTurma) return;
+    if (fProf && professorDe(t).nome !== fProf) return;
+    t.alunos.forEach(a => {
+      const al = alertasDoAluno(a, t);
+      if (al.length) itens.push({ t, a, al });
+    });
+  });
   itens.sort((x,y) => y.al.length - x.al.length);
+
+  // total sem filtro, para o contador dizer de quanto se está vendo
+  let total = 0;
+  TURMAS.forEach(t => t.alunos.forEach(a => { if (alertasDoAluno(a, t).length) total++; }));
+
+  const nFiltros = [fEmp, fTurma, fProf].filter(Boolean).length;
+  const lim = document.getElementById("a-limpar");
+  lim.style.display = nFiltros ? "inline-flex" : "none";
+  document.getElementById("a-cont").textContent =
+    nFiltros ? `${itens.length} de ${total} alunos` : `${total} aluno${total!==1?"s":""}`;
 
   box.innerHTML = `<div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção</div>`;
   if (!itens.length){
-    box.innerHTML += `<div class="card"><p>Nenhum aluno em atenção agora.</p></div>`;
+    box.innerHTML += `<div class="card"><p>${nFiltros
+      ? "Nenhum aluno em atenção com esses filtros."
+      : "Nenhum aluno em atenção agora."}</p></div>`;
     return;
   }
 
@@ -1811,6 +1858,23 @@ const fEmp = document.getElementById("f-emp");
 fEmp.innerHTML = `<option value="">Todas as empresas</option>` +
   [...new Set(TURMAS.map(t => t.empresa))].map(e => `<option>${e}</option>`).join("");
 
+// ── Filtros da aba Alertas ──
+const aEmp  = document.getElementById("a-emp");
+const aProf = document.getElementById("a-prof");
+aEmp.innerHTML  = `<option value="">Todas as empresas</option>` +
+  [...new Set(TURMAS.map(t => t.empresa))].map(e => `<option>${e}</option>`).join("");
+aProf.innerHTML = `<option value="">Todos os professores</option>` +
+  PROFESSORES.map(p => `<option>${p.nome}</option>`).join("");
+
+aEmp.onchange = () => { opcoesTurma(); renderAlertas(); };
+document.getElementById("a-turma").onchange = renderAlertas;
+aProf.onchange = renderAlertas;
+document.getElementById("a-limpar").onclick = () => {
+  aEmp.value = ""; aProf.value = "";
+  opcoesTurma();
+  renderAlertas();
+};
+
 fProf.onchange = renderTabela;
 fEmp.onchange  = renderTabela;
 document.getElementById("f-busca").oninput = renderTabela;
@@ -1830,6 +1894,7 @@ document.querySelectorAll(".tab").forEach(t => {
 });
 
 renderTabela();
+opcoesTurma();
 renderAlertas();
 renderTurmas();
 </script>

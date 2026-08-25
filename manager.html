@@ -1317,6 +1317,38 @@
   .form-linha textarea{ resize: vertical; min-height: 84px; line-height: 1.45; }
   .form-duplo{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+  /* ── Área de upload ── */
+  .area-upload{
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: 1.5px dashed var(--azul-intermediario); border-radius: 11px;
+    padding: 20px 16px; cursor: pointer; text-align: center;
+    background: #fafbf7; transition: background .13s, border-color .13s;
+  }
+  .area-upload:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+  .area-upload svg{ width: 24px; height: 24px; color: var(--azul-intermediario); margin-bottom: 3px; }
+  .au-tit{ font-size: 13.5px; font-weight: 700; color: var(--teal-escuro); }
+  .au-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+  .area-upload input[type=file]{
+    position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
+  }
+  .au-escolhido:empty{ display: none; }
+  .au-escolhido{ margin-top: 9px; }
+  .au-chip{
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--limao-claro); border: 1px solid var(--amarelo-neon);
+    border-radius: 999px; padding: 6px 7px 6px 12px;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
+    max-width: 100%; overflow: hidden;
+  }
+  .au-chip b{ font-weight: 600; color: var(--cinza-texto); font-size: 11px; }
+  .au-chip button{
+    width: 18px; height: 18px; border-radius: 50%; border: none; padding: 0;
+    background: rgba(84,64,47,.15); color: var(--teal-escuro);
+    font-size: 13px; line-height: 1; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .au-chip button:hover{ background: var(--teal-escuro); color: #fff; }
+
   @media (max-width: 760px){
     .resumo-medias .ra-wrap{ display: none; }
     .resumo-medias .md-nav{ display: flex; }
@@ -1666,8 +1698,9 @@ function renderDocs(){
               <td>${d.vencimento || "—"}</td>
               <td class="doc-valor">${d.valor || "—"}</td>
               <td><span class="doc-status ${classeStatus(d.status)}">${d.status}</span></td>
-              <td>${d.url ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">abrir ↗</a>`
-                          : '<span class="sem">—</span>'}</td>
+              <td>${d.url
+                ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">${d.arquivo || "abrir"} ↗</a>`
+                : '<span class="sem">sem anexo</span>'}</td>
             </tr>`).join("")}
         </tbody>
       </table>
@@ -1685,8 +1718,9 @@ function renderDocs(){
           <div class="rt-linha"><span class="rt-rot">Emissão</span><span>${d.emissao || "—"}</span></div>
           <div class="rt-linha"><span class="rt-rot">Vencimento</span><span>${d.vencimento || "—"}</span></div>
           <div class="rt-linha"><span class="rt-rot">Valor</span><span class="doc-valor">${d.valor || "—"}</span></div>
-          ${d.url ? `<div class="rt-linha"><span class="rt-rot">Arquivo</span>
-            <a class="u-link" href="${d.url}" target="_blank" rel="noopener">abrir ↗</a></div>` : ""}
+          <div class="rt-linha"><span class="rt-rot">Arquivo</span>
+            ${d.url ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">${d.arquivo || "abrir"} ↗</a>`
+                    : '<span class="sem">sem anexo</span>'}</div>
         </article>`).join("")}
     </div>`;
 }
@@ -1725,8 +1759,17 @@ document.getElementById("btn-novo-doc").onclick = () => {
       <select id="nd-status">${STATUS_DOC.map(s => `<option>${s}</option>`).join("")}</select>
     </div>
     <div class="form-linha">
-      <label for="nd-url">Link do arquivo</label>
-      <input id="nd-url" placeholder="https://…">
+      <label>Arquivo</label>
+      <label class="area-upload" for="nd-arquivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>
+        <span class="au-tit">Escolher arquivo</span>
+        <span class="au-sub">PDF, imagem ou documento</span>
+        <input type="file" id="nd-arquivo" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xml">
+      </label>
+      <div class="au-escolhido" id="nd-arquivo-nome"></div>
     </div>
     <div class="form-linha">
       <label for="nd-obs">Observação</label>
@@ -1737,6 +1780,25 @@ document.getElementById("btn-novo-doc").onclick = () => {
       <button class="btn lime" id="nd-salvar">Adicionar</button>
     </div>
   `);
+  // O arquivo escolhido vira uma URL de sessão. ATENÇÃO: sem servidor de
+  // arquivos, ele existe só enquanto a aba estiver aberta — ao recarregar, o
+  // registro continua e o anexo some. Upload de verdade depende do Supabase
+  // Storage (item no NEXT_STEPS).
+  let arquivoEscolhido = null;
+  const inputArq = document.getElementById("nd-arquivo");
+  inputArq.onchange = () => {
+    const f = inputArq.files && inputArq.files[0];
+    const cx = document.getElementById("nd-arquivo-nome");
+    if (!f){ arquivoEscolhido = null; cx.innerHTML = ""; return; }
+    arquivoEscolhido = { nome: f.name, tamanho: f.size, url: URL.createObjectURL(f) };
+    cx.innerHTML = `<span class="au-chip">${f.name}
+      <b>${(f.size/1024).toFixed(0)} KB</b>
+      <button type="button" id="nd-tirar" aria-label="Remover">&times;</button></span>`;
+    document.getElementById("nd-tirar").onclick = () => {
+      arquivoEscolhido = null; inputArq.value = ""; cx.innerHTML = "";
+    };
+  };
+
   document.getElementById("nd-cancelar").onclick = fecharModal;
   document.getElementById("nd-salvar").onclick = () => {
     const v = id => (document.getElementById(id).value || "").trim();
@@ -1745,7 +1807,9 @@ document.getElementById("btn-novo-doc").onclick = () => {
       id: "d" + Date.now(), empresa: EMPRESA,
       tipo: v("nd-tipo"), titulo: v("nd-titulo"), numero: v("nd-numero"),
       emissao: v("nd-emissao"), vencimento: v("nd-venc"), valor: v("nd-valor"),
-      status: v("nd-status"), url: v("nd-url"), obs: v("nd-obs")
+      status: v("nd-status"), obs: v("nd-obs"),
+      url: arquivoEscolhido ? arquivoEscolhido.url : "",
+      arquivo: arquivoEscolhido ? arquivoEscolhido.nome : ""
     });
     fecharModal();
     renderDocs();
@@ -1758,7 +1822,7 @@ document.getElementById("btn-csv-docs").onclick = () => {
   const linhas = [cols.map(esc).join(";")].concat(
     DOCS.filter(d => d.empresa === EMPRESA).map(d =>
       [rotTipoDoc(d.tipo), d.titulo, d.numero, d.emissao, d.vencimento,
-       d.valor, d.status, d.url, d.obs].map(esc).join(";")));
+       d.valor, d.status, d.arquivo || "", d.obs].map(esc).join(";")));
   const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);

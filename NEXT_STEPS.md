@@ -1,5 +1,12 @@
 # NEXT STEPS
 
+- [ ] **UPLOAD DE ARQUIVO DE VERDADE (Supabase Storage).** A aba Docs da dash do
+      RH já tem área de upload, mas sem servidor de arquivos o anexo vira uma
+      URL de sessão: existe enquanto a aba está aberta e some ao recarregar —
+      o registro do documento fica, o arquivo não. Precisa de um bucket no
+      Supabase Storage, com a mesma regra de acesso da tabela: cada empresa vê
+      só os arquivos dela.
+
 - [ ] **ENVIO DE E-MAILS — lembrar de criar.** Hoje nada sai da plataforma por
       e-mail: o RH só vê o aviso se abrir a dash, e o professor só vê o recado
       da gestão se entrar na ficha do aluno. Falta construir:

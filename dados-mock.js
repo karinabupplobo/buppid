@@ -506,10 +506,10 @@ function aulaTerminou(aulaId){
 //  o gerador de aulas precisa.
 // ══════════════════════════════════════════════════════════
 const FAIXAS_NIVEL = [
-  { l: "L0", cefr: ["Pré-A1", "Pre-A1", "PréA1", "A1"] },
-  { l: "L1", cefr: ["A2", "B1"] },
-  { l: "L2", cefr: ["B2", "C1"] },
-  { l: "L3", cefr: ["C2"] }
+  { l: "Basic",        cefr: ["Pré-A1", "Pre-A1", "PréA1", "A1"] },
+  { l: "Intermediate", cefr: ["A2", "B1"] },
+  { l: "Advanced",     cefr: ["B2", "C1"] },
+  { l: "Proficient",   cefr: ["C2"] }
 ];
 
 function nivelL(cefr){

@@ -28,6 +28,12 @@
   input, select, textarea, button { font-family: inherit; }
   .hidden { display: none !important; }
 
+  /* Modo embutido: sem sidebar, sem cabeçalho, sem margem externa. */
+  html.embutido #sidebar,
+  html.embutido #app-header { display: none !important; }
+  html.embutido body { padding: 0 !important; }
+  html.embutido #app { margin-left: 0 !important; padding: 16px !important; max-width: none !important; }
+
   /* --- Login gate --- */
   #login-gate-backdrop { position: fixed; inset: 0; background: var(--bg); z-index: 200; display: flex; align-items: center; justify-content: center; }
   #login-gate-backdrop.hidden { display: none; }
@@ -1620,7 +1626,8 @@ function afterLogin() {
   renderTasksTable();
   renderSettingsUsersList();
   setTasksViewMode("list");
-  showView("tasks");
+  // Embutida na interna, abre direto na view que o iframe pediu.
+  showView(EMBED ? EMBED_VIEW : "tasks");
 }
 
 
@@ -2438,6 +2445,18 @@ setInterval(() => {
   if (document.querySelector(".ct-card.editando")) return;
   renderLeads();
 }, 900000);
+
+// ══════════════════════════════════════════════════════════
+//  MODO EMBUTIDO
+//  Quando esta dash é aberta dentro de um iframe da interna
+//  (?embed=1&view=tasks|leads|estudo), esconde a navegação própria — sidebar,
+//  cabeçalho e botão de settings — porque quem navega é a interna.
+//  O LOGIN CONTINUA VALENDO: a base de leads tem contatos reais, e liberar
+//  acesso por query string abriria a dash inteira para qualquer um.
+// ══════════════════════════════════════════════════════════
+const EMBED = new URLSearchParams(location.search).get("embed") === "1";
+const EMBED_VIEW = new URLSearchParams(location.search).get("view") || "tasks";
+if (EMBED) document.documentElement.classList.add("embutido");
 
 // --- View switching (Tasks / Leads / Settings) ---
 function showView(name) {

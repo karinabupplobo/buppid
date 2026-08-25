@@ -136,6 +136,31 @@ versão inicial desta seção)*
 
 ## Histórico de decisões
 
+### 21/08/2026 — Tasks, Leads e Mercado dentro da interna
+As três telas do `index.html` (Tasks, Leads, Mercado) ganharam abas na dash
+interna, **embutidas por iframe** em vez de copiadas.
+
+O `index.html` passou a aceitar `?embed=1&view=tasks|leads|estudo`: nesse modo
+ele esconde a navegação própria (sidebar e cabeçalho) e abre direto na view
+pedida, porque quem navega é a interna. O iframe só carrega quando a aba é
+aberta pela primeira vez.
+
+**Por que iframe e não cópia do código:** as três views dependem de 2.462 linhas
+de JS que compartilham login, sincronia com Supabase, usuários e helpers.
+Copiar significaria trazer quase tudo e manter duas versões do mesmo código,
+que divergiriam na primeira correção feita em um só lado. Com iframe é
+literalmente o mesmo código, sempre em sincronia.
+
+**O login do `index.html` continua valendo dentro do iframe.** A dash interna
+não tem senha (decisão da Karina: os dados dela são fictícios por enquanto, e a
+senha entra antes dos dados reais), mas a base de leads do `index.html` tem
+contatos reais de empresas reais — liberar acesso por query string abriria essa
+base para qualquer um com o link.
+
+**Direção de longo prazo:** o `index.html` será aposentado. Quando isso
+acontecer, o conteúdo das três abas migra para dentro da interna e elas passam
+a ser nativas. O iframe é a ponte até lá, não o destino.
+
 ### 21/08/2026 — Dash interna da Bupp
 Criada a `interna.html`, quarta e última tela da fila (professor → aluno → RH →
 interna). Mesma linguagem visual da plataforma do professor, mesmo arquivo de

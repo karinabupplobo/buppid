@@ -828,6 +828,24 @@
   .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
           padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
 
+  /* ── Abas embutidas (Tasks, Leads, Mercado) ──
+     São a dash do index.html dentro de um iframe: mesmo código, sempre em
+     sincronia. Quando o index for aposentado, o conteúdo migra para cá e
+     estas três abas passam a ser nativas. */
+  .pane.emb{ padding: 0; }
+  .pane.emb.active{ display: flex; flex-direction: column; }
+  .emb-frame{
+    width: 100%; height: calc(100vh - 60px); min-height: 520px;
+    border: 1px solid var(--borda); border-radius: 14px;
+    background: var(--branco); display: block;
+  }
+  @media (min-width: 900px){
+    .emb-frame{ height: calc(100vh - 60px); }
+  }
+  @media (max-width: 899px){
+    .emb-frame{ height: calc(100vh - 210px); min-height: 420px; }
+  }
+
   /* ── Bloco "Média": planilha no desktop, carrossel no celular ── */
   .resumo-medias{ margin-bottom: 18px; }
   .rt-titulo{
@@ -1116,6 +1134,9 @@
   <div class="tabs">
     <button class="tab active" data-pane="planilha">Dados</button>
     <button class="tab" data-pane="alertas">Alertas</button>
+    <button class="tab" data-pane="tasks">Tasks</button>
+    <button class="tab" data-pane="leads">Leads</button>
+    <button class="tab" data-pane="mercado">Mercado</button>
   </div>
 </aside>
 
@@ -1152,6 +1173,18 @@
     <div class="planilha-wrap">
       <table class="planilha" id="tabela"></table>
     </div>
+  </section>
+
+  <section class="pane emb" id="pane-tasks">
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks" title="Tasks"></iframe>
+  </section>
+
+  <section class="pane emb" id="pane-leads">
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads" title="Leads"></iframe>
+  </section>
+
+  <section class="pane emb" id="pane-mercado">
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -2246,6 +2279,14 @@ document.querySelectorAll(".tab").forEach(t => {
     document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
     document.querySelectorAll(".pane").forEach(p =>
       p.classList.toggle("active", p.id === "pane-" + t.dataset.pane));
+
+    // As abas Tasks, Leads e Mercado são a própria dash do index.html embutida.
+    // Carrega o iframe só na primeira vez que a aba é aberta — evita puxar a
+    // dash inteira (e o login) para quem só quer ver os dados.
+    const pane = document.getElementById("pane-" + t.dataset.pane);
+    const fr = pane && pane.querySelector(".emb-frame");
+    if (fr && !fr.src) fr.src = fr.dataset.src;
+
     window.scrollTo(0, 0);
   };
 });

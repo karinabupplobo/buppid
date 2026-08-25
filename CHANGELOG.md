@@ -2,6 +2,53 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2155-remove-particular — 25/08/2026
+- O que mudou: eliminado o conceito de turma "particular" (sem empresa) em
+  toda a dash — sempre é por empresa agora. `nova-turma.html` perdeu o
+  campo Tipo (Corporativa/Particular); empresa ficou sempre visível e
+  obrigatória. `plataforma.html` sempre mostra "Corporativa". `dados-mock.js`
+  renomeou a turma "Particular — Marcos B." pra "Nelogica — CEO" (tipo
+  corporativa, descrição "aula individual" em vez de "aula particular").
+  `docs/plataforma.md` atualizado (schema, seção do professor, notas de
+  design) pra não descrever mais `empresa_cliente_id` como nullable nem
+  "Alunos particulares" no seletor.
+- Arquivos: nova-turma.html, plataforma.html, dados-mock.js,
+  docs/plataforma.md, schema do Supabase (ver abaixo).
+- Schema (Supabase, projeto `gajvcgrfljyxgahzfjfp`, tabela `turmas`): a
+  única turma órfã (empresa_cliente_id null, tipo particular — o 1:1 do
+  CEO da Nelogica) foi religada a `empresa_cliente_id` da Nelogica,
+  renomeada pra "Nelogica — CEO" e tipo trocado pra `corporativa`. Depois:
+  `turmas_tipo_check` recriado só com `'corporativa'`,
+  `empresa_cliente_id` virou `NOT NULL`.
+- Motivo: Karina decidiu que não existe mais aluno/turma sem vínculo
+  empresarial — regra de negócio, não só de UI.
+- Reverter para o estado ANTERIOR a esta mudança (arquivos; o schema do
+  Supabase precisa reverter manualmente — recriar o constraint antigo,
+  soltar o NOT NULL, e decidir se desfaz o link da turma da Nelogica):
+  git checkout v-20260825-2148-faixa-marrom-form
+
+## v-20260825-2148-faixa-marrom-form — 25/08/2026
+- O que mudou: `<h2>Turma</h2>` no topo do `nova-turma.html` (texto pequeno,
+  sem fundo) virou uma faixa cheia logo abaixo do logo — fundo marrom
+  (`--teal-escuro`), texto branco, renomeada pra "Formulário de Nova Turma".
+- Arquivos: nova-turma.html
+- Motivo: pedido da Karina em 25/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2145-turmas-clicaveis
+
+## v-20260825-2145-turmas-clicaveis — 25/08/2026
+- O que mudou: turmas na aba Empresas ficaram clicáveis — abrem modal com
+  tudo que o form gravou (formato, tamanho, duração, frequência, módulos,
+  objetivos, assuntos essenciais, restrições) e a lista de alunos
+  vinculados com o nível de cada um (Level Test: banda + Low/High, visível
+  só aqui, nunca pro aluno). Card da empresa ganhou bucket "Sem turma
+  ainda" pra quem fez o Level Test mas não foi alocado — clicar abre modal
+  com o nível e um select pra escolher a turma.
+- Arquivos: interna.html
+- Motivo: pedido da Karina em 25/08 — "vermos as respostas do forms".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2130-nivel-test
+
 ## v-20260825-2130-nivel-test — 25/08/2026
 - O que mudou: novo form público `nivel-test.html` — Level Test que o próprio
   aluno/lead preenche sozinho (link vem do botão **+ Aluno**, novo, ao lado

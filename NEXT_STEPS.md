@@ -51,23 +51,10 @@
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
       do resto da dash). Travar por role quando o Supabase Auth entrar.
 - [ ] TESTAR NO NAVEGADOR o `nivel-test.html` fluxo completo (checkbox de
-      pular, teste sequencial A1→C2, gravação em `alunos`) — não testado no
-      REST nesta sessão, mesma pegadinha do allowlist do subdomínio novo do
-      Supabase no bash_tool.
-- [ ] Aba Empresas de `interna.html` ainda não busca nem mostra `alunos` —
-      só `turmas`, `professores` e `empresas_cliente`. Precisa: (1) turmas
-      clicáveis mostrando as respostas do form (objetivos, tamanho, formato,
-      frequência, módulos, assuntos essenciais, restrições — tudo que
-      `nova-turma.html` grava) e a lista de alunos vinculados; (2) dentro
-      disso, detalhe do aluno mostrando `nivel_cefr`/`nivel_banda`/
-      `nivel_sub` (Low/High só aparece aqui, nunca pro aluno); (3) lista de
-      alunos "sem turma" (fizeram o Level Test mas ainda não foram alocados)
-      visível no card da empresa, com jeito de alocar numa turma existente.
-      Pedido pela Karina em 25/08, ainda não implementado.
-- [ ] `nova-turma.html`: trocar o `<h2>Turma</h2>` do topo por uma faixa
-      cheia com fundo marrom (`--teal-escuro`) e texto branco, renomeada pra
-      "Formulário de Nova Turma". Pedido pela Karina em 25/08, ainda não
-      implementado.
+      pular, teste sequencial A1→C2, gravação em `alunos`) e o fluxo de
+      alocação de aluno sem turma na aba Empresas (interna.html) — não
+      testado no REST nesta sessão, mesma pegadinha do allowlist do
+      subdomínio novo do Supabase no bash_tool.
 - [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
       Aulas — hoje o gerador ainda pergunta tudo de novo no chat.
 - [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead

@@ -739,7 +739,7 @@
   #leads-funnel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px 13px; position: sticky; top: 18px; }
   #leads-funnel h4 { margin: 0 0 12px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--text-muted); font-weight: 700; }
+    color: var(--accent); font-weight: 800; }
   .funnel-stage { display: block; width: 100%; border: none; color: #fff; cursor: pointer;
     margin: 0 auto 4px; padding: 9px 8px; border-radius: 7px; text-align: center;
     transition: transform .12s, filter .12s, box-shadow .12s; }
@@ -749,7 +749,6 @@
   .funnel-stage span { font-size: 10.5px; font-weight: 600; opacity: .92; }
   .funnel-stage.vazio { filter: saturate(.3) opacity(.55); }
   .funnel-stage[data-fs="inbound"].vazio { filter: none; opacity: 1; } /* Inbound nunca fica cinza */" 
-  .funnel-drop { font-size: 10px; color: var(--text-muted); text-align: center; margin: -2px 0 4px; }
   /* arraste do lead até a etapa */
   .lead-row.arrastando { opacity: .45; }
   .funnel-stage.alvo { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px #b5641f; transform: scale(1.03); }
@@ -2355,10 +2354,7 @@ function renderFunil(calc) {
     // amarelo e verde ficam claros demais para texto branco; escolhe o texto
     // pela luminância real da faixa em vez de fixar uma cor só
     const escuro = luminancia(hsl.h, hsl.s, hsl.l) > 0.23;
-    if (i > 0) {
-      const antes = nums[i - 1];
-      html += `<div class="funnel-drop">↓ ${antes > 0 ? Math.round((nums[i] / antes) * 100) : 0}%</div>`;
-    }
+
     html += `<button class="funnel-stage${leadsFiltro === e.k ? " active" : ""}${nums[i] === 0 ? " vazio" : ""}"
       style="width:${larg}%;background:${cor};color:${escuro ? "#241f14" : "#fff"}" data-fs="${e.k}" title="${e.d}" type="button">
       <b>${nums[i]}</b><span>${e.r}</span></button>`;

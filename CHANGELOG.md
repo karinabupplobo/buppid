@@ -2,6 +2,49 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2130-nivel-test — 25/08/2026
+- O que mudou: novo form público `nivel-test.html` — Level Test que o próprio
+  aluno/lead preenche sozinho (link vem do botão **+ Aluno**, novo, ao lado
+  do +Turma em cada card de empresa na aba Empresas de `interna.html`).
+  Checkbox "não tenho conhecimento" pula o teste e grava Pré-A1 direto. Sem
+  marcar, teste sequencial começando em A1 — 3 perguntas por nível, precisa
+  2/3 pra subir. Falha no meio → resultado é o último nível que passou.
+  Passou C2 → para ali. Grava em `alunos` (nivel_cefr, nivel_banda,
+  nivel_sub) sem `turma_alunos` — aluno fica "sem turma" até alocação manual
+  depois. Aluno nunca vê o nível, só tela de confirmação.
+- Arquivos: nivel-test.html (novo), interna.html (botão +Aluno + CSS
+  `.ec-btns`), schema do Supabase (ver abaixo).
+- Schema (Supabase, projeto `gajvcgrfljyxgahzfjfp`, tabela `alunos`):
+  3 colunas novas, todas nullable — `nivel_cefr` (texto livre, Pré-A1...C2),
+  `nivel_banda` (check: Basic/Intermediate/Advanced/Proficient) e
+  `nivel_sub` (check: Low/High, nulo pra Proficient). Mais a coluna `email`
+  (texto livre, nullable) — não existia em `alunos` e o Level Test precisa
+  pra poder retomar contato com o lead.
+- Motivo: Level Test determina o nível real do aluno (CEFR + Low/High
+  interno) sem expor isso pra ele — só a Bupp vê o sub-nível, no detalhe do
+  aluno dentro da aba Empresas.
+- Reverter para o estado ANTERIOR a esta mudança (arquivos; o schema do
+  Supabase não é revertido automaticamente por `git checkout` — rodar
+  `ALTER TABLE alunos DROP COLUMN nivel_cefr, DROP COLUMN nivel_banda,
+  DROP COLUMN nivel_sub, DROP COLUMN email;` manualmente se for reverter de
+  verdade):
+  git checkout v-20260825-2101-fix-empresas-dados
+
+## v-20260825-2101-fix-empresas-dados — 25/08/2026
+- O que mudou: duas correções na aba Empresas de `interna.html`. (1) Botão
+  **+Nova Turma** removido da aba Dados — resto de antes de existir a aba
+  Empresas; hoje o +Turma já vive dentro do card de cada empresa, e o botão
+  antigo não tinha nenhuma referência em JS. (2) Contador "N empresa(s)" em
+  Empresas somava +1 sempre que existia turma Particular, tratando
+  "Particular" como se fosse uma 4ª empresa — por isso o card de KPI (fonte:
+  `empresas_cliente`, sempre 3) e a aba Empresas divergiam (3 vs 4).
+  Corrigido pra contar só `grupos.length`.
+- Arquivos: interna.html
+- Motivo: Karina reportou a divergência 3 vs 4 — dado tem que ser
+  consistente em todas as frentes da dash.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2058-form-nivel-e-logo
+
 ## v-20260825-2058-form-nivel-e-logo — 25/08/2026
 - O que mudou: duas mudanças no `nova-turma.html`.
   **Nível:** a coluna `turmas.nivel_cefr` foi renomeada pra `turmas.nivel` no

@@ -1437,24 +1437,53 @@
   .kpi .d{ font-size: 11.5px; color: var(--cinza-texto); margin-top: 2px; }
   @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(5,1fr); } }
 
-  /* ================= Turmas ================= */
-  .turma-card{
+  /* ================= Empresas (aba antiga "Turmas") ================= */
+  .empresa-card{
     background: var(--branco); border: 1px solid var(--borda); border-radius: 12px;
-    padding: 14px 16px; margin-bottom: 10px; display:flex; flex-wrap:wrap; gap: 14px; align-items:center;
+    padding: 16px 18px; margin-bottom: 12px;
   }
-  .turma-card .tc-info{ flex: 1 1 260px; min-width: 0; }
-  .turma-card h3{ margin: 0 0 3px; font-size: 14.5px; font-weight: 800; color: var(--texto); }
-  .turma-card .tc-meta{ font-size: 11.5px; color: var(--cinza-texto); }
-  .turma-card .tc-obj{ font-size: 12.5px; color: var(--texto); margin-top: 5px; line-height: 1.4; }
-  .turma-card .tc-prof{ flex: 0 0 190px; }
-  .turma-card .tc-prof label{ display:block; font-size: 10.5px; font-weight: 800; text-transform: uppercase;
-    letter-spacing: .05em; color: var(--azul-intermediario); margin-bottom: 4px; }
-  .turma-card select{
-    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 7px 9px;
-    font-family: inherit; font-size: 12.5px; color: var(--texto); background: var(--branco);
+  .ec-cab{ display:flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .ec-cab h3{ margin: 0 0 3px; font-size: 15.5px; font-weight: 800; color: var(--texto); }
+  .ec-meta{ font-size: 12px; color: var(--cinza-texto); line-height: 1.4; max-width: 520px; }
+  .btn-mini{
+    flex-shrink: 0; background: var(--teal-escuro); color: #fff; border: none; border-radius: 7px;
+    padding: 7px 13px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none;
+    white-space: nowrap;
   }
-  .turma-card .tc-salvo{ font-size: 10.5px; color: #2E7D46; font-weight: 700; margin-top: 4px; height: 13px; }
+  .btn-mini:hover{ background: var(--azul-intermediario); }
+  .ec-turmas{ border-top: 1px solid var(--borda); padding-top: 10px; display:flex; flex-direction:column; gap: 8px; }
+  .turma-linha{
+    display:flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    background: var(--limao-claro); border-radius: 9px; padding: 10px 12px;
+  }
+  .turma-linha .tl-info{ flex: 1 1 260px; min-width: 0; }
+  .turma-linha h4{ margin: 0 0 2px; font-size: 13.5px; font-weight: 800; color: var(--texto); }
+  .turma-linha .tl-meta{ font-size: 11px; color: var(--cinza-texto); }
+  .turma-linha .tl-obj{ font-size: 12px; color: var(--texto); margin-top: 4px; line-height: 1.4; }
+  .turma-linha .tl-prof{ flex: 0 0 180px; }
+  .turma-linha .tl-prof label{ display:block; font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--azul-intermediario); margin-bottom: 3px; }
+  .turma-linha select{
+    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 6px 8px;
+    font-family: inherit; font-size: 12px; color: var(--texto); background: var(--branco);
+  }
+  .turma-linha .tl-salvo{ font-size: 10px; color: #2E7D46; font-weight: 700; margin-top: 3px; height: 13px; }
   .turmas-vazio{ font-size: 13px; color: var(--cinza-texto); padding: 20px 4px; }
+  .sem-turmas{ font-size: 12px; color: var(--cinza-texto); font-style: italic; }
+
+  /* Formulário rápido de + Nova Empresa, dentro do modal já existente */
+  .form-modal .campo{ margin-bottom: 11px; }
+  .form-modal label{ display:block; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .form-modal input, .form-modal textarea{
+    width:100%; border:1px solid var(--borda); border-radius: 7px; padding: 8px 9px;
+    font-family:inherit; font-size: 13px; color: var(--texto);
+  }
+  .form-modal .fm-acoes{ display:flex; justify-content:flex-end; gap:8px; margin-top: 8px; }
+  .form-modal .fm-salvar{
+    background: var(--teal-escuro); color:#fff; border:none; border-radius: 8px; padding: 9px 16px;
+    font-family:inherit; font-weight:700; font-size: 13px; cursor:pointer;
+  }
+  .form-modal .fm-msg{ font-size: 11.5px; font-weight:700; margin-top: 6px; }
 
 </style>
 
@@ -1474,7 +1503,7 @@
   <div class="tabs">
     <button class="tab active" data-pane="planilha">Dados</button>
     <button class="tab" data-pane="alertas">Alertas</button>
-    <button class="tab" data-pane="turmas">Turmas</button>
+    <button class="tab" data-pane="turmas">Empresas</button>
     <button class="tab" data-pane="usuarios">Usuários</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="leads">Leads</button>
@@ -1524,9 +1553,9 @@
       <select class="filtro" id="tu-emp"></select>
       <button class="btn-limpar-col" id="tu-limpar" style="display:none;">Limpar filtros</button>
       <span class="cont-linhas" id="tu-cont"></span>
-      <a class="btn-csv" href="nova-turma.html" target="_blank" rel="noopener" style="text-decoration:none;">+ Nova Turma</a>
+      <button class="btn-csv" id="btn-nova-empresa">+ Nova Empresa</button>
     </div>
-    <div class="rt-titulo" id="titulo-turmas">Turmas</div>
+    <div class="rt-titulo" id="titulo-turmas">Empresas</div>
     <div id="turmas-wrap"></div>
   </section>
 
@@ -3248,15 +3277,17 @@ const SB_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
 const SB_H = { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" };
 
-let TURMAS_SB = null, PROFESSORES_SB = null, turmasCarregadas = false;
+let TURMAS_SB = null, PROFESSORES_SB = null, EMPRESAS_SB = null, turmasCarregadas = false;
 
 async function carregarTurmasSupabase(){
-  const [turmasRes, profRes] = await Promise.all([
-    fetch(`${SB_URL}/rest/v1/turmas?select=*,empresas_cliente(nome)&order=criado_em.desc`, { headers: SB_H }),
-    fetch(`${SB_URL}/rest/v1/professores?select=id,nome&order=nome`, { headers: SB_H })
+  const [turmasRes, profRes, empRes] = await Promise.all([
+    fetch(`${SB_URL}/rest/v1/turmas?select=*,empresas_cliente(id,nome,setor,contexto_ingles)&order=criado_em.desc`, { headers: SB_H }),
+    fetch(`${SB_URL}/rest/v1/professores?select=id,nome&order=nome`, { headers: SB_H }),
+    fetch(`${SB_URL}/rest/v1/empresas_cliente?select=id,nome,setor,contexto_ingles&order=nome`, { headers: SB_H })
   ]);
   TURMAS_SB = await turmasRes.json();
   PROFESSORES_SB = await profRes.json();
+  EMPRESAS_SB = await empRes.json();
 }
 
 function opcoesEmpTurmas(){
@@ -3277,51 +3308,135 @@ async function atribuirProfessor(turmaId, professorId, elSalvo){
   setTimeout(() => { elSalvo.textContent = ""; }, 2000);
 }
 
+function turmaLinhaHtml(t){
+  const meta = [t.nivel_cefr, t.formato, t.tamanho_turma ? `${t.tamanho_turma} alunos` : null]
+    .filter(Boolean).join(" · ");
+  return `
+    <div class="turma-linha">
+      <div class="tl-info">
+        <h4>${t.nome}</h4>
+        <div class="tl-meta">${meta}</div>
+        <div class="tl-obj">${t.objetivo_1 || ""}</div>
+      </div>
+      <div class="tl-prof">
+        <label>Professor</label>
+        <select data-turma="${t.id}">
+          <option value="">Sem professor atribuído</option>
+          ${PROFESSORES_SB.map(p => `<option value="${p.id}" ${p.id === t.professor_id ? "selected" : ""}>${p.nome}</option>`).join("")}
+        </select>
+        <div class="tl-salvo"></div>
+      </div>
+    </div>`;
+}
+
+// Empresas sem nenhuma turma ainda (cadastradas por "+ Nova Empresa" mas sem
+// "+ Turma" clicado) também precisam aparecer — senão o botão fica
+// escondido justamente em quem mais precisa dele.
 function renderTurmas(){
   const fEmp = document.getElementById("tu-emp").value;
-  const lista = TURMAS_SB.filter(t => {
-    const nomeEmp = t.empresas_cliente ? t.empresas_cliente.nome : "Particular";
-    return !fEmp || nomeEmp === fEmp;
+
+  const porEmpresaId = new Map();
+  EMPRESAS_SB.forEach(e => porEmpresaId.set(e.id, { empresa: e, turmas: [] }));
+  const particulares = [];
+  TURMAS_SB.forEach(t => {
+    if (t.empresa_cliente_id && porEmpresaId.has(t.empresa_cliente_id)){
+      porEmpresaId.get(t.empresa_cliente_id).turmas.push(t);
+    } else if (!t.empresa_cliente_id){
+      particulares.push(t);
+    }
   });
 
+  let grupos = [...porEmpresaId.values()].sort((a,b) => a.empresa.nome.localeCompare(b.empresa.nome,"pt-BR"));
+  if (fEmp) grupos = grupos.filter(g => g.empresa.nome === fEmp);
+  const mostrarParticular = !fEmp || fEmp === "Particular";
+
   document.getElementById("tu-limpar").style.display = fEmp ? "inline-flex" : "none";
-  document.getElementById("tu-cont").textContent = `${lista.length} de ${TURMAS_SB.length} turmas`;
+  const totalTurmas = TURMAS_SB.length;
+  document.getElementById("tu-cont").textContent =
+    `${grupos.length + (mostrarParticular && particulares.length ? 1 : 0)} empresa(s) · ${totalTurmas} turma(s) no total`;
 
   const wrap = document.getElementById("turmas-wrap");
-  if (!lista.length){
-    wrap.innerHTML = `<div class="turmas-vazio">Nenhuma turma ainda. Use "+ Nova Turma" para criar a primeira.</div>`;
+  if (!grupos.length && !(mostrarParticular && particulares.length)){
+    wrap.innerHTML = `<div class="turmas-vazio">Nenhuma empresa ainda. Use "+ Nova Empresa" pra criar a primeira.</div>`;
     return;
   }
 
-  wrap.innerHTML = lista.map(t => {
-    const nomeEmp = t.empresas_cliente ? t.empresas_cliente.nome : "Particular";
-    const meta = [nomeEmp, t.nivel_cefr, t.formato, t.tamanho_turma ? `${t.tamanho_turma} alunos` : null]
-      .filter(Boolean).join(" · ");
+  let html = grupos.map(g => {
+    const e = g.empresa;
+    const meta = [e.setor, e.contexto_ingles].filter(Boolean).join(" · ");
     return `
-      <div class="turma-card">
-        <div class="tc-info">
-          <h3>${t.nome}</h3>
-          <div class="tc-meta">${meta}</div>
-          <div class="tc-obj">${t.objetivo_1 || ""}</div>
+      <div class="empresa-card">
+        <div class="ec-cab">
+          <div>
+            <h3>${e.nome}</h3>
+            ${meta ? `<div class="ec-meta">${meta}</div>` : ""}
+          </div>
+          <a class="btn-mini" href="nova-turma.html?empresa_id=${e.id}&empresa_nome=${encodeURIComponent(e.nome)}" target="_blank" rel="noopener">+ Turma</a>
         </div>
-        <div class="tc-prof">
-          <label>Professor</label>
-          <select data-turma="${t.id}">
-            <option value="">Sem professor atribuído</option>
-            ${PROFESSORES_SB.map(p => `<option value="${p.id}" ${p.id === t.professor_id ? "selected" : ""}>${p.nome}</option>`).join("")}
-          </select>
-          <div class="tc-salvo"></div>
+        <div class="ec-turmas">
+          ${g.turmas.length ? g.turmas.map(turmaLinhaHtml).join("") : `<div class="sem-turmas">Nenhuma turma cadastrada ainda pra esta empresa.</div>`}
         </div>
       </div>`;
   }).join("");
 
+  if (mostrarParticular && particulares.length){
+    html += `
+      <div class="empresa-card">
+        <div class="ec-cab">
+          <div>
+            <h3>Particular</h3>
+            <div class="ec-meta">Alunos sem empresa vinculada</div>
+          </div>
+          <a class="btn-mini" href="nova-turma.html?tipo=particular" target="_blank" rel="noopener">+ Turma</a>
+        </div>
+        <div class="ec-turmas">${particulares.map(turmaLinhaHtml).join("")}</div>
+      </div>`;
+  }
+
+  wrap.innerHTML = html;
   wrap.querySelectorAll("select[data-turma]").forEach(sel => {
-    sel.onchange = () => atribuirProfessor(sel.dataset.turma, sel.value, sel.parentElement.querySelector(".tc-salvo"));
+    sel.onchange = () => atribuirProfessor(sel.dataset.turma, sel.value, sel.parentElement.querySelector(".tl-salvo"));
   });
 }
 
 document.getElementById("tu-emp").onchange = renderTurmas;
 document.getElementById("tu-limpar").onclick = () => { document.getElementById("tu-emp").value = ""; renderTurmas(); };
+
+document.getElementById("btn-nova-empresa").onclick = () => {
+  abrirModal("Empresas", "Nova empresa", `
+    <div class="form-modal">
+      <div class="campo"><label>Nome</label><input id="ne-nome" placeholder="Nome da empresa"></div>
+      <div class="campo"><label>Setor</label><input id="ne-setor" placeholder="Ex.: Trading de comércio exterior"></div>
+      <div class="campo"><label>Com quem falam inglês e por quê</label><textarea id="ne-contexto" rows="2"></textarea></div>
+      <div class="fm-msg" id="ne-msg"></div>
+      <div class="fm-acoes"><button type="button" class="fm-salvar" id="ne-salvar">Criar empresa</button></div>
+    </div>
+  `);
+  document.getElementById("ne-salvar").onclick = async () => {
+    const nome = document.getElementById("ne-nome").value.trim();
+    const msg = document.getElementById("ne-msg");
+    if (!nome){ msg.textContent = "Preencha o nome."; msg.style.color = "var(--erro,#B3423C)"; return; }
+    msg.textContent = "Salvando..."; msg.style.color = "var(--cinza-texto)";
+    try{
+      const res = await fetch(`${SB_URL}/rest/v1/empresas_cliente`, {
+        method: "POST", headers: { ...SB_H, "Prefer": "return=representation" },
+        body: JSON.stringify({
+          nome,
+          setor: document.getElementById("ne-setor").value.trim() || null,
+          contexto_ingles: document.getElementById("ne-contexto").value.trim() || null
+        })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const nova = (await res.json())[0];
+      EMPRESAS_SB.push(nova);
+      opcoesEmpTurmas();
+      renderTurmas();
+      fecharModal();
+    } catch(err){
+      msg.textContent = "Erro ao salvar: " + err.message; msg.style.color = "var(--erro,#B3423C)";
+    }
+  };
+};
 
 async function abrirAbaTurmas(){
   if (turmasCarregadas) { renderTurmas(); return; }

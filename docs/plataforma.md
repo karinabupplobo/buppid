@@ -57,7 +57,7 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | `professores` | Professor (nome). | N:M `turmas` |
 | `aulas_assigned` | Uma aula do Gerador de Aulas atribuída a uma turma numa data. Abre no `templateaula.html` (o "material da aula" É o carrossel de 8 telas — não existe .pptx literal). Status: agendada / dada. | N:1 `turmas` |
 | `lousas_aula` | Lousas de uma aula: imagem (PNG/base64 ou storage), título, ordem e `criada_em`. Várias por aula. **Cada lousa é carimbada com turma, data e nome da aula** — sem isso não há como saber depois de qual aula ela veio. Substituiu a antiga `anotacoes_aula` em texto. | N:1 `aulas_assigned` · N:1 `turmas` |
-| `anotacoes_aluno` | **Anotação INTERNA** do professor sobre um aluno específico numa aula. **Visível só para a Bupp (role `interno`)** — nunca para o aluno, nunca para o RH do cliente. | N:1 `alunos` · N:1 `aulas_assigned` |
+| `anotacoes_aluno` | Anotação sobre um aluno, **acumulativa** (não é por aula — não tem `aulas_assigned`). `tipo`: `prof` \| `rh` \| `aluno` \| `gestao`. Quem vê o quê por tipo ainda não está travado por role (RLS aberta pra `anon`, pendência registrada no NEXT_STEPS). Implementada em 25/08/2026 — desenho original desta linha (por aula, só visível pra Bupp) não foi o que entrou; ficha do aluno em `interna.html` usa esse formato mais simples. | N:1 `alunos` |
 | `trilha_licoes` | As **lições (exercícios)** de uma trilha. **Modelo: 1 aula → 1 trilha → N lições** — a lição é o exercício dentro da trilha, não uma trilha própria. Liberada automaticamente após a aula. | N:1 `aulas_assigned` |
 | `progresso_aluno` | Por aluno, por lição da trilha: status (não iniciado / em progresso / feito), timestamp. | N:1 `alunos` · N:1 `trilha_licoes` |
 | `presenca` | Por aluno, por aula: presente / ausente. | N:1 `alunos` · N:1 `aulas_assigned` |
@@ -124,11 +124,8 @@ versão inicial desta seção)*
 
 ## 5. Pendências abertas (não bloqueiam a fundação, mas ficam registradas)
 
-- Nome definitivo da view interna que vê tudo cross-cliente (hoje
-  provisório: "Turmas").
-- Quando um lead vira "Cliente" no funil, o fluxo de criar o registro
-  correspondente em `empresas_cliente` ainda não está desenhado (manual
-  vs. automático).
+- Nome definitivo da view interna que vê tudo cross-cliente: virou
+  "Empresas" (25/08/2026), navegação por empresa em vez de turma solta.
 - Indicador de progresso pessoal do aluno (item 4 da tela Aluno) é
   opcional — decidir se entra na primeira versão ou fica pra depois.
 

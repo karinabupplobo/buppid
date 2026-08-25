@@ -2,6 +2,46 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2210-historico-empresa-aluno — 25/08/2026
+- O que mudou: dois cliques novos na aba Empresas de `interna.html`. (1)
+  Clique no nome da empresa abre o histórico de comentários com a gestão
+  — é o mesmo `e.cm` que a aba Leads usa (busca em
+  `bupp_dashboard_data`/seção `leads` por `lead_origem_id`); virar cliente
+  não zera a conversa, continua no mesmo lugar, e dá pra adicionar
+  comentário novo por ali. Empresa sem lead de origem mostra aviso e só
+  acumula dali pra frente. (2) Clique num aluno (dentro do detalhe da
+  turma, ou no bucket "sem turma ainda") abre ficha unificada: nível do
+  Level Test, aviso de que presença/trilha ainda não estão conectadas, e
+  anotações de prof/RH/aluno/gestão. `abrirAlocarAluno` foi absorvida por
+  `abrirDetalheAluno` — quando vem do bucket "sem turma", a mesma ficha
+  também mostra o bloco de alocação.
+- Arquivos: interna.html, schema do Supabase (ver abaixo).
+- Schema (Supabase, projeto `gajvcgrfljyxgahzfjfp`): tabela nova
+  `anotacoes_aluno` (id, aluno_id → alunos, tipo [prof/rh/aluno/gestao],
+  autor, texto, tratado, criado_em) — item do schema de 10 tabelas do
+  `docs/plataforma.md` que ainda não tinha sido criado. RLS aberta pra
+  `anon`, mesma lógica provisória do resto da dash.
+- Motivo: pedido da Karina em 25/08.
+- Reverter para o estado ANTERIOR a esta mudança (arquivos; a tabela
+  `anotacoes_aluno` no Supabase precisa ser removida manualmente —
+  `DROP TABLE anotacoes_aluno;` — se for reverter de verdade):
+  git checkout v-20260825-2155-lead-vira-empresa
+
+## v-20260825-2155-lead-vira-empresa — 25/08/2026
+- O que mudou: lead que muda de etapa pra "Cliente" no funil (`index.html`,
+  também embutido em `interna.html`) cria automaticamente a empresa em
+  `empresas_cliente` — checando duplicata por nome antes (não recria se o
+  lead ir e voltar de etapa, ou se a empresa já tiver sido cadastrada na
+  mão via "+ Nova Empresa"). Grava nome, setor (label de `LEAD_SETORES`),
+  operação (cidade/UF) e `lead_origem_id` (nome do lead — não existe id
+  estável nos leads hoje). `contexto_ingles` fica em branco pra preencher
+  depois. Feedback visual no `funilMsg` já existente.
+- Arquivos: index.html
+- Motivo: pedido da Karina em 25/08 — "todo lead que chega em Cliente vai
+  parar na aba Empresas como nova empresa".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2155-remove-particular
+
 ## v-20260825-2155-remove-particular — 25/08/2026
 - O que mudou: eliminado o conceito de turma "particular" (sem empresa) em
   toda a dash — sempre é por empresa agora. `nova-turma.html` perdeu o

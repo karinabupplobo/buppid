@@ -43,23 +43,32 @@
       exato pra montar o mapa pedagógico. Enquanto o Gerador não lê do
       Supabase (próximo item), isso não trava nada — mas quando ligar, falta
       essa ponte.
-- [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; só 4
-      foram criadas até agora. Faltam: `aulas_assigned`, `lousas_aula`,
-      `anotacoes_aluno`, `trilha_licoes`, `progresso_aluno`, `presenca`,
-      `profiles`. Criar conforme as dashes forem pedindo esses dados (regra
-      permanente da Karina).
+- [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; 5 já
+      foram criadas (`empresas_cliente`, `turmas`, `professores`, `alunos`,
+      `anotacoes_aluno`). Faltam: `aulas_assigned`, `lousas_aula`,
+      `trilha_licoes`, `progresso_aluno`, `presenca`, `profiles`. Criar
+      conforme as dashes forem pedindo esses dados (regra permanente da
+      Karina).
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
       do resto da dash). Travar por role quando o Supabase Auth entrar.
-- [ ] TESTAR NO NAVEGADOR o `nivel-test.html` fluxo completo (checkbox de
-      pular, teste sequencial A1→C2, gravação em `alunos`) e o fluxo de
-      alocação de aluno sem turma na aba Empresas (interna.html) — não
-      testado no REST nesta sessão, mesma pegadinha do allowlist do
-      subdomínio novo do Supabase no bash_tool.
+- [ ] TESTAR NO NAVEGADOR: mudar um lead pra etapa "Cliente" e conferir se
+      a empresa aparece em Empresas; abrir histórico de uma empresa com
+      lead de origem e sem lead de origem; abrir ficha de aluno e testar
+      anotação de cada tipo (prof/rh/aluno/gestao) e a alocação pelo
+      bucket "sem turma ainda" — não testado no REST nesta sessão, mesma
+      pegadinha do allowlist do subdomínio novo do Supabase no bash_tool.
+- [ ] `criarEmpresaClienteDoLead` roda só quando o select de etapa muda
+      dentro do `index.html` (ou embutido em `interna.html`). Se o status
+      do lead for alterado por outro caminho no futuro (import em massa,
+      API), essa criação automática não dispara — vale revisitar se
+      aparecer um jeito novo de mudar etapa.
+- [ ] `anotacoes_aluno` não distingue quem pode ver o quê por role ainda
+      (RLS aberta pra `anon`, igual o resto). Quando Supabase Auth entrar,
+      decidir se anotação tipo "aluno" fica visível pro RH, e se "gestao"
+      fica escondida do professor — mesma lógica de "Pontos de Atenção"
+      que já existe em `plataforma.html`.
 - [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
       Aulas — hoje o gerador ainda pergunta tudo de novo no chat.
-- [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead
-      vira "Cliente" no funil (manual vs. automático) — pendência aberta
-      registrada em `docs/plataforma.md` §5.
 - [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional
       da tela Aluno) entra na primeira versão do `plataforma.html`.
 - [ ] MUDAR A ROTINA: depois de qualquer push que altere algo visual (index.html,

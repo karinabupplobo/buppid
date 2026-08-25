@@ -66,6 +66,13 @@
   .aluno-card{ border:1px solid var(--borda); border-radius: 9px; padding: 12px; margin-bottom: 8px; background: var(--limao-claro); }
   .aluno-card .linha2{ margin-bottom: 8px; }
   .aluno-rm{ background:none; border:none; color: var(--erro); font-size: 11.5px; font-weight: 700; cursor:pointer; padding: 0; }
+  .aluno-chip{
+    display:flex; align-items:center; justify-content:space-between; gap: 10px;
+    border:1px solid var(--borda); border-radius: 9px; padding: 10px 12px;
+    margin-bottom: 8px; background: var(--limao-claro);
+  }
+  .ac-nome{ font-size: 13.5px; font-weight: 700; }
+  .ac-cargo{ font-weight: 500; color: var(--cinza-texto); }
   .busca-aluno{ position: relative; }
   .busca-resultados{
     position:absolute; top: 100%; left:0; right:0; background: var(--branco); border:1px solid var(--borda);
@@ -77,12 +84,6 @@
   }
   .busca-resultados button:hover{ background: var(--limao-claro); }
   .busca-resultados .vazio{ padding: 9px 10px; font-size: 12.5px; color: var(--cinza-texto); }
-  .busca-resultados .al-grupo{
-    padding: 6px 10px; font-size: 10px; font-weight: 800; text-transform: uppercase;
-    letter-spacing: .06em; color: var(--azul-intermediario); background: var(--bg-dash);
-    border-bottom: 1px solid var(--borda);
-  }
-  .busca-resultados .al-novo{ font-weight: 700; color: var(--teal-escuro); border-bottom: none; }
 
   .modulos-lista{ display:flex; flex-direction:column; gap: 6px; margin-bottom: 8px; }
   .modulos-lista input{ width:100%; }
@@ -170,8 +171,12 @@
 
     <div class="secao">
       <h2>Alunos</h2>
+      <div class="campo">
+        <label for="f-aluno-sel">Selecionar aluno já cadastrado</label>
+        <select id="f-aluno-sel"><option value="">Carregando...</option></select>
+      </div>
       <div id="alunos-lista"></div>
-      <button type="button" class="btn-add" id="btn-add-aluno">+ Aluno</button>
+      <button type="button" class="btn-add" id="btn-add-aluno">+ Aluno novo</button>
     </div>
 
     <div class="secao">
@@ -272,119 +277,93 @@ empBusca.oninput = async () => {
     }
     empBusca.value = empresaSelecionada.nome;
     empRes.style.display = "none";
+    // A empresa define o agrupamento do seletor de alunos — reagrupa agora.
+    renderSeletorAlunos();
   });
 };
 document.addEventListener("click", e => { if (!e.target.closest(".busca-aluno")) empRes.style.display = "none"; });
-document.addEventListener("click", e => {
-  if (e.target.closest(".busca-aluno")) return;
-  document.querySelectorAll(".al-resultados").forEach(r => r.style.display = "none");
-});
-
-// ── Alunos: escolher entre os que já existem nessa empresa, ou criar novo ──
+// ── Alunos ──
+// Dois caminhos, separados: um seletor com quem já está cadastrado (o caso
+// comum — o aluno normalmente já entrou pelo Level Test), e um botão para
+// cadastrar alguém novo, que pede só nome e cargo. Antes era um card só com
+// quatro campos e busca inline, que misturava as duas coisas.
 let alunosCache = null;
 async function todosAlunos(){
-  if (!alunosCache) alunosCache = await sbGet("alunos", "?select=id,nome,cargo,area_atuacao,responsabilidades,empresa_cliente_id&order=nome");
+  if (!alunosCache) alunosCache = await sbGet("alunos", "?select=id,nome,cargo,empresa_cliente_id&order=nome");
   return alunosCache;
 }
-let alunosForm = []; // { existenteId|null, nome, cargo, areaAtuacao, responsabilidades }
+
+let alunosForm = []; // { existenteId|null, nome, cargo }
 const alunosLista = document.getElementById("alunos-lista");
+const alunoSel = document.getElementById("f-aluno-sel");
+
+// O seletor mostra primeiro quem é da empresa dessa turma, depois o resto —
+// e esconde quem já foi adicionado, pra não dar pra pôr a mesma pessoa duas
+// vezes na mesma turma.
+async function renderSeletorAlunos(){
+  const todos = await todosAlunos();
+  const empId = empresaSelecionada && empresaSelecionada.id;
+  const jaEscolhidos = new Set(alunosForm.map(a => a.existenteId).filter(Boolean));
+  const livres = todos.filter(a => !jaEscolhidos.has(a.id));
+  const daEmpresa = livres.filter(a => empId && a.empresa_cliente_id === empId);
+  const outros = livres.filter(a => !empId || a.empresa_cliente_id !== empId);
+
+  const opt = a => `<option value="${a.id}">${a.nome}${a.cargo ? " — " + a.cargo : ""}</option>`;
+  let html = `<option value="">Selecione um aluno...</option>`;
+  if (daEmpresa.length){
+    html += `<optgroup label="${empresaSelecionada.nome}">${daEmpresa.map(opt).join("")}</optgroup>`;
+  }
+  if (outros.length){
+    html += `<optgroup label="${daEmpresa.length ? "De outras empresas" : "Alunos no sistema"}">${outros.map(opt).join("")}</optgroup>`;
+  }
+  if (!livres.length) html = `<option value="">Nenhum aluno disponível — use "+ Aluno novo"</option>`;
+  alunoSel.innerHTML = html;
+}
+
+alunoSel.onchange = async () => {
+  const id = alunoSel.value;
+  if (!id) return;
+  const a = (await todosAlunos()).find(x => x.id === id);
+  if (a) alunosForm.push({ existenteId: a.id, nome: a.nome, cargo: a.cargo || "" });
+  alunoSel.value = "";
+  renderAlunos();
+};
 
 function renderAlunos(){
-  alunosLista.innerHTML = alunosForm.map((a, i) => `
-    <div class="aluno-card" data-i="${i}">
-      <div class="linha2">
-        <div class="campo busca-aluno" style="margin-bottom:0;">
-          <label>Nome</label>
-          <input class="al-nome" value="${a.nome || ""}" placeholder="Buscar existente ou digitar novo...">
-          <div class="busca-resultados al-resultados" style="display:none;"></div>
-        </div>
-        <div class="campo" style="margin-bottom:0;">
-          <label>Cargo</label>
-          <input class="al-cargo" value="${a.cargo || ""}">
-        </div>
-      </div>
-      <div class="linha2" style="margin-top:8px;">
-        <div class="campo" style="margin-bottom:0;">
-          <label>Área de atuação</label>
-          <input class="al-area" value="${a.areaAtuacao || ""}">
-        </div>
-        <div class="campo" style="margin-bottom:0;">
-          <label>Responsabilidades</label>
-          <input class="al-resp" value="${a.responsabilidades || ""}">
-        </div>
-      </div>
-      <button type="button" class="aluno-rm">Remover aluno</button>
-    </div>
-  `).join("");
+  alunosLista.innerHTML = alunosForm.map((a, i) => a.existenteId
+    ? `<div class="aluno-chip" data-i="${i}">
+         <span class="ac-nome">${a.nome}${a.cargo ? ` <span class="ac-cargo">${a.cargo}</span>` : ""}</span>
+         <button type="button" class="aluno-rm">remover</button>
+       </div>`
+    : `<div class="aluno-card" data-i="${i}">
+         <div class="linha2">
+           <div class="campo" style="margin-bottom:0;">
+             <label>Nome</label>
+             <input class="al-nome" value="${a.nome || ""}" placeholder="Nome do aluno">
+           </div>
+           <div class="campo" style="margin-bottom:0;">
+             <label>Cargo</label>
+             <input class="al-cargo" value="${a.cargo || ""}" placeholder="Cargo">
+           </div>
+         </div>
+         <button type="button" class="aluno-rm">Remover aluno</button>
+       </div>`
+  ).join("");
 
-  alunosLista.querySelectorAll(".aluno-card").forEach(card => {
-    const i = +card.dataset.i;
-    card.querySelector(".aluno-rm").onclick = () => { alunosForm.splice(i,1); renderAlunos(); };
-    card.querySelector(".al-cargo").oninput = e => alunosForm[i].cargo = e.target.value;
-    card.querySelector(".al-area").oninput = e => alunosForm[i].areaAtuacao = e.target.value;
-    card.querySelector(".al-resp").oninput = e => alunosForm[i].responsabilidades = e.target.value;
-
-    const nomeInput = card.querySelector(".al-nome");
-    const res = card.querySelector(".al-resultados");
-
-    // Lista os alunos que já existem: primeiro os DESSA empresa (é quase
-    // sempre quem a pessoa procura), depois os de outras empresas, e no fim
-    // sempre a opção de criar um novo — antes a lista vinha misturada e não
-    // tinha caminho explícito pra "esse aluno não existe ainda".
-    async function mostrarLista(q){
-      const todos = await todosAlunos();
-      const empId = empresaSelecionada && empresaSelecionada.id;
-      const jaEscolhidos = new Set(alunosForm.map(x => x.existenteId).filter(Boolean));
-      const casa = a => !jaEscolhidos.has(a.id) && (!q || a.nome.toLowerCase().includes(q));
-
-      const daEmpresa = todos.filter(a => empId && a.empresa_cliente_id === empId).filter(casa);
-      const outros = todos.filter(a => !empId || a.empresa_cliente_id !== empId).filter(casa);
-
-      const botao = a => `<button type="button" data-id="${a.id}" data-nome="${a.nome}" data-cargo="${a.cargo||""}" data-area="${a.area_atuacao||""}" data-resp="${a.responsabilidades||""}">${a.nome} <span style="color:var(--cinza-texto);">— ${a.cargo||"sem cargo"}</span></button>`;
-      const cabecalho = txt => `<div class="al-grupo">${txt}</div>`;
-
-      let html = "";
-      if (daEmpresa.length){
-        html += cabecalho(empresaSelecionada.nome) + daEmpresa.map(botao).join("");
-      }
-      if (outros.length){
-        html += cabecalho(daEmpresa.length ? "De outras empresas" : "Alunos no sistema") + outros.map(botao).join("");
-      }
-      if (!daEmpresa.length && !outros.length){
-        html += `<div class="vazio">${q ? "Nenhum aluno com esse nome." : "Nenhum aluno cadastrado ainda."}</div>`;
-      }
-      html += `<button type="button" data-novo="1" class="al-novo">+ ${q ? `Criar "${nomeInput.value.trim()}" como novo aluno` : "Novo aluno"}</button>`;
-
-      res.innerHTML = html;
-      res.style.display = "block";
-      res.querySelectorAll("button").forEach(b => b.onclick = () => {
-        if (b.dataset.novo){
-          alunosForm[i].existenteId = null;
-          res.style.display = "none";
-          nomeInput.focus();
-          return;
-        }
-        alunosForm[i] = {
-          existenteId: b.dataset.id, nome: b.dataset.nome, cargo: b.dataset.cargo,
-          areaAtuacao: b.dataset.area, responsabilidades: b.dataset.resp
-        };
-        renderAlunos();
-      });
-    }
-
-    // Foco no campo já mostra todos os alunos do sistema — não precisa digitar
-    // nada. Alunos entram pelo teste de nível, então a lista precisa estar
-    // sempre navegável, não só aparecer quando o nome é digitado certo.
-    nomeInput.onfocus = () => mostrarLista(nomeInput.value.trim().toLowerCase());
-    nomeInput.oninput = () => {
-      alunosForm[i].nome = nomeInput.value;
-      alunosForm[i].existenteId = null;
-      mostrarLista(nomeInput.value.trim().toLowerCase());
-    };
+  alunosLista.querySelectorAll("[data-i]").forEach(el => {
+    const i = +el.dataset.i;
+    el.querySelector(".aluno-rm").onclick = () => { alunosForm.splice(i,1); renderAlunos(); };
+    const nome = el.querySelector(".al-nome");
+    if (nome) nome.oninput = e => alunosForm[i].nome = e.target.value;
+    const cargo = el.querySelector(".al-cargo");
+    if (cargo) cargo.oninput = e => alunosForm[i].cargo = e.target.value;
   });
+
+  renderSeletorAlunos();
 }
+
 document.getElementById("btn-add-aluno").onclick = () => {
-  alunosForm.push({ existenteId: null, nome: "", cargo: "", areaAtuacao: "", responsabilidades: "" });
+  alunosForm.push({ existenteId: null, nome: "", cargo: "" });
   renderAlunos();
 };
 renderAlunos();
@@ -478,7 +457,6 @@ document.getElementById("btn-salvar").onclick = async () => {
       if (!alunoId){
         const novo = await sbInsert("alunos", {
           nome: a.nome.trim(), cargo: a.cargo || null,
-          area_atuacao: a.areaAtuacao || null, responsabilidades: a.responsabilidades || null,
           empresa_cliente_id: empresaClienteId
         });
         alunoId = novo.id;

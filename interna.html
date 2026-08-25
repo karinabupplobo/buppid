@@ -1458,6 +1458,22 @@
     background: var(--limao-claro); border-radius: 9px; padding: 10px 12px;
   }
   .turma-linha .tl-info{ flex: 1 1 260px; min-width: 0; }
+  .tl-clicavel{ cursor: pointer; border-radius: 7px; padding: 4px 6px; margin: -4px -6px; }
+  .tl-clicavel:hover{ background: rgba(255,255,255,.55); }
+  .dt-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 12px; }
+  @media (max-width: 480px){ .dt-grid{ grid-template-columns: 1fr; } }
+  .ec-sem-turma{ border-top: 1px dashed var(--borda); margin-top: 10px; padding-top: 10px; }
+  .ec-sem-turma-titulo{ font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--azul-intermediario); margin-bottom: 7px; }
+  .aluno-sem-turma{
+    width: 100%; display:flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--limao-claro); border: 1px dashed var(--azul-intermediario); border-radius: 8px;
+    padding: 8px 10px; font-family: inherit; cursor: pointer; margin-bottom: 6px;
+  }
+  .aluno-sem-turma:last-child{ margin-bottom: 0; }
+  .aluno-sem-turma:hover{ background: var(--amarelo-neon); }
+  .aluno-sem-turma .ti-nome{ font-size: 12.5px; font-weight: 700; color: var(--texto); }
+  .aluno-sem-turma .ti-grade{ font-size: 11px; font-weight: 700; color: var(--azul-intermediario); white-space: nowrap; }
   .turma-linha h4{ margin: 0 0 2px; font-size: 13.5px; font-weight: 800; color: var(--texto); }
   .turma-linha .tl-meta{ font-size: 11px; color: var(--cinza-texto); }
   .turma-linha .tl-obj{ font-size: 12px; color: var(--texto); margin-top: 4px; line-height: 1.4; }
@@ -3277,26 +3293,42 @@ const SB_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
 const SB_H = { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" };
 
-let TURMAS_SB = null, PROFESSORES_SB = null, EMPRESAS_SB = null, turmasCarregadas = false;
+let TURMAS_SB = null, PROFESSORES_SB = null, EMPRESAS_SB = null, ALUNOS_SB = null, turmasCarregadas = false;
 
 async function carregarTurmasSupabase(){
-  const [turmasRes, profRes, empRes] = await Promise.all([
+  const [turmasRes, profRes, empRes, alunosRes] = await Promise.all([
     fetch(`${SB_URL}/rest/v1/turmas?select=*,empresas_cliente(id,nome,setor,contexto_ingles)&order=criado_em.desc`, { headers: SB_H }),
     fetch(`${SB_URL}/rest/v1/professores?select=id,nome&order=nome`, { headers: SB_H }),
-    fetch(`${SB_URL}/rest/v1/empresas_cliente?select=id,nome,setor,contexto_ingles&order=nome`, { headers: SB_H })
+    fetch(`${SB_URL}/rest/v1/empresas_cliente?select=id,nome,setor,contexto_ingles&order=nome`, { headers: SB_H }),
+    fetch(`${SB_URL}/rest/v1/alunos?select=id,nome,cargo,area_atuacao,responsabilidades,email,empresa_cliente_id,nivel_cefr,nivel_banda,nivel_sub,turma_alunos(turma_id)&order=nome`, { headers: SB_H })
   ]);
   TURMAS_SB = await turmasRes.json();
   PROFESSORES_SB = await profRes.json();
   EMPRESAS_SB = await empRes.json();
+  ALUNOS_SB = await alunosRes.json();
 }
 
+// Toda turma é de uma empresa (Karina decidiu em 25/08 — não existe mais
+// turma "Particular"). O fallback de nome só continua aqui como blindagem
+// caso algum dado antigo escape sem empresa_cliente_id.
 function opcoesEmpTurmas(){
   const sel = document.getElementById("tu-emp");
-  const nomes = [...new Set(TURMAS_SB.map(t => t.empresas_cliente ? t.empresas_cliente.nome : "Particular"))]
-    .sort((a,b) => a.localeCompare(b,"pt-BR"));
+  const nomes = [...EMPRESAS_SB].map(e => e.nome).sort((a,b) => a.localeCompare(b,"pt-BR"));
   sel.innerHTML = `<option value="">Todas as empresas</option>` +
     nomes.map(n => `<option value="${n}">${n}</option>`).join("");
 }
+
+function alunosDaTurma(turmaId){
+  return ALUNOS_SB.filter(a => (a.turma_alunos || []).some(ta => ta.turma_id === turmaId));
+}
+function alunosSemTurma(empresaId){
+  return ALUNOS_SB.filter(a => a.empresa_cliente_id === empresaId && !(a.turma_alunos || []).length);
+}
+function nivelAlunoLabel(a){
+  if (!a.nivel_banda) return "sem Level Test";
+  return a.nivel_sub ? `${a.nivel_banda} ${a.nivel_sub}` : a.nivel_banda;
+}
+
 
 async function atribuirProfessor(turmaId, professorId, elSalvo){
   await fetch(`${SB_URL}/rest/v1/turmas?id=eq.${turmaId}`, {
@@ -3313,7 +3345,7 @@ function turmaLinhaHtml(t){
     .filter(Boolean).join(" · ");
   return `
     <div class="turma-linha">
-      <div class="tl-info">
+      <div class="tl-info tl-clicavel" data-turma-detalhe="${t.id}">
         <h4>${t.nome}</h4>
         <div class="tl-meta">${meta}</div>
         <div class="tl-obj">${t.objetivo_1 || ""}</div>
@@ -3329,44 +3361,111 @@ function turmaLinhaHtml(t){
     </div>`;
 }
 
+// Abre as respostas completas do form (nova-turma.html) pra essa turma —
+// tudo que o Gerador de Aulas vai usar — mais os alunos vinculados e o
+// nível de cada um (Level Test).
+function abrirDetalheTurma(t){
+  const alunos = alunosDaTurma(t.id);
+  const modulos = (t.nomes_modulos || []).filter(Boolean);
+  const corpo = `
+    <div class="dt-grid">
+      <div class="mini"><b>Formato</b><span>${t.formato || "—"}</span></div>
+      <div class="mini"><b>Tamanho previsto</b><span>${t.tamanho_turma ? t.tamanho_turma + " alunos" : "—"}</span></div>
+      <div class="mini"><b>Duração da aula</b><span>${t.duracao_aula_min ? t.duracao_aula_min + " min" : "—"}</span></div>
+      <div class="mini"><b>Frequência</b><span>${t.frequencia_semanal ? t.frequencia_semanal + "x por semana" : "—"}</span></div>
+    </div>
+    <div class="mini obj"><b>Objetivo 1</b><span>${t.objetivo_1 || "—"}</span></div>
+    ${t.objetivo_2 ? `<div class="mini obj"><b>Objetivo 2</b><span>${t.objetivo_2}</span></div>` : ""}
+    ${t.assuntos_essenciais ? `<div class="mini obj"><b>Assuntos essenciais</b><span>${t.assuntos_essenciais}</span></div>` : ""}
+    ${t.restricoes ? `<div class="mini obj alerta-turma"><b>Restrições</b><span>${t.restricoes}</span></div>` : ""}
+    ${modulos.length ? `<div class="mini obj"><b>Módulos</b><span>${modulos.join(" · ")}</span></div>` : ""}
+    <div class="rt-titulo" style="margin-top:16px;">Alunos (${alunos.length})</div>
+    ${alunos.length ? alunos.map(a => `
+      <div class="turma-item" style="cursor:default;">
+        <span class="ti-esq">
+          <span class="ti-nome">${a.nome}${a.cargo ? " · " + a.cargo : ""}</span>
+          <span class="ti-meta">${a.email || "sem e-mail"}</span>
+        </span>
+        <span class="ti-dir"><span class="ti-grade">${nivelAlunoLabel(a)}</span></span>
+      </div>`).join("") : `<div class="sem-turmas">Nenhum aluno vinculado ainda.</div>`}
+  `;
+  abrirModal(t.empresas_cliente ? t.empresas_cliente.nome : "Turma", t.nome, corpo);
+}
+
+// Aluno fez o Level Test (ou entrou pelo +Aluno) mas ainda não foi alocado
+// numa turma — mostra o nível pra Bupp decidir onde encaixar.
+function abrirAlocarAluno(aluno, turmasDaEmpresa){
+  const corpo = `
+    <div class="mini obj"><b>Nível (Level Test)</b><span>${nivelAlunoLabel(aluno)}</span></div>
+    ${aluno.cargo ? `<div class="mini obj"><b>Cargo</b><span>${aluno.cargo}</span></div>` : ""}
+    ${aluno.email ? `<div class="mini obj"><b>E-mail</b><span>${aluno.email}</span></div>` : ""}
+    <div class="form-modal" style="margin-top:14px;">
+      <div class="campo">
+        <label>Alocar na turma</label>
+        <select id="aloc-turma">
+          <option value="">Selecione uma turma</option>
+          ${turmasDaEmpresa.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
+        </select>
+      </div>
+      <button type="button" class="btn-salvar" id="aloc-confirmar" ${turmasDaEmpresa.length ? "" : "disabled"}>Alocar</button>
+      <div id="aloc-msg" style="font-size:12px;font-weight:700;margin-top:8px;"></div>
+    </div>
+    ${turmasDaEmpresa.length ? "" : `<div class="sem-turmas" style="margin-top:8px;">Essa empresa ainda não tem turma — crie uma com "+ Turma" antes de alocar.</div>`}
+  `;
+  abrirModal("Alocar aluno", aluno.nome, corpo);
+  const btn = document.getElementById("aloc-confirmar");
+  if (btn) btn.onclick = async () => {
+    const turmaId = document.getElementById("aloc-turma").value;
+    const msg = document.getElementById("aloc-msg");
+    if (!turmaId){ msg.textContent = "Selecione uma turma."; msg.style.color = "var(--erro)"; return; }
+    btn.disabled = true; msg.textContent = "Alocando...";
+    try{
+      const res = await fetch(`${SB_URL}/rest/v1/turma_alunos`, {
+        method: "POST", headers: SB_H, body: JSON.stringify({ turma_id: turmaId, aluno_id: aluno.id })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      aluno.turma_alunos = [{ turma_id: turmaId }];
+      fecharModal();
+      renderTurmas();
+    } catch(err){
+      msg.textContent = "Erro ao alocar: " + err.message; msg.style.color = "var(--erro)"; btn.disabled = false;
+    }
+  };
+}
+
 // Empresas sem nenhuma turma ainda (cadastradas por "+ Nova Empresa" mas sem
 // "+ Turma" clicado) também precisam aparecer — senão o botão fica
-// escondido justamente em quem mais precisa dele.
+// escondido justamente em quem mais precisa dele. Toda turma é de uma
+// empresa (não existe mais bucket "Particular" — Karina decidiu em 25/08).
 function renderTurmas(){
   const fEmp = document.getElementById("tu-emp").value;
 
   const porEmpresaId = new Map();
   EMPRESAS_SB.forEach(e => porEmpresaId.set(e.id, { empresa: e, turmas: [] }));
-  const particulares = [];
   TURMAS_SB.forEach(t => {
     if (t.empresa_cliente_id && porEmpresaId.has(t.empresa_cliente_id)){
       porEmpresaId.get(t.empresa_cliente_id).turmas.push(t);
-    } else if (!t.empresa_cliente_id){
-      particulares.push(t);
     }
   });
 
   let grupos = [...porEmpresaId.values()].sort((a,b) => a.empresa.nome.localeCompare(b.empresa.nome,"pt-BR"));
   if (fEmp) grupos = grupos.filter(g => g.empresa.nome === fEmp);
-  const mostrarParticular = !fEmp || fEmp === "Particular";
 
   document.getElementById("tu-limpar").style.display = fEmp ? "inline-flex" : "none";
   const totalTurmas = TURMAS_SB.length;
-  // "Particular" não é uma empresa (é gente sem vínculo empresarial) — não pode
-  // entrar na contagem de empresa(s), senão diverge do card de KPI e da
-  // contagem real de empresas_cliente (bug reportado pela Karina em 25/08).
   document.getElementById("tu-cont").textContent =
     `${grupos.length} empresa(s) · ${totalTurmas} turma(s) no total`;
 
   const wrap = document.getElementById("turmas-wrap");
-  if (!grupos.length && !(mostrarParticular && particulares.length)){
+  if (!grupos.length){
     wrap.innerHTML = `<div class="turmas-vazio">Nenhuma empresa ainda. Use "+ Nova Empresa" pra criar a primeira.</div>`;
     return;
   }
 
-  let html = grupos.map(g => {
+  const html = grupos.map(g => {
     const e = g.empresa;
     const meta = [e.setor, e.contexto_ingles].filter(Boolean).join(" · ");
+    const semTurma = alunosSemTurma(e.id);
     return `
       <div class="empresa-card">
         <div class="ec-cab">
@@ -3382,26 +3481,31 @@ function renderTurmas(){
         <div class="ec-turmas">
           ${g.turmas.length ? g.turmas.map(turmaLinhaHtml).join("") : `<div class="sem-turmas">Nenhuma turma cadastrada ainda pra esta empresa.</div>`}
         </div>
+        ${semTurma.length ? `
+          <div class="ec-sem-turma">
+            <div class="ec-sem-turma-titulo">Sem turma ainda (${semTurma.length})</div>
+            ${semTurma.map(a => `
+              <button type="button" class="aluno-sem-turma" data-aluno-alocar="${a.id}" data-empresa="${e.id}">
+                <span class="ti-nome">${a.nome}</span>
+                <span class="ti-grade">${nivelAlunoLabel(a)}</span>
+              </button>`).join("")}
+          </div>` : ""}
       </div>`;
   }).join("");
-
-  if (mostrarParticular && particulares.length){
-    html += `
-      <div class="empresa-card">
-        <div class="ec-cab">
-          <div>
-            <h3>Particular</h3>
-            <div class="ec-meta">Alunos sem empresa vinculada</div>
-          </div>
-          <a class="btn-mini" href="nova-turma.html?tipo=particular" target="_blank" rel="noopener">+ Turma</a>
-        </div>
-        <div class="ec-turmas">${particulares.map(turmaLinhaHtml).join("")}</div>
-      </div>`;
-  }
 
   wrap.innerHTML = html;
   wrap.querySelectorAll("select[data-turma]").forEach(sel => {
     sel.onchange = () => atribuirProfessor(sel.dataset.turma, sel.value, sel.parentElement.querySelector(".tl-salvo"));
+  });
+  wrap.querySelectorAll("[data-turma-detalhe]").forEach(el => {
+    el.onclick = () => abrirDetalheTurma(TURMAS_SB.find(t => t.id === el.dataset.turmaDetalhe));
+  });
+  wrap.querySelectorAll("[data-aluno-alocar]").forEach(btn => {
+    btn.onclick = () => {
+      const aluno = ALUNOS_SB.find(a => a.id === btn.dataset.alunoAlocar);
+      const turmasDaEmpresa = TURMAS_SB.filter(t => t.empresa_cliente_id === btn.dataset.empresa);
+      abrirAlocarAluno(aluno, turmasDaEmpresa);
+    };
   });
 }
 

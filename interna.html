@@ -1437,6 +1437,25 @@
   .kpi .d{ font-size: 11.5px; color: var(--cinza-texto); margin-top: 2px; }
   @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(4,1fr); } }
 
+  /* ================= Turmas ================= */
+  .turma-card{
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 10px; display:flex; flex-wrap:wrap; gap: 14px; align-items:center;
+  }
+  .turma-card .tc-info{ flex: 1 1 260px; min-width: 0; }
+  .turma-card h3{ margin: 0 0 3px; font-size: 14.5px; font-weight: 800; color: var(--texto); }
+  .turma-card .tc-meta{ font-size: 11.5px; color: var(--cinza-texto); }
+  .turma-card .tc-obj{ font-size: 12.5px; color: var(--texto); margin-top: 5px; line-height: 1.4; }
+  .turma-card .tc-prof{ flex: 0 0 190px; }
+  .turma-card .tc-prof label{ display:block; font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--azul-intermediario); margin-bottom: 4px; }
+  .turma-card select{
+    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 7px 9px;
+    font-family: inherit; font-size: 12.5px; color: var(--texto); background: var(--branco);
+  }
+  .turma-card .tc-salvo{ font-size: 10.5px; color: #2E7D46; font-weight: 700; margin-top: 4px; height: 13px; }
+  .turmas-vazio{ font-size: 13px; color: var(--cinza-texto); padding: 20px 4px; }
+
 </style>
 
 </head>
@@ -1455,6 +1474,7 @@
   <div class="tabs">
     <button class="tab active" data-pane="planilha">Dados</button>
     <button class="tab" data-pane="alertas">Alertas</button>
+    <button class="tab" data-pane="turmas">Turmas</button>
     <button class="tab" data-pane="usuarios">Usuários</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="leads">Leads</button>
@@ -1485,6 +1505,7 @@
       </div>
       <button class="btn-limpar-col" id="limpar-col" style="display:none;"></button>
       <span class="cont-linhas" id="cont-linhas"></span>
+      <a class="btn-csv" id="btn-nova-turma" href="nova-turma.html" target="_blank" rel="noopener" style="text-decoration:none;">+ Nova Turma</a>
       <button class="btn-csv" id="btn-csv">Exportar CSV</button>
     </div>
     <div class="chips-filtro" id="chips-filtro"></div>
@@ -1496,6 +1517,17 @@
     <div class="planilha-wrap">
       <table class="planilha" id="tabela"></table>
     </div>
+  </section>
+
+  <section class="pane" id="pane-turmas">
+    <div class="barra-planilha">
+      <select class="filtro" id="tu-emp"></select>
+      <button class="btn-limpar-col" id="tu-limpar" style="display:none;">Limpar filtros</button>
+      <span class="cont-linhas" id="tu-cont"></span>
+      <a class="btn-csv" href="nova-turma.html" target="_blank" rel="noopener" style="text-decoration:none;">+ Nova Turma</a>
+    </div>
+    <div class="rt-titulo" id="titulo-turmas">Turmas</div>
+    <div id="turmas-wrap"></div>
   </section>
 
   <section class="pane" id="pane-usuarios">
@@ -3205,6 +3237,103 @@ document.getElementById("limpar-col").onclick = () => {
   renderTabela();
 };
 
+// ══════════════════════════════════════════════════════════
+//  TURMAS — lê e escreve direto no Supabase (turmas, empresas_cliente,
+//  professores). É a primeira aba da dash interna que não vem do
+//  dados-mock.js: as turmas aqui nascem no nova-turma.html.
+// ══════════════════════════════════════════════════════════
+const SB_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
+const SB_H = { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" };
+
+let TURMAS_SB = null, PROFESSORES_SB = null, turmasCarregadas = false;
+
+async function carregarTurmasSupabase(){
+  const [turmasRes, profRes] = await Promise.all([
+    fetch(`${SB_URL}/rest/v1/turmas?select=*,empresas_cliente(nome)&order=criado_em.desc`, { headers: SB_H }),
+    fetch(`${SB_URL}/rest/v1/professores?select=id,nome&order=nome`, { headers: SB_H })
+  ]);
+  TURMAS_SB = await turmasRes.json();
+  PROFESSORES_SB = await profRes.json();
+}
+
+function opcoesEmpTurmas(){
+  const sel = document.getElementById("tu-emp");
+  const nomes = [...new Set(TURMAS_SB.map(t => t.empresas_cliente ? t.empresas_cliente.nome : "Particular"))]
+    .sort((a,b) => a.localeCompare(b,"pt-BR"));
+  sel.innerHTML = `<option value="">Todas as empresas</option>` +
+    nomes.map(n => `<option value="${n}">${n}</option>`).join("");
+}
+
+async function atribuirProfessor(turmaId, professorId, elSalvo){
+  await fetch(`${SB_URL}/rest/v1/turmas?id=eq.${turmaId}`, {
+    method: "PATCH", headers: SB_H, body: JSON.stringify({ professor_id: professorId || null })
+  });
+  const t = TURMAS_SB.find(x => x.id === turmaId);
+  if (t) t.professor_id = professorId || null;
+  elSalvo.textContent = "Salvo ✓";
+  setTimeout(() => { elSalvo.textContent = ""; }, 2000);
+}
+
+function renderTurmas(){
+  const fEmp = document.getElementById("tu-emp").value;
+  const lista = TURMAS_SB.filter(t => {
+    const nomeEmp = t.empresas_cliente ? t.empresas_cliente.nome : "Particular";
+    return !fEmp || nomeEmp === fEmp;
+  });
+
+  document.getElementById("tu-limpar").style.display = fEmp ? "inline-flex" : "none";
+  document.getElementById("tu-cont").textContent = `${lista.length} de ${TURMAS_SB.length} turmas`;
+
+  const wrap = document.getElementById("turmas-wrap");
+  if (!lista.length){
+    wrap.innerHTML = `<div class="turmas-vazio">Nenhuma turma ainda. Use "+ Nova Turma" para criar a primeira.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = lista.map(t => {
+    const nomeEmp = t.empresas_cliente ? t.empresas_cliente.nome : "Particular";
+    const meta = [nomeEmp, t.nivel_cefr, t.formato, t.tamanho_turma ? `${t.tamanho_turma} alunos` : null]
+      .filter(Boolean).join(" · ");
+    return `
+      <div class="turma-card">
+        <div class="tc-info">
+          <h3>${t.nome}</h3>
+          <div class="tc-meta">${meta}</div>
+          <div class="tc-obj">${t.objetivo_1 || ""}</div>
+        </div>
+        <div class="tc-prof">
+          <label>Professor</label>
+          <select data-turma="${t.id}">
+            <option value="">Sem professor atribuído</option>
+            ${PROFESSORES_SB.map(p => `<option value="${p.id}" ${p.id === t.professor_id ? "selected" : ""}>${p.nome}</option>`).join("")}
+          </select>
+          <div class="tc-salvo"></div>
+        </div>
+      </div>`;
+  }).join("");
+
+  wrap.querySelectorAll("select[data-turma]").forEach(sel => {
+    sel.onchange = () => atribuirProfessor(sel.dataset.turma, sel.value, sel.parentElement.querySelector(".tc-salvo"));
+  });
+}
+
+document.getElementById("tu-emp").onchange = renderTurmas;
+document.getElementById("tu-limpar").onclick = () => { document.getElementById("tu-emp").value = ""; renderTurmas(); };
+
+async function abrirAbaTurmas(){
+  if (turmasCarregadas) { renderTurmas(); return; }
+  document.getElementById("turmas-wrap").innerHTML = `<div class="turmas-vazio">Carregando...</div>`;
+  try{
+    await carregarTurmasSupabase();
+    turmasCarregadas = true;
+    opcoesEmpTurmas();
+    renderTurmas();
+  } catch(err){
+    document.getElementById("turmas-wrap").innerHTML = `<div class="turmas-vazio">Erro ao carregar turmas: ${err.message}</div>`;
+  }
+}
+
 document.querySelectorAll(".tab").forEach(t => {
   t.onclick = () => {
     document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
@@ -3217,6 +3346,7 @@ document.querySelectorAll(".tab").forEach(t => {
     const pane = document.getElementById("pane-" + t.dataset.pane);
     const fr = pane && pane.querySelector(".emb-frame");
     if (fr && !fr.src) fr.src = fr.dataset.src;
+    if (t.dataset.pane === "turmas") abrirAbaTurmas();
 
     window.scrollTo(0, 0);
   };

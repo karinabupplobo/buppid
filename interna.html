@@ -847,12 +847,33 @@
   .sel-papel.papel-teacher{ background: #e8efe3; border-color: #b6d7ac; }
   .sel-papel.papel-interno{ background: var(--teal-escuro); color: #fff; border-color: var(--teal-escuro); }
 
+  /* PADRÃO DA MARCA: faixa marrom no topo do card, conteúdo branco embaixo.
+     Vale para todos os cards que têm linha de identificação. */
+  #lista-alertas .card{ padding: 0 18px 18px; overflow: hidden; }
+  #lista-alertas .card .ident{
+    background: var(--teal-escuro);
+    margin: 0 -18px 14px; padding: 14px 18px;
+    flex-wrap: wrap;
+  }
+  #lista-alertas .card .id-emp{ color: #fff; }
+  #lista-alertas .card .id-turma{ color: rgba(255,255,255,.72); }
+  #lista-alertas .card .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  #lista-alertas .card .id-hora{ color: rgba(255,255,255,.8); }
+
+  /* Topo marrom também nos cards de usuário — é o padrão da marca:
+     faixa escura no topo do card, conteúdo branco embaixo. */
+  .u-card{ padding: 0 16px 16px; overflow: hidden; }
+  .u-card .ident{
+    background: var(--teal-escuro);
+    margin: 0 -16px 12px; padding: 14px 16px;
+  }
+  .u-card .id-emp{ color: #fff; }
+  .u-card .id-turma{ color: rgba(255,255,255,.72); }
+  .u-card h2{ font-size: 17px; margin-bottom: 2px; }
+
   @media (max-width: 760px){
     .usuarios-wrap .ra-wrap{ display: none; }
     .usuarios-wrap .u-cards{ display: block; }
-    .u-card{ padding: 16px; }
-    .u-card h2{ font-size: 17px; margin-bottom: 2px; }
-    .u-card .ident{ margin-bottom: 8px; }
     .u-card .rt-linha:first-of-type{ margin-top: 8px; }
   }
 
@@ -1220,15 +1241,15 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=3" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=3" title="Leads"></iframe>
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=3" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">

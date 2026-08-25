@@ -1338,7 +1338,6 @@
     padding: 2px 14px; border-radius: 10px; line-height: 1.2;
   }
   .mn-turma{ font-size: 12.5px; color: rgba(255,255,255,.78); font-weight: 600; }
-  .mn-desc{ font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,.9); margin-top: 8px; }
   .mn-obj{
     margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.16);
   }
@@ -1347,15 +1346,6 @@
     color: var(--amarelo-neon); margin-bottom: 5px;
   }
   .mn-obj p{ margin: 0; font-size: 13.5px; line-height: 1.5; color: #fff; }
-
-  /* Barra de progresso do módulo */
-  .progresso-mod{ margin-top: 14px; }
-  .pm-topo{ display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
-  .pm-rot{ font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--amarelo-neon); }
-  .pm-n{ font-size: 12px; font-weight: 700; color: rgba(255,255,255,.85); }
-  .pm-barra{ height: 8px; border-radius: 999px; background: rgba(255,255,255,.18); overflow: hidden; }
-  .pm-preenchida{ height: 100%; background: var(--amarelo-neon); border-radius: 999px; }
 
   /* Cards de aula e de trilha */
   .card-aula{ margin-bottom: 12px; }
@@ -1496,6 +1486,13 @@ document.getElementById("bt-nivel").textContent = nivelL(TURMA.nivel);
 function classeNota(n){
   return n === null ? "" : n >= 80 ? "alta" : n >= 60 ? "media" : "baixa";
 }
+// A trilha é corrigida em acerto/erro, então o número natural é uma
+// porcentagem. No card do aluno ela aparece como nota de 0 a 10 — é a
+// escala que o aluno brasileiro lê sem traduzir. classeNota continua
+// recebendo o pct (0-100), porque é usada também em presença e média.
+function notaDez(pct){
+  return pct === null ? "–" : (pct / 10).toFixed(1).replace(".", ",");
+}
 function estrelas(n){
   if (!n) return '<span class="sem">–</span>';
   return `<span class="estrelas-ro">${"★".repeat(n)}<b>${"☆".repeat(3-n)}</b></span>`;
@@ -1559,17 +1556,7 @@ function renderHome(){
     <div class="meu-nivel">
       <div class="mn-topo">
         <span class="mn-nivel">${nivelL(TURMA.nivel)}</span>
-        <span class="mn-turma">${TURMA.empresa} · ${partesIdent(TURMA)} · ${TURMA.modulo}</span>
-      </div>
-      <div class="mn-desc">${TURMA.nivelDesc}</div>
-      <div class="progresso-mod">
-        <div class="pm-topo">
-          <span class="pm-rot">Trilhas concluídas</span>
-          <span class="pm-n">${n.trilhasFeitas} de ${n.trilhasTotal}</span>
-        </div>
-        <div class="pm-barra">
-          <div class="pm-preenchida" style="width:${n.trilhasTotal ? (n.trilhasFeitas/n.trilhasTotal*100) : 0}%"></div>
-        </div>
+        <span class="mn-turma">${TURMA.empresa} · ${partesIdent(TURMA)}</span>
       </div>
       <div class="mn-obj">
         <div class="rot">Onde a turma quer chegar</div>
@@ -1582,8 +1569,8 @@ function renderHome(){
       <div class="r">Presença</div><div class="d">${n.presentes} de ${n.marcadas} aulas</div></div>
     <div class="kpi"><div class="v">${n.medEng===null?"–":n.medEng.toFixed(1)+"★"}</div>
       <div class="r">Engajamento</div><div class="d">avaliação do professor</div></div>
-    <div class="kpi"><div class="v ${classeNota(n.medNota)}">${n.medNota===null?"–":n.medNota+"%"}</div>
-      <div class="r">Trilhas</div><div class="d">média de acerto</div></div>
+    <div class="kpi"><div class="v ${classeNota(n.medNota)}">${notaDez(n.medNota)}</div>
+      <div class="r">Trilhas</div><div class="d">nota média</div></div>
     <div class="kpi"><div class="v">${n.aulasDadas}</div>
       <div class="r">Aulas</div><div class="d">já realizadas</div></div>`;
 
@@ -1715,7 +1702,7 @@ function renderTrilhas(){
             <span class="ok">${t.acertos} certo${t.acertos!==1?"s":""}</span> ·
             <span class="er">${t.erros} erro${t.erros!==1?"s":""}</span>
           </span>
-          <span class="nota te-nota ${classeNota(t.nota)}">${t.nota===null?"–":t.nota+"%"}</span>
+          <span class="nota te-nota ${classeNota(t.nota)}">${notaDez(t.nota)}</span>
         </div>
         <div class="tema-lista">${temas}</div>
         <a class="btn" href="templatetrilha.html?modo=gabarito&aula=${encodeURIComponent(h.titulo)}"

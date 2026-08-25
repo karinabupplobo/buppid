@@ -164,25 +164,6 @@
     </div>
 
     <div class="secao">
-      <h2>Curso</h2>
-      <div class="linha2">
-        <div class="campo">
-          <label for="f-qtd-modulos">Quantidade de módulos</label>
-          <input id="f-qtd-modulos" type="number" min="1">
-        </div>
-        <div class="campo">
-          <label for="f-aulas-modulo">Aulas por módulo</label>
-          <input id="f-aulas-modulo" type="number" min="1">
-        </div>
-      </div>
-      <div class="campo">
-        <label>Nomes dos módulos <span class="ajuda">(se já definidos)</span></label>
-        <div class="modulos-lista" id="modulos-lista"></div>
-        <button type="button" class="btn-add" id="btn-add-modulo">+ Módulo</button>
-      </div>
-    </div>
-
-    <div class="secao">
       <h2>Cliente / Empresa</h2>
       <div class="campo">
         <label for="f-setor">Setor e operação</label>
@@ -235,6 +216,12 @@ async function sbInsert(tabela, linha){
   return (await res.json())[0];
 }
 
+// ── Trava de empresa via URL (vem do "+ Turma" dentro do card da empresa) ──
+const paramsUrl = new URLSearchParams(location.search);
+const empresaLockId = paramsUrl.get("empresa_id");
+const empresaLockNome = paramsUrl.get("empresa_nome");
+let empresaTravada = false;
+
 // ── Tipo turma: mostra/esconde bloco empresa ──
 document.querySelectorAll('input[name="tipo"]').forEach(r => {
   r.onchange = () => {
@@ -243,8 +230,21 @@ document.querySelectorAll('input[name="tipo"]').forEach(r => {
   };
 });
 
+if (empresaLockId && empresaLockNome){
+  empresaTravada = true;
+  document.querySelector('input[name="tipo"][value="particular"]').closest("label").style.display = "none";
+  document.getElementById("bloco-empresa").innerHTML = `
+    <label>Empresa</label>
+    <input value="${empresaLockNome}" disabled style="background:var(--limao-claro); font-weight:700;">
+    <div class="ajuda">Turma nova para esta empresa — direto do card em Empresas.</div>
+  `;
+} else if (paramsUrl.get("tipo") === "particular"){
+  document.querySelector('input[name="tipo"][value="particular"]').checked = true;
+  document.getElementById("bloco-empresa").style.display = "none";
+}
+
 // ── Busca de empresa existente ──
-let empresaSelecionada = null; // { id, nome } | { nome } se nova
+let empresaSelecionada = empresaLockId ? { id: empresaLockId, nome: empresaLockNome } : null; // { id, nome } | { nome } se nova
 let empresasCache = null;
 async function empresas(){
   if (!empresasCache) empresasCache = await sbGet("empresas_cliente", "?select=id,nome&order=nome");
@@ -275,6 +275,10 @@ empBusca.oninput = async () => {
   });
 };
 document.addEventListener("click", e => { if (!e.target.closest(".busca-aluno")) empRes.style.display = "none"; });
+document.addEventListener("click", e => {
+  if (e.target.closest(".busca-aluno")) return;
+  document.querySelectorAll(".al-resultados").forEach(r => r.style.display = "none");
+});
 
 // ── Alunos: adicionar novo ou buscar existente ──
 let alunosCache = null;
@@ -322,15 +326,15 @@ function renderAlunos(){
 
     const nomeInput = card.querySelector(".al-nome");
     const res = card.querySelector(".al-resultados");
-    nomeInput.oninput = async () => {
-      alunosForm[i].nome = nomeInput.value;
-      alunosForm[i].existenteId = null;
-      const q = nomeInput.value.trim().toLowerCase();
-      if (!q){ res.style.display = "none"; return; }
-      const lista = (await todosAlunos()).filter(a => a.nome.toLowerCase().includes(q));
+
+    async function mostrarLista(q){
+      const todos = await todosAlunos();
+      const lista = q ? todos.filter(a => a.nome.toLowerCase().includes(q)) : todos;
       res.innerHTML = (lista.length ? lista.map(a =>
         `<button type="button" data-id="${a.id}" data-nome="${a.nome}" data-cargo="${a.cargo||""}" data-area="${a.area_atuacao||""}" data-resp="${a.responsabilidades||""}">${a.nome} <span style="color:var(--cinza-texto);">— ${a.cargo||"sem cargo"}</span></button>`
-      ).join("") : `<div class="vazio">Nenhum aluno existente com esse nome — vai ser criado novo.</div>`);
+      ).join("") : (q
+        ? `<div class="vazio">Nenhum aluno existente com esse nome — vai ser criado novo.</div>`
+        : `<div class="vazio">Nenhum aluno cadastrado ainda no sistema.</div>`));
       res.style.display = "block";
       res.querySelectorAll("button").forEach(b => b.onclick = () => {
         alunosForm[i] = {
@@ -339,6 +343,16 @@ function renderAlunos(){
         };
         renderAlunos();
       });
+    }
+
+    // Foco no campo já mostra todos os alunos do sistema — não precisa digitar
+    // nada. Alunos entram pelo teste de nível, então a lista precisa estar
+    // sempre navegável, não só aparecer quando o nome é digitado certo.
+    nomeInput.onfocus = () => mostrarLista(nomeInput.value.trim().toLowerCase());
+    nomeInput.oninput = () => {
+      alunosForm[i].nome = nomeInput.value;
+      alunosForm[i].existenteId = null;
+      mostrarLista(nomeInput.value.trim().toLowerCase());
     };
   });
 }
@@ -347,21 +361,6 @@ document.getElementById("btn-add-aluno").onclick = () => {
   renderAlunos();
 };
 renderAlunos();
-
-// ── Módulos: lista dinâmica de nomes ──
-let modulosForm = [];
-const modulosLista = document.getElementById("modulos-lista");
-function renderModulos(){
-  modulosLista.innerHTML = modulosForm.map((m, i) => `
-    <div style="display:flex; gap:6px;">
-      <input class="mod-nome" data-i="${i}" value="${m}" placeholder="Ex.: Módulo 1 — Negotiation Basics">
-      <button type="button" class="aluno-rm" data-rm="${i}">✕</button>
-    </div>
-  `).join("");
-  modulosLista.querySelectorAll(".mod-nome").forEach(inp => inp.oninput = e => modulosForm[+e.target.dataset.i] = e.target.value);
-  modulosLista.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { modulosForm.splice(+b.dataset.rm,1); renderModulos(); });
-}
-document.getElementById("btn-add-modulo").onclick = () => { modulosForm.push(""); renderModulos(); };
 
 // ── Salvar ──
 const msg = document.getElementById("msg");
@@ -414,9 +413,6 @@ document.getElementById("btn-salvar").onclick = async () => {
       duracao_aula_min: +document.getElementById("f-duracao").value || null,
       formato: document.getElementById("f-formato").value || null,
       frequencia_semanal: +document.getElementById("f-frequencia").value || null,
-      qtd_modulos: +document.getElementById("f-qtd-modulos").value || null,
-      aulas_por_modulo: +document.getElementById("f-aulas-modulo").value || null,
-      nomes_modulos: modulosForm.filter(Boolean),
       assuntos_essenciais: document.getElementById("f-assuntos").value.trim() || null,
       restricoes: document.getElementById("f-restricoes").value.trim() || null
     });
@@ -437,9 +433,12 @@ document.getElementById("btn-salvar").onclick = async () => {
 
     msg.textContent = "Turma salva! Pode fechar esta aba ou criar outra."; msg.className = "ok";
     document.getElementById("form-turma").reset();
-    alunosForm = []; modulosForm = []; empresaSelecionada = null;
-    renderAlunos(); renderModulos();
-    document.getElementById("empresa-selecionada").textContent = "";
+    alunosForm = [];
+    if (!empresaTravada){
+      empresaSelecionada = null;
+      document.getElementById("empresa-selecionada").textContent = "";
+    }
+    renderAlunos();
   } catch(err){
     msg.textContent = "Erro ao salvar: " + err.message; msg.className = "erro";
   } finally {

@@ -29,31 +29,32 @@
 
 ## Próximo
 
-- [ ] TESTAR NO NAVEGADOR o fluxo completo: aba Empresas → "+ Nova Empresa" →
-      "+ Turma" (confirmar que abre com a empresa certa travada) → preencher e
-      salvar → voltar pra aba Empresas e conferir se a turma aparece dentro do
-      card certo → atribuir professor pelo select → recarregar e confirmar que
-      persistiu. Ainda não testado no REST com a anon key nesta sessão (mesma
-      pegadinha do allowlist do subdomínio novo do Supabase).
+- [ ] TESTAR NO NAVEGADOR o fluxo completo: abrir a aba Empresas e conferir
+      se Sertrading, Tirolez e Nelogica aparecem com as turmas certas e o
+      professor já atribuído (dado migrado nesta sessão). Testar também
+      "+ Nova Empresa" → "+ Turma" com o nível agora em banda (Basic/
+      Intermediate/Advanced/Proficient) e o logo no lugar da faixa marrom.
+      Ainda não testado no REST com a anon key nesta sessão (mesma pegadinha
+      do allowlist do subdomínio novo do Supabase).
+- [ ] Decidir se vale ter a granularidade CEFR (Pré-A1...C2) em algum lugar
+      da turma pra quando o Gerador de Aulas rodar — hoje `turmas.nivel`
+      guarda só a banda (Basic/Intermediate/Advanced/Proficient), e o
+      protocolo do Gerador (`pedagogico/GERADOR.md`, Passo 2) pede CEFR
+      exato pra montar o mapa pedagógico. Enquanto o Gerador não lê do
+      Supabase (próximo item), isso não trava nada — mas quando ligar, falta
+      essa ponte.
 - [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; só 4
-      foram criadas até agora (`professores`, `empresas_cliente`, `turmas`,
-      `alunos`, mais a ponte `turma_alunos`). Faltam: `aulas_assigned`,
-      `lousas_aula`, `anotacoes_aluno`, `trilha_licoes`, `progresso_aluno`,
-      `presenca`, `profiles`. Criar conforme as dashes forem pedindo esses
-      dados (regra permanente da Karina).
+      foram criadas até agora. Faltam: `aulas_assigned`, `lousas_aula`,
+      `anotacoes_aluno`, `trilha_licoes`, `progresso_aluno`, `presenca`,
+      `profiles`. Criar conforme as dashes forem pedindo esses dados (regra
+      permanente da Karina).
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
       do resto da dash). Travar por role quando o Supabase Auth entrar.
 - [ ] Onde o "teste de nível" que cadastra o aluno no sistema vai morar.
-      Hoje `nova-turma.html` já assume que alunos podem existir antes da
-      turma (por isso a lista sempre visível), mas o teste em si ainda não
-      foi desenhado nem tem tela.
+      `nova-turma.html` já assume que alunos podem existir antes da turma,
+      mas o teste em si ainda não tem tela.
 - [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
-      Aulas (`pedagogico/GERADOR.md`, Passo 2) — hoje o gerador ainda
-      pergunta tudo de novo no chat.
-- [ ] Popular `empresas_cliente` e `alunos` com os dados fictícios que já
-      existem no `dados-mock.js` (Sertrading, Tirolez, Nelogica...), se for
-      útil ter exemplos pra testar a aba Empresas sem depender só de dados
-      criados na mão.
+      Aulas — hoje o gerador ainda pergunta tudo de novo no chat.
 - [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead
       vira "Cliente" no funil (manual vs. automático) — pendência aberta
       registrada em `docs/plataforma.md` §5.

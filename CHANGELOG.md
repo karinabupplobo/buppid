@@ -2,6 +2,47 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2058-form-nivel-e-logo — 25/08/2026
+- O que mudou: duas mudanças no `nova-turma.html`.
+  **Nível:** a coluna `turmas.nivel_cefr` foi renomeada pra `turmas.nivel` no
+  Supabase, com o check constraint trocado pros 4 valores de banda (`Basic`,
+  `Intermediate`, `Advanced`, `Proficient`). O formulário para de pedir CEFR
+  granular (Pré-A1...C2) — pede só a banda. `interna.html` (aba Empresas)
+  atualizado pra ler a coluna nova.
+  **Logo:** saiu "Nova turma" / "Preenche o que o Gerador de Aulas precisa..."
+  e a faixa marrom inteira do topo. Entrou o logo da Bupp
+  (`assets/logo-bupp-marrom-azul.png`, versão pra fundo claro), sozinho e
+  centralizado, em cima do título "Turma".
+- Arquivos: nova-turma.html, interna.html, schema do Supabase (coluna
+  renomeada em `turmas`)
+- Motivo: pedidos diretos da Karina.
+  Observação: as 3 empresas e 4 turmas mock (Sertrading, Tirolez, Nelogica)
+  foram migradas pro Supabase nesta sessão (ver entrada abaixo) já usando o
+  nome de coluna novo — não precisou de migração dupla.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2055-niveis-bandas
+
+## v-20260825-2055-niveis-bandas — 25/08/2026
+- O que mudou: os rótulos de nível exibidos nas dashes trocaram de `L0/L1/L2/L3`
+  para `Basic/Intermediate/Advanced/Proficient` — mesmo mapeamento de CEFR por
+  trás (`FAIXAS_NIVEL` em `dados-mock.js`), só o texto mostrado muda. Como
+  `aluno.html`, `manager.html`, `interna.html` e `plataforma.html` leem todos
+  de `nivelL()`, a troca valeu nas quatro de uma vez.
+  Também: **as 3 empresas mock (Sertrading, Tirolez, Nelogica) e as 4 turmas**
+  (Comex, Diretoria, Liderança, Particular do Marcos) foram inseridas de
+  verdade no Supabase — professores, alunos e vínculo turma↔aluno inclusos —
+  porque a aba Empresas estava mostrando zero mesmo com dado mock existindo
+  no `dados-mock.js` (os dois mundos não se falavam: mock é local, Empresas
+  lê do Supabase).
+- Arquivos: dados-mock.js, schema do Supabase (dados, não estrutura)
+- Motivo: pedido direto da Karina — "precisa manter tudo fluindo". A
+  divergência entre o que a dash mock mostra e o que o Supabase realmente
+  tem é o tipo de coisa que gera desconfiança na base toda.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2010-aba-empresas
+  (os dados inseridos no Supabase não voltam por tag — teriam que ser
+  apagados manualmente, se for o caso)
+
 ## v-20260825-2010-aba-empresas — 25/08/2026
 - O que mudou: a aba "Turmas" do `interna.html` virou **Empresas**. Antes era uma
   lista simples de turma; agora agrupa por empresa — cada card mostra setor e

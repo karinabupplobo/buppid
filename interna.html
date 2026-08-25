@@ -877,6 +877,17 @@
     .u-card .rt-linha:first-of-type{ margin-top: 8px; }
   }
 
+  /* Filtros da aba Alertas: três selects numa linha só, dividindo a largura
+     igualmente em vez de quebrar para a segunda linha. */
+  #pane-alertas .barra-planilha{ flex-wrap: nowrap; gap: 7px; }
+  #pane-alertas .filtro{ flex: 1 1 0; min-width: 0; }
+  #pane-alertas .cont-linhas{ flex-shrink: 0; }
+  @media (max-width: 620px){
+    #pane-alertas .barra-planilha{ flex-wrap: wrap; }
+    #pane-alertas .filtro{ flex: 1 1 30%; font-size: 11.5px; padding: 8px 9px; }
+    #pane-alertas .cont-linhas{ flex: 1 0 100%; }
+  }
+
   /* ── Alertas agrupados por empresa ── */
   .grupo-emp{ margin-bottom: 22px; }
   .ge-cab{
@@ -942,6 +953,47 @@
     border-color: var(--teal-escuro);
   }
   .form-linha textarea{ resize: vertical; min-height: 84px; line-height: 1.45; }
+
+  /* ── Área de upload ── */
+  .doc-emp{ font-weight: 800; color: var(--teal-escuro); }
+  .dc-emp{ font-size: 11.5px; font-weight: 800; color: #fff; margin-right: auto; }
+  #pane-docs .barra-planilha{ flex-wrap: wrap; }
+  #pane-docs .filtro{ flex: 1 1 140px; min-width: 0; }
+  @media (max-width: 760px){
+    .doc-wrap .ra-wrap{ display: none; }
+    .doc-cards{ display: block; }
+  }
+
+  .area-upload{
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: 1.5px dashed var(--azul-intermediario); border-radius: 11px;
+    padding: 20px 16px; cursor: pointer; text-align: center;
+    background: #fafbf7; transition: background .13s, border-color .13s;
+  }
+  .area-upload:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+  .area-upload svg{ width: 24px; height: 24px; color: var(--azul-intermediario); margin-bottom: 3px; }
+  .au-tit{ font-size: 13.5px; font-weight: 700; color: var(--teal-escuro); }
+  .au-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+  .area-upload input[type=file]{
+    position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
+  }
+  .au-escolhido:empty{ display: none; }
+  .au-escolhido{ margin-top: 9px; }
+  .au-chip{
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--limao-claro); border: 1px solid var(--amarelo-neon);
+    border-radius: 999px; padding: 6px 7px 6px 12px;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
+    max-width: 100%; overflow: hidden;
+  }
+  .au-chip b{ font-weight: 600; color: var(--cinza-texto); font-size: 11px; }
+  .au-chip button{
+    width: 18px; height: 18px; border-radius: 50%; border: none; padding: 0;
+    background: rgba(84,64,47,.15); color: var(--teal-escuro);
+    font-size: 13px; line-height: 1; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .au-chip button:hover{ background: var(--teal-escuro); color: #fff; }
 
   /* ── Abas embutidas (Tasks, Leads, Mercado) ──
      São a dash do index.html dentro de um iframe: mesmo código, sempre em
@@ -1252,6 +1304,7 @@
     <button class="tab" data-pane="usuarios">Usuários</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="leads">Leads</button>
+    <button class="tab" data-pane="docs">Docs</button>
     <button class="tab" data-pane="mercado">Mercado</button>
   </div>
 </aside>
@@ -1307,15 +1360,27 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=7" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=8" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=7" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=8" title="Leads"></iframe>
+  </section>
+
+  <section class="pane" id="pane-docs">
+    <div class="barra-planilha">
+      <button class="btn-novo-doc" id="btn-novo-doc"><span class="mais">+</span> Novo documento</button>
+      <select class="filtro" id="doc-emp"></select>
+      <select class="filtro" id="doc-tipo"></select>
+      <span class="cont-linhas" id="cont-docs"></span>
+      <button class="btn-csv" id="btn-csv-docs">Exportar CSV</button>
+    </div>
+    <div class="rt-titulo" id="titulo-docs">Documentos</div>
+    <div class="doc-wrap" id="doc-wrap"></div>
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=7" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=8" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -2370,6 +2435,188 @@ function abrirNovoAviso(empresaPre){
   };
 }
 
+// ══════════════════════════════════════════════════════════
+//  DOCUMENTOS (visão interna)
+//  Mesma estrutura da aba Docs do RH, com uma diferença: aqui aparecem os
+//  documentos de TODAS as empresas, então existe a coluna Empresa e o filtro
+//  por ela. É a visão de quem administra os contratos, não a de quem é parte.
+// ══════════════════════════════════════════════════════════
+function rotTipoDoc(k){ return (TIPOS_DOC.find(t => t.k === k) || {}).rot || k; }
+function classeStatus(s){ return s.replace(/\s+/g, "-"); }
+
+function docsFiltrados(){
+  const fe = document.getElementById("doc-emp").value;
+  const ft = document.getElementById("doc-tipo").value;
+  return DOCS.filter(d => (!fe || d.empresa === fe) && (!ft || d.tipo === ft));
+}
+
+function renderDocs(){
+  const box = document.getElementById("doc-wrap");
+  const dados = docsFiltrados();
+
+  document.getElementById("titulo-docs").textContent = `Documentos · ${dados.length}`;
+  document.getElementById("cont-docs").textContent =
+    dados.length === DOCS.length
+      ? `${DOCS.length} documento${DOCS.length!==1?"s":""}`
+      : `${dados.length} de ${DOCS.length}`;
+
+  box.innerHTML = `
+    <div class="ra-wrap">
+      <table class="ra-tabela">
+        <thead><tr>
+          <th>Empresa</th><th>Tipo</th><th>Documento</th><th>Número</th>
+          <th>Emissão</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Arquivo</th>
+        </tr></thead>
+        <tbody>
+          ${dados.map(d => `
+            <tr>
+              <td class="doc-emp">${d.empresa}</td>
+              <td><span class="doc-tipo ${d.tipo}">${rotTipoDoc(d.tipo)}</span></td>
+              <td><b>${d.titulo}</b>${d.obs ? `<span class="ra-sub">${d.obs}</span>` : ""}</td>
+              <td>${d.numero || "—"}</td>
+              <td>${d.emissao || "—"}</td>
+              <td>${d.vencimento || "—"}</td>
+              <td class="doc-valor">${d.valor || "—"}</td>
+              <td><span class="doc-status ${classeStatus(d.status)}">${d.status}</span></td>
+              <td>${d.url
+                ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">${d.arquivo || "abrir"} ↗</a>`
+                : '<span class="sem">sem anexo</span>'}</td>
+            </tr>`).join("") ||
+            `<tr><td colspan="9" style="color:var(--cinza-texto)">Nenhum documento com esses filtros.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-cards">
+      ${dados.map(d => `
+        <article class="doc-card">
+          <div class="dc-cab">
+            <span class="dc-emp">${d.empresa}</span>
+            <span class="doc-tipo ${d.tipo}">${rotTipoDoc(d.tipo)}</span>
+            <span class="doc-status ${classeStatus(d.status)}">${d.status}</span>
+          </div>
+          <h3>${d.titulo}</h3>
+          <div class="doc-sub">${d.numero || "—"}</div>
+          <div class="rt-linha"><span class="rt-rot">Emissão</span><span>${d.emissao || "—"}</span></div>
+          <div class="rt-linha"><span class="rt-rot">Vencimento</span><span>${d.vencimento || "—"}</span></div>
+          <div class="rt-linha"><span class="rt-rot">Valor</span><span class="doc-valor">${d.valor || "—"}</span></div>
+          <div class="rt-linha"><span class="rt-rot">Arquivo</span>
+            ${d.url ? `<a class="u-link" href="${d.url}" target="_blank" rel="noopener">${d.arquivo || "abrir"} ↗</a>`
+                    : '<span class="sem">sem anexo</span>'}</div>
+        </article>`).join("")}
+    </div>`;
+}
+
+document.getElementById("btn-novo-doc").onclick = () => {
+  const empresas = [...new Set(TURMAS.map(t => t.empresa))];
+  abrirModal("Documentos", "Novo documento", `
+    <div class="form-linha">
+      <label for="nd-emp">Empresa</label>
+      <select id="nd-emp">${empresas.map(e => `<option>${e}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label for="nd-tipo">Tipo</label>
+      <select id="nd-tipo">${TIPOS_DOC.map(t => `<option value="${t.k}">${t.rot}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label for="nd-titulo">Título</label>
+      <input id="nd-titulo" placeholder="Ex.: NF-e outubro/2026">
+    </div>
+    <div class="form-duplo">
+      <div class="form-linha"><label for="nd-numero">Número</label><input id="nd-numero" placeholder="NF 1090"></div>
+      <div class="form-linha"><label for="nd-valor">Valor</label><input id="nd-valor" placeholder="R$ 14.000,00"></div>
+    </div>
+    <div class="form-duplo">
+      <div class="form-linha"><label for="nd-emissao">Emissão</label><input id="nd-emissao" placeholder="05/10"></div>
+      <div class="form-linha"><label for="nd-venc">Vencimento</label><input id="nd-venc" placeholder="15/10"></div>
+    </div>
+    <div class="form-linha">
+      <label for="nd-status">Status</label>
+      <select id="nd-status">${STATUS_DOC.map(s => `<option>${s}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label>Arquivo</label>
+      <label class="area-upload" for="nd-arquivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>
+        <span class="au-tit">Escolher arquivo</span>
+        <span class="au-sub">PDF, imagem ou documento</span>
+        <input type="file" id="nd-arquivo" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xml">
+      </label>
+      <div class="au-escolhido" id="nd-arquivo-nome"></div>
+    </div>
+    <div class="form-linha">
+      <label for="nd-obs">Observação</label>
+      <textarea id="nd-obs" placeholder="Prazo, condição especial, o que for útil lembrar…"></textarea>
+    </div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="nd-cancelar">Cancelar</button>
+      <button class="btn lime" id="nd-salvar">Adicionar</button>
+    </div>
+  `);
+
+  // Sem servidor de arquivos, o anexo é uma URL de sessão: existe enquanto a
+  // aba estiver aberta. Upload de verdade depende do Supabase Storage.
+  let arquivoEscolhido = null;
+  const inputArq = document.getElementById("nd-arquivo");
+  inputArq.onchange = () => {
+    const f = inputArq.files && inputArq.files[0];
+    const cx = document.getElementById("nd-arquivo-nome");
+    if (!f){ arquivoEscolhido = null; cx.innerHTML = ""; return; }
+    arquivoEscolhido = { nome: f.name, url: URL.createObjectURL(f) };
+    cx.innerHTML = `<span class="au-chip">${f.name}
+      <b>${(f.size/1024).toFixed(0)} KB</b>
+      <button type="button" id="nd-tirar">&times;</button></span>`;
+    document.getElementById("nd-tirar").onclick = () => {
+      arquivoEscolhido = null; inputArq.value = ""; cx.innerHTML = "";
+    };
+  };
+
+  document.getElementById("nd-cancelar").onclick = fecharModal;
+  document.getElementById("nd-salvar").onclick = () => {
+    const v = id => (document.getElementById(id).value || "").trim();
+    if (!v("nd-titulo")){ document.getElementById("nd-titulo").focus(); return; }
+    DOCS.push({
+      id: "d" + Date.now(), empresa: v("nd-emp"),
+      tipo: v("nd-tipo"), titulo: v("nd-titulo"), numero: v("nd-numero"),
+      emissao: v("nd-emissao"), vencimento: v("nd-venc"), valor: v("nd-valor"),
+      status: v("nd-status"), obs: v("nd-obs"),
+      url: arquivoEscolhido ? arquivoEscolhido.url : "",
+      arquivo: arquivoEscolhido ? arquivoEscolhido.nome : ""
+    });
+    fecharModal();
+    renderDocs();
+  };
+};
+
+document.getElementById("btn-csv-docs").onclick = () => {
+  const esc = v => `"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  const cols = ["Empresa","Tipo","Documento","Número","Emissão","Vencimento","Valor","Status","Arquivo","Observação"];
+  const linhas = [cols.map(esc).join(";")].concat(docsFiltrados().map(d =>
+    [d.empresa, rotTipoDoc(d.tipo), d.titulo, d.numero, d.emissao, d.vencimento,
+     d.valor, d.status, d.arquivo || "", d.obs].map(esc).join(";")));
+  const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "bupp-documentos.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// filtros da aba
+(function ligarFiltrosDocs(){
+  const fe = document.getElementById("doc-emp");
+  const ft = document.getElementById("doc-tipo");
+  fe.innerHTML = `<option value="">Todas as empresas</option>` +
+    [...new Set(DOCS.map(d => d.empresa))].map(e => `<option>${e}</option>`).join("");
+  ft.innerHTML = `<option value="">Todos os tipos</option>` +
+    TIPOS_DOC.map(t => `<option value="${t.k}">${t.rot}</option>`).join("");
+  fe.onchange = renderDocs;
+  ft.onchange = renderDocs;
+})();
+
 // ── Exportar CSV ──
 function baixarCSV(){
   const dados = filtradas();
@@ -2699,6 +2946,7 @@ renderChips();
 renderTabela();
 renderChipsU();
 renderUsuarios();
+renderDocs();
 opcoesTurma();
 renderAlertas();
 </script>

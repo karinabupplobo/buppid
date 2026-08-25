@@ -955,13 +955,50 @@
   .form-linha textarea{ resize: vertical; min-height: 84px; line-height: 1.45; }
 
   /* ── Área de upload ── */
+  /* Documentos */
+  .doc-tipo{
+    font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px; background: #f2f0ee; color: var(--cinza-texto);
+  }
+  .doc-tipo.contrato{ background: var(--limao-claro); color: var(--teal-escuro); }
+  .doc-tipo.aditivo{ background: #eae4f0; color: #57407a; }
+  .doc-tipo.nf{ background: #e8efe3; color: #3f6b45; }
+  .doc-status{
+    font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .doc-status.vigente{ background: #dff0d8; color: #3f6b45; }
+  .doc-status.pago{ background: #dff0d8; color: #3f6b45; }
+  .doc-status.em-aberto{ background: #fbf2d8; color: #8a6d1f; }
+  .doc-status.vencido{ background: #fbe0de; color: #a3312a; }
+  .doc-status.encerrado{ background: #f0eeec; color: #8d8781; }
+  .doc-valor{ font-weight: 800; font-variant-numeric: tabular-nums; }
+  .doc-cards{ display: none; }
+  .doc-card{
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 14px;
+    padding: 0 16px 16px; margin-bottom: 10px; overflow: hidden;
+  }
+  .doc-card .dc-cab{
+    background: var(--teal-escuro); margin: 0 -16px 12px; padding: 13px 16px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .doc-card h3{ margin: 0 0 3px; font-size: 15.5px; font-weight: 800; }
+  .doc-sub{ font-size: 11.5px; color: var(--cinza-texto); }
+
+
+  /* Complementos da visão interna: a empresa identifica o documento. */
   .doc-emp{ font-weight: 800; color: var(--teal-escuro); }
   .dc-emp{ font-size: 11.5px; font-weight: 800; color: #fff; margin-right: auto; }
+  .doc-card h3{ letter-spacing: -.01em; color: var(--texto); }
+  .doc-card .rt-linha{ font-size: 12.5px; }
+  .doc-card .doc-sub{ margin-bottom: 4px; }
+  .doc-wrap .ra-sub{ white-space: normal; }
   #pane-docs .barra-planilha{ flex-wrap: wrap; }
   #pane-docs .filtro{ flex: 1 1 140px; min-width: 0; }
+
   @media (max-width: 760px){
     .doc-wrap .ra-wrap{ display: none; }
-    .doc-cards{ display: block; }
+    .doc-wrap .doc-cards{ display: block; }
   }
 
   .area-upload{

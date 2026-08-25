@@ -2,6 +2,56 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-1942-kpi-empresas — 25/08/2026
+- O que mudou: novo card "Empresas" na aba Dados do `interna.html`, antes do card de
+  Presença. Mostra `EMPRESAS.length` (já usado no link "N empresas ›" da sidebar). Grid
+  dos KPIs passou de 4 para 5 colunas no desktop.
+- Arquivos: interna.html
+- Motivo: pedido da Karina.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-1941-aba-turmas
+
+## v-20260825-1941-aba-turmas — 25/08/2026
+- O que mudou: nova aba "Turmas" na sidebar do `interna.html`, entre Alertas e
+  Usuários. É a primeira tela da dash interna que lê direto do Supabase (tabelas
+  `turmas` + `empresas_cliente`), não do `dados-mock.js`. Filtro por empresa, e um
+  select por turma pra atribuir professor — grava na hora via PATCH em `turmas`.
+  Botão "+ Nova Turma" também na barra da aba Dados, abrindo `nova-turma.html` em
+  aba nova.
+- Arquivos: interna.html
+- Motivo: as turmas criadas no formulário novo (`nova-turma.html`) nascem sem
+  professor — a Karina define esse fluxo: professor é atribuído depois, aqui.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-1940-form-nova-turma
+
+## v-20260825-1940-form-nova-turma — 25/08/2026
+- O que mudou: `nova-turma.html`, formulário novo que grava direto no Supabase.
+  Também: 4 tabelas criadas no projeto Supabase (`professores`, `empresas_cliente`,
+  `turmas`, `alunos`, `turma_alunos`) — até então só existia `bupp_dashboard_data`.
+  RLS ligado, policy aberta pra `anon` (mesma lógica de senha simples do resto da
+  dash; travar por role fica pra quando entrar Supabase Auth de verdade). Campos:
+  turma (nome, tipo, empresa, nível, objetivo 1 e 2, tamanho, duração, formato,
+  frequência), alunos (busca existente com autocomplete ou cria novo — nome, cargo,
+  área de atuação, responsabilidades), curso (módulos, aulas por módulo, nomes dos
+  módulos), contexto do cliente (setor, com quem falam inglês, assuntos essenciais
+  do RH) e restrições (o que NÃO pode aparecer). Sem campo de professor — isso é
+  atribuído depois na aba Turmas.
+- Arquivos: nova-turma.html (novo), schema do Supabase (projeto Bupp Idiomas,
+  gajvcgrfljyxgahzfjfp)
+- Motivo: primeiro passo pra gerar o material completo de uma turma — o
+  formulário junta todas as infos que o protocolo do Gerador de Aulas
+  (`pedagogico/GERADOR.md`, Passo 2) precisa antes de montar qualquer aula.
+  Campos vieram do cruzamento entre o que a Karina pediu e o que o protocolo já
+  exigia (tamanho da turma, duração, módulos, contexto da empresa, restrições —
+  que não estavam na lista original dela).
+  Observação: o schema relacional de 10 tabelas do `docs/plataforma.md` tinha
+  sido desenhado mas nunca criado — só a tabela de blob existia. Essas 4 são o
+  primeiro pedaço real desse schema.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260821-2745-nome-longo
+  (as tabelas do Supabase não são revertidas por tag — teriam que ser dropadas
+  manualmente, se for o caso)
+
 ## v-20260820-2105-migracao-supabase-bupp-idiomas — 20/08/2026
 - O que mudou: `SUPABASE_URL`, `SUPABASE_ANON_KEY` e o nome da tabela em
   `SUPABASE_TABLE_URL` trocados do projeto antigo (`ersknlnoeixddjczqlki`)

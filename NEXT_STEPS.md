@@ -29,23 +29,37 @@
 
 ## Próximo
 
-- [ ] TESTAR a migração do Supabase (v-20260820-2105) no navegador: abrir
-      a dash, fazer login, confirmar que tasks/leads/users aparecem vindos
-      do projeto novo "Bupp Idiomas" (`gajvcgrfljyxgahzfjfp`), não só que
-      o deploy subiu. Só depois disso considerar a migração encerrada.
-- [ ] Karina revisar o schema proposto em `docs/plataforma.md` (fundação
-      da plataforma prof/aluno/RH, v-20260820-1954). Nenhuma tabela criada
-      no Supabase ainda — está tudo em doc, esperando OK antes de virar
-      banco de verdade.
-- [ ] Depois do OK do schema: criar as 10 tabelas no projeto Supabase
-      "Bupp Idiomas" (`gajvcgrfljyxgahzfjfp` — já é o projeto usado pela
-      dash desde v-20260820-2105) com RLS por role desde o início.
+- [ ] TESTAR NO NAVEGADOR o fluxo de `nova-turma.html` → aba Turmas
+      (v-20260825-1940/1941/1942): abrir `nova-turma.html`, criar uma
+      turma de teste (empresa nova + 1 aluno novo), confirmar que ela
+      aparece na aba Turmas do `interna.html`, atribuir professor pelo
+      select e confirmar que salvou (recarregar a aba e ver se persistiu).
+      Só rodou validação de sintaxe e teste direto no Supabase via MCP
+      até agora — o REST com a anon key não pôde ser testado nesta sessão
+      porque o subdomínio novo não estava no allowlist do bash (mesma
+      pegadinha já registrada mais abaixo neste arquivo).
+- [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; só 4
+      foram criadas até agora (`professores`, `empresas_cliente`, `turmas`,
+      `alunos`, mais a ponte `turma_alunos`) — as que o formulário de nova
+      turma precisava. Faltam: `aulas_assigned`, `lousas_aula`,
+      `anotacoes_aluno`, `trilha_licoes`, `progresso_aluno`, `presenca`,
+      `profiles`. Criar conforme as dashes forem pedindo esses dados (regra
+      permanente da Karina — nunca deixar dado novo só no front sem tabela
+      correspondente).
+- [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
+      do resto da dash). Travar por role quando o Supabase Auth entrar,
+      como já previsto em `docs/plataforma.md`.
+- [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
+      Aulas (`pedagogico/GERADOR.md`, Passo 2) — hoje o gerador ainda
+      pergunta tudo de novo no chat; o formulário deveria alimentar direto
+      essas respostas quando a turma já existir no Supabase.
+- [ ] Popular `empresas_cliente` e `alunos` com os dados fictícios que já
+      existem no `dados-mock.js` (Sertrading, Tirolez, Nelogica...), se for
+      útil ter exemplos pra testar a aba Turmas sem depender só de dados
+      criados na mão.
 - [ ] Desenhar o fluxo de criação de `empresas_cliente` quando um lead
       vira "Cliente" no funil (manual vs. automático) — pendência aberta
       registrada em `docs/plataforma.md` §5.
-- [ ] Decidir nome definitivo da view nova na dash interna que vai ler os
-      dados da plataforma sem restrição de RLS (hoje provisório:
-      "Turmas").
 - [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional
       da tela Aluno) entra na primeira versão do `plataforma.html`.
 - [ ] MUDAR A ROTINA: depois de qualquer push que altere algo visual (index.html,

@@ -2,6 +2,32 @@
 
 Entradas mais recentes no topo.
 
+## v-20260825-2315-dias-aula-e-autor-automatico — 25/08/2026
+- O que mudou: duas mudanças, uma no form de turma e outra na anotação de
+  aluno. (1) `nova-turma.html` perdeu os campos "Tamanho da turma" e
+  "Duração da aula (min)" — nenhuma turma tinha isso preenchido até hoje.
+  Entrou "Dias da aula" (checkboxes Seg a Dom); "Aulas por semana" deixou
+  de ser perguntado, agora é calculado sozinho (nº de dias marcados) no
+  momento de salvar. `interna.html` (meta da linha de turma e modal de
+  detalhe) atualizado pra mostrar os dias em vez de tamanho/duração. (2)
+  O form de anotação de aluno em `interna.html` perdeu o select "Quem
+  escreve" e o input "Seu nome" — interna.html só tem um usuário possível
+  (a gestão Bupp, sem login multi-usuário real), então toda anotação
+  daqui já grava `tipo: gestao` e `autor: "Karina Bupp Team"` sozinha.
+- Arquivos: nova-turma.html, interna.html, schema do Supabase (ver
+  abaixo).
+- Schema (Supabase, projeto `gajvcgrfljyxgahzfjfp`, tabela `turmas`):
+  colunas `tamanho_turma` e `duracao_aula_min` removidas (as 4 turmas
+  existentes tinham valor nulo nas duas — checado antes de remover).
+  Coluna nova `dias_semana` (jsonb, array de dias, default `'[]'`).
+- Motivo: pedido da Karina em 25/08, com 2 prints de referência — campos
+  vazios que nunca eram preenchidos, e um "quem escreve" que não fazia
+  sentido pedir manualmente numa dash de usuário único.
+- Reverter para o estado ANTERIOR a esta mudança (arquivos; o schema do
+  Supabase precisa reverter manualmente — recriar tamanho_turma e
+  duracao_aula_min, soltar dias_semana — se for reverter de verdade):
+  git checkout v-20260825-2235-faixa-h2-nova-turma
+
 ## v-20260825-2235-faixa-h2-nova-turma — 25/08/2026
 - O que mudou: a faixa-titulo flutuante "Formulário de Nova Turma" (bloco
   separado abaixo do logo, v-20260825-2148) foi removida. No lugar, o

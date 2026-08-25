@@ -54,14 +54,27 @@
 - [ ] TESTAR NO NAVEGADOR: mudar um lead pra etapa "Cliente" e conferir se
       a empresa aparece em Empresas; abrir histórico de uma empresa com
       lead de origem e sem lead de origem; abrir ficha de aluno e testar
-      anotação de cada tipo (prof/rh/aluno/gestao) e a alocação pelo
-      bucket "sem turma ainda" — não testado no REST nesta sessão, mesma
-      pegadinha do allowlist do subdomínio novo do Supabase no bash_tool.
+      anotação e a alocação pelo bucket "sem turma ainda"; criar turma
+      marcando dias da semana e conferir se a frequência calculada bate;
+      abrir detalhe de turma e conferir os dias mostrados; adicionar
+      anotação de aluno e conferir que grava autor "Karina Bupp Team" sem
+      perguntar nada — não testado no REST nesta sessão, mesma pegadinha
+      do allowlist do subdomínio novo do Supabase no bash_tool.
 - [ ] `criarEmpresaClienteDoLead` roda só quando o select de etapa muda
       dentro do `index.html` (ou embutido em `interna.html`). Se o status
       do lead for alterado por outro caminho no futuro (import em massa,
       API), essa criação automática não dispara — vale revisitar se
       aparecer um jeito novo de mudar etapa.
+- [ ] **SENSÍVEL — anotacoes_aluno e RH.** Hoje o RH não tem acesso
+      técnico nenhum (manager.html nem tem chave do Supabase ainda), mas
+      quando o RH migrar pra dados reais isso muda. Antes disso acontecer,
+      travar por RLS: RH nunca pode ler `anotacoes_aluno`, ponto — não é
+      "esconder na UI", é bloquear no banco. Decisão da Karina em 25/08,
+      não é negociável.
+- [ ] Quando `plataforma.html` ganhar uma tela de anotação de aluno pro
+      professor (hoje não existe), o autor também precisa ser automático
+      — nome do professor logado, tipo "prof". Mesma lógica do que foi
+      feito em `interna.html` pra gestão, adaptada pro professor.
 - [ ] `anotacoes_aluno` não distingue quem pode ver o quê por role ainda
       (RLS aberta pra `anon`, igual o resto). Quando Supabase Auth entrar,
       decidir se anotação tipo "aluno" fica visível pro RH, e se "gestao"

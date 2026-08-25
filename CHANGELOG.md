@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-0005-alunos-por-empresa — 26/08/2026
+- O que mudou: o campo de aluno em `nova-turma.html` buscava todos os
+  alunos do sistema numa lista só, misturada, e não tinha caminho
+  explícito pra "esse aluno não existe ainda". Agora os alunos DESSA
+  empresa aparecem primeiro (sob o nome dela), depois os de outras
+  empresas sob "De outras empresas", e no fim sempre um "+ Novo aluno"
+  (que vira `+ Criar "X" como novo aluno` quando já tem nome digitado).
+  Aluno já escolhido em outra linha do form some da lista, pra não dar
+  pra adicionar a mesma pessoa duas vezes na turma.
+- Arquivos: nova-turma.html
+- Motivo: pedido da Karina em 25/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260825-2345-formato-material-autor-login
+
 ## v-20260825-2345-formato-material-autor-login — 25/08/2026
 - O que mudou: três mudanças em `interna.html`, todas dentro do modal de
   detalhe de turma/aluno. (1) Formato vira editável (select Live/Online,

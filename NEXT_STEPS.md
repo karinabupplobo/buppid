@@ -89,6 +89,13 @@
       sessão do `index.html` via localStorage compartilhado (mesma
       origem) só pra saber quem escreve uma anotação de aluno — não é
       login de verdade, é atalho até isso ser construído direito.
+      **REGRA QUE VALE DESDE JÁ, em qualquer tela nova:** nome de quem
+      escreve/age NUNCA é hardcoded no código nem digitado à mão pela
+      pessoa — sempre vem do login. O papel também: quem escreve pela
+      interna é `adm`, pela plataforma do professor é `teacher`, e assim
+      por diante, derivado da dash de origem, nunca de um dropdown.
+      Karina teve que repetir isso mais de uma vez em 25/08 — não repetir
+      o erro.
 - [ ] **SENSÍVEL — anotacoes_aluno e RH.** Hoje o RH não tem acesso
       técnico nenhum (manager.html nem tem chave do Supabase ainda), mas
       quando o RH migrar pra dados reais isso muda. Antes disso acontecer,

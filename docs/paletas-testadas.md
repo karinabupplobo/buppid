@@ -4,6 +4,12 @@ Registro das combinações testadas na plataforma do professor, para poder volta
 a qualquer uma. Cada uma tem uma tag no git — `git checkout <tag>` traz a
 combinação inteira de volta, incluindo o arquivo do logo correspondente.
 
+**Em uso agora: Comb 2.** A seção 10 do `docs/icp-comprador.md` descreve a Comb 2
+como paleta em teste da marca, com as regras de uso e os riscos.
+
+Trocar de combinação é uma linha de CSS mais o arquivo do logo — todos estão no
+repositório. Basta pedir "volta pra Comb N".
+
 ---
 
 ## Comb 1 — Verde-limão + cinza
@@ -41,7 +47,13 @@ forma em si sobre branco e precisa de corpo.
 | Bege neutro | `#F7F5F2` | Fundo da página, levemente quente para acompanhar o marrom |
 | Branco | `#FFFFFF` | Cards |
 
-Arquivo do logo: `assets/logo-bupp-marrom-azul.png`
+Arquivos do logo: `assets/logo-bupp-marrom-azul.png` (sobre claro) e
+`assets/logo-bupp-marrom-azul-claro.png` (sobre marrom, usado na sidebar).
+
+**Estrutura desta combinação:** a sidebar inteira é marrom — logo, usuário e
+abas sobre fundo escuro. Os cards de "Fim da aula" e "Trilhas" têm faixa marrom
+no topo, com texto branco e o selo do nível em azul. O conteúdo roda em bege
+quase branco com cards brancos.
 
 Contrastes: marrom sobre branco 9,8:1 · marrom sobre azul 6,3:1 · azul sobre
 branco 1,56:1 (por isso o azul nunca é texto, só preenchimento).

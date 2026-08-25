@@ -246,39 +246,59 @@ checagem no INPI.
 
 ---
 
-## 10. Paleta de cores (fechada em 21/08/2026 — substitui a versão de 15/08)
+## 10. Paleta de cores (21/08/2026 — Comb 2, em teste na dash do professor)
+
+**Status: em teste, não fechada.** Esta é a combinação atualmente aplicada na
+plataforma do professor. Antes de virar paleta oficial da marca, precisa passar
+por peça comercial impressa — proposta em PDF e slide de projetor.
 
 | Papel | Hex | Uso |
 |---|---|---|
-| **Ameixa** (principal) | `#4A2B4D` | Cor da marca e do logo. Texto de destaque, botão primário, estado ativo |
-| **Verde-limão** (acento) | `#D9E28C` | Acento — pontos do logo, fundo dos botões de menu, selos, marcadores |
-| **Cinza-lavanda** (apoio) | `#6B6478` | Kickers, links, texto secundário, rótulos de grupo |
-| **Branco** | `#FFFFFF` | Base da interface — fundo de página e de cards |
-| **Preto** | `#000000` | Texto corrido |
+| **Marrom** (principal) | `#54402F` | Cor escura da marca. Texto, títulos, botões, estado ativo, sidebar, faixas de cabeçalho, palavra do logo |
+| **Azul-bebê** (acento) | `#A8D5F2` | Acento de preenchimento — aba ativa, selos de nível, botão "+", marcadores |
+| **Azul do logo** | `#7CBBE4` | Só nos pingos do "i". Mais escuro que o azul da interface |
+| **Azul lavado** | `#E4F1FA` | Fundos suaves, blocos de destaque |
+| **Bege neutro** | `#F7F5F2` | Fundo da página — levemente quente, para acompanhar o marrom |
+| **Marrom claro** | `#8A7767` | Kickers, links, texto secundário |
+| **Branco** | `#FFFFFF` | Cards e superfícies de conteúdo |
 
 ### Regras de uso
-- **A base é branca, não escura.** Inversão de 21/08: a dash e o produto rodam em fundo branco
-  (off-white `#fafaf8` na página, branco puro nos cards), e a ameixa entra como cor de texto,
-  de estado ativo e de ação. Antes o fundo era escuro e os cards claros.
-- **Ameixa é a cor da marca.** É a cor do logo e o que carrega a identidade. Contraste de
-  9,6:1 sobre branco — serve para qualquer tamanho de texto.
-- **Verde-limão tem dois usos, e são diferentes.** Dentro da interface, ele segue reservado
-  para "isto está ativo/selecionado" — título de tela, aba ativa, estado marcado; usá-lo em
-  área grande apaga o efeito de destaque. Na marca (logo, capa, avatar, peça isolada), ele
-  pode ocupar área cheia como cor de superfície. A regra de acento vale para produto, não
-  para identidade.
-- **Verde-limão em área cheia é a aplicação de maior risco.** É o que mais aproxima do
-  território de app de idioma (Duolingo). Usar em peça curta e isolada — avatar de rede,
-  adesivo, capa de slide. Evitar em site inteiro e em capa de proposta comercial.
-- Texto sobre verde-limão é sempre escuro (preto ou teal escuro), nunca branco — o
-  verde-limão é claro demais para servir de fundo com texto branco em cima. Esta regra não
-  tem exceção, nem no produto nem na marca.
-- **Cinza-lavanda é o tom de apoio**: neutro com um toque de roxo, acompanha a ameixa sem
-  competir. Contraste de 6,2:1 sobre branco. Substituiu o azul intermediário `#3C6E78`, que era
-  resquício da paleta teal e brigava com a ameixa.
-- **Nos botões do menu o limão é fundo, com texto ameixa por cima.** Exceção à regra de "limão
-  como acento pontual": funciona porque são elementos pequenos e repetidos, e porque o
-  contraste ameixa-sobre-limão é 6,9:1.
+- **Estrutura da interface: coluna escura à esquerda, conteúdo claro à direita.**
+  A sidebar inteira é marrom (logo, usuário e abas). O conteúdo roda em bege
+  quase branco com cards brancos. As faixas marrons no topo dos cards de "Fim da
+  aula" e "Trilhas" fazem a ponte entre as duas partes.
+- **O azul-bebê é acento de PREENCHIMENTO, nunca de texto.** Sobre branco ele tem
+  1,56:1 — é invisível como letra. Texto sobre azul é sempre o marrom (6,3:1).
+  Esta regra não tem exceção.
+- **Sobre marrom, texto é branco** (9,8:1). Em faixas escuras, o azul-bebê deixa
+  de ser fundo e vira o único ponto de cor — é assim que o selo do nível se
+  destaca dentro das faixas.
+- **O azul do logo é mais escuro que o da interface, de propósito.** Na interface
+  o azul é fundo com texto por cima e precisa ser claro; no logo ele é a forma em
+  si sobre branco e precisa de corpo.
+- **Fundo levemente quente.** O bege `#F7F5F2` existe para o marrom não ficar
+  isolado numa tela fria. Fundo cinza neutro faz a dupla parecer desconexa.
+
+### Riscos conhecidos desta combinação
+- **Marrom e azul-bebê não têm parentesco de matiz.** É o mais quente contra o
+  mais frio, sem meio-termo. Dá contraste forte, mas as duas cores não
+  "conversam" — diferente de uma paleta onde o neutro deixa o acento mandar
+  sozinho.
+- **Azul-bebê tem território ocupado:** lê como infantil, ou como saúde e
+  maternidade. Vale testar numa proposta comercial antes de fechar.
+
+### Outras combinações testadas
+Registradas em `docs/paletas-testadas.md`, cada uma com tag no git para
+restaurar a dash inteira, incluindo o arquivo do logo:
+
+| Combinação | Cores | Tag |
+|---|---|---|
+| **Comb 1** | Cinza `#404040` + verde-limão `#D2E46B` | `comb-1-limao-cinza` |
+| **Comb 2** | Marrom `#54402F` + azul-bebê `#A8D5F2` | `comb-2-marrom-azul` |
+| **Comb 3** | Cinza `#404040` + azul-bebê `#A8D5F2` | `comb-3-cinza-azul` |
+
+Comb 1 e Comb 3 são idênticas exceto pelo acento — comparar as duas isola a
+pergunta "limão ou azul".
 
 ### Logo
 
@@ -290,39 +310,50 @@ Sem símbolo, sem mascote, sem elemento gráfico acoplado. O nome tem quatro let
 compacto o bastante para funcionar sozinho, inclusive em tamanho pequeno. O padrão do
 mercado-alvo (consultoria) é nome sozinho; ícone puxa a leitura para escola/edtech.
 
-**Versão atual (21/08/2026):** o logotipo passou a ser assinado **"bupp idiomas"**, em duas
-linhas, com a palavra em ameixa `#4A2B4D` e os pingos do "i" em verde-limão `#D9E28C`. Os
-pingos fazem o papel que o ponto final fazia: o gesto de cor está embutido na própria palavra,
-não pendurado no fim. Arquivo em `assets/logo-bupp-idiomas.png` no repositório
-`karinabupplobo/ingles`.
+**Versão atual (21/08/2026):** o logotipo é assinado **"bupp idiomas"**, em duas linhas, com a
+palavra na cor escura da marca e os pingos do "i" no acento. Os pingos fazem o papel que o
+ponto final fazia: o gesto de cor está embutido na própria palavra, não pendurado no fim.
 
-| Versão | Fundo | Palavra | Uso |
-|---|---|---|---|
-| **Principal** | Branco `#FFFFFF` | Ameixa `#4A2B4D`, pingos limão | Aplicação padrão — dash, proposta, documento |
-| **Invertida** | Ameixa `#4A2B4D` | Branco, pingos limão | Capa de proposta, slide de abertura, fundo escuro |
-| **Sobre limão** | Verde-limão `#D9E28C` | Ameixa `#4A2B4D` | Peça curta e isolada — avatar, adesivo |
+Na Comb 2 (em teste), a palavra é marrom `#54402F` e os pingos são azul `#7CBBE4`.
 
-Reduzido (favicon, avatar, app): só o "b" em ameixa sobre limão, ou limão sobre ameixa. É
+| Versão | Fundo | Palavra | Arquivo | Uso |
+|---|---|---|---|---|
+| **Principal** | Branco | Marrom, pingos azuis | `assets/logo-bupp-marrom-azul.png` | Documento, proposta, fundo claro |
+| **Clara** | Marrom `#54402F` | Branco, pingos azuis | `assets/logo-bupp-marrom-azul-claro.png` | Sidebar da dash, capa de proposta, fundo escuro |
+
+Os pingos ficam azuis nas duas versões: sobre marrom dão 4,7:1, o suficiente para se
+destacarem sem precisar de uma terceira cor.
+
+Reduzido (favicon, avatar, app): só o "b" na cor escura sobre o acento, ou o inverso. É
 derivação do logotipo, não marca gráfica nova.
 
-**Pendência:** só existe versão PNG. Falta o vetorial (SVG/AI) e as versões invertida e sobre
-limão, que ainda não foram produzidas.
+**Arquivos das outras combinações** (todos no repositório, para trocar sem retrabalho):
+`logo-bupp-final-v2.png` (Comb 1, cinza + limão) · `logo-bupp-cinza-azul.png` (Comb 3) ·
+`logo-bupp-idiomas-v2.png` (ameixa + limão, paleta antiga).
+
+**Pendências:** só existe PNG — falta o vetorial (SVG/AI). E ainda não foi produzida a versão
+sobre o acento (logo em marrom sobre fundo azul), que faria falta em avatar e adesivo.
 
 O elemento gráfico recorrente — a barra de 6 meses parcialmente preenchida — vive no sistema
 (capa de proposta, slide, rodapé, assinatura de e-mail) e nunca entra no logo.
 
-### Como se chegou à ameixa
-Terceira paleta em uma semana — e a última. A partir daqui, mexer custa retrabalho de material.
+### Histórico das paletas
+Cinco direções em uma semana. Nada foi impresso nem enviado a cliente ainda, então trocar
+continua barato — mas a partir da primeira proposta enviada, cada troca custa retrabalho.
 
 - **14/08** — terracota `#8F4426` sobre creme. Caiu por ler como orgânico/eco ao lado de verde.
 - **15/08** — teal escuro `#0A1214` + limão, herdada do template de aula. Segura, mas o teal
   quase-preto nunca era memorável sozinho.
-- **21/08** — ameixa `#4A2B4D` + limão. Complementar do limão, ou seja, contraste máximo. E é
+- **21/08 (manhã)** — ameixa `#4A2B4D` + limão. Complementar do limão, ou seja, contraste máximo. E é
   território vago no setor: Berlitz, Rosetta Stone (`#003263`) e Wall Street English são azuis,
   Duolingo é verde (`#58CC02`), Babbel é laranja (`#FF5F00`). Ninguém em idiomas usa roxo como
   cor principal.
 - Testado e descartado no mesmo dia: verde-petróleo `#2F5C5C`, que devolvia a marca ao
   território azul-esverdeado do setor — exatamente o que se queria evitar.
+- **21/08 (tarde)** — rodada de testes na dash do professor: laranja `#E8542E` (descartado por
+  ter 3,66:1 sobre branco, o que reprova para rótulo pequeno), verde-menta `#B4EFDC`
+  (descartado por destacar de menos), e o preto puro trocado por cinza `#404040` e depois por
+  marrom `#54402F`. Sobraram três combinações vivas — Comb 1, 2 e 3, na tabela acima.
 
 **Riscos assumidos conscientemente:**
 - No Brasil, roxo escuro carrega associação forte com o Nubank. Um comprador de RH pode ler

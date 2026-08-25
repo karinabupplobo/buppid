@@ -52,13 +52,16 @@
   .linha2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .linha3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   @media (max-width: 560px){ .linha2, .linha3{ grid-template-columns: 1fr; } }
-  .dias-grupo{ display:flex; flex-wrap:wrap; gap: 8px; }
-  .dias-grupo label{
-    display:flex; align-items:center; gap: 5px; font-size: 12.5px; font-weight: 600;
-    border: 1px solid var(--borda); border-radius: 7px; padding: 6px 10px; cursor:pointer;
+  .dias-grupo{ display:flex; flex-direction:column; gap: 6px; }
+  .dia-linha{ display:flex; align-items:center; gap: 10px; }
+  .dia-linha label{
+    display:flex; align-items:center; gap: 6px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid var(--borda); border-radius: 7px; padding: 6px 10px; cursor:pointer; width: 70px;
   }
-  .dias-grupo input{ width:auto; }
-  .dias-grupo label:has(input:checked){ background: var(--limao-claro); border-color: var(--azul-intermediario); }
+  .dia-linha input[type="checkbox"]{ width:auto; }
+  .dia-linha label:has(input:checked){ background: var(--limao-claro); border-color: var(--azul-intermediario); }
+  .dia-linha input[type="time"]{ width: 120px; }
+  .dia-linha input[type="time"]:disabled{ opacity: .4; background: var(--bg-dash); }
 
   .aluno-card{ border:1px solid var(--borda); border-radius: 9px; padding: 12px; margin-bottom: 8px; background: var(--limao-claro); }
   .aluno-card .linha2{ margin-bottom: 8px; }
@@ -134,16 +137,17 @@
         <textarea id="f-obj2"></textarea>
       </div>
       <div class="campo">
-        <label>Dias da aula</label>
-        <div class="dias-grupo">
-          <label><input type="checkbox" name="dia" value="Seg"> Seg</label>
-          <label><input type="checkbox" name="dia" value="Ter"> Ter</label>
-          <label><input type="checkbox" name="dia" value="Qua"> Qua</label>
-          <label><input type="checkbox" name="dia" value="Qui"> Qui</label>
-          <label><input type="checkbox" name="dia" value="Sex"> Sex</label>
-          <label><input type="checkbox" name="dia" value="Sáb"> Sáb</label>
-          <label><input type="checkbox" name="dia" value="Dom"> Dom</label>
+        <label>Dias da aula <span class="ajuda">(1 a 5 dias, cada um com seu horário)</span></label>
+        <div class="dias-grupo" id="dias-grupo">
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Seg"> Seg</label><input type="time" class="dia-hora" data-dia="Seg" disabled></div>
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Ter"> Ter</label><input type="time" class="dia-hora" data-dia="Ter" disabled></div>
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Qua"> Qua</label><input type="time" class="dia-hora" data-dia="Qua" disabled></div>
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Qui"> Qui</label><input type="time" class="dia-hora" data-dia="Qui" disabled></div>
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Sex"> Sex</label><input type="time" class="dia-hora" data-dia="Sex" disabled></div>
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Sáb"> Sáb</label><input type="time" class="dia-hora" data-dia="Sáb" disabled></div>
+          <div class="dia-linha"><label><input type="checkbox" name="dia" value="Dom"> Dom</label><input type="time" class="dia-hora" data-dia="Dom" disabled></div>
         </div>
+        <div class="ajuda" id="dias-msg"></div>
         <div class="ajuda">A frequência semanal é calculada sozinha a partir dos dias marcados.</div>
       </div>
       <div class="linha2">
@@ -151,7 +155,7 @@
           <label for="f-formato">Formato</label>
           <select id="f-formato">
             <option value="">Selecione</option>
-            <option value="presencial">Presencial</option>
+            <option value="live">Live</option>
             <option value="online">Online</option>
           </select>
         </div>
@@ -225,11 +229,12 @@ let empresaTravada = false;
 
 if (empresaLockId && empresaLockNome){
   empresaTravada = true;
-  document.getElementById("bloco-empresa").innerHTML = `
-    <label>Empresa</label>
-    <input value="${empresaLockNome}" disabled style="background:var(--limao-claro); font-weight:700;">
-    <div class="ajuda">Turma nova para esta empresa — direto do card em Empresas.</div>
-  `;
+  const campoBusca = document.getElementById("f-empresa-busca");
+  campoBusca.value = empresaLockNome;
+  campoBusca.disabled = true;
+  campoBusca.style.background = "var(--limao-claro)";
+  campoBusca.style.fontWeight = "700";
+  document.getElementById("empresa-selecionada").textContent = "Turma nova para esta empresa — direto do card em Empresas.";
 }
 
 // ── Busca de empresa existente ──
@@ -351,6 +356,26 @@ document.getElementById("btn-add-aluno").onclick = () => {
 };
 renderAlunos();
 
+// ── Dias da aula: cada dia marcado libera o próprio campo de horário.
+// Limite de 5 dias — travando aqui em vez de só validar no salvar, pra
+// avisar na hora em vez de deixar a pessoa marcar 6 e só descobrir depois. ──
+const MAX_DIAS = 5;
+document.querySelectorAll('#dias-grupo input[name="dia"]').forEach(chk => {
+  chk.onchange = () => {
+    const hora = document.querySelector(`.dia-hora[data-dia="${chk.value}"]`);
+    const msg = document.getElementById("dias-msg");
+    const marcados = document.querySelectorAll('#dias-grupo input[name="dia"]:checked');
+    if (chk.checked && marcados.length > MAX_DIAS){
+      chk.checked = false;
+      msg.textContent = `Máximo de ${MAX_DIAS} dias por turma.`; msg.style.color = "var(--erro)";
+      return;
+    }
+    msg.textContent = ""; msg.style.color = "";
+    hora.disabled = !chk.checked;
+    if (!chk.checked) hora.value = "";
+  };
+});
+
 // ── Salvar ──
 const msg = document.getElementById("msg");
 document.getElementById("btn-salvar").onclick = async () => {
@@ -363,6 +388,14 @@ document.getElementById("btn-salvar").onclick = async () => {
   }
   if (!empresaSelecionada){
     msg.textContent = "Selecione ou crie a empresa."; msg.className = "erro"; return;
+  }
+  const diasMarcados = [...document.querySelectorAll('#dias-grupo input[name="dia"]:checked')];
+  if (!diasMarcados.length){
+    msg.textContent = "Marque pelo menos 1 dia de aula."; msg.className = "erro"; return;
+  }
+  const diasSemHorario = diasMarcados.filter(d => !document.querySelector(`.dia-hora[data-dia="${d.value}"]`).value);
+  if (diasSemHorario.length){
+    msg.textContent = `Preencha o horário de ${diasSemHorario.map(d => d.value).join(", ")}.`; msg.className = "erro"; return;
   }
 
   document.getElementById("btn-salvar").disabled = true;
@@ -389,7 +422,10 @@ document.getElementById("btn-salvar").onclick = async () => {
       }
     }
 
-    const diasSelecionados = [...document.querySelectorAll('input[name="dia"]:checked')].map(d => d.value);
+    const diasSelecionados = diasMarcados.map(d => ({
+      dia: d.value,
+      hora: document.querySelector(`.dia-hora[data-dia="${d.value}"]`).value
+    }));
 
     const turma = await sbInsert("turmas", {
       nome, tipo: "corporativa", empresa_cliente_id: empresaClienteId, professor_id: null,

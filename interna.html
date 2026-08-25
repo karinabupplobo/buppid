@@ -942,7 +942,113 @@
   #lista-alertas .card .id-niv{ background: var(--amarelo-neon); color: var(--teal-escuro); }
   #lista-alertas .card .id-hora{ color: rgba(255,255,255,.8); }
 
-  .btn-limpar-col{
+  /* ── Resumo por aluno: tabela no desktop, carrossel no celular ── */
+  .resumo-alunos{ margin-bottom: 18px; }
+  .resumo-alunos .ra-nav{ display: none; }
+  .resumo-alunos .ra-viewport{ display: none; }
+
+  .ra-wrap{
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: 14px; overflow-x: auto;
+  }
+  table.ra-tabela{ border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  table.ra-tabela th{
+    background: #faf9f7; color: var(--azul-intermediario);
+    font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    padding: 10px 12px; text-align: left; white-space: nowrap;
+    border-bottom: 1px solid var(--borda);
+  }
+  table.ra-tabela td{
+    padding: 11px 12px; border-bottom: 1px solid #f4f2f0;
+    vertical-align: middle; white-space: nowrap; color: var(--texto);
+  }
+  table.ra-tabela tbody tr:last-child td{ border-bottom: none; }
+  table.ra-tabela tbody tr:hover td{ background: #faf9f7; }
+  table.ra-tabela th:nth-child(n+4), table.ra-tabela td:nth-child(n+4){ text-align: right; }
+  table.ra-tabela th:nth-child(10), table.ra-tabela td:nth-child(10),
+  table.ra-tabela th:nth-child(11), table.ra-tabela td:nth-child(11){ text-align: left; }
+  .ra-sub{ display: block; font-size: 11px; color: var(--cinza-texto); font-weight: 500; margin-top: 2px; }
+  .ra-anot{
+    font-size: 11px; font-weight: 800; background: var(--limao-claro);
+    color: var(--teal-escuro); padding: 3px 8px; border-radius: 999px;
+  }
+
+  @media (max-width: 760px){
+    .resumo-alunos .ra-wrap{ display: none; }
+    .resumo-alunos .ra-nav{ display: flex; }
+    .resumo-alunos .ra-viewport{ display: block; }
+    .resumo-alunos .rt-card{ flex: 0 0 100%; }
+  }
+
+  /* ── Filtro no cabeçalho da planilha ── */
+  table.planilha th{ position: sticky; top: 0; z-index: 3; padding: 0; }
+  .th-btn{
+    width: 100%; display: flex; align-items: center; gap: 6px; justify-content: space-between;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .07em;
+    text-transform: uppercase; padding: 11px 12px; white-space: nowrap;
+  }
+  .th-btn:hover{ background: rgba(255,255,255,.1); }
+  .funil{
+    width: 9px; height: 9px; flex-shrink: 0; opacity: .5;
+    clip-path: polygon(0 0, 100% 0, 62% 45%, 62% 100%, 38% 82%, 38% 45%);
+    background: #fff;
+  }
+  th.filtrado{ background: var(--azul-intermediario) !important; }
+  th.filtrado .funil{ opacity: 1; background: var(--amarelo-neon); }
+
+  .menu-col{
+    position: absolute; top: 100%; left: 0; z-index: 40; min-width: 240px; max-width: 300px;
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 10px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.18); overflow: hidden; white-space: normal;
+    text-transform: none; letter-spacing: 0;
+  }
+  .mc-topo{ padding: 9px; border-bottom: 1px solid var(--borda); }
+  .mc-busca{
+    width: 100%; border: 1px solid var(--borda); border-radius: 7px; padding: 7px 9px;
+    font-family: inherit; font-size: 12.5px; color: var(--texto); outline: none;
+  }
+  .mc-busca:focus{ border-color: var(--teal-escuro); }
+  .mc-acoes{ display: flex; gap: 6px; padding: 8px 9px 4px; }
+  .mc-acoes button{
+    flex: 1; border: 1px solid var(--borda); background: var(--branco); border-radius: 6px;
+    padding: 5px; font-family: inherit; font-size: 11px; font-weight: 700;
+    color: var(--azul-intermediario); cursor: pointer;
+  }
+  .mc-acoes button:hover{ border-color: var(--teal-escuro); color: var(--teal-escuro); }
+  .mc-lista{ max-height: 220px; overflow-y: auto; padding: 4px 9px 8px; }
+  .mc-item{
+    display: flex; align-items: center; gap: 8px; padding: 5px 4px; cursor: pointer;
+    font-size: 12.5px; font-weight: 500; color: var(--texto); border-radius: 5px;
+  }
+  .mc-item:hover{ background: #faf9f7; }
+  .mc-item input{ accent-color: var(--teal-escuro); cursor: pointer; flex-shrink: 0; }
+  .mc-vazio{ font-size: 12px; color: var(--cinza-texto); padding: 8px 4px; }
+  .mc-rodape{ padding: 8px 9px; border-top: 1px solid var(--borda); }
+  .mc-ok{
+    width: 100%; border: none; border-radius: 7px; background: var(--teal-escuro);
+    color: #fff; font-family: inherit; font-size: 12px; font-weight: 700;
+    padding: 8px; cursor: pointer;
+  }
+  .mc-ok:hover{ background: var(--azul-intermediario); }
+
+  /* Planilha no celular: rolagem horizontal com a coluna do aluno fixa,
+     para não perder a referência de quem é a linha. */
+  @media (max-width: 760px){
+    .planilha-wrap{ max-height: 62vh; }
+    table.planilha th, table.planilha td{ padding: 9px 10px; font-size: 12px; }
+    table.planilha th:nth-child(7){ left: 0; z-index: 4; }
+    table.planilha td:nth-child(7){
+      position: sticky; left: 0; z-index: 2;
+      background: var(--branco); box-shadow: 2px 0 0 var(--borda);
+    }
+    table.planilha tbody tr:hover td:nth-child(7){ background: #faf9f7; }
+    table.planilha tbody tr.alerta td:nth-child(7){ background: #fffaf8; }
+    .cel-anot, .cel-at{ max-width: 200px; }
+    .barra-planilha{ gap: 7px; }
+    .filtro, input.filtro{ flex: 1; min-width: 0; }
+    .btn-csv{ margin-left: 0; flex: 1; }
+    .btn-limpar-col{
     border: 1px solid var(--borda); background: var(--limao-claro); border-radius: 9px;
     padding: 9px 12px; font-family: inherit; font-size: 12px; font-weight: 700;
     color: var(--teal-escuro); cursor: pointer; align-items: center;
@@ -1051,6 +1157,7 @@
     <div class="kpis" id="kpis"></div>
 
     <div class="resumo-turmas" id="resumo-turmas"></div>
+    <div class="resumo-alunos" id="resumo-alunos"></div>
 
     <div class="planilha-wrap">
       <table class="planilha" id="tabela"></table>
@@ -1329,6 +1436,7 @@ function renderTabela(){
     `${dados.length} de ${LINHAS.length} linhas`;
   renderKPIs(dados);
   renderResumoTurmas(dados);
+  renderResumoAlunos(dados);
   ligarCelulas();
 
   document.querySelectorAll(".th-btn").forEach(b => {
@@ -1351,6 +1459,13 @@ function renderTabela(){
 
 // ── Células clicáveis da planilha ──
 function ligarCelulas(){
+  document.querySelectorAll("[data-aluno-pop]").forEach(b => {
+    b.onclick = () => {
+      const t = TURMAS.find(x => x.id === b.dataset.turma);
+      const a = t && t.alunos.find(x => x.id === b.dataset.alunoPop);
+      if (t && a) abrirAluno(t, a);
+    };
+  });
   document.querySelectorAll("[data-turma-pop]").forEach(b => {
     b.onclick = () => abrirTurma(TURMAS.find(t => t.id === b.dataset.turmaPop));
   });
@@ -1361,6 +1476,60 @@ function ligarCelulas(){
       if (t && h) abrirAula(t, h);
     };
   });
+}
+
+// Ficha do aluno: números consolidados, aula a aula e as anotações internas.
+function abrirAluno(t, a){
+  const p  = partesIdent(t);
+  const ls = LINHAS.filter(l => l.turmaId === t.id && l.alunoId === a.id);
+  const comPres = ls.filter(l => l.presenca);
+  const pctPres = comPres.length
+    ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+  const comEng = ls.filter(l => l.eng);
+  const medEng = comEng.length
+    ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
+  const comNota = ls.filter(l => l.nota !== null);
+  const medNota = comNota.length
+    ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+
+  const alertas = alertasDoAluno(a, t);
+
+  abrirModal(`${p.empresa} · ${p.turma} · ${t.nivel}`, a.nome, `
+    <div class="nums">
+      <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
+      <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
+      <div class="num"><span class="nv ${classeNota(medNota)}">${medNota===null?"–":medNota+"%"}</span><span class="nr">Trilhas</span></div>
+    </div>
+    ${alertas.length ? `
+    <div class="bloco">
+      <div class="bt">Precisa ser tratado · ${alertas.length}</div>
+      ${alertas.map(x => {
+        const r = ROT[x.tipo] || { r:x.tipo, c:"lavanda" };
+        return `<div class="item-trat"><span class="tag-al ${r.c}">${r.r}</span>
+          <span class="it-txt">${x.texto}</span></div>`;
+      }).join("")}
+    </div>` : ""}
+    <div class="bloco">
+      <div class="bt">Aula a aula · ${ls.length}</div>
+      ${ls.map(l => `
+        <div class="mini">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <b>${l.aula}</b>
+            <span>${l.presenca === "p" ? '<span class="tag-p">presente</span>'
+                   : l.presenca === "a" ? '<span class="tag-f">faltou</span>' : '<span class="tag-x">—</span>'}
+              ${estrelasRO(l.eng)}
+              <span class="nota ${classeNota(l.nota)}">${l.nota===null?"–":l.nota+"%"}</span></span>
+          </div>
+          <span>${l.dia} ${l.data}</span>
+          ${l.atencao.length ? `<div style="margin-top:6px;">${htmlAtencao(l.atencao)}</div>` : ""}
+          ${l.anot ? `<span style="margin-top:6px;font-style:italic;">“${l.anot}”</span>` : ""}
+        </div>`).join("")}
+    </div>
+    <div class="bloco">
+      <div class="bt">Professor</div>
+      <div class="mini"><b>${professorDe(t).nome}</b><span>${professorDe(t).email}</span></div>
+    </div>
+  `);
 }
 
 function abrirTurma(t){
@@ -1631,6 +1800,154 @@ function renderResumoTurmas(dados){
       if (alvo && alvo.scrollIntoView) alvo.scrollIntoView({ behavior:"smooth", block:"start" });
     };
   });
+}
+
+// ══════════════════════════════════════════════════════════
+//  RESUMO POR ALUNO
+//  Uma linha por aluno com as médias de tudo. No desktop é tabela; no
+//  celular vira carrossel de cards, igual ao resumo por turma.
+// ══════════════════════════════════════════════════════════
+function renderResumoAlunos(dados){
+  const box = document.getElementById("resumo-alunos");
+  const porAluno = new Map();
+  dados.forEach(l => {
+    const k = l.turmaId + "|" + l.alunoId;   // aluno pertence a uma turma
+    if (!porAluno.has(k)) porAluno.set(k, []);
+    porAluno.get(k).push(l);
+  });
+
+  if (!porAluno.size){ box.innerHTML = ""; return; }
+
+  const linhas = [...porAluno.values()].map(ls => {
+    const comPres = ls.filter(l => l.presenca);
+    const pctPres = comPres.length
+      ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+    const faltas  = ls.filter(l => l.presenca === "a").length;
+
+    const comEng = ls.filter(l => l.eng);
+    const medEng = comEng.length ? comEng.reduce((n,l) => n + l.eng, 0) / comEng.length : null;
+
+    const comNota = ls.filter(l => l.nota !== null);
+    const medNota = comNota.length
+      ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+
+    const acertos = ls.reduce((n,l) => n + l.acertos, 0);
+    const erros   = ls.reduce((n,l) => n + l.erros, 0);
+
+    const temas = {};
+    ls.forEach(l => l.atencao.forEach(x => {
+      if (x.tipo === "pend") return;
+      temas[x.tema] = (temas[x.tema] || 0) + 1;
+    }));
+    const pior = Object.entries(temas).sort((a,b) => b[1]-a[1])[0];
+    const anot = ls.filter(l => l.anot).length;
+
+    return {
+      aluno: ls[0].aluno, cargo: ls[0].cargo, empresa: ls[0].empresa, turma: ls[0].turma,
+      nivel: ls[0].nivel, prof: ls[0].prof, turmaId: ls[0].turmaId, alunoId: ls[0].alunoId,
+      aulas: ls.length, pctPres, faltas, medEng, medNota, acertos, erros, pior, anot
+    };
+  }).sort((a,b) => (a.medNota ?? 999) - (b.medNota ?? 999));   // pior primeiro
+
+  const cel = x => ({
+    pres: `<span class="nota ${classeNota(x.pctPres)}">${x.pctPres===null?"–":x.pctPres+"%"}</span>${
+            x.faltas ? `<span class="rt-falta">${x.faltas}</span>` : ""}`,
+    eng:  x.medEng === null ? '<span class="sem">–</span>'
+          : `<span class="rt-eng ${x.medEng <= 1.5 ? "baixo" : ""}">${x.medEng.toFixed(1)}★</span>`,
+    nota: `<span class="nota ${classeNota(x.medNota)}">${x.medNota===null?"–":x.medNota+"%"}</span>`,
+    pior: x.pior
+          ? `<span class="tag-at ${x.pior[1] >= 2 ? "recorrente" : "isolado"}">${x.pior[0]} <b>${x.pior[1]}×</b></span>`
+          : '<span class="sem">—</span>',
+    anot: x.anot ? `<span class="ra-anot">${x.anot}</span>` : '<span class="sem">—</span>'
+  });
+
+  // ── desktop: tabela ──
+  const tabela = `
+    <div class="ra-wrap">
+      <table class="ra-tabela">
+        <thead><tr>
+          <th>Aluno</th><th>Turma</th><th>Professor</th><th>Aulas</th>
+          <th>Presença</th><th>Engaj.</th><th>Trilhas</th>
+          <th>Certos</th><th>Erros</th><th>Onde mais erra</th><th>Anot.</th>
+        </tr></thead>
+        <tbody>
+          ${linhas.map(x => { const c = cel(x); return `
+            <tr>
+              <td><button class="cel-link" data-aluno-pop="${x.alunoId}" data-turma="${x.turmaId}">${x.aluno}</button>
+                  <span class="ra-sub">${x.cargo}</span></td>
+              <td>${x.empresa} · ${x.turma}<span class="ra-sub">${x.nivel}</span></td>
+              <td class="rt-prof">${x.prof}</td>
+              <td>${x.aulas}</td>
+              <td>${c.pres}</td>
+              <td>${c.eng}</td>
+              <td>${c.nota}</td>
+              <td>${x.acertos}</td>
+              <td>${x.erros}</td>
+              <td>${c.pior}</td>
+              <td>${c.anot}</td>
+            </tr>`; }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+
+  // ── celular: carrossel de cards ──
+  const cards = linhas.map(x => { const c = cel(x); return `
+    <article class="rt-card">
+      <header>
+        <button class="cel-link" data-aluno-pop="${x.alunoId}" data-turma="${x.turmaId}">${x.aluno}</button>
+        <span class="rt-sub">${x.empresa} · ${x.turma} · ${x.nivel} · ${x.aulas} aula${x.aulas!==1?"s":""}</span>
+      </header>
+      <div class="rt-linha"><span class="rt-rot">Professor</span><span class="rt-prof">${x.prof}</span></div>
+      <div class="rt-linha"><span class="rt-rot">Presença</span><span>${c.pres}</span></div>
+      <div class="rt-linha"><span class="rt-rot">Engajamento</span><span>${c.eng}</span></div>
+      <div class="rt-linha"><span class="rt-rot">Trilhas</span><span>${c.nota}</span></div>
+      <div class="rt-linha"><span class="rt-rot">Certos / erros</span><span><b>${x.acertos}</b> / ${x.erros}</span></div>
+      <div class="rt-linha"><span class="rt-rot">Onde mais erra</span><span>${c.pior}</span></div>
+    </article>`; }).join("");
+
+  box.innerHTML = `
+    <div class="rt-titulo">
+      Por aluno · ${linhas.length}
+      <span class="rt-nav ra-nav">
+        <button class="rt-seta" data-ir="-1" aria-label="Anterior">&lsaquo;</button>
+        <span class="rt-pos" id="ra-pos"></span>
+        <button class="rt-seta" data-ir="1" aria-label="Próximos">&rsaquo;</button>
+      </span>
+    </div>
+    ${tabela}
+    <div class="rt-viewport ra-viewport">
+      <div class="rt-trilho" id="ra-trilho">${cards}</div>
+    </div>`;
+
+  // carrossel só existe no celular; no desktop a tabela é que aparece
+  const trilho   = box.querySelector("#ra-trilho");
+  const viewport = box.querySelector(".ra-viewport");
+  const VAO = 12;
+  let paginas = linhas.length;
+  let pag = 0;
+
+  function irPara(n){
+    pag = Math.max(0, Math.min(n, paginas - 1));
+    trilho.style.transform = `translateX(-${pag * (viewport.clientWidth + VAO)}px)`;
+    box.querySelector("#ra-pos").textContent = `${pag + 1}/${paginas}`;
+    box.querySelectorAll(".ra-nav .rt-seta").forEach(b => {
+      const dir = +b.dataset.ir;
+      b.disabled = (dir < 0 && pag === 0) || (dir > 0 && pag === paginas - 1);
+    });
+  }
+  box.querySelectorAll(".ra-nav .rt-seta").forEach(b => {
+    b.onclick = () => irPara(pag + (+b.dataset.ir));
+  });
+  let x0 = null;
+  viewport.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive:true });
+  viewport.addEventListener("touchend", e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 45) irPara(pag + (dx < 0 ? 1 : -1));
+    x0 = null;
+  }, { passive:true });
+  window.addEventListener("resize", () => irPara(pag));
+  irPara(0);
 }
 
 // ── Exportar CSV ──

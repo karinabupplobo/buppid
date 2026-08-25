@@ -729,6 +729,11 @@
     padding: 6px 10px; border-radius: 999px; text-align: center; white-space: nowrap;
   }
   .lc-temp:hover{ filter: brightness(.94); }
+  /* A regra .lc define a cor do texto e vem depois de .tag-quente no arquivo,
+     por isso a etiqueta saía escura. Aqui a cor é fixada com dois seletores. */
+  .lc.lc-temp.tag-quente{ background: #A3541A; color: #fff; }
+  .lc.lc-temp.tag-morno{ background: #f3e7d5; color: #7a5a1c; }
+  .lc.lc-temp.tag-frio{ background: #f2f0ee; color: #8d8781; }
 
   /* Ícone de contato: vermelho quando não há ninguém mapeado */
   .lc-contato{

@@ -31,6 +31,8 @@
   /* Modo embutido: sem sidebar, sem cabeçalho, sem margem externa. */
   html.embutido #sidebar,
   html.embutido #app-header { display: none !important; }
+  /* Sem porta de login, "Sair" não tem para onde levar. */
+  html.sem-senha #logout-btn { display: none !important; }
   html.embutido body { padding: 0 !important; }
   html.embutido #app { margin-left: 0 !important; padding: 16px !important; max-width: none !important; }
 
@@ -1616,10 +1618,10 @@ async function loadFromCloud() {
   // Cloud data just landed — usersList may have changed, so re-check the
   // session against the freshest list before it's too late to bounce a
   // now-invalid one back to the login screen.
-  // No modo embutido não há sessão em localStorage para revalidar — o acesso
-  // vem da dash interna, não de um login. Sem esta guarda, o carregamento da
-  // nuvem expulsava o usuário embutido de volta para a tela de senha.
-  if (currentUser && !EMBED) {
+  // Com a senha desligada não há sessão em localStorage para revalidar — sem
+  // esta guarda, o carregamento da nuvem devolvia o usuário para a tela de
+  // senha alguns segundos depois de a página abrir.
+  if (currentUser && !SEM_SENHA) {
     const restored = tryRestoreSession();
     if (!restored) {
       currentUser = null;
@@ -1733,6 +1735,7 @@ document.getElementById("login-gate-pw-submit").addEventListener("click", submit
 document.getElementById("login-gate-new-password-confirm").addEventListener("keydown", e => { if (e.key === "Enter") submitPasswordChange(); });
 
 document.getElementById("logout-btn").addEventListener("click", () => {
+  if (SEM_SENHA) return;   // sem porta de login, não há para onde sair
   currentUser = null;
   clearSession();
   document.getElementById("app").classList.add("hidden");
@@ -2686,9 +2689,20 @@ setInterval(() => {
 //  O LOGIN CONTINUA VALENDO: a base de leads tem contatos reais, e liberar
 //  acesso por query string abriria a dash inteira para qualquer um.
 // ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+//  SEM SENHA (21/08/2026)
+//  A porta de login foi desligada por decisão da Karina: nesta fase de teste
+//  ninguém deve esbarrar em senha, nem aqui nem na dash interna.
+//  ATENÇÃO: a base de leads tem empresas e contatos reais. Enquanto isto
+//  estiver `true`, qualquer pessoa com o link vê essa base. Voltar a senha
+//  antes de a plataforma sair do ar de teste — item registrado no NEXT_STEPS.
+// ══════════════════════════════════════════════════════════
+const SEM_SENHA = true;
+
 const EMBED = new URLSearchParams(location.search).get("embed") === "1";
 const EMBED_VIEW = new URLSearchParams(location.search).get("view") || "tasks";
 if (EMBED) document.documentElement.classList.add("embutido");
+if (SEM_SENHA) document.documentElement.classList.add("sem-senha");
 
 // --- View switching (Tasks / Leads / Settings) ---
 function showView(name) {
@@ -3982,13 +3996,10 @@ document.getElementById("settings-add-user-btn").addEventListener("click", () =>
 initialCloudLoadPromise = loadFromCloud();
 
 (function restoreSessionOnLoad() {
-  // Embutida na dash interna: entra direto, sem porta de login. A interna
-  // ainda não tem senha (decisão de 21/08 — os dados são fictícios e a senha
-  // entra antes dos reais). Pendência registrada no NEXT_STEPS: a base de
-  // leads tem contatos reais, então a senha precisa voltar antes de a dash
-  // interna sair do ar de teste.
-  if (EMBED) {
-    currentUser = { username: "interno", role: "adm" };
+  if (SEM_SENHA) {
+    // Entra direto. Se houver sessão salva, aproveita para manter o nome de
+    // quem estava usando; senão, entra como usuário interno genérico.
+    currentUser = tryRestoreSession() || { username: "interno", role: "adm" };
     hideLoginGate();
     afterLogin();
     return;

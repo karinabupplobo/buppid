@@ -1451,6 +1451,8 @@
   .cm-meta{ font-size: 10.5px; color: var(--cinza-texto); font-weight: 700; }
   .cm-item p{ margin: 3px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--texto); }
   .lead-meta{ font-size: 12.5px; color: var(--cinza-texto); }
+  .anot-autor-fixo{ font-size: 12px; color: var(--cinza-texto); margin-bottom: 8px; }
+  .anot-autor-fixo b{ color: var(--texto); }
   .ec-meta{ font-size: 12px; color: var(--cinza-texto); line-height: 1.4; max-width: 520px; }
   .ec-btns{ flex-shrink: 0; display:flex; gap: 8px; }
   .btn-mini{
@@ -3409,7 +3411,7 @@ async function atribuirProfessor(turmaId, professorId, elSalvo){
 }
 
 function turmaLinhaHtml(t){
-  const meta = [t.nivel, t.formato, t.tamanho_turma ? `${t.tamanho_turma} alunos` : null]
+  const meta = [t.nivel, t.formato, (t.dias_semana || []).length ? t.dias_semana.join("/") : null]
     .filter(Boolean).join(" · ");
   return `
     <div class="turma-linha">
@@ -3437,9 +3439,8 @@ function abrirDetalheTurma(t){
   const modulos = (t.nomes_modulos || []).filter(Boolean);
   const corpo = `
     <div class="dt-grid">
+      <div class="mini"><b>Dias da aula</b><span>${(t.dias_semana || []).length ? t.dias_semana.join(", ") : "—"}</span></div>
       <div class="mini"><b>Formato</b><span>${t.formato || "—"}</span></div>
-      <div class="mini"><b>Tamanho previsto</b><span>${t.tamanho_turma ? t.tamanho_turma + " alunos" : "—"}</span></div>
-      <div class="mini"><b>Duração da aula</b><span>${t.duracao_aula_min ? t.duracao_aula_min + " min" : "—"}</span></div>
       <div class="mini"><b>Frequência</b><span>${t.frequencia_semanal ? t.frequencia_semanal + "x por semana" : "—"}</span></div>
     </div>
     <div class="mini obj"><b>Objetivo 1</b><span>${t.objetivo_1 || "—"}</span></div>
@@ -3517,21 +3518,7 @@ function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
         </div>`).join("") : `<p class="lead-meta">Nenhuma anotação ainda.</p>`}
     </div>
     <div class="form-modal" style="margin-top:10px;">
-      <div class="linha2">
-        <div class="campo">
-          <label>Quem escreve</label>
-          <select id="anot-tipo">
-            <option value="gestao">Gestão Bupp</option>
-            <option value="prof">Professor</option>
-            <option value="rh">RH</option>
-            <option value="aluno">Aluno</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label>Seu nome</label>
-          <input id="anot-autor" placeholder="Ex.: Karina">
-        </div>
-      </div>
+      <div class="anot-autor-fixo">Você escreve como <b>Karina Bupp Team</b></div>
       <textarea id="anot-txt" rows="2" placeholder="anotação sobre esse aluno…"></textarea>
       <button type="button" class="btn-salvar" id="anot-salvar" style="margin-top:8px;">Adicionar</button>
       <div id="anot-msg" style="font-size:12px;font-weight:700;margin-top:6px;"></div>
@@ -3560,15 +3547,13 @@ function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
 
   document.getElementById("anot-salvar").onclick = async () => {
     const texto = document.getElementById("anot-txt").value.trim();
-    const autor = document.getElementById("anot-autor").value.trim();
-    const tipo = document.getElementById("anot-tipo").value;
     const msg = document.getElementById("anot-msg");
-    if (!texto || !autor){ msg.textContent = "Preencha quem escreve e o texto."; msg.style.color = "var(--erro)"; return; }
+    if (!texto){ msg.textContent = "Escreva algo antes de adicionar."; msg.style.color = "var(--erro)"; return; }
     document.getElementById("anot-salvar").disabled = true; msg.textContent = "Salvando...";
     try{
       const res = await fetch(`${SB_URL}/rest/v1/anotacoes_aluno`, {
         method: "POST", headers: { ...SB_H, "Prefer": "return=representation" },
-        body: JSON.stringify({ aluno_id: aluno.id, tipo, autor, texto })
+        body: JSON.stringify({ aluno_id: aluno.id, tipo: "gestao", autor: "Karina Bupp Team", texto })
       });
       if (!res.ok) throw new Error(await res.text());
       const nova = (await res.json())[0];

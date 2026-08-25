@@ -52,6 +52,13 @@
   .linha2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .linha3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   @media (max-width: 560px){ .linha2, .linha3{ grid-template-columns: 1fr; } }
+  .dias-grupo{ display:flex; flex-wrap:wrap; gap: 8px; }
+  .dias-grupo label{
+    display:flex; align-items:center; gap: 5px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid var(--borda); border-radius: 7px; padding: 6px 10px; cursor:pointer;
+  }
+  .dias-grupo input{ width:auto; }
+  .dias-grupo label:has(input:checked){ background: var(--limao-claro); border-color: var(--azul-intermediario); }
 
   .aluno-card{ border:1px solid var(--borda); border-radius: 9px; padding: 12px; margin-bottom: 8px; background: var(--limao-claro); }
   .aluno-card .linha2{ margin-bottom: 8px; }
@@ -108,21 +115,15 @@
         </div>
         <div class="ajuda" id="empresa-selecionada"></div>
       </div>
-      <div class="linha2">
-        <div class="campo">
-          <label for="f-nivel">Nível</label>
-          <select id="f-nivel" required>
-            <option value="">Selecione</option>
-            <option value="Basic">Basic</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-            <option value="Proficient">Proficient</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label for="f-tamanho">Tamanho da turma</label>
-          <input id="f-tamanho" type="number" min="1" placeholder="Nº de alunos previstos">
-        </div>
+      <div class="campo">
+        <label for="f-nivel">Nível</label>
+        <select id="f-nivel" required>
+          <option value="">Selecione</option>
+          <option value="Basic">Basic</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Proficient">Proficient</option>
+        </select>
       </div>
       <div class="campo">
         <label for="f-obj1">Objetivo 1 — resultado de negócio (não meta de idioma)</label>
@@ -132,11 +133,20 @@
         <label for="f-obj2">Objetivo 2 <span class="ajuda">(opcional, máximo 2 no total)</span></label>
         <textarea id="f-obj2"></textarea>
       </div>
-      <div class="linha3">
-        <div class="campo">
-          <label for="f-duracao">Duração da aula (min)</label>
-          <input id="f-duracao" type="number" min="1" placeholder="Ex.: 60">
+      <div class="campo">
+        <label>Dias da aula</label>
+        <div class="dias-grupo">
+          <label><input type="checkbox" name="dia" value="Seg"> Seg</label>
+          <label><input type="checkbox" name="dia" value="Ter"> Ter</label>
+          <label><input type="checkbox" name="dia" value="Qua"> Qua</label>
+          <label><input type="checkbox" name="dia" value="Qui"> Qui</label>
+          <label><input type="checkbox" name="dia" value="Sex"> Sex</label>
+          <label><input type="checkbox" name="dia" value="Sáb"> Sáb</label>
+          <label><input type="checkbox" name="dia" value="Dom"> Dom</label>
         </div>
+        <div class="ajuda">A frequência semanal é calculada sozinha a partir dos dias marcados.</div>
+      </div>
+      <div class="linha2">
         <div class="campo">
           <label for="f-formato">Formato</label>
           <select id="f-formato">
@@ -144,10 +154,6 @@
             <option value="presencial">Presencial</option>
             <option value="online">Online</option>
           </select>
-        </div>
-        <div class="campo">
-          <label for="f-frequencia">Aulas por semana</label>
-          <input id="f-frequencia" type="number" min="1" placeholder="Ex.: 2">
         </div>
       </div>
     </div>
@@ -383,15 +389,16 @@ document.getElementById("btn-salvar").onclick = async () => {
       }
     }
 
+    const diasSelecionados = [...document.querySelectorAll('input[name="dia"]:checked')].map(d => d.value);
+
     const turma = await sbInsert("turmas", {
       nome, tipo: "corporativa", empresa_cliente_id: empresaClienteId, professor_id: null,
       nivel: nivel,
       objetivo_1: obj1,
       objetivo_2: document.getElementById("f-obj2").value.trim() || null,
-      tamanho_turma: +document.getElementById("f-tamanho").value || null,
-      duracao_aula_min: +document.getElementById("f-duracao").value || null,
+      dias_semana: diasSelecionados,
       formato: document.getElementById("f-formato").value || null,
-      frequencia_semanal: +document.getElementById("f-frequencia").value || null,
+      frequencia_semanal: diasSelecionados.length || null,
       assuntos_essenciais: document.getElementById("f-assuntos").value.trim() || null,
       restricoes: document.getElementById("f-restricoes").value.trim() || null
     });

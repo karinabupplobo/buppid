@@ -69,9 +69,9 @@
       anotação e a alocação pelo bucket "sem turma ainda"; criar turma
       marcando dias da semana e conferir se a frequência calculada bate;
       abrir detalhe de turma e conferir os dias mostrados; adicionar
-      anotação de aluno e conferir que grava autor "Karina Bupp Team" sem
-      perguntar nada — não testado no REST nesta sessão, mesma pegadinha
-      do allowlist do subdomínio novo do Supabase no bash_tool.
+      anotação de aluno e conferir que grava o autor vindo do login (não
+      digitado, não hardcoded) — não testado no REST nesta sessão, mesma
+      pegadinha do allowlist do subdomínio novo do Supabase no bash_tool.
 - [ ] `criarEmpresaClienteDoLead` roda só quando o select de etapa muda
       dentro do `index.html` (ou embutido em `interna.html`). Se o status
       do lead for alterado por outro caminho no futuro (import em massa,

@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-0020-topo-enxuto-nota-dez — 26/08/2026
+- O que mudou: duas mudanças em `aluno.html`. (1) O topo da aba Início
+  perdeu a descrição do nível (`nivelDesc`), o módulo do curso e a barra
+  "Trilhas concluídas" — fica só nível, `empresa · turma` e "Onde a
+  turma quer chegar". CSS órfão (`.mn-desc` e o bloco
+  `.progresso-mod`/`.pm-*`) removido junto. (2) A nota da trilha deixa de
+  aparecer em % e passa a aparecer como nota de 0 a 10 (`notaDez()`,
+  com vírgula decimal) nos cards e no KPI "Trilhas" do Início. A trilha
+  continua sendo corrigida em acerto/erro internamente — a mudança é só
+  de exibição. `classeNota()` segue recebendo o pct 0-100 porque também
+  serve a presença, que continua em % (ali porcentagem é a leitura certa).
+- Arquivos: aluno.html
+- Motivo: pedido da Karina em 25/08, com print de referência.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-0005-alunos-por-empresa
+
 ## v-20260826-0005-alunos-por-empresa — 26/08/2026
 - O que mudou: o campo de aluno em `nova-turma.html` buscava todos os
   alunos do sistema numa lista só, misturada, e não tinha caminho

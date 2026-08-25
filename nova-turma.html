@@ -77,6 +77,12 @@
   }
   .busca-resultados button:hover{ background: var(--limao-claro); }
   .busca-resultados .vazio{ padding: 9px 10px; font-size: 12.5px; color: var(--cinza-texto); }
+  .busca-resultados .al-grupo{
+    padding: 6px 10px; font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--azul-intermediario); background: var(--bg-dash);
+    border-bottom: 1px solid var(--borda);
+  }
+  .busca-resultados .al-novo{ font-weight: 700; color: var(--teal-escuro); border-bottom: none; }
 
   .modulos-lista{ display:flex; flex-direction:column; gap: 6px; margin-bottom: 8px; }
   .modulos-lista input{ width:100%; }
@@ -274,10 +280,10 @@ document.addEventListener("click", e => {
   document.querySelectorAll(".al-resultados").forEach(r => r.style.display = "none");
 });
 
-// ── Alunos: adicionar novo ou buscar existente ──
+// ── Alunos: escolher entre os que já existem nessa empresa, ou criar novo ──
 let alunosCache = null;
 async function todosAlunos(){
-  if (!alunosCache) alunosCache = await sbGet("alunos", "?select=id,nome,cargo,area_atuacao,responsabilidades&order=nome");
+  if (!alunosCache) alunosCache = await sbGet("alunos", "?select=id,nome,cargo,area_atuacao,responsabilidades,empresa_cliente_id&order=nome");
   return alunosCache;
 }
 let alunosForm = []; // { existenteId|null, nome, cargo, areaAtuacao, responsabilidades }
@@ -321,16 +327,43 @@ function renderAlunos(){
     const nomeInput = card.querySelector(".al-nome");
     const res = card.querySelector(".al-resultados");
 
+    // Lista os alunos que já existem: primeiro os DESSA empresa (é quase
+    // sempre quem a pessoa procura), depois os de outras empresas, e no fim
+    // sempre a opção de criar um novo — antes a lista vinha misturada e não
+    // tinha caminho explícito pra "esse aluno não existe ainda".
     async function mostrarLista(q){
       const todos = await todosAlunos();
-      const lista = q ? todos.filter(a => a.nome.toLowerCase().includes(q)) : todos;
-      res.innerHTML = (lista.length ? lista.map(a =>
-        `<button type="button" data-id="${a.id}" data-nome="${a.nome}" data-cargo="${a.cargo||""}" data-area="${a.area_atuacao||""}" data-resp="${a.responsabilidades||""}">${a.nome} <span style="color:var(--cinza-texto);">— ${a.cargo||"sem cargo"}</span></button>`
-      ).join("") : (q
-        ? `<div class="vazio">Nenhum aluno existente com esse nome — vai ser criado novo.</div>`
-        : `<div class="vazio">Nenhum aluno cadastrado ainda no sistema.</div>`));
+      const empId = empresaSelecionada && empresaSelecionada.id;
+      const jaEscolhidos = new Set(alunosForm.map(x => x.existenteId).filter(Boolean));
+      const casa = a => !jaEscolhidos.has(a.id) && (!q || a.nome.toLowerCase().includes(q));
+
+      const daEmpresa = todos.filter(a => empId && a.empresa_cliente_id === empId).filter(casa);
+      const outros = todos.filter(a => !empId || a.empresa_cliente_id !== empId).filter(casa);
+
+      const botao = a => `<button type="button" data-id="${a.id}" data-nome="${a.nome}" data-cargo="${a.cargo||""}" data-area="${a.area_atuacao||""}" data-resp="${a.responsabilidades||""}">${a.nome} <span style="color:var(--cinza-texto);">— ${a.cargo||"sem cargo"}</span></button>`;
+      const cabecalho = txt => `<div class="al-grupo">${txt}</div>`;
+
+      let html = "";
+      if (daEmpresa.length){
+        html += cabecalho(empresaSelecionada.nome) + daEmpresa.map(botao).join("");
+      }
+      if (outros.length){
+        html += cabecalho(daEmpresa.length ? "De outras empresas" : "Alunos no sistema") + outros.map(botao).join("");
+      }
+      if (!daEmpresa.length && !outros.length){
+        html += `<div class="vazio">${q ? "Nenhum aluno com esse nome." : "Nenhum aluno cadastrado ainda."}</div>`;
+      }
+      html += `<button type="button" data-novo="1" class="al-novo">+ ${q ? `Criar "${nomeInput.value.trim()}" como novo aluno` : "Novo aluno"}</button>`;
+
+      res.innerHTML = html;
       res.style.display = "block";
       res.querySelectorAll("button").forEach(b => b.onclick = () => {
+        if (b.dataset.novo){
+          alunosForm[i].existenteId = null;
+          res.style.display = "none";
+          nomeInput.focus();
+          return;
+        }
         alunosForm[i] = {
           existenteId: b.dataset.id, nome: b.dataset.nome, cargo: b.dataset.cargo,
           areaAtuacao: b.dataset.area, responsabilidades: b.dataset.resp

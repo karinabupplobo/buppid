@@ -1801,17 +1801,6 @@ const EIXOS = {
     },
     ctx: ls => [...new Set(ls.map(l => l.prof))].join(", ")
   },
-  turma: {
-    rot: "Turma",
-    chave:  l => l.turmaId,
-    titulo: ls => `${ls[0].empresa} · ${ls[0].turma}`,
-    sub:    ls => {
-      const alunos = new Set(ls.map(l => l.alunoId)).size;
-      const aulas  = new Set(ls.map(l => l.aulaId)).size;
-      return `${ls[0].nivel} · ${alunos} aluno${alunos!==1?"s":""} · ${aulas} aula${aulas!==1?"s":""}`;
-    },
-    ctx: ls => ls[0].prof
-  },
   aluno: {
     rot: "Aluno",
     chave:  l => l.turmaId + "|" + l.alunoId,
@@ -1832,7 +1821,7 @@ const EIXOS = {
   }
 };
 
-let eixoAtual = "turma";
+let eixoAtual = "empresa";
 
 function agrupar(dados, eixo){
   const e = EIXOS[eixo];
@@ -1893,14 +1882,12 @@ function renderMedias(dados){
 
   // link para a ficha, quando o eixo aponta para algo que tem ficha
   const linkTitulo = x => {
-    if (eixoAtual === "turma")
-      return `<button class="cel-link" data-turma-pop="${x.turmaId}">${x.titulo}</button>`;
     if (eixoAtual === "aluno")
       return `<button class="cel-link" data-aluno-pop="${x.alunoId}" data-turma="${x.turmaId}">${x.titulo}</button>`;
     return `<span class="md-titulo">${x.titulo}</span>`;
   };
 
-  const ctxRot = { empresa:"Professores", turma:"Professor", aluno:"Professor", professor:"Empresas" }[eixoAtual];
+  const ctxRot = { empresa:"Professores", aluno:"Professor", professor:"Empresas" }[eixoAtual];
 
   const tabela = `
     <div class="ra-wrap">

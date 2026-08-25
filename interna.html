@@ -828,6 +828,13 @@
   .tag-x{ background:#f0eeec; color:#8d8781; font-size:10.5px; font-weight:800;
           padding:3px 8px; border-radius:999px; letter-spacing:.04em; }
 
+  .cel-link{
+    background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-escuro);
+    text-align: left; border-bottom: 1px dotted var(--azul-intermediario);
+  }
+  .cel-link:hover{ color: var(--azul-intermediario); border-bottom-style: solid; }
+
   .cel-at{ max-width: 230px; white-space: normal; }
   .ats-cel{ display: flex; flex-wrap: wrap; gap: 4px; }
   .tag-at{
@@ -912,14 +919,14 @@
 
 <main>
   <section class="pane active" id="pane-planilha">
-    <div class="kpis" id="kpis"></div>
     <div class="barra-planilha">
-      <select class="filtro" id="f-prof"></select>
       <select class="filtro" id="f-emp"></select>
+      <select class="filtro" id="f-prof"></select>
       <input class="filtro" id="f-busca" type="search" placeholder="Buscar aluno, aula, anotação…">
       <span class="cont-linhas" id="cont-linhas"></span>
       <button class="btn-csv" id="btn-csv">Exportar CSV</button>
     </div>
+    <div class="kpis" id="kpis"></div>
     <div class="planilha-wrap">
       <table class="planilha" id="tabela"></table>
     </div>
@@ -1058,12 +1065,12 @@ function renderTabela(){
     `<tbody>${dados.map(l => {
       const risco = l.presenca === "a" || (l.nota !== null && l.nota < 60) || (l.eng && l.eng <= 1);
       return `<tr class="${risco ? "alerta" : ""}">
-        <td>${l.dia} ${l.data}</td>
+        <td><button class="cel-link" data-aula="${l.aulaId}" data-turma="${l.turmaId}">${l.dia} ${l.data}</button></td>
         <td>${l.empresa}</td>
-        <td>${l.turma}</td>
+        <td><button class="cel-link" data-turma-pop="${l.turmaId}">${l.turma}</button></td>
         <td>${l.nivel}</td>
         <td>${l.prof}</td>
-        <td>${l.aula}</td>
+        <td><button class="cel-link" data-aula="${l.aulaId}" data-turma="${l.turmaId}">${l.aula}</button></td>
         <td class="col-aluno">${l.aluno}</td>
         <td>${l.presenca === "p" ? '<span class="tag-p">presente</span>'
              : l.presenca === "a" ? '<span class="tag-f">faltou</span>'
@@ -1080,6 +1087,123 @@ function renderTabela(){
   document.getElementById("cont-linhas").textContent =
     `${dados.length} de ${LINHAS.length} linhas`;
   renderKPIs(dados);
+  ligarCelulas();
+}
+
+// ── Células clicáveis da planilha ──
+function ligarCelulas(){
+  document.querySelectorAll("[data-turma-pop]").forEach(b => {
+    b.onclick = () => abrirTurma(TURMAS.find(t => t.id === b.dataset.turmaPop));
+  });
+  document.querySelectorAll("[data-aula]").forEach(b => {
+    b.onclick = () => {
+      const t = TURMAS.find(x => x.id === b.dataset.turma);
+      const h = (t.historico || []).find(x => x.id === b.dataset.aula);
+      if (t && h) abrirAula(t, h);
+    };
+  });
+}
+
+function abrirTurma(t){
+  if (!t) return;
+  const p = partesIdent(t);
+  const grade = (t.aulasHoje || []).map(a => `${a.dia || ""} ${a.hora}`).join(" · ");
+  const linhasT = LINHAS.filter(l => l.turmaId === t.id);
+  const comPres = linhasT.filter(l => l.presenca);
+  const pctPres = comPres.length
+    ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
+  const comNota = linhasT.filter(l => l.nota !== null);
+  const medNota = comNota.length
+    ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+  const comEng = linhasT.filter(l => l.eng);
+  const medEng = comEng.length
+    ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
+
+  abrirModal("Turma", `${p.empresa} · ${p.turma} · ${t.nivel}${grade ? " · " + grade : ""}`, `
+    <div class="nums">
+      <div class="num"><span class="nv ${classeNota(pctPres)}">${pctPres===null?"–":pctPres+"%"}</span><span class="nr">Presença</span></div>
+      <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
+      <div class="num"><span class="nv ${classeNota(medNota)}">${medNota===null?"–":medNota+"%"}</span><span class="nr">Trilhas</span></div>
+    </div>
+    <div class="bloco">
+      <div class="bt">Professor</div>
+      <div class="mini"><b>${professorDe(t).nome}</b><span>${professorDe(t).email}</span></div>
+    </div>
+    <div class="bloco">
+      <div class="bt">Objetivo da turma</div>
+      <div class="mini destaque"><span>${t.objetivoTurma}</span></div>
+    </div>
+    <div class="bloco">
+      <div class="bt">Alunos · ${t.alunos.length}</div>
+      ${t.alunos.map(a => {
+        const suas = linhasT.filter(l => l.alunoId === a.id);
+        const nt = suas.filter(l => l.nota !== null);
+        const m = nt.length ? Math.round(nt.reduce((n,l) => n + l.nota, 0) / nt.length) : null;
+        const faltas = suas.filter(l => l.presenca === "a").length;
+        return `<div class="mini linha-acao">
+          <b>${a.nome}</b>
+          <span><span class="nota ${classeNota(m)}">${m===null?"–":m+"%"}</span>${
+            faltas ? ` · <span style="color:#a3312a;font-weight:700;">${faltas} falta${faltas>1?"s":""}</span>` : ""}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="bloco">
+      <div class="bt">Empresa</div>
+      <div class="mini"><b>${t.empresa}</b><span>${t.empresaDesc}</span></div>
+    </div>
+  `);
+}
+
+function abrirAula(t, h){
+  const p = partesIdent(t);
+  const linhasA = LINHAS.filter(l => l.aulaId === h.id);
+  const presentes = linhasA.filter(l => l.presenca === "p").length;
+  const comPres = linhasA.filter(l => l.presenca).length;
+  const comEng = linhasA.filter(l => l.eng);
+  const medEng = comEng.length
+    ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
+  const comNota = linhasA.filter(l => l.nota !== null);
+  const medNota = comNota.length
+    ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
+
+  // temas que a turma errou nesta aula
+  const porTema = {};
+  linhasA.forEach(l => l.atencao.forEach(x => {
+    if (x.tipo === "pend") return;
+    porTema[x.tema] = (porTema[x.tema] || 0) + 1;
+  }));
+  const temasTurma = Object.entries(porTema).sort((a,b) => b[1]-a[1]);
+
+  abrirModal(`${p.empresa} · ${p.turma} · ${t.nivel}`, `${h.titulo} — ${h.dia || ""} ${h.data}`, `
+    <div class="nums">
+      <div class="num"><span class="nv">${comPres ? presentes + "/" + comPres : "–"}</span><span class="nr">Presença</span></div>
+      <div class="num"><span class="nv">${medEng===null?"–":medEng+"★"}</span><span class="nr">Engajamento</span></div>
+      <div class="num"><span class="nv ${classeNota(medNota)}">${medNota===null?"–":medNota+"%"}</span><span class="nr">Trilha</span></div>
+    </div>
+    ${temasTurma.length ? `
+    <div class="bloco">
+      <div class="bt">Onde a turma tropeçou</div>
+      ${temasTurma.map(([tema, n]) => `
+        <div class="mini linha-acao"><b>${tema}</b>
+          <span class="tag-at ${n >= Math.ceil(linhasA.length*0.6) ? "recorrente" : "isolado"}">${n} de ${linhasA.length} alunos</span>
+        </div>`).join("")}
+    </div>` : ""}
+    <div class="bloco">
+      <div class="bt">Aluno a aluno</div>
+      ${linhasA.map(l => `
+        <div class="mini">
+          <div class="linha-acao" style="display:flex;justify-content:space-between;align-items:center;">
+            <b>${l.aluno}</b>
+            <span>${l.presenca === "p" ? '<span class="tag-p">presente</span>'
+                   : l.presenca === "a" ? '<span class="tag-f">faltou</span>' : '<span class="tag-x">—</span>'}
+              ${estrelasRO(l.eng)}
+              <span class="nota ${classeNota(l.nota)}">${l.nota===null?"–":l.nota+"%"}</span></span>
+          </div>
+          ${l.atencao.length ? `<div style="margin-top:6px;">${htmlAtencao(l.atencao)}</div>` : ""}
+          ${l.anot ? `<span style="margin-top:6px;font-style:italic;">“${l.anot}”</span>` : ""}
+        </div>`).join("")}
+    </div>
+  `);
 }
 
 function renderKPIs(dados){

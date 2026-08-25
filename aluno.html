@@ -222,7 +222,7 @@
   tbody tr:hover td{ background: #fafbf7; }
   tbody tr:hover td.aluno-nome{ background: #fafbf7; }
 
-  .st{ display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; font-size: 11px; font-weight: 800; }
+  .st{ display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 800; }
   .st.ok{ background: #dff0d8; color: #3f6b45; }
   .st.err{ background: #fbe0de; color: #a3312a; }
   .st.pend{ background: #eef0ec; color: #9aa39f; }
@@ -1425,7 +1425,7 @@
     <div class="whoami">
       <strong id="al-nome"></strong>
       <span>student</span>
-      <button class="link-turmas" id="btn-turma"><b id="bt-nivel"></b> · minha turma ›</button>
+      <button class="link-turmas" id="btn-turma"><b id="bt-nivel"></b> ›</button>
     </div>
   </div>
 
@@ -1625,7 +1625,10 @@ function htmlConteudoAula(a){
 
 function renderHoje(){
   const box = document.getElementById("lista-hoje");
-  const aulas = TURMA.aulasHoje || [];
+  // Só entra na aba Hoje o que realmente é de hoje — o campo `dia` no mock
+  // é fixo (ex.: "Qui"), então sem esse filtro uma aula de quinta aparecia
+  // como "de hoje" numa terça-feira de verdade.
+  const aulas = (TURMA.aulasHoje || []).filter(a => a.dia === diaHojeAbrev());
 
   box.innerHTML = `<div class="section-title">Hoje · ${aulas.length} aula${aulas.length!==1?"s":""}</div>`;
 

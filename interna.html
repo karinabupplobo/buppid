@@ -1555,7 +1555,8 @@ function renderResumoTurmas(dados){
       FILTROS_COL.turma = new Set([partesIdent(t).turma]);
       FILTROS_COL.empresa = new Set([t.empresa]);
       renderTabela();
-      document.querySelector(".planilha-wrap").scrollIntoView({ behavior:"smooth", block:"start" });
+      const alvo = document.querySelector(".planilha-wrap");
+      if (alvo && alvo.scrollIntoView) alvo.scrollIntoView({ behavior:"smooth", block:"start" });
     };
   });
 }

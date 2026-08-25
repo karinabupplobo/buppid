@@ -1387,6 +1387,7 @@
   }
   .tema-tag.errou{ background: #fbe0de; color: #a3312a; font-weight: 800; }
   .tema-tag.acertou{ background: #e8efe3; color: #3f6b45; }
+  .tema-tag.pendente{ background: #eef0ec; color: #6f7772; font-weight: 700; }
 
   /* Filtro passado / futuro */
   .switch{
@@ -1529,21 +1530,26 @@ function meusNumeros(){
   };
 }
 
-// ── Onde eu erro mais ──
+// ── Onde prestar atenção ──
+// Só entra aqui o que é de fato ponto de atenção: tema com erro, ou lição
+// ainda não feita. Tema que o aluno acertou por inteiro e sem pendência
+// não aparece — não é atenção, é o contrário.
 function meusTemas(){
   const mapa = {};
   (TURMA.historico || []).forEach(h => {
     const st = (h.progresso && h.progresso[EU.id]) || [];
     (h.temas || []).forEach((tema, i) => {
-      if (!st[i] || st[i] === "pend") return;
-      const d = mapa[tema] = mapa[tema] || { total:0, erros:0 };
+      if (!st[i]) return;
+      const d = mapa[tema] = mapa[tema] || { total:0, erros:0, pend:0 };
       d.total++;
       if (st[i] === "err") d.erros++;
+      else if (st[i] === "pend") d.pend++;
     });
   });
   return Object.entries(mapa)
     .map(([tema, d]) => ({ tema, ...d, pct: Math.round(d.erros / d.total * 100) }))
-    .sort((a,b) => b.pct - a.pct || b.total - a.total);
+    .filter(t => t.erros || t.pend)
+    .sort((a,b) => b.erros - a.erros || b.pend - a.pend || b.pct - a.pct);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1577,7 +1583,7 @@ function renderHome(){
   const temas = meusTemas();
   const box = document.getElementById("home-temas");
   if (!temas.length){
-    box.innerHTML = `<div class="vazio-msg">Ainda não há trilha suficiente para dizer onde você tropeça.</div>`;
+    box.innerHTML = `<div class="vazio-msg">Nenhum ponto de atenção — você acertou tudo que já fez e não tem trilha em aberto.</div>`;
     return;
   }
   box.innerHTML = `
@@ -1586,9 +1592,8 @@ function renderHome(){
         <div class="mini linha-acao">
           <b>${t.tema}</b>
           <span>
-            ${t.erros
-              ? `<span class="tema-tag errou">${t.erros} erro${t.erros>1?"s":""} em ${t.total}</span>`
-              : `<span class="tema-tag acertou">${t.total} de ${t.total} certos</span>`}
+            ${t.erros ? `<span class="tema-tag errou">${t.erros} erro${t.erros>1?"s":""} em ${t.total}</span>` : ""}
+            ${t.pend ? `<span class="tema-tag pendente">${t.pend} a fazer</span>` : ""}
           </span>
         </div>`).join("")}
     </div>`;

@@ -1318,6 +1318,104 @@
   .form-linha textarea{ resize: vertical; min-height: 84px; line-height: 1.45; }
   .form-duplo{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+  /* ── Menu de filtro no cabeçalho da planilha ── */
+  .menu-col{
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
+    min-width: 230px; max-width: 300px;
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(40,30,22,.18); overflow: hidden; white-space: normal;
+    text-transform: none; letter-spacing: 0;
+  }
+  .mc-cab{
+    font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--azul-intermediario); padding: 12px 14px 8px;
+  }
+  .mc-topo{ padding: 0 10px 8px; }
+  .mc-busca{
+    width: 100%; border: 1px solid var(--borda); border-radius: 8px; padding: 8px 10px;
+    font-family: inherit; font-size: 12.5px; color: var(--texto); outline: none;
+    background: #fafbf7;
+  }
+  .mc-busca:focus{ border-color: var(--teal-escuro); background: var(--branco); }
+
+  .mc-lista{ max-height: 240px; overflow-y: auto; padding: 0 8px 8px; }
+  .mc-item{
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    padding: 8px 6px; border-radius: 8px; text-align: left;
+    font-size: 13px; color: var(--cinza-texto); transition: background .12s, color .12s;
+  }
+  .mc-item:hover{ background: #faf9f7; }
+  .mc-check{
+    width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0;
+    border: 1.5px solid var(--borda); background: var(--branco);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s, border-color .12s;
+  }
+  .mc-item.on{ color: var(--texto); font-weight: 600; }
+  .mc-item.on .mc-check{ background: var(--teal-escuro); border-color: var(--teal-escuro); }
+  .mc-item.on .mc-check::after{
+    content: ""; width: 4px; height: 8px; margin-top: -2px;
+    border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+    transform: rotate(45deg);
+  }
+  .mc-val{ flex: 1; min-width: 0; }
+  .mc-vazio{ font-size: 12.5px; color: var(--cinza-texto); padding: 6px; }
+
+  .mc-pe{
+    display: flex; gap: 6px; padding: 9px 10px;
+    border-top: 1px solid var(--borda); background: #fafbf7;
+  }
+  .mc-limpar, .mc-so, .mc-ok{
+    flex: 1; border-radius: 8px; padding: 8px; cursor: pointer;
+    font-family: inherit; font-size: 11.5px; font-weight: 700;
+  }
+  .mc-limpar, .mc-so{
+    border: 1px solid var(--borda); background: var(--branco); color: var(--azul-intermediario);
+  }
+  .mc-limpar:hover, .mc-so:hover{ border-color: var(--teal-escuro); color: var(--teal-escuro); }
+  .mc-ok{ border: none; background: var(--teal-escuro); color: #fff; }
+  .mc-ok:hover{ background: var(--azul-intermediario); }
+
+  /* filtro de período: calendário em vez de lista de datas */
+  .mc-datas{ display: flex; flex-direction: column; gap: 8px; padding: 0 12px 10px; }
+  .mc-datas label{
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--azul-intermediario);
+  }
+  .mc-datas input{
+    flex: 1; border: 1px solid var(--borda); border-radius: 8px; padding: 8px 10px;
+    font-family: inherit; font-size: 13px; color: var(--texto); outline: none;
+    background: var(--branco); letter-spacing: 0; text-transform: none;
+  }
+  .mc-datas input:focus{ border-color: var(--teal-escuro); }
+  .mc-atalhos{ display: flex; gap: 6px; padding: 0 12px 10px; }
+  .mc-atalhos button{
+    flex: 1; border: 1px solid var(--borda); background: var(--branco); border-radius: 999px;
+    padding: 6px; font-family: inherit; font-size: 11px; font-weight: 700;
+    color: var(--azul-intermediario); cursor: pointer;
+  }
+  .mc-atalhos button:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
+
+  /* cabeçalho clicável */
+  table.planilha th{ position: sticky; top: 0; z-index: 3; padding: 0; }
+  .th-btn{
+    width: 100%; display: flex; align-items: center; gap: 6px; justify-content: space-between;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .07em;
+    text-transform: uppercase; padding: 11px 12px; white-space: nowrap;
+    transition: background .12s;
+  }
+  .th-btn:hover{ background: rgba(255,255,255,.12); }
+  .funil{
+    width: 9px; height: 9px; flex-shrink: 0; opacity: .45;
+    clip-path: polygon(0 0, 100% 0, 62% 45%, 62% 100%, 38% 82%, 38% 45%);
+    background: #fff;
+  }
+  th.filtrado{ background: var(--azul-intermediario) !important; }
+  th.filtrado .funil{ opacity: 1; background: var(--amarelo-neon); }
+
   /* ── Área de upload ── */
   .area-upload{
     display: flex; flex-direction: column; align-items: center; gap: 3px;
@@ -1482,13 +1580,215 @@ function montarLinhas(){
 }
 const LINHAS = montarLinhas();
 
-const COLUNAS = ["Data","Turma","Nível","Aula","Aluno","Presença","Engaj.","Trilha","Certos","Erros"];
+// Cada coluna sabe extrair o próprio valor — é o que o filtro do cabeçalho usa.
+const COLUNAS = [
+  { rot:"Data",     k:"data",     valores: l => [`${l.dia} ${l.data}`.trim()] },
+  { rot:"Turma",    k:"turma",    valores: l => [l.turma] },
+  { rot:"Nível",    k:"nivel",    valores: l => [nivelL(l.nivel)] },
+  { rot:"Aula",     k:"aula",     valores: l => [l.aula] },
+  { rot:"Aluno",    k:"aluno",    valores: l => [l.aluno] },
+  { rot:"Presença", k:"presenca", valores: l => [l.presenca === "p" ? "Presente"
+                                               : l.presenca === "a" ? "Faltou" : "Não marcada"] },
+  { rot:"Engaj.",   k:"eng",      valores: l => [l.eng ? `${l.eng} estrela${l.eng>1?"s":""}` : "Não avaliado"] },
+  { rot:"Trilha",   k:"nota",     valores: l => [l.nota === null ? "Sem nota"
+                                               : l.nota >= 80 ? "80% ou mais"
+                                               : l.nota >= 60 ? "60 a 79%" : "Abaixo de 60%"] },
+  { rot:"Certos",   k:"acertos",  valores: l => [String(l.acertos)] },
+  { rot:"Erros",    k:"erros",    valores: l => [String(l.erros)] }
+];
+const FILTROS_COL = {};
+
+// As datas do mock são "dd/mm" do ano corrente. Vira "aaaa-mm-dd" para o
+// <input type=date> e para comparar.
+const ANO_BASE = 2026;
+function paraISO(ddmm){
+  const [dd, mm] = String(ddmm || "").split("/");
+  if (!dd || !mm) return "";
+  return `${ANO_BASE}-${mm.padStart(2,"0")}-${dd.padStart(2,"0")}`;
+}
+function isoDaLinha(l){ return paraISO(l.data); }
+
+function passaFiltrosColuna(l){
+  return COLUNAS.every(c => {
+    const sel = FILTROS_COL[c.k];
+    if (!sel) return true;
+    if (c.k === "data"){
+      const iso = isoDaLinha(l);
+      if (sel.de && iso < sel.de) return false;
+      if (sel.ate && iso > sel.ate) return false;
+      return true;
+    }
+    if (!sel.size) return true;
+    return c.valores(l).some(v => sel.has(v));
+  });
+}
+
+// Valores possíveis de uma coluna, considerando os OUTROS filtros já aplicados
+// (é o comportamento de planilha: a lista encolhe conforme você filtra).
+function valoresDaColuna(c){
+  const guarda = FILTROS_COL[c.k];
+  delete FILTROS_COL[c.k];
+  const base = LINHAS.filter(l => passaFiltrosBasicos(l) && passaFiltrosColuna(l));
+  if (guarda) FILTROS_COL[c.k] = guarda;
+  const set = new Set();
+  base.forEach(l => c.valores(l).forEach(v => set.add(v)));
+  return [...set].sort((a,b) => a.localeCompare(b, "pt-BR", { numeric:true }));
+}
+
+function abrirMenuColuna(c, th){
+  fecharMenuColuna();
+  const menu = document.createElement("div");
+  menu.className = "menu-col";
+
+  // ── Coluna Data: calendário de/até, com atalhos ──
+  if (c.k === "data"){
+    const f = FILTROS_COL.data || {};
+    const todas = LINHAS.map(isoDaLinha).filter(Boolean).sort();
+    const min = todas[0] || "", max = todas[todas.length-1] || "";
+    menu.innerHTML = `
+      <div class="mc-cab">Período</div>
+      <div class="mc-datas">
+        <label>De<input type="date" id="mc-de" min="${min}" max="${max}" value="${f.de || ""}"></label>
+        <label>Até<input type="date" id="mc-ate" min="${min}" max="${max}" value="${f.ate || ""}"></label>
+      </div>
+      <div class="mc-atalhos">
+        <button data-dias="7">7 dias</button>
+        <button data-dias="30">30 dias</button>
+        <button data-dias="0">Tudo</button>
+      </div>
+      <div class="mc-pe">
+        <button class="mc-limpar" data-limpar>Limpar</button>
+        <button class="mc-ok" data-aplicar>Aplicar</button>
+      </div>`;
+    th.appendChild(menu);
+
+    const de = menu.querySelector("#mc-de"), ate = menu.querySelector("#mc-ate");
+    menu.querySelectorAll("[data-dias]").forEach(b => {
+      b.onclick = ev => {
+        ev.stopPropagation();
+        const dias = +b.dataset.dias;
+        if (!dias){ de.value = ""; ate.value = ""; return; }
+        const fim = new Date(max || Date.now());
+        const ini = new Date(fim);
+        ini.setDate(ini.getDate() - dias);
+        de.value = ini.toISOString().slice(0,10);
+        ate.value = fim.toISOString().slice(0,10);
+      };
+    });
+    menu.querySelector("[data-limpar]").onclick = ev => {
+      ev.stopPropagation();
+      delete FILTROS_COL.data;
+      fecharMenuColuna();
+      renderTabela();
+    };
+    menu.querySelector("[data-aplicar]").onclick = ev => {
+      ev.stopPropagation();
+      if (!de.value && !ate.value) delete FILTROS_COL.data;
+      else FILTROS_COL.data = { de: de.value, ate: ate.value };
+      fecharMenuColuna();
+      renderTabela();
+    };
+    menu.onclick = e => e.stopPropagation();
+    return;
+  }
+
+  // ── Demais colunas: lista com marcação imediata ──
+  const sel = FILTROS_COL[c.k];
+  const vals = valoresDaColuna(c);
+  const marcado = v => !sel || !sel.size || sel.has(v);
+
+  menu.innerHTML = `
+    <div class="mc-cab">${c.rot}</div>
+    ${vals.length > 7 ? `<div class="mc-topo">
+      <input class="mc-busca" type="search" placeholder="Buscar…"></div>` : ""}
+    <div class="mc-lista">
+      ${vals.map(v => `
+        <button class="mc-item ${marcado(v) ? "on" : ""}" data-v="${v.replace(/"/g,'&quot;')}">
+          <span class="mc-check"></span>
+          <span class="mc-val">${v}</span>
+        </button>`).join("") || '<div class="mc-vazio">Nada para filtrar</div>'}
+    </div>
+    <div class="mc-pe">
+      <button class="mc-limpar" data-limpar>Mostrar tudo</button>
+      <button class="mc-so" data-so>Só os marcados</button>
+    </div>`;
+  th.appendChild(menu);
+
+  const busca = menu.querySelector(".mc-busca");
+  if (busca){
+    busca.oninput = () => {
+      const q = busca.value.trim().toLowerCase();
+      menu.querySelectorAll(".mc-item").forEach(it => {
+        it.style.display = it.textContent.toLowerCase().includes(q) ? "" : "none";
+      });
+    };
+    setTimeout(() => busca.focus(), 30);
+  }
+
+  // clicar num valor aplica na hora — sem botão de confirmar
+  menu.querySelectorAll(".mc-item").forEach(b => {
+    b.onclick = ev => {
+      ev.stopPropagation();
+      const atual = FILTROS_COL[c.k] ? new Set(FILTROS_COL[c.k]) : new Set(vals);
+      const v = b.dataset.v;
+      if (atual.has(v)) atual.delete(v); else atual.add(v);
+      if (!atual.size || atual.size === vals.length) delete FILTROS_COL[c.k];
+      else FILTROS_COL[c.k] = atual;
+      b.classList.toggle("on");
+      renderTabela();
+      const novoTh = document.querySelector(`.th-btn[data-col="${c.k}"]`);
+      if (novoTh) abrirMenuColuna(c, novoTh.parentElement);
+    };
+  });
+
+  menu.querySelector("[data-limpar]").onclick = ev => {
+    ev.stopPropagation();
+    delete FILTROS_COL[c.k];
+    fecharMenuColuna();
+    renderTabela();
+  };
+  menu.querySelector("[data-so]").onclick = ev => {
+    ev.stopPropagation();
+    const visiveis = [...menu.querySelectorAll(".mc-item")]
+      .filter(i => i.style.display !== "none").map(i => i.dataset.v);
+    FILTROS_COL[c.k] = new Set(visiveis);
+    fecharMenuColuna();
+    renderTabela();
+  };
+  menu.onclick = e => e.stopPropagation();
+}
+
+
+function fecharMenuColuna(){
+  document.querySelectorAll(".menu-col").forEach(m => m.remove());
+}
+document.addEventListener("click", fecharMenuColuna);
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharMenuColuna(); });
+
+function passaFiltrosBasicos(){ return true; }   // esta dash não tem filtro no topo
+function valoresDaColuna(c){
+  const guarda = FILTROS_COL[c.k];
+  delete FILTROS_COL[c.k];
+  const base = LINHAS.filter(l => passaFiltrosColuna(l));
+  if (guarda) FILTROS_COL[c.k] = guarda;
+  const set = new Set();
+  base.forEach(l => c.valores(l).forEach(v => set.add(v)));
+  return [...set].sort((a,b) => a.localeCompare(b, "pt-BR", { numeric:true }));
+}
+function filtradas(){ return LINHAS.filter(passaFiltrosColuna); }
 
 function renderTabela(){
   const tb = document.getElementById("tabela");
+  const dados = filtradas();
   tb.innerHTML =
-    `<thead><tr>${COLUNAS.map(c => `<th>${c}</th>`).join("")}</tr></thead>` +
-    `<tbody>${LINHAS.map(l => `
+    `<thead><tr>${COLUNAS.map(c => {
+      const f = FILTROS_COL[c.k];
+      const ativo = f && (c.k === "data" ? (f.de || f.ate) : f.size);
+      return `<th class="${ativo ? "filtrado" : ""}">
+        <button class="th-btn" data-col="${c.k}">${c.rot}<i class="funil"></i></button>
+      </th>`;
+    }).join("")}</tr></thead>` +
+    `<tbody>${dados.map(l => `
       <tr class="${l.presenca === "a" || (l.nota !== null && l.nota < 60) ? "alerta" : ""}">
         <td>${l.dia} ${l.data}</td>
         <td>${l.turma}</td>
@@ -1504,20 +1804,33 @@ function renderTabela(){
         <td>${l.erros}</td>
       </tr>`).join("")}</tbody>`;
 
-  document.getElementById("titulo-geral").textContent = `Geral · ${LINHAS.length}`;
-  renderKPIs();
-  renderMedias();
+  document.getElementById("titulo-geral").textContent =
+    dados.length === LINHAS.length ? `Geral · ${LINHAS.length}`
+                                   : `Geral · ${dados.length} de ${LINHAS.length}`;
+
+  document.querySelectorAll(".th-btn").forEach(b => {
+    b.onclick = e => {
+      e.stopPropagation();
+      const c = COLUNAS.find(x => x.k === b.dataset.col);
+      if (b.parentElement.querySelector(".menu-col")){ fecharMenuColuna(); return; }
+      abrirMenuColuna(c, b.parentElement);
+    };
+  });
+
+  renderKPIs(dados);
+  renderMedias(dados);
 }
 
-function renderKPIs(){
-  const comPres = LINHAS.filter(l => l.presenca);
+function renderKPIs(dados){
+  dados = dados || LINHAS;
+  const comPres = dados.filter(l => l.presenca);
   const pctPres = comPres.length
     ? Math.round(comPres.filter(l => l.presenca === "p").length / comPres.length * 100) : null;
-  const comEng = LINHAS.filter(l => l.eng);
+  const comEng = dados.filter(l => l.eng);
   const medEng = comEng.length ? (comEng.reduce((n,l) => n + l.eng, 0) / comEng.length).toFixed(1) : null;
-  const comNota = LINHAS.filter(l => l.nota !== null);
+  const comNota = dados.filter(l => l.nota !== null);
   const medNota = comNota.length ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
-  const alunos = new Set(LINHAS.map(l => l.turmaId + l.alunoId)).size;
+  const alunos = new Set(dados.map(l => l.turmaId + l.alunoId)).size;
 
   document.getElementById("kpis").innerHTML = `
     <div class="kpi"><div class="v">${alunos}</div><div class="r">Alunos</div>
@@ -1543,11 +1856,12 @@ const EIXOS = {
 };
 let eixoAtual = "turma";
 
-function renderMedias(){
+function renderMedias(dados){
+  dados = dados || filtradas();
   const box = document.getElementById("resumo-medias");
   const e = EIXOS[eixoAtual];
   const mapa = new Map();
-  LINHAS.forEach(l => {
+  dados.forEach(l => {
     const k = e.chave(l);
     if (!mapa.has(k)) mapa.set(k, []);
     mapa.get(k).push(l);
@@ -1610,7 +1924,7 @@ function renderMedias(){
       </div>
     </div>`;
 
-  document.getElementById("md-eixo").onchange = ev => { eixoAtual = ev.target.value; renderMedias(); };
+  document.getElementById("md-eixo").onchange = ev => { eixoAtual = ev.target.value; renderMedias(dados); };
 
   const trilho = box.querySelector("#md-trilho");
   const vp = box.querySelector(".md-viewport");

@@ -881,8 +881,7 @@ let turmaAtual = TURMAS[0];
 //  Seletor de turma
 // ══════════════════════════════════════════════════════════
 function metaTurma(t){
-  const tipo = t.tipo === "particular" ? "Particular" : "Corporativa";
-  return `${tipo} · ${nivelL(t.nivel)} · ${t.modulo} · ${t.alunos.length} aluno${t.alunos.length>1?"s":""}`;
+  return `Corporativa · ${nivelL(t.nivel)} · ${t.modulo} · ${t.alunos.length} aluno${t.alunos.length>1?"s":""}`;
 }
 
 function renderTurmas(){
@@ -1375,10 +1374,10 @@ function renderAula(){
 
 // Identificação completa de uma aula: empresa · turma · nível.
 // Sem isso, um card de aula solto não diz de quem é — e o nome da turma
-// nem sempre contém o nome da empresa (ex.: "Particular — Marcos B.").
+// nem sempre repete o nome inteiro da empresa (ex.: "Nelogica — CEO").
 function partesIdent(t){
   // O nome da turma às vezes já começa com a empresa ("Sertrading — Comex"),
-  // às vezes não ("Particular — Marcos B."). Evita repetir.
+  // às vezes não repete tudo ("Nelogica — CEO"). Evita repetir.
   const nome = t.nome;
   const jaTem = nome.toLowerCase().startsWith(t.empresa.toLowerCase());
   const resto = jaTem ? nome.slice(t.empresa.length).replace(/^\s*[—\-·]\s*/, "") : nome;
@@ -1520,7 +1519,7 @@ function abrirCancelar(a, t){
 
 // Identificação completa de uma aula: empresa · turma · nível.
 // Sem isso, um card de aula solto não diz de quem é — e o nome da turma
-// nem sempre contém o nome da empresa (ex.: "Particular — Marcos B.").
+// nem sempre repete o nome inteiro da empresa (ex.: "Nelogica — CEO").
 // Linha de identificação: Empresa · Nível · Dia · Horário, e o "+" que abre
 // os detalhes da turma. O nome da turma sai daqui — ele está dentro do "+".
 

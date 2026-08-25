@@ -52,7 +52,7 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | Tabela | O que guarda | Relações |
 |---|---|---|
 | `empresas_cliente` | Empresa contratante (nome, dados). `lead_origem_id` linka de volta ao lead que virou cliente no funil (Leads CRM). | 1:N `turmas` |
-| `turmas` | Turma de uma empresa. `empresa_cliente_id` **nullable** (NULL = turma particular). `tipo`: `corporativa` \| `particular`. Nível CEFR, módulo do curso, professor responsável. **Uma empresa pode ter N turmas** (ex.: turma de chão de fábrica + turma de liderança, cada uma com seu professor/nível/trilha). | N:1 `empresas_cliente` · N:1 `professores` · 1:N `alunos` |
+| `turmas` | Turma de uma empresa. `empresa_cliente_id` **obrigatório** — toda turma pertence a uma empresa (decisão de 25/08/2026, não existe mais turma "particular"/sem empresa). `tipo`: sempre `corporativa`. Nível em banda (Basic/Intermediate/Advanced/Proficient), módulo do curso, professor responsável. **Uma empresa pode ter N turmas** (ex.: turma de chão de fábrica + turma de liderança, cada uma com seu professor/nível/trilha). | N:1 `empresas_cliente` · N:1 `professores` · 1:N `alunos` |
 | `alunos` | Aluno (nome, cargo). | N:1 `turmas` |
 | `professores` | Professor (nome). | N:M `turmas` |
 | `aulas_assigned` | Uma aula do Gerador de Aulas atribuída a uma turma numa data. Abre no `templateaula.html` (o "material da aula" É o carrossel de 8 telas — não existe .pptx literal). Status: agendada / dada. | N:1 `turmas` |
@@ -89,8 +89,8 @@ por role — evita o aluno precisar saber "qual link é o meu".
 *(revisado em 20/08 durante a construção do `plataforma.html` — substitui a
 versão inicial desta seção)*
 
-1. **Seletor de turma** — dropdown agrupado em "Turmas" (corporativas) e
-   "Alunos particulares". Só as turmas do professor logado.
+1. **Seletor de turma** — dropdown agrupado por empresa. Só as turmas do
+   professor logado.
 2. **Aula do dia** — card com a aula da turma selecionada + botão que abre o
    `templateaula.html`. Ao lado, resumo da turma (média da trilha, quantos
    concluíram, lousas, status da presença).
@@ -348,8 +348,8 @@ decidido** — não o contrário. Este doc é adaptado a cada rodada.
   prometia uma navegação inexistente — corrigido na mesma sessão.
 - Lições no detalhe do aluno abrem o `templatetrilha.html` em modo
   gabarito, com as respostas visíveis para o professor conferir.
-- Seletor de turma é dropdown agrupado (Turmas / Alunos particulares), não
-  botões — decidido por layout depois de testar com chips.
+- Seletor de turma é dropdown agrupado por empresa, não botões —
+  decidido por layout depois de testar com chips.
 - `templatetrilha.html` criado como irmão do `templateaula.html`: mesma
   navegação e paleta, mas cada card é exercício com correção e nota.
   **Estrutura pronta, conteúdo em branco** — os exercícios entram depois.

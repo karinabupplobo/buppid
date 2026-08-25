@@ -166,12 +166,12 @@ const TURMAS = [
   },
   {
     id: "t3",
-    nome: "Particular — Marcos B.",
-    tipo: "particular",
+    nome: "Nelogica — CEO",
+    tipo: "corporativa",
     nivel: "B2",
     nivelDesc: "Intermediário alto — argumenta e sustenta posição, ainda trava em registro formal.",
     empresa: "Nelogica",
-    empresaDesc: "Software para mercado financeiro, Porto Alegre/RS. Aula particular do CEO.",
+    empresaDesc: "Software para mercado financeiro, Porto Alegre/RS. Aula individual do CEO.",
     modulo: "Módulo 5 — Apresentações",
     objetivoTurma: "Em 6 meses, apresentar a empresa e sustentar o Q&A com investidor estrangeiro, sem leitura de slide.",
     alunos: [ { id:"c1", nome:"Marcos Boschetti", cargo:"CEO e cofundador",
@@ -201,7 +201,7 @@ const TURMAS = [
 TURMAS[0].profId = "pr1";   // Sertrading — Comex
 TURMAS[1].profId = "pr1";   // Sertrading — Diretoria
 TURMAS[2].profId = "pr2";   // Tirolez — Liderança
-TURMAS[3].profId = "pr1";   // Nelogica — Particular
+TURMAS[3].profId = "pr1";   // Nelogica — CEO
 
 function professorDe(t){
   return PROFESSORES.find(p => p.id === t.profId) || PROFESSORES[0];
@@ -461,7 +461,7 @@ TURMAS[2].futuras = [   // Tirolez — Liderança (A2)
     resumo:"Orientar um visitante dentro da planta.",
     temas:["Imperativo","Preposições"] }
 ];
-TURMAS[3].futuras = [   // Nelogica — particular (B2)
+TURMAS[3].futuras = [   // Nelogica — CEO (B2)
   { id:"f8", data:"27/08", dia:"Qui", hora:"12:00", titulo:"Investor Q&A",
     resumo:"Sustentar o Q&A depois do pitch.",
     temas:["Condicionais","Vocabulário"] }

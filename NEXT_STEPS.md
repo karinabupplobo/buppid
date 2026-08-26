@@ -130,21 +130,22 @@
       por diante, derivado da dash de origem, nunca de um dropdown.
       Karina teve que repetir isso mais de uma vez em 25/08 — não repetir
       o erro.
-- [ ] **SENSÍVEL — anotacoes_aluno e RH.** Hoje o RH não tem acesso
-      técnico nenhum (manager.html nem tem chave do Supabase ainda), mas
-      quando o RH migrar pra dados reais isso muda. Antes disso acontecer,
-      travar por RLS: RH nunca pode ler `anotacoes_aluno`, ponto — não é
-      "esconder na UI", é bloquear no banco. Decisão da Karina em 25/08,
-      não é negociável.
+- [x] **RLS por papel — FEITO em 26/08 (v-20260826-2130).** O RH nunca lê
+      `anotacoes_aluno`, travado no banco e testado. Sem login não se
+      alcança nada. Aluno vê só o próprio; professor, suas turmas; RH, sua
+      empresa (menos anotações); Bupp, tudo.
+- [ ] **RLS: o que ficou de fora.** (a) As 5 tabelas que ainda não existem
+      (`presenca`, `progresso_aluno`, `aulas_assigned`, `trilha_licoes`,
+      `lousas_aula`) precisam nascer já com política por papel — não
+      repetir o `anon full access`. (b) Anotação tipo `aluno` (o próprio
+      aluno escrevendo) ainda não tem tela nem política de escrita;
+      decidir se o professor vê. (c) Hoje o professor vê anotações tipo
+      `gestao` dos alunos dele — confirmar com a Karina se é isso mesmo ou
+      se a gestão quer um canal privado.
 - [ ] Quando `plataforma.html` ganhar uma tela de anotação de aluno pro
       professor (hoje não existe), o autor também precisa ser automático
       — nome do professor logado, tipo "prof". Mesma lógica do que foi
       feito em `interna.html` pra gestão, adaptada pro professor.
-- [ ] `anotacoes_aluno` não distingue quem pode ver o quê por role ainda
-      (RLS aberta pra `anon`, igual o resto). Quando Supabase Auth entrar,
-      decidir se anotação tipo "aluno" fica visível pro RH, e se "gestao"
-      fica escondida do professor — mesma lógica de "Pontos de Atenção"
-      que já existe em `plataforma.html`.
 - [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
       Aulas — hoje o gerador ainda pergunta tudo de novo no chat.
 - [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional

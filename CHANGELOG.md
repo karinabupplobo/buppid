@@ -2,6 +2,42 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2130-rls-por-papel — 26/08/2026
+- O que mudou: **só schema do Supabase, nenhum arquivo.** As 8 tabelas
+  estavam com `anon full access` (leitura e escrita liberadas a qualquer
+  um, com ou sem login) — e a chave que dá esse acesso está no HTML, à
+  vista. Na prática o login controlava qual tela aparecia, não quais
+  dados a pessoa alcançava. Trocado por regras por papel:
+  - **Sem login:** zero em todas as tabelas (era: tudo).
+  - **Aluno:** só o próprio registro, a própria empresa e as turmas em que
+    está matriculado. Nenhuma anotação.
+  - **Professor:** as turmas que leciona e os alunos delas, mais as
+    anotações desses alunos. Nada do CRM.
+  - **RH (`gestor` e `aluno_gestor`):** a própria empresa, seus alunos e
+    turmas. **Zero anotações** — regra não-negociável da Karina (25/08).
+    `aluno_gestor` também está excluído apesar de ser aluno, senão veria
+    as anotações dos colegas de empresa.
+  - **Bupp (`interno`):** tudo, como antes.
+  Escrita é quase toda restrita à Bupp; professor edita a própria turma e
+  grava anotação tipo `prof`. Editar e apagar anotação é só da Bupp —
+  histórico não se reescreve.
+  Funções de apoio (`meu_papel`, `sou_bupp`, `minha_empresa`,
+  `meu_aluno_id`, `meu_professor_id`, `minhas_turmas`) em `SECURITY
+  DEFINER` para evitar recursão: a política de `usuarios` chamaria a
+  função, que leria `usuarios`, que chamaria a política.
+  Gatilho `travar_campos_sensiveis_usuario`: ninguém muda o próprio papel,
+  empresa ou vínculo de login — só a Bupp. `WITH CHECK` não consegue
+  comparar com o valor antigo, por isso é gatilho.
+- Testado simulando cada papel logado, e mais três tentativas de burla:
+  aluno tentando se promover a `interno` (bloqueado), professor tentando
+  gravar anotação como `gestao` (bloqueado) e professor tentando apagar
+  anotação (bloqueado).
+- Motivo: antes de entrar dado real de cliente. A brecha não incomodava
+  com dado de teste, mas seria séria com aluno e empresa de verdade.
+- Reverter: as políticas antigas eram `anon full access` (`USING true`) em
+  cada tabela. Reverter significa reabrir tudo — só faça se algo quebrar e
+  for preciso destravar, e refaça as regras logo em seguida.
+
 ## v-20260826-2030-protege-crm — 26/08/2026
 - O que mudou: o que parecia "login duplo" era o contrário. O gate próprio
   do `crm.html` está desligado (`SEM_SENHA = true`) desde antes, então ele

@@ -36,13 +36,6 @@
       Intermediate/Advanced/Proficient) e o logo no lugar da faixa marrom.
       Ainda não testado no REST com a anon key nesta sessão (mesma pegadinha
       do allowlist do subdomínio novo do Supabase).
-- [ ] Decidir se vale ter a granularidade CEFR (Pré-A1...C2) em algum lugar
-      da turma pra quando o Gerador de Aulas rodar — hoje `turmas.nivel`
-      guarda só a banda (Basic/Intermediate/Advanced/Proficient), e o
-      protocolo do Gerador (`pedagogico/GERADOR.md`, Passo 2) pede CEFR
-      exato pra montar o mapa pedagógico. Enquanto o Gerador não lê do
-      Supabase (próximo item), isso não trava nada — mas quando ligar, falta
-      essa ponte.
 - [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; 5 já
       foram criadas (`empresas_cliente`, `turmas`, `professores`, `alunos`,
       `anotacoes_aluno`). Faltam: `aulas_assigned`, `lousas_aula`,
@@ -146,8 +139,16 @@
       professor (hoje não existe), o autor também precisa ser automático
       — nome do professor logado, tipo "prof". Mesma lógica do que foi
       feito em `interna.html` pra gestão, adaptada pro professor.
-- [ ] Ligar o resultado de `nova-turma.html` ao protocolo do Gerador de
-      Aulas — hoje o gerador ainda pergunta tudo de novo no chat.
+- [ ] **Criar no Supabase uma forma de rastrear turma com/sem material
+      gerado** (tabela `materiais`/`aulas_geradas` ou flag em `turmas`) —
+      o Passo 2 do `pedagogico/GERADOR.md` (v-20260826-2210) depende disso
+      pra listar de verdade "turmas sem material"; hoje trata todas como
+      sem material porque não existe outra forma de saber. Decisão de
+      estrutura pendente com a Karina.
+- [ ] Rodar o `iniciar gerador de aulas` numa turma real pela primeira vez
+      (protocolo v2, v-20260826-2210), preenchendo o CEFR exato e o que
+      mais faltar na turma escolhida — nenhuma das 4 turmas atuais tem
+      `qtd_modulos`/`aulas_por_modulo`/`nivel` CEFR exato preenchidos.
 - [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional
       da tela Aluno) entra na primeira versão do `plataforma.html`.
 - [ ] MUDAR A ROTINA: depois de qualquer push que altere algo visual (index.html,

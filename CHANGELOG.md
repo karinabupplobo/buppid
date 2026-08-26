@@ -2,6 +2,33 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2210-gerador-protocolo-v2 — 26/08/2026
+- O que mudou: `pedagogico/GERADOR.md` reescrito. Principais mudanças em
+  relação à versão de 19/08:
+  - Passo 2 deixa de perguntar tudo manualmente e passa a listar turmas por
+    empresa sem material, pra Karina escolher qual gerar.
+  - Passo 3 (novo): puxa do Supabase o que já existe da turma cadastrada
+    (empresa, setor, objetivos, professor, formato) — só pergunta o que
+    falta, hoje principalmente o CEFR exato (turma só guarda a banda).
+  - Estrutura do curso fica fixa em 8 módulos de 6 aulas (48 aulas), em vez
+    de módulos/aulas variáveis por turma.
+  - Passo 5 (capacidade): como 48 aulas excede a capacidade de todos os
+    níveis, o estouro deixa de ser exceção e passa a ser tratado caso a
+    caso com a Karina, sem regra fixa de repetição automática.
+  - Produção passa a ser aula a aula (pede tema, gera, aprova, próxima),
+    módulo por módulo — substitui os 4 portões acumulados (1 aula → 20% →
+    60% → 100%) da versão anterior.
+- Arquivos: pedagogico/GERADOR.md
+- Motivo: alinhar o protocolo documentado ao fluxo que a Karina já estava
+  descrevendo como o real — turma vem do Supabase (nova-turma.html já
+  captura boa parte disso), estrutura fixa de 8x6, aprovação granular aula
+  a aula em vez de lotes.
+  Observação: ainda falta uma forma de rastrear no Supabase quais turmas
+  já têm material (Passo 2 depende disso pra funcionar de verdade — por
+  ora todas contam como "sem material"). Registrado no NEXT_STEPS.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2155-limpa-senha-navegador
+
 ## v-20260826-2130-rls-por-papel — 26/08/2026
 - O que mudou: **só schema do Supabase, nenhum arquivo.** As 8 tabelas
   estavam com `anon full access` (leitura e escrita liberadas a qualquer

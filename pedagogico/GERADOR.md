@@ -16,42 +16,52 @@ no `index.html` foi removida em 19/08/2026 — ver `CHANGELOG.md`,
 3. As seções 1 a 6 do `docs/pedagogico.md` — estrutura das 8 telas, componentes,
    regras de dependência de conteúdo e schema JSON de saída
 
-Só depois de ler é que as perguntas do Passo 2 são feitas.
+Só depois de ler é que o Passo 2 começa.
 
 ---
 
-## Passo 2 — Levantamento
+## Passo 2 — Seleção da turma
 
-Perguntar à Karina, de uma vez:
+Listar as turmas por empresa que ainda não têm material gerado e apresentar
+pra Karina escolher qual vamos criar.
 
-**Turma**
-- Nível CEFR da turma (Pre-A1, A1, A2, B1, B2, C1, C2)
-- Contexto da turma: cargos, áreas, o que já fazem em inglês hoje
-- Tamanho da turma
-- Duração de cada aula
-- Formato e frequência (presencial ou online; 1x, 2x por semana)
-
-**Curso**
-- Quantidade de módulos
-- Aulas por módulo
-- Objetivo do curso — o resultado de negócio, não a meta de idioma
-- Segundo objetivo (opcional, máximo 2 no total)
-- Nomes dos módulos, se já definidos
-
-**Cliente**
-- Contexto da empresa: setor, operação, com quem falam inglês e por quê
-- Assuntos essenciais pedidos pelo RH — o que precisa obrigatoriamente aparecer
-- **Restrições: o que NÃO pode aparecer.** Concorrente citado, caso interno,
-  assunto sensível, cliente nominado. Campo de risco alto — uma aula que usa o
-  nome de um concorrente do cliente num exemplo de negociação é erro caro e
-  totalmente evitável.
+> Nota: até existir uma tabela/flag no Supabase rastreando material gerado
+> (item em aberto no NEXT_STEPS), todas as turmas cadastradas contam como
+> "sem material" — nenhuma tem curso real ainda.
 
 ---
 
-## Passo 3 — Checagem de capacidade (antes de montar qualquer coisa)
+## Passo 3 — Carregar dados da turma
 
-Comparar `módulos × aulas por módulo` com o número de combinações disponíveis na
-seção 5 do arquivo do nível pedido.
+Puxar do Supabase tudo que já existe pra turma escolhida: empresa (nome,
+setor, operação, contexto de inglês), nível (banda), objetivo_1, objetivo_2,
+professor, formato e frequência semanal se estiverem preenchidos, e
+assuntos_essenciais/restrições se já cadastrados. Apresentar um resumo pra
+confirmação.
+
+Perguntar só o que falta e não dá pra inferir do cadastro — hoje isso inclui
+pelo menos:
+- **Nível CEFR exato.** A turma guarda só a banda (Basic/Intermediate/
+  Advanced/Proficient), que pode cobrir mais de um nível CEFR. Preciso saber
+  qual exatamente (Pre-A1, A1, A2, B1, B2, C1 ou C2) antes de montar o mapa.
+- `assuntos_essenciais` e `restricoes`, se estiverem nulos.
+- Qualquer contexto adicional que a Karina julgue relevante e não esteja no
+  cadastro.
+
+---
+
+## Passo 4 — Estrutura do curso
+
+Todo curso passa a ter **8 módulos de 6 aulas cada — 48 aulas no total**.
+Estrutura fixa; não se pergunta mais quantidade de módulos ou aulas por
+módulo.
+
+---
+
+## Passo 5 — Checagem de capacidade
+
+Comparar as 48 aulas com o número de combinações disponíveis na seção 5 do
+arquivo do nível pedido.
 
 Capacidade atual por nível:
 
@@ -65,17 +75,27 @@ Capacidade atual por nível:
 | C1 | 24 | 48 |
 | C2 | 16 | 30 |
 
-Se o curso pedido excede a capacidade, **avisar antes de montar** e oferecer as
-saídas: reduzir o número de aulas, criar combinações novas no arquivo do nível
-(vira commit próprio), ou repetir gramática de propósito em contexto diferente
-— o que é decisão pedagógica dela, não do gerador.
+Como 48 aulas excede a capacidade de **todos** os níveis, esse aviso vai
+aparecer em praticamente todo curso — deixou de ser exceção rara. Quando
+acontecer, apresentar as três saídas de sempre e deixar a decisão com a
+Karina, caso a caso, **sem regra fixa**:
+- reduzir o número de aulas do curso,
+- criar combinações novas no arquivo do nível (vira commit próprio),
+- repetir gramática de propósito, em contexto/vocabulário diferente.
 
 ---
 
-## Passo 4 — Mapa Pedagógico
+## Passo 6 — Temas dos módulos
 
-Montar uma linha por aula, com IDs reais dos arquivos. Nada inventado: se a
-combinação não existe no arquivo do nível, ela não entra no mapa.
+Perguntar de uma vez os 8 temas/títulos dos módulos.
+
+---
+
+## Passo 7 — Mapa Pedagógico
+
+Montar uma linha por aula (48 linhas), com IDs reais dos arquivos de nível.
+Nada inventado: se a combinação não existe no arquivo do nível, ela não entra
+no mapa.
 
 ```json
 {
@@ -88,7 +108,7 @@ combinação não existe no arquivo do nível, ela não entra no mapa.
       "gramatica_id": "B1-G-006",
       "gramatica": "second conditional",
       "vocab_id": "B1-V-01",
-      "tema": "negociação de prazo de pagamento",
+      "tema": null,
       "objetivo_master": "negociar prazo de pagamento",
       "objetivo_vinculado": 1
     }
@@ -97,64 +117,63 @@ combinação não existe no arquivo do nível, ela não entra no mapa.
 ```
 
 Regras do mapa:
-- Gramática em ordem crescente de complexidade, **sem repetir `gramatica_id`**
-- Avanço em blocos coerentes por módulo, não lista corrida
-- Cada aula vinculada a um dos até 2 objetivos
-- Todo item pedido pelo RH aparece em pelo menos uma aula
-- Nenhuma restrição violada
+- Gramática em ordem crescente de complexidade, sem repetir `gramatica_id`
+  enquanto a capacidade permitir; quando esgotar, aplicar a decisão tomada no
+  Passo 5.
+- Avanço em blocos coerentes por módulo, não lista corrida.
+- Cada aula vinculada a um dos até 2 objetivos.
+- Todo item pedido pelo RH aparece em pelo menos uma aula.
+- Nenhuma restrição violada.
+- O campo `tema` fica em aberto (`null`) nesta etapa — é preenchido aula a
+  aula no Passo 9, não aqui.
 
 Apresentar o mapa como tabela legível, não como JSON cru.
 
 ---
 
-## Passo 5 — Aprovação do mapa
+## Passo 8 — Aprovação do mapa
 
 Duas saídas para a Karina:
-- **Aprovar** → segue para o Passo 6
+- **Aprovar** → segue para o Passo 9
 - **Sugestão de melhoria** → o mapa é refeito **inteiro** incorporando o
   feedback, não editado ponto a ponto
 
 ---
 
-## Passo 6 — Produção em quatro portões
+## Passo 9 — Produção aula a aula, por módulo
 
-O material nunca é entregue de uma vez. Quatro entregas, cada uma aprovada
-antes da seguinte:
+Substitui os antigos portões de 20%/60%/100%. Fluxo:
 
-| Portão | O que é produzido | Para quê |
-|---|---|---|
-| 1 | **Uma aula completa** | Validar tom, densidade e formato antes de escalar |
-| 2 | **20% do curso** (acumulado) | Confirmar que o padrão se sustenta em série |
-| 3 | **60% do curso** (acumulado) | Verificar progressão real entre módulos |
-| 4 | **100% do curso** | Fechamento |
+1. Entrar no módulo 1 do mapa aprovado.
+2. Pedir os temas das 6 aulas desse módulo.
+3. Gerar a aula 1 completa (schema do Passo 10) e pedir aprovação.
+4. Só depois de aprovada, gerar a aula 2 — e assim até a aula 6 do módulo.
+5. Passar pro módulo 2: pedir os temas das próximas 6 aulas, repetir o ciclo.
+6. Seguir até fechar as 48 aulas.
 
-Regras dos portões:
-- Percentual **acumulado** sobre o total de aulas, arredondado para cima. Curso
-  de 24 aulas: portão 1 = aula 1; portão 2 = aulas 1–5; portão 3 = aulas 1–15;
-  portão 4 = aulas 1–24.
-- A aula do portão 1 conta dentro dos 20%.
-- Nenhum portão avança sem aprovação explícita.
-- Se um portão for reprovado, o **ajuste vale para trás**: as aulas já feitas são
-  corrigidas antes de produzir as novas. Curso com padrão inconsistente entre a
-  aula 3 e a aula 18 é pior que curso atrasado.
-- Curso curto demais para os percentuais fazerem sentido (menos de 5 aulas):
-  portão 1 = uma aula, portão 2 = o resto.
+Regras:
+- Nenhuma aula avança sem aprovação explícita da anterior.
+- Se uma aula for reprovada, corrigir antes de seguir — não acumula pendência
+  pra ajustar depois.
+- Um módulo só é dado como fechado quando as 6 aulas dele estão aprovadas.
 
 ---
 
-## Passo 7 — Formato de saída de cada aula
+## Passo 10 — Formato de saída de cada aula
 
-O JSON das 8 telas, conforme o schema do `docs/pedagogico.md` §6.2, respeitando:
+O JSON das 8 telas, conforme o schema do `docs/pedagogico.md` §6.2,
+respeitando:
 
 - **Regra de dependência (§6):** Vocab e Grammar são as duas únicas fontes de
   conteúdo. What would you do?, Situational e Debate reciclam esse conteúdo;
   Practice treina exclusivamente a gramática da tela Grammar. Nada de
   vocabulário ou gramática novos no meio da aula.
-- **Regra criterial:** a tela Grammar só ensina item criterial do nível pedido.
-  As demais telas podem usar livremente qualquer coisa dos níveis anteriores.
-- **Regras por nível (§6.3):** quantidade de itens em Vocab, tipo de exercício
-  em Practice, formato do Vocab (termo solto até A2, frase em contexto de B1 em
-  diante).
+- **Regra criterial:** a tela Grammar só ensina item criterial do nível
+  pedido. As demais telas podem usar livremente qualquer coisa dos níveis
+  anteriores.
+- **Regras por nível (§6.3):** quantidade de itens em Vocab, tipo de
+  exercício em Practice, formato do Vocab (termo solto até A2, frase em
+  contexto de B1 em diante).
 - O `contexto_empresa` personaliza a situação; **não** substitui a escolha
   pedagógica feita no mapa.
 
@@ -164,5 +183,5 @@ O JSON das 8 telas, conforme o schema do `docs/pedagogico.md` §6.2, respeitando
 
 - Não gera aula sem mapa aprovado.
 - Não inventa gramática ou campo lexical fora dos arquivos de nível.
-- Não pula portão, mesmo com pressa.
+- Não avança pra próxima aula sem aprovação explícita da anterior.
 - Não escreve nada na dash — a integração será construída depois.

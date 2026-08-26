@@ -2,6 +2,28 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1830-largura-tela-grande — 26/08/2026
+- O que mudou: dois sintomas com a mesma causa. O `main` da `interna.html`
+  estava travado em `max-width: 1180px`, então a dash não crescia em tela
+  grande; e como a aba Tasks é o `index.html` num iframe, e a tabela de
+  Tasks colapsa pro modo cartão (com lápis, sem edição inline) abaixo de
+  ~1140px de largura útil, o teto de 1180 menos a sidebar (282px) e o
+  padding deixava a largura sempre abaixo do limite — por isso o Tasks
+  embutido nunca ficava igual ao standalone. `main` perdeu o max-width;
+  as abas embutidas anulam o padding lateral do main (margem negativa) e
+  o `index.html` embutido teve o padding lateral reduzido de 16 pra 10px,
+  devolvendo ~90px de largura útil. Iframes de cache-busting `v=17` →
+  `v=18` (estavam pinados numa versão anterior ao commit do
+  lead-vira-empresa).
+- Arquivos: interna.html, index.html
+- Motivo: reportado pela Karina em 26/08 com print — Tasks embutido
+  diferente do standalone, e dash sem se adaptar a tela grande.
+  Resultado: 1600px de tela → 1298px úteis (tabela), 1920 → 1618px
+  (tabela). Abaixo de ~1440px ainda colapsa — a grade de 7 colunas pede
+  ~1020px mínimos, então ali o colapso é correto, não bug.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-0110-aba-alunos
+
 ## v-20260826-0110-aba-alunos — 26/08/2026
 - O que mudou: a fila de alunos sem turma saiu do card da empresa (aba
   Empresas) e virou aba própria em `interna.html`, em planilha, listando

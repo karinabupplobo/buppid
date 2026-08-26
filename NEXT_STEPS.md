@@ -51,15 +51,20 @@
       Karina).
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
       do resto da dash). Travar por role quando o Supabase Auth entrar.
-- [ ] **PRÓXIMO PASSO — LOGIN DE VERDADE (pedido da Karina, 26/08).**
-      Configurar login/senha real via Supabase Auth, unindo ao que já
-      existe: a tabela `usuarios` já tem a coluna `auth_user_id`
-      reservada pra isso, então é ligar cada usuário ao registro do Auth
-      sem recadastrar ninguém. O papel (`aluno`/`gestor`/`aluno_gestor`/
-      `teacher`/`interno`) já está gravado por usuário e é o que decide
-      qual dash a pessoa vê. Preservar os 13 usuários já migrados. Vale
-      pra todas as dashes EXCETO os forms públicos (`nova-turma.html`,
-      `nivel-test.html`), que continuam sem login.
+- [ ] **LOGIN — falta ligar no Supabase e testar com gente de verdade.**
+      `login.html` e `auth-guard.js` prontos (v-20260826-2000), mas
+      dependem de três coisas fora do código: (1) no painel do Supabase,
+      Authentication → habilitar Email/magic link e pôr a URL do site em
+      Site URL + Redirect URLs, senão o link do e-mail volta pro lugar
+      errado; (2) preencher os e-mails na aba Usuários — hoje só 3 dos 13
+      têm e-mail, e sem e-mail não há como enviar link; (3) testar o
+      fluxo ponta a ponta com um usuário real. Enquanto isso as dashes já
+      redirecionam pro login, então TESTAR ANTES de divulgar o link.
+- [ ] **DOMÍNIO plataforma.buppidiomas.com.br.** CNAME `plataforma` →
+      `karinabupplobo.github.io` no Registro.br; depois GitHub Settings →
+      Pages → Custom domain, e marcar Enforce HTTPS quando o certificado
+      sair. A raiz do site hoje é `index.html` (Tasks/Leads) — decidir se
+      passa a ser o `login.html`.
 - [ ] **INVENTÁRIO — o que ainda é mock (dados-mock.js) e falta migrar.**
       Já estão no Supabase: Empresas, Turmas, Alunos, Usuários, Leads,
       Tasks. Ainda em mock: (a) abas Dados, Alertas e Docs da

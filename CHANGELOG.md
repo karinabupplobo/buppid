@@ -2,6 +2,61 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2000-login-magic-link — 26/08/2026
+- O que mudou: `login.html` novo — login sem senha, por link enviado no
+  e-mail (magic link do Supabase Auth). Depois de autenticar, redireciona
+  pela coluna `papel` da tabela `usuarios`: aluno/aluno_gestor →
+  `aluno.html`, teacher → `plataforma.html`, interno → `interna.html`,
+  gestor → `manager.html`. Só entra quem já está em `usuarios` com
+  e-mail: o e-mail é conferido antes de disparar o link e o
+  `signInWithOtp` vai com `shouldCreateUser: false` — sem isso o Supabase
+  criaria conta pra qualquer e-mail digitado. No primeiro acesso grava
+  `auth_user_id` no registro, ligando as duas pontas.
+  `auth-guard.js` novo, incluído pelas 4 dashes, cada uma declarando os
+  papéis que aceita: sem sessão → login; e-mail fora da tabela → desloga;
+  papel errado → vai pra dash do papel certo (mandar pro login criaria
+  laço). Esconde o body enquanto verifica. Expõe `window.USUARIO_LOGADO`,
+  o evento `usuario-pronto` e `window.sairDaPlataforma()`. Com isso a
+  anotação de aluno passa a usar o login de verdade, e o atalho que lia
+  a sessão do `index.html` via localStorage vira só fallback.
+  Os forms públicos (`nova-turma.html`, `nivel-test.html`) ficam de fora.
+- Arquivos: login.html (novo), auth-guard.js (novo), interna.html,
+  aluno.html, manager.html, plataforma.html
+- Motivo: pedido da Karina em 26/08 — porta de entrada única, com cada
+  papel caindo na sua tela.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1945-realocar-desativar
+
+## v-20260826-1945-realocar-desativar — 26/08/2026
+- O que mudou: na aba Alunos da `interna.html`, a coluna Turma deixou de
+  ser "só alocar quem não tem" e virou select sempre editável, com a
+  turma atual pré-selecionada — trocar move o aluno (DELETE do vínculo
+  antigo + POST do novo), e "Sem turma" devolve ele pra fila do topo.
+  Aluno pode ser desativado em vez de excluído: sai da turma e das
+  listas, mas nome, nível e anotações continuam existindo. Botão alterna
+  Desativar/Reativar, com filtro "Desativados" pra encontrá-los (não
+  aparecem em nenhuma outra visão). Ordem: sem turma no topo, alocados no
+  meio, desativados no fim. Também corrigido o cabeçalho espremido da
+  planilha: a regra `table.planilha th { padding: 0 }` valia pra todas as
+  tabelas, mas quem devolvia o espaçamento era o `.th-btn`, que só existe
+  na aba Dados — restringida a `th:has(.th-btn)`.
+- Arquivos: interna.html, schema do Supabase (coluna `alunos.ativo`,
+  boolean, default true).
+- Motivo: pedido da Karina em 26/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1930-selo-troca-visao
+
+## v-20260826-1930-selo-troca-visao — 26/08/2026
+- O que mudou: quem tem papel `aluno_gestor` (RH da empresa que também
+  faz aula) abre a tela de aluno normalmente, e o selo "student" ao lado
+  do nome vira clicável, levando pra tela de manager; lá, o selo
+  "manager" traz de volta. Mesmo login, sem tela nova e sem menu extra.
+  Pra quem é só aluno (ou só gestor) nada muda — o selo continua rótulo.
+- Arquivos: aluno.html, manager.html
+- Motivo: pedido da Karina em 26/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1900-usuarios-supabase
+
 ## v-20260826-1900-usuarios-supabase — 26/08/2026
 - O que mudou: a aba Usuários da `interna.html` era 100% derivada do
   `dados-mock.js` — a lista nascia dos alunos e professores das turmas

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+  LOGIN — porta de entrada da plataforma
+  ========================================
+  Login sem senha: a pessoa digita o e-mail e recebe um link (magic link do
+  Supabase Auth). Ao clicar, volta pra cá com a sessão pronta, e daí é
+  redirecionada pra dash do papel dela (tabela `usuarios`, coluna `papel`):
+
+    aluno         -> aluno.html
+    teacher       -> plataforma.html
+    interno       -> interna.html
+    gestor        -> manager.html
+    aluno_gestor  -> aluno.html (o selo lá troca pra manager)
+
+  Só entra quem já está cadastrado em `usuarios` com e-mail. Não há
+  auto-cadastro: se o e-mail não estiver na tabela, o login é recusado —
+  senão qualquer pessoa criaria conta sozinha.
+
+  Os formulários públicos (nova-turma.html, nivel-test.html) ficam de fora
+  do login de propósito: são preenchidos por quem ainda não tem conta.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bupp Idiomas — Entrar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-escuro: #54402F;
+    --amarelo-neon: #A8D5F2;
+    --limao-claro: #E4F1FA;
+    --bg-dash: #F7F5F2;
+    --azul-intermediario: #8A7767;
+    --branco: #FFFFFF;
+    --texto: #54402F;
+    --cinza-texto: #8A7F76;
+    --borda: #E7E1DA;
+    --erro: #B3423C;
+    --ok: #2E7D46;
+  }
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; min-height:100vh; background: var(--teal-escuro);
+    font-family:'Inter',system-ui,sans-serif; color: var(--texto); }
+  body{ display:flex; align-items:center; justify-content:center; padding: 24px; }
+  .caixa{ width:100%; max-width: 380px; }
+  .logo{ display:flex; justify-content:center; margin-bottom: 22px; }
+  .logo img{ height: 54px; width:auto; }
+  .card{ background: var(--branco); border-radius: 14px; padding: 26px 24px; }
+  h1{ font-size: 17px; font-weight: 800; margin: 0 0 6px; }
+  .sub{ font-size: 13px; color: var(--cinza-texto); line-height:1.5; margin: 0 0 18px; }
+  label{ display:block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+  input{
+    width:100%; border:1px solid var(--borda); border-radius: 8px; padding: 11px 12px;
+    font-family:inherit; font-size: 14px; color: var(--texto); background: var(--branco);
+  }
+  input:focus{ outline: 2px solid var(--amarelo-neon); border-color: var(--azul-intermediario); }
+  button{
+    width:100%; margin-top: 14px; background: var(--teal-escuro); color:#fff; border:none;
+    border-radius: 9px; padding: 12px; font-family:inherit; font-weight: 800; font-size: 14px; cursor:pointer;
+  }
+  button:hover{ background: var(--azul-intermediario); }
+  button:disabled{ opacity:.55; cursor:not-allowed; }
+  #msg{ font-size: 12.5px; font-weight: 600; line-height:1.5; margin-top: 12px; }
+  #msg.erro{ color: var(--erro); }
+  #msg.ok{ color: var(--ok); }
+  .rodape{ text-align:center; font-size: 11.5px; color: rgba(255,255,255,.6); margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div class="caixa">
+  <div class="logo"><img src="assets/logo-bupp-marrom-azul-claro.png" alt="Bupp Idiomas"></div>
+
+  <div class="card">
+    <h1 id="titulo">Entrar</h1>
+    <p class="sub" id="sub">Digite seu e-mail e enviamos um link de acesso. Não precisa de senha.</p>
+
+    <div id="form-area">
+      <label for="f-email">E-mail</label>
+      <input id="f-email" type="email" autocomplete="email" placeholder="seu@empresa.com.br">
+      <button type="button" id="btn-entrar">Enviar link de acesso</button>
+    </div>
+
+    <div id="msg"></div>
+  </div>
+
+  <div class="rodape">Bupp Idiomas</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Onde cada papel entra. Mantido junto ao guarda-de-rota das dashes
+// (auth-guard.js) — mudar aqui exige mudar lá.
+const DESTINO = {
+  aluno: "aluno.html",
+  aluno_gestor: "aluno.html",
+  teacher: "plataforma.html",
+  interno: "interna.html",
+  gestor: "manager.html"
+};
+
+const msg = document.getElementById("msg");
+function aviso(texto, tipo){ msg.textContent = texto; msg.className = tipo || ""; }
+
+async function usuarioPorEmail(email){
+  const r = await fetch(
+    `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&select=id,nome,papel`,
+    { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
+  );
+  if (!r.ok) throw new Error(await r.text());
+  return (await r.json())[0] || null;
+}
+
+// Se a pessoa já chegou aqui com sessão (voltou do link do e-mail, ou a
+// sessão anterior ainda vale), não faz sentido pedir e-mail de novo:
+// manda direto pra dash dela.
+async function redirecionarSeLogado(){
+  const { data } = await sb.auth.getSession();
+  const sessao = data && data.session;
+  if (!sessao) return false;
+  const email = sessao.user.email;
+  const u = await usuarioPorEmail(email);
+  if (!u){
+    // Autenticou no Auth mas não está cadastrado na plataforma.
+    await sb.auth.signOut();
+    aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp.", "erro");
+    return false;
+  }
+  // Guarda o vínculo pro Auth, pra dispensar essa busca nas próximas vezes.
+  if (u.id) fetch(`${SUPABASE_URL}/rest/v1/usuarios?id=eq.${u.id}`, {
+    method: "PATCH",
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ auth_user_id: sessao.user.id })
+  });
+  document.getElementById("form-area").style.display = "none";
+  aviso(`Entrando como ${u.nome}...`, "ok");
+  location.replace(DESTINO[u.papel] || "aluno.html");
+  return true;
+}
+
+document.getElementById("btn-entrar").onclick = async () => {
+  const email = document.getElementById("f-email").value.trim().toLowerCase();
+  const btn = document.getElementById("btn-entrar");
+  if (!email || !email.includes("@")){
+    aviso("Digite um e-mail válido.", "erro"); return;
+  }
+  btn.disabled = true;
+  aviso("Verificando...", "");
+  try{
+    // Confere ANTES de mandar o link: sem isso o Supabase criaria uma conta
+    // nova pra qualquer e-mail digitado.
+    const u = await usuarioPorEmail(email);
+    if (!u){
+      aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp para liberar seu acesso.", "erro");
+      btn.disabled = false; return;
+    }
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false, emailRedirectTo: location.href.split("?")[0] }
+    });
+    if (error) throw error;
+    document.getElementById("form-area").style.display = "none";
+    document.getElementById("titulo").textContent = "Link enviado";
+    document.getElementById("sub").textContent = "";
+    aviso(`Enviamos um link de acesso para ${email}. Abra seu e-mail e clique no link para entrar — ele vale por 1 hora.`, "ok");
+  } catch(err){
+    aviso("Não deu para enviar o link: " + (err.message || err), "erro");
+    btn.disabled = false;
+  }
+};
+
+document.getElementById("f-email").onkeydown = e => {
+  if (e.key === "Enter") document.getElementById("btn-entrar").click();
+};
+
+redirecionarSeLogado();
+</script>
+</body>
+</html>

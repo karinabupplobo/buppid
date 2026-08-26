@@ -1561,6 +1561,9 @@
 
 </style>
 
+<script>window.PAPEIS_ACEITOS = ["interno"];</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth-guard.js?v=1"></script>
 </head>
 <body>
 
@@ -3538,6 +3541,11 @@ function nivelAlunoLabel(a){
 // login nenhum. Só funciona depois que a pessoa loga pelo menos uma vez
 // numa dessas abas nesta sessão do navegador.
 function usuarioLogadoInterno(){
+  // Vem do login de verdade (auth-guard.js preenche window.USUARIO_LOGADO
+  // com o registro da tabela `usuarios`). O fallback abaixo lê a sessão
+  // antiga do index.html e só existe pra não travar quem abrir a página
+  // antes do login estar em uso; sai quando o login virar obrigatório.
+  if (window.USUARIO_LOGADO && window.USUARIO_LOGADO.nome) return window.USUARIO_LOGADO.nome;
   try{
     const sessao = JSON.parse(localStorage.getItem("tasks_std_auth_session") || "null");
     const usuarios = JSON.parse(localStorage.getItem("tasks_std_users") || "null") || [];

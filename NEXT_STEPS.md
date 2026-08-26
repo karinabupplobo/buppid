@@ -1,15 +1,22 @@
 # NEXT STEPS
 
 - [ ] **FOTO REAL EM VEZ DE SVG na Aula 1 (Tirolez — Liderança).** Decisão
-      de fonte ainda aberta. Status do Canva em 26/08: aparece **conectado**
-      no `search_mcp_registry`, mas o card de uso mostrado na conversa vem
-      com o botão "Connect" (deveria ser "Use") e clicar nele só devolve o
-      aviso "That connector is already installed" — parece bug de UI do
-      produto, não travou do lado da Karina. Alternativa pronta: Pexels/
-      Unsplash (CC0, já é padrão do projeto, automatizável). Depois de
-      decidir, refazer o `vocab.itens[].imagem` e as `cena` de What would
-      you do?/Situational da Aula 1 com `<img>` real (o template já
-      suporta, só faltou fonte).
+      de fonte fechada: Canva (conector destravado em 26/08), estilo
+      aprovado — foto editorial, sem texto/logo/CTA, tom marrom `#54402F`
+      + azul-bebê `#A8D5F2`, espaço negativo pra corte em quadrado.
+      Progresso: **1 de 7 imagens pronta e commitada** (`manager`,
+      v-20260826-2102). Faltam: supervisor (supervisor(a)), colleague
+      (colega), team (equipe/time), department (departamento — foto de
+      ambiente/corredor, não retrato), cena "What would you do?" (dois
+      colegas se cumprimentando, sem reproduzir personagens nomeados) e
+      cena "Situational" (colega recebendo alguém novo perto da entrada
+      do departamento, mesmo cuidado). Gerar uma de cada vez, mostrar as
+      4 candidatas e esperar a Karina escolher antes de converter/
+      exportar. "be responsible for" continua sem foto (expressão
+      abstrata, decisão já tomada). Depois de ter as 7, aplicar no
+      `templateaula.html`/aula1-tirolez trocando `vocab.itens[].imagem` e
+      as `cena` de SVG pra `<img>` (igual feito na aula Safety Rules em
+      19/08 — conferir regra CSS `.vocab-img img`).
 - [ ] **Gravar a Aula 1 de verdade em `aulas_assigned`.** A linha
       (turma Tirolez — Liderança, `numero_aula=1`) tem só o esqueleto do
       mapa (`status='mapa'`) — o conteúdo completo foi aprovado em chat no

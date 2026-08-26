@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2102-foto-manager — 26/08/2026
+- O que mudou: adicionada a primeira foto real (via Canva) da Aula 1 do Módulo 1
+  "At The Office" (turma Tirolez — Liderança, A1): `assets/aula1-tirolez/manager.jpg`,
+  foto editorial do termo "manager" (800x1000, JPG). Estilo aprovado: sem texto/logo/
+  CTA de rede social, tratamento de cor em marrom `#54402F` + azul-bebê `#A8D5F2`,
+  espaço negativo generoso pra corte em quadrado. Design gerado no Canva
+  (`design_id: DAHTbBhZIlQ`, "Corporate Manager Seated by Window"), candidata 4 do
+  job `8b8be41d-f9b7-45a9-ac60-d835dea24d9e` já escolhida pela Karina em sessão
+  anterior; esta entrada só registra a exportação e o commit da imagem no repo.
+- Arquivos: assets/aula1-tirolez/manager.jpg (novo)
+- Motivo: substituir os ilustrações SVG da Aula 1 por fotos reais; "manager" é o
+  primeiro dos 7 termos/cenas a ganhar foto.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2044-fix-corrida-token
+
 ## v-20260826-2044-fix-corrida-token — 26/08/2026
 - O que mudou: **bug real, não só visual.** `carregarTurmasSupabase()`
   disparava os 4 fetches (turmas, professores, empresas, alunos) sem

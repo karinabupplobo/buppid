@@ -3560,16 +3560,23 @@ const SB_H = { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-T
 // RLS por papel (26/08): a chave anônima não lê mais essas tabelas.
 // Troca o Authorization pelo token de quem está logado, assim que a
 // sessão (já salva pelo login) estiver disponível.
-if (window.supabase){
-  window.supabase.createClient(SB_URL, SB_KEY).auth.getSession().then(({ data }) => {
-    const sessao = data && data.session;
-    if (sessao) SB_H.Authorization = `Bearer ${sessao.access_token}`;
-  });
-}
+// SB_SESSAO_PRONTA é aguardada por carregarTurmasSupabase antes de disparar
+// qualquer fetch — sem isso, a troca do token rodava em paralelo com o
+// carregamento, e quem recarregava a página caindo direto numa aba
+// (Alunos/Usuários, pela persistência de aba) podia disparar os fetches
+// ainda com a chave anônima, vindo zero linhas (RLS bloqueando) sem erro
+// nenhum na tela — parecia planilha vazia, não estava.
+const SB_SESSAO_PRONTA = window.supabase
+  ? window.supabase.createClient(SB_URL, SB_KEY).auth.getSession().then(({ data }) => {
+      const sessao = data && data.session;
+      if (sessao) SB_H.Authorization = `Bearer ${sessao.access_token}`;
+    })
+  : Promise.resolve();
 
 let TURMAS_SB = null, PROFESSORES_SB = null, EMPRESAS_SB = null, ALUNOS_SB = null, turmasCarregadas = false;
 
 async function carregarTurmasSupabase(){
+  await SB_SESSAO_PRONTA;
   const [turmasRes, profRes, empRes, alunosRes] = await Promise.all([
     fetch(`${SB_URL}/rest/v1/turmas?select=*,empresas_cliente(id,nome,setor,contexto_ingles)&order=criado_em.desc`, { headers: SB_H }),
     fetch(`${SB_URL}/rest/v1/professores?select=id,nome&order=nome`, { headers: SB_H }),

@@ -1463,6 +1463,26 @@
   .cm-meta{ font-size: 10.5px; color: var(--cinza-texto); font-weight: 700; }
   .cm-item p{ margin: 3px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--texto); }
   .lead-meta{ font-size: 12.5px; color: var(--cinza-texto); }
+  /* --- Aba Usuários: edição na própria célula --- */
+  .cel-u{
+    width: 100%; min-width: 90px; border: 1px solid transparent; border-radius: 6px;
+    padding: 5px 7px; font-family: inherit; font-size: 12.5px; color: var(--texto);
+    background: transparent;
+  }
+  .cel-u:hover{ border-color: var(--borda); background: var(--branco); }
+  .cel-u:focus{ outline: none; border-color: var(--azul-intermediario); background: var(--branco); }
+  .sel-u{
+    border: 1px solid var(--borda); border-radius: 6px; padding: 4px 6px;
+    font-family: inherit; font-size: 12px; background: var(--branco); color: var(--texto);
+    max-width: 170px;
+  }
+  .td-acoes{ white-space: nowrap; text-align: right; }
+  .u-ok{ font-size: 12px; font-weight: 800; color: #2E7D46; margin-right: 4px; }
+  .btn-excluir-u{
+    background: none; border: none; color: var(--cinza-texto); font-size: 17px;
+    line-height: 1; cursor: pointer; padding: 2px 5px; border-radius: 5px;
+  }
+  .btn-excluir-u:hover{ background: #FBE9E7; color: var(--erro); }
   /* --- Aba Alunos --- */
   .tag-status{
     display:inline-block; font-size: 10.5px; font-weight: 800; text-transform: uppercase;
@@ -1628,6 +1648,7 @@
       </div>
       <button class="btn-limpar-col" id="limpar-u" style="display:none;">Limpar filtros</button>
       <span class="cont-linhas" id="cont-u"></span>
+      <button class="btn-csv" id="btn-novo-u">+ Usuário</button>
       <button class="btn-csv" id="btn-csv-u">Exportar CSV</button>
     </div>
     <div class="chips-filtro" id="chips-u"></div>
@@ -2578,13 +2599,25 @@ function renderMedias(dados){
 //  Quem tem login e com que papel. O papel é editável direto na planilha —
 //  é a operação mais comum aqui (aluno vira aluno-e-gestor, professor sai).
 // ══════════════════════════════════════════════════════════
+// Os usuários vêm do Supabase (tabela `usuarios`), não mais derivados do
+// dados-mock.js. USUARIOS_SB é a lista viva; enquanto não carrega, fica
+// vazia e a aba mostra "Carregando...".
+let USUARIOS_SB = [];
+let usuariosCarregados = false;
+
+function empresaNomeDe(id){
+  const e = (EMPRESAS_SB || []).find(x => x.id === id);
+  return e ? e.nome : "—";
+}
+function turmaNomeDe(id){
+  const t = (TURMAS_SB || []).find(x => x.id === id);
+  return t ? t.nome : "—";
+}
+
 const CAT_U = [
   { k:"papel",   rot:"Papel",   campo: u => (PAPEIS.find(p => p.k === u.papel) || {}).rot || u.papel },
-  { k:"empresa", rot:"Empresa", campo: u => u.empresa },
-  { k:"turma",   rot:"Turma",   campo: u => {
-      const t = TURMAS.find(x => x.id === u.turmaId);
-      return t ? `${t.empresa} · ${partesIdent(t).turma}` : "—";
-    } }
+  { k:"empresa", rot:"Empresa", campo: u => empresaNomeDe(u.empresa_cliente_id) },
+  { k:"turma",   rot:"Turma",   campo: u => turmaNomeDe(u.turma_id) }
 ];
 const CHIPS_U = [];
 
@@ -2596,40 +2629,102 @@ function passaU(u){
   });
 }
 
-function usuariosFiltrados(){ return USUARIOS.filter(passaU); }
+function usuariosFiltrados(){ return USUARIOS_SB.filter(passaU); }
 
 function vinculoDe(u){
-  const t = TURMAS.find(x => x.id === u.turmaId);
-  return t ? `${partesIdent(t).turma} · ${nivelL(t.nivel)}` : "—";
+  const t = (TURMAS_SB || []).find(x => x.id === u.turma_id);
+  return t ? `${t.nome} · ${t.nivel || ""}`.trim() : "—";
+}
+
+// Salva um campo do usuário direto no Supabase. Chamado a cada blur/change
+// de célula editável — não tem botão "salvar", a edição é na própria linha.
+async function salvarCampoUsuario(id, campo, valor, elFeedback){
+  const u = USUARIOS_SB.find(x => x.id === id);
+  if (!u) return;
+  const antes = u[campo];
+  const novo = valor === "" ? null : valor;
+  if (antes === novo) return;
+  u[campo] = novo;
+  if (elFeedback) elFeedback.textContent = "…";
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/usuarios?id=eq.${id}`, {
+      method: "PATCH", headers: SB_H, body: JSON.stringify({ [campo]: novo })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    if (elFeedback){ elFeedback.textContent = "✓"; setTimeout(() => elFeedback.textContent = "", 1600); }
+  } catch(err){
+    u[campo] = antes;   // desfaz na memória pra tela não mentir
+    alert("Erro ao salvar: " + err.message);
+    renderUsuarios();
+  }
+}
+
+async function excluirUsuario(id){
+  const u = USUARIOS_SB.find(x => x.id === id);
+  if (!u) return;
+  if (!confirm(`Excluir ${u.nome}? Isso remove o acesso dessa pessoa, mas não apaga o registro de aluno nem o histórico de aulas.`)) return;
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/usuarios?id=eq.${id}`, { method: "DELETE", headers: SB_H });
+    if (!res.ok) throw new Error(await res.text());
+    USUARIOS_SB = USUARIOS_SB.filter(x => x.id !== id);
+    renderUsuarios();
+  } catch(err){ alert("Erro ao excluir: " + err.message); }
 }
 
 function renderUsuarios(){
-  const dados = usuariosFiltrados();
   const box = document.getElementById("usuarios-wrap");
+  if (!usuariosCarregados){
+    box.innerHTML = `<div class="turmas-vazio">Carregando...</div>`;
+    return;
+  }
+  const dados = usuariosFiltrados();
 
   const selPapel = u => `
-    <select class="sel-papel papel-${u.papel}" data-u="${u.id}">
+    <select class="sel-papel papel-${u.papel}" data-u="${u.id}" data-campo="papel">
       ${PAPEIS.map(p => `<option value="${p.k}" ${p.k===u.papel?"selected":""}>${p.rot}</option>`).join("")}
     </select>`;
+
+  const selEmpresa = u => `
+    <select class="sel-u" data-u="${u.id}" data-campo="empresa_cliente_id">
+      <option value="">—</option>
+      ${(EMPRESAS_SB || []).map(e => `<option value="${e.id}" ${e.id===u.empresa_cliente_id?"selected":""}>${e.nome}</option>`).join("")}
+    </select>`;
+
+  // Só turmas da empresa do usuário — oferecer turma de outra empresa seria
+  // um vínculo inconsistente.
+  const selTurma = u => {
+    const opcoes = (TURMAS_SB || []).filter(t => !u.empresa_cliente_id || t.empresa_cliente_id === u.empresa_cliente_id);
+    return `
+      <select class="sel-u" data-u="${u.id}" data-campo="turma_id">
+        <option value="">—</option>
+        ${opcoes.map(t => `<option value="${t.id}" ${t.id===u.turma_id?"selected":""}>${t.nome}</option>`).join("")}
+      </select>`;
+  };
+
+  const cel = (u, campo, tipo) => `<input class="cel-u" type="${tipo||"text"}" data-u="${u.id}" data-campo="${campo}" value="${u[campo] ? String(u[campo]).replace(/"/g,"&quot;") : ""}" placeholder="—">`;
 
   box.innerHTML = `
     <div class="ra-wrap">
       <table class="ra-tabela tab-u">
         <thead><tr>
           <th>Nome completo</th><th>WhatsApp</th><th>E-mail</th>
-          <th>Empresa</th><th>Turma</th><th>Cargo</th><th>Papel</th>
+          <th>Empresa</th><th>Turma</th><th>Cargo</th><th>Papel</th><th></th>
         </tr></thead>
         <tbody>
-          ${dados.map(u => `
+          ${dados.length ? dados.map(u => `
             <tr>
-              <td class="u-nome">${u.nome}</td>
-              <td><a class="u-link" href="https://wa.me/55${u.wpp.replace(/\D/g,"")}" target="_blank" rel="noopener">${u.wpp}</a></td>
-              <td><a class="u-link" href="mailto:${u.email}">${u.email}</a></td>
-              <td>${u.empresa}</td>
-              <td>${vinculoDe(u)}</td>
-              <td class="rt-prof">${u.cargo}</td>
+              <td>${cel(u,"nome")}</td>
+              <td>${cel(u,"wpp")}</td>
+              <td>${cel(u,"email","email")}</td>
+              <td>${selEmpresa(u)}</td>
+              <td>${selTurma(u)}</td>
+              <td>${cel(u,"cargo")}</td>
               <td>${selPapel(u)}</td>
-            </tr>`).join("")}
+              <td class="td-acoes">
+                <span class="u-ok" data-ok="${u.id}"></span>
+                <button type="button" class="btn-excluir-u" data-excluir="${u.id}" title="Excluir usuário">&times;</button>
+              </td>
+            </tr>`).join("") : `<tr><td colspan="8" class="sem-turmas">Nenhum usuário com esses filtros.</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -2638,31 +2733,80 @@ function renderUsuarios(){
       ${dados.map(u => `
         <article class="card u-card">
           <div class="ident">
-            <span class="id-emp">${u.empresa}</span>
-            ${u.turmaId ? `<span class="id-turma">${vinculoDe(u)}</span>` : ""}
+            <span class="id-emp">${empresaNomeDe(u.empresa_cliente_id)}</span>
+            ${u.turma_id ? `<span class="id-turma">${turmaNomeDe(u.turma_id)}</span>` : ""}
           </div>
           <h2>${u.nome}</h2>
-          <p>${u.cargo}</p>
+          <p>${u.cargo || ""}</p>
           <div class="rt-linha"><span class="rt-rot">WhatsApp</span>
-            <a class="u-link" href="https://wa.me/55${u.wpp.replace(/\D/g,"")}" target="_blank" rel="noopener">${u.wpp}</a></div>
+            ${u.wpp ? `<a class="u-link" href="https://wa.me/55${String(u.wpp).replace(/\D/g,"")}" target="_blank" rel="noopener">${u.wpp}</a>` : "—"}</div>
           <div class="rt-linha"><span class="rt-rot">E-mail</span>
-            <a class="u-link" href="mailto:${u.email}">${u.email}</a></div>
+            ${u.email ? `<a class="u-link" href="mailto:${u.email}">${u.email}</a>` : "—"}</div>
           <div class="rt-linha"><span class="rt-rot">Papel</span>${selPapel(u)}</div>
         </article>`).join("")}
     </div>`;
 
-  box.querySelectorAll(".sel-papel").forEach(sel => {
-    sel.onchange = () => {
-      const u = USUARIOS.find(x => x.id === sel.dataset.u);
-      if (u){ u.papel = sel.value; renderUsuarios(); }
+  box.querySelectorAll(".cel-u").forEach(inp => {
+    inp.onblur = () => {
+      const ok = document.querySelector(`[data-ok="${inp.dataset.u}"]`);
+      salvarCampoUsuario(inp.dataset.u, inp.dataset.campo, inp.value.trim(), ok);
     };
+    inp.onkeydown = e => { if (e.key === "Enter") inp.blur(); };
+  });
+  box.querySelectorAll(".sel-u, .sel-papel").forEach(sel => {
+    sel.onchange = async () => {
+      const ok = document.querySelector(`[data-ok="${sel.dataset.u}"]`);
+      await salvarCampoUsuario(sel.dataset.u, sel.dataset.campo, sel.value, ok);
+      // Trocar de empresa muda quais turmas são válidas; trocar papel muda a cor.
+      if (sel.dataset.campo === "empresa_cliente_id" || sel.dataset.campo === "papel") renderUsuarios();
+    };
+  });
+  box.querySelectorAll("[data-excluir]").forEach(b => {
+    b.onclick = () => excluirUsuario(b.dataset.excluir);
   });
 
   document.getElementById("cont-u").textContent =
-    CHIPS_U.length ? `${dados.length} de ${USUARIOS.length} usuários`
-                   : `${USUARIOS.length} usuário${USUARIOS.length!==1?"s":""}`;
+    CHIPS_U.length ? `${dados.length} de ${USUARIOS_SB.length} usuários`
+                   : `${USUARIOS_SB.length} usuário${USUARIOS_SB.length!==1?"s":""}`;
   document.getElementById("titulo-u").textContent = `Usuários · ${dados.length}`;
   document.getElementById("limpar-u").style.display = CHIPS_U.length ? "inline-flex" : "none";
+}
+
+async function novoUsuario(){
+  const nome = prompt("Nome do novo usuário:");
+  if (!nome || !nome.trim()) return;
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/usuarios`, {
+      method: "POST", headers: { ...SB_H, "Prefer": "return=representation" },
+      body: JSON.stringify({ nome: nome.trim(), papel: "aluno" })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const criado = (await res.json())[0];
+    USUARIOS_SB.push(criado);
+    renderUsuarios();
+  } catch(err){ alert("Erro ao criar usuário: " + err.message); }
+}
+
+// A aba Usuários precisa das empresas e turmas pra montar os seletores de
+// vínculo — reaproveita o mesmo carregamento das abas Empresas e Alunos.
+async function abrirAbaUsuarios(){
+  if (usuariosCarregados){ renderUsuarios(); return; }
+  document.getElementById("usuarios-wrap").innerHTML = `<div class="turmas-vazio">Carregando...</div>`;
+  try{
+    if (!turmasCarregadas){
+      await carregarTurmasSupabase();
+      turmasCarregadas = true;
+      opcoesEmpTurmas();
+    }
+    const res = await fetch(`${SB_URL}/rest/v1/usuarios?select=*&order=nome`, { headers: SB_H });
+    if (!res.ok) throw new Error(await res.text());
+    USUARIOS_SB = await res.json();
+    usuariosCarregados = true;
+    renderChipsU();
+    renderUsuarios();
+  } catch(err){
+    document.getElementById("usuarios-wrap").innerHTML = `<div class="turmas-vazio">Erro ao carregar usuários: ${err.message}</div>`;
+  }
 }
 
 function renderChipsU(){
@@ -2683,7 +2827,7 @@ function pintarPainelU(){
   if (!catU){
     p.innerHTML = `<div class="af-tit">Filtrar por</div>` +
       CAT_U.map(c => {
-        const total = new Set(USUARIOS.map(u => c.campo(u))).size;
+        const total = new Set(USUARIOS_SB.map(u => c.campo(u))).size;
         const usados = CHIPS_U.filter(ch => ch.k === c.k).length;
         return `<button class="af-cat" data-k="${c.k}">
           <span class="af-rot">${c.rot}</span>
@@ -2697,8 +2841,8 @@ function pintarPainelU(){
   }
   const c = CAT_U.find(x => x.k === catU);
   const marcados = new Set(CHIPS_U.filter(ch => ch.k === c.k).map(ch => ch.valor));
-  const vals = [...new Set(USUARIOS.map(u => c.campo(u)))].sort((a,b) => a.localeCompare(b,"pt-BR"))
-    .map(v => ({ v, n: USUARIOS.filter(u => c.campo(u) === v).length }));
+  const vals = [...new Set(USUARIOS_SB.map(u => c.campo(u)))].sort((a,b) => a.localeCompare(b,"pt-BR"))
+    .map(v => ({ v, n: USUARIOS_SB.filter(u => c.campo(u) === v).length }));
 
   p.innerHTML = `
     <div class="af-topo"><button class="af-voltar" data-voltar>&lsaquo;</button>
@@ -2740,7 +2884,7 @@ document.getElementById("btn-csv-u").onclick = () => {
   const esc = v => `"${String(v==null?"":v).replace(/"/g,'""')}"`;
   const cols = ["Nome completo","WhatsApp","E-mail","Empresa","Turma","Cargo","Papel"];
   const linhas = [cols.map(esc).join(";")].concat(usuariosFiltrados().map(u =>
-    [u.nome, u.wpp, u.email, u.empresa, vinculoDe(u), u.cargo,
+    [u.nome, u.wpp, u.email, empresaNomeDe(u.empresa_cliente_id), vinculoDe(u), u.cargo,
      (PAPEIS.find(p => p.k === u.papel) || {}).rot || u.papel].map(esc).join(";")));
   const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type:"text/csv;charset=utf-8;" });
   const a = document.createElement("a");
@@ -2749,6 +2893,8 @@ document.getElementById("btn-csv-u").onclick = () => {
   a.click();
   URL.revokeObjectURL(a.href);
 };
+
+document.getElementById("btn-novo-u").onclick = novoUsuario;
 
 // ══════════════════════════════════════════════════════════
 //  AVISO AO RH
@@ -3924,6 +4070,7 @@ document.querySelectorAll(".tab").forEach(t => {
     if (fr && !fr.src) fr.src = fr.dataset.src;
     if (t.dataset.pane === "turmas") abrirAbaTurmas();
     if (t.dataset.pane === "alunos") abrirAbaAlunos();
+    if (t.dataset.pane === "usuarios") abrirAbaUsuarios();
 
     window.scrollTo(0, 0);
   };
@@ -3931,8 +4078,9 @@ document.querySelectorAll(".tab").forEach(t => {
 
 renderChips();
 renderTabela();
+// Usuários carrega do Supabase ao abrir a aba (abrirAbaUsuarios), não aqui —
+// no boot ainda não há dado nenhum pra renderizar.
 renderChipsU();
-renderUsuarios();
 renderDocs();
 opcoesTurma();
 renderAlertas();

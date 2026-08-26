@@ -1056,6 +1056,9 @@
 
 
 </style>
+<script>window.PAPEIS_ACEITOS = ["interno"];</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth-guard.js?v=2"></script>
 </head>
 <body>
 
@@ -4261,6 +4264,37 @@ document.getElementById("settings-add-user-btn").addEventListener("click", () =>
 // every render function this can call already has everything it needs.
 initialCloudLoadPromise = loadFromCloud();
 
+// Quem entrou pelo login da plataforma (index.html). Embutido nas abas da
+// interna.html, o registro está na página de fora; aberto direto, no próprio
+// window — o auth-guard.js preenche os dois.
+function usuarioDaPlataforma(){
+  try{
+    const u = window.USUARIO_LOGADO
+      || (window.parent !== window && window.parent.USUARIO_LOGADO);
+    if (u && u.nome) return { username: u.nome, role: "adm" };
+  } catch(e){ /* acesso ao parent bloqueado — segue com o fallback */ }
+  return null;
+}
+
+// O guarda é assíncrono: se a página montou antes dele resolver, o nome
+// entrou genérico. Quando o usuário chega, corrige — o nome é lido sob
+// demanda (ao comentar numa task, por exemplo), então basta trocar aqui.
+window.addEventListener("usuario-pronto", e => {
+  if (e.detail && e.detail.nome){
+    currentUser = { username: e.detail.nome, name: e.detail.nome, role: "adm" };
+  }
+});
+// Embutido: o evento dispara no window da página de fora, não neste.
+try{
+  if (window.parent !== window){
+    window.parent.addEventListener("usuario-pronto", e => {
+      if (e.detail && e.detail.nome){
+        currentUser = { username: e.detail.nome, name: e.detail.nome, role: "adm" };
+      }
+    });
+  }
+} catch(e){ /* acesso ao parent bloqueado — fica com o fallback */ }
+
 (function restoreSessionOnLoad() {
   // O gate nasce escondido no HTML e o app nasce visível: com a senha
   // desligada, mostrar a porta e escondê-la logo depois fazia a tela de login
@@ -4273,9 +4307,12 @@ initialCloudLoadPromise = loadFromCloud();
     return;
   }
   if (SEM_SENHA) {
-    // Entra direto. Se houver sessão salva, aproveita para manter o nome de
-    // quem estava usando; senão, entra como usuário interno genérico.
-    currentUser = tryRestoreSession() || { username: "interno", role: "adm" };
+    // Entra direto. A senha própria daqui está desligada — quem controla o
+    // acesso agora é o login da plataforma (index.html + auth-guard.js).
+    // O nome vem de lá: embutido, da página de fora; solto, do próprio
+    // guarda desta página. Se ainda não chegou (o guarda é assíncrono),
+    // entra com o que tiver e o evento abaixo corrige quando resolver.
+    currentUser = usuarioDaPlataforma() || tryRestoreSession() || { username: "interno", role: "adm" };
     hideLoginGate();
     afterLogin();
     return;

@@ -36,6 +36,12 @@
 
   const aceitos = window.PAPEIS_ACEITOS || [];
 
+  // Embutido em iframe (crm.html dentro das abas Tasks/Leads/Mercado da
+  // interna.html): quem guarda a porta é a página de fora, que já rodou
+  // este mesmo guarda. Rodar de novo aqui dispararia um redirect dentro
+  // do iframe, quebrando a aba.
+  if (new URLSearchParams(location.search).get("embed") === "1") return;
+
   // Esconde o conteúdo enquanto verifica, pra não piscar a dash pra quem
   // não pode vê-la.
   const estilo = document.createElement("style");

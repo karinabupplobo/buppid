@@ -2,6 +2,39 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1726-fechar-paleta-marrom-azul — 26/08/2026
+- O que mudou: seção 10 de `docs/icp-comprador.md` fechada — a paleta
+  Comb 2 (marrom `#54402F` + azul-bebê `#A8D5F2`) deixa de estar "em
+  teste" e vira a decisão oficial. Registrado que já está aplicada em
+  toda a produção e que os dois riscos conhecidos (marrom e azul-bebê
+  sem parentesco de matiz; azul-bebê com território infantil/saúde)
+  foram avaliados e aceitos conscientemente. Teste em peça comercial
+  impressa (proposta em PDF, slide) segue pendente.
+- Arquivos: docs/icp-comprador.md
+- Motivo: a Karina confirmou a decisão nesta sessão.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1725-paleta-marrom-azul-templates
+
+## v-20260826-1725-paleta-marrom-azul-templates — 26/08/2026
+- O que mudou: `templateaula.html` e `templatetrilha.html` migrados da
+  paleta petróleo `#0A1214` + limão `#D9E28C` para marrom `#54402F` +
+  azul-bebê `#A8D5F2` (Comb 2) — mesma paleta já em uso no `index.html`
+  e `plataforma.html`. Além das 3 variáveis CSS (`--teal-escuro`,
+  `--amarelo-neon`, `--azul-intermediario`), foram trocadas todas as
+  ocorrências hardcoded que a variável sozinha não alcançava: hex fixo
+  e equivalentes `rgba()` em decimal na barra de anotação, badges,
+  marcação/destaque de texto e botões seletores de cor (`data-c`).
+  Observação: os 2 botões de cor de anotação (antes petróleo-escuro e
+  teal-médio) agora usam marrom-escuro e marrom-claro — ficam mais
+  parecidos entre si que antes (dois tons de marrom em vez de
+  preto+teal), redução de distinguibilidade aceita a pedido da Karina.
+- Arquivos: templateaula.html, templatetrilha.html
+- Motivo: a Karina confirmou a paleta marrom + azul-bebê como oficial
+  nesta sessão; faltava propagar pros dois templates de conteúdo
+  pedagógico, que ainda estavam na paleta petróleo/limão anterior.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2320-aula-9-telas
+
 ## v-20260826-2320-aula-9-telas — 26/08/2026
 - O que mudou: `templateaula.html` reestruturado de 8 pra 9 telas —
   decisão da Karina, testada primeiro num preview da Aula 1 (Tirolez —

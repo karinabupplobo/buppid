@@ -2,6 +2,16 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1636-espaco-titulo-alunos — 26/08/2026
+- O que mudou: título "Alunos" na `interna.html` ganhou espaçamento próprio
+  (`margin-top: 20px; margin-bottom: 14px`), separado da classe geral
+  `.rt-titulo` — que continua igual em outros lugares (ex: título
+  "Empresas"), a pedido da Karina de mexer só nessa aba por enquanto.
+- Arquivos: interna.html
+- Motivo: título colado na barra de filtros, reportado pela Karina com print.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2000-login-magic-link
+
 ## v-20260826-2000-login-magic-link — 26/08/2026
 - O que mudou: `login.html` novo — login sem senha, por link enviado no
   e-mail (magic link do Supabase Auth). Depois de autenticar, redireciona

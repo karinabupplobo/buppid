@@ -2,6 +2,41 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1902-persistir-aba — 26/08/2026
+- O que mudou: a última aba usada agora sobrevive ao recarregar a página,
+  nas 4 telas que têm esse sistema de abas — `interna.html`, `aluno.html`,
+  `manager.html`, `plataforma.html`. Cada uma extraiu a troca de aba pra
+  uma função própria (`irParaAba`/`irPara`) que, além de trocar a aba
+  visível, salva o nome no `localStorage` (chave própria por tela, pra não
+  colidir). No fim da inicialização, se houver uma aba salva diferente da
+  padrão, a tela abre direto nela. Antes, recarregar sempre voltava pra
+  aba padrão (Dados/Início/Hoje), mesmo quem estava em Alunos ou Usuários.
+- Arquivos: interna.html, aluno.html, manager.html, plataforma.html
+- Motivo: pedido da Karina em 26/08 — "se eu recarrego a página, tem que
+  voltar onde eu estava".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1902-edicao-alunos-usuarios
+
+## v-20260826-1902-edicao-alunos-usuarios — 26/08/2026
+- O que mudou: a ficha do aluno (aba Alunos) ganhou campos editáveis —
+  nome, cargo, e-mail, área de atuação — no mesmo padrão inline já usado
+  em Usuários (`salvarCampoAluno`, espelhando `salvarCampoUsuario`). Nível
+  ficou de fora de propósito: vem do Level Test, editar manual merece
+  decisão à parte.
+  Sincronia: `alunos` e `usuarios` são tabelas separadas que se sobrepõem
+  em nome/cargo/email — quando um usuário tem `aluno_id` (é aluno e tem
+  login), editar um desses campos em qualquer uma das duas telas agora
+  grava nas duas tabelas (`sincronizarCampoLigado`, direto por filtro no
+  Supabase — não depende da outra aba já ter carregado dados em memória).
+  Sem isso, a mesma pessoa podia ficar com nome/cargo diferentes conforme
+  a tela.
+- Arquivos: interna.html
+- Motivo: pedido da Karina em 26/08 — "as infos precisam ser editáveis
+  pro internal... lembrando que o aluno X e o usuário X são a mesma
+  conta".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2250-aulas-assigned
+
 ## v-20260826-2250-aulas-assigned — 26/08/2026
 - O que mudou: criada a tabela `aulas_assigned` no Supabase — já estava
   planejada em `docs/plataforma.md` ("uma aula do Gerador de Aulas

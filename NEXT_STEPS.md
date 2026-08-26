@@ -19,16 +19,29 @@
       Caminho provável: Edge Function do Supabase + serviço de envio
       (Resend, Postmark ou similar). Depende de a plataforma sair do mock.
 
-- [ ] **SEGURANÇA — voltar a senha antes dos dados reais.** A dash interna
-      (`interna.html`) está pública no GitHub Pages sem login, e desde 21/08 o
-      `index.html` em modo `?embed=1` também entra sem senha. Os dados da
-      interna são fictícios, mas a **base de leads do `index.html` tem 76
-      empresas reais com contatos verificados** — hoje qualquer pessoa com o
-      link `index.html?embed=1&view=leads` abre essa base. Precisa de porta de
-      entrada antes de a plataforma sair do ar de teste.
+- [ ] **SEGURANÇA — pendências que sobraram do login/RLS de 26/08.** Login
+      por senha e RLS por papel já estão no ar (ver CHANGELOG de 26/08). O
+      que ainda falta:
+      · `nova-turma.html` e `nivel-test.html` são forms públicos de
+        propósito (preenchidos por quem ainda não tem conta) — conferir se
+        as políticas RLS cobrem o que eles gravam sem sessão.
+      · conferir se sobrou algum outro arquivo/rota lendo com a chave
+        anônima sem trocar pelo token da sessão (mesmo bug já achado e
+        corrigido em `interna.html` e `crm.html` em 26/08 — pode haver mais).
 
 ## Próximo
 
+- [ ] DECIDIR o caminho pras anotações "não vistas" no card de Dados
+      (pedido da Karina em 26/08, ainda sem resposta): rápido via
+      localStorage (só nesse computador) ou migrar o sistema de anotação
+      por-aula (`NOTAS_ALUNO`, hoje mock em dados-mock.js) pro Supabase
+      antes, com registro de leitura por usuário. O card hoje só mostra
+      o total, não o não-visto.
+- [ ] NÍVEL DO ALUNO editável manualmente por interno — ficou de fora da
+      edição de Alunos (v-20260826-1902-edicao-alunos-usuarios) de
+      propósito, porque vem do Level Test e mexer nisso à mão envolve três
+      campos ligados (`nivel_cefr`, `nivel_banda`, `nivel_sub`) — decidir
+      se vale um campo livre ou um seletor guiado antes de abrir.
 - [ ] TESTAR NO NAVEGADOR o fluxo completo: abrir a aba Empresas e conferir
       se Sertrading, Tirolez e Nelogica aparecem com as turmas certas e o
       professor já atribuído (dado migrado nesta sessão). Testar também

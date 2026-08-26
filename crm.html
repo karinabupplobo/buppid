@@ -1628,6 +1628,16 @@ try {
 }
 usersList = usersList.map(ensureUserDefaults);
 
+// O login antigo salvava a senha em texto puro aqui no navegador. Ela saiu
+// do código e do banco em 26/08, mas continua no localStorage de quem já
+// usou a dash — este bloco apaga na primeira vez que a página abrir. Sem
+// isso a senha ficaria legível pra sempre em cada máquina.
+(function limparSenhasDoNavegador(){
+  if (!usersList.some(u => "password" in u)) return;
+  usersList = usersList.map(u => { const { password, mustChangePassword, ...resto } = u; return resto; });
+  try { localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersList)); } catch (e) {}
+})();
+
 let currentUser = null;
 function isAdm() { return !!currentUser && currentUser.role === "adm"; }
 

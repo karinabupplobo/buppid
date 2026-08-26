@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-0110-aba-alunos — 26/08/2026
+- O que mudou: a fila de alunos sem turma saiu do card da empresa (aba
+  Empresas) e virou aba própria em `interna.html`, em planilha, listando
+  todos os alunos e não só os pendentes. Colunas: Status, Nome, Cargo,
+  Empresa, Nível, Turma. Tag por linha ("Sem turma" âmbar / "Alocado"
+  verde), com a linha sem turma destacada. Ordenação fixa: sem turma
+  sempre em cima, depois alfabética. Filtros por empresa e por status.
+  Alocação direto na linha — select com as turmas daquela empresa, grava
+  em `turma_alunos` na hora; empresa sem turma deixa o select
+  desabilitado em vez de oferecer lista vazia. Clicar no nome abre a
+  mesma ficha do aluno. O refresh após alocar pela ficha virou sensível
+  à aba ativa (antes chamava `renderTurmas()` fixo, o que deixaria a
+  planilha com dado velho). CSS e listener do bucket antigo removidos.
+- Arquivos: interna.html
+- Motivo: pedido da Karina em 26/08 — a fila dentro do card não dava
+  visão do conjunto nem permitia filtrar.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-0050-seletor-aluno
+
 ## v-20260826-0050-seletor-aluno — 26/08/2026
 - O que mudou: a seção Alunos do `nova-turma.html` foi refeita. Antes era
   um card só com quatro campos (nome, cargo, área de atuação,

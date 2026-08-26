@@ -138,6 +138,11 @@
     color: var(--teal-escuro);
     box-shadow: none;
   }
+  .tab-grupo{
+    flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: rgba(255,255,255,.4);
+    padding: 12px 14px 2px; white-space: nowrap;
+  }
 
   /* ===== Conteúdo ===== */
   main{ padding: 18px 18px 60px; }
@@ -740,6 +745,8 @@
       width: 100%; text-align: left; padding: 12px 14px;
       letter-spacing: .04em; font-size: 12.5px;
     }
+    .tab-grupo{ padding: 10px 14px 2px 6px; }
+    .tab-sub{ width: calc(100% - 14px); margin-left: 14px; }
 
     main{
       grid-column: 2;
@@ -1583,13 +1590,17 @@
   <div class="tabs">
     <button class="tab active" data-pane="planilha">Performance</button>
     <button class="tab" data-pane="alertas">Alerts</button>
-    <button class="tab" data-pane="turmas">Companies</button>
-    <button class="tab" data-pane="alunos">Students</button>
-    <button class="tab" data-pane="usuarios">Users</button>
     <button class="tab" data-pane="tasks">Tasks</button>
-    <button class="tab" data-pane="leads">Leads</button>
-    <button class="tab" data-pane="docs">Docs</button>
-    <button class="tab" data-pane="mercado">Market</button>
+    <button class="tab" data-pane="usuarios">Users</button>
+
+    <div class="tab-grupo">Clients</div>
+    <button class="tab tab-sub" data-pane="turmas">Companies</button>
+    <button class="tab tab-sub" data-pane="alunos">Students</button>
+    <button class="tab tab-sub" data-pane="docs">Docs</button>
+
+    <div class="tab-grupo">Sales</div>
+    <button class="tab tab-sub" data-pane="leads">Leads</button>
+    <button class="tab tab-sub" data-pane="mercado">Market</button>
   </div>
 </aside>
 

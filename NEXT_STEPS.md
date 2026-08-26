@@ -4,8 +4,8 @@
       de fonte fechada: Canva (conector destravado em 26/08), estilo
       aprovado — foto editorial, sem texto/logo/CTA, tom marrom `#54402F`
       + azul-bebê `#A8D5F2`, espaço negativo pra corte em quadrado.
-      Progresso: **1 de 7 imagens pronta e commitada** (`manager`,
-      v-20260826-2102). Faltam: supervisor (supervisor(a)), colleague
+      Progresso: **2 de 7 imagens prontas e commitadas** (`manager`
+      v-20260826-2102, `supervisor` v-20260826-2109). Faltam: colleague
       (colega), team (equipe/time), department (departamento — foto de
       ambiente/corredor, não retrato), cena "What would you do?" (dois
       colegas se cumprimentando, sem reproduzir personagens nomeados) e

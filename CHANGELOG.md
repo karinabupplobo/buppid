@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2109-foto-supervisor — 26/08/2026
+- O que mudou: segunda foto real da Aula 1 do Módulo 1 "At The Office" (turma
+  Tirolez — Liderança, A1): `assets/aula1-tirolez/supervisor.jpg`, foto editorial
+  do termo "supervisor" (800x1000, JPG). Design gerado no Canva
+  (`design_id: DAHTbagZ06Q`, "Confident Office Supervisor in Natural Light"),
+  candidata 2 do job `533a9f36-9075-4d0e-9cbe-2941d30250d4`, escolhida pela
+  Karina. Observação: a paleta desta imagem saiu mais azul-marinho/cinza do que
+  marrom — mais fria que a de "manager" — mas foi aprovada pela Karina assim
+  mesmo, sem pedido de regeração.
+- Arquivos: assets/aula1-tirolez/supervisor.jpg (novo)
+- Motivo: continuar a substituição das ilustrações SVG da Aula 1 por fotos reais
+  — "supervisor" é o segundo dos 7 termos/cenas.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2102-foto-manager
+
 ## v-20260826-2102-foto-manager — 26/08/2026
 - O que mudou: adicionada a primeira foto real (via Canva) da Aula 1 do Módulo 1
   "At The Office" (turma Tirolez — Liderança, A1): `assets/aula1-tirolez/manager.jpg`,

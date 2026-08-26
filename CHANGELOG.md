@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1827-fix-rls-crm — 26/08/2026
+- O que mudou: `crm.html` tinha o mesmo problema já corrigido no
+  `interna.html` (v-20260826-1813-fix-rls-interna) — confirmado por SQL
+  direto no Supabase antes de mexer: as políticas de `bupp_dashboard_data`
+  ("dashboard: só Bupp", `sou_bupp()`) e `empresas_cliente` (leitura exige
+  `sou_bupp() OR id = minha_empresa()`) não aceitam mais a chave anônima.
+  Isso afeta salvar/carregar Tasks, Leads e Usuários, e o fluxo de lead
+  virar empresa (`empresas_cliente` checado e criado ao converter lead).
+  Mesmo conserto: cria um cliente Supabase, pega a sessão que o login já
+  salvou, troca `SUPABASE_HEADERS.Authorization` pelo token da sessão.
+  `crm.html` roda embutido no iframe da `interna.html` (mesma origem,
+  mesmo localStorage), então a sessão salva pelo login alcança ali também.
+- Arquivos: crm.html
+- Motivo: pedido da Karina em 26/08 de conferir se o mesmo problema do
+  interna.html também afetava o crm.html — afetava.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2210-gerador-protocolo-v2
+
 ## v-20260826-2210-gerador-protocolo-v2 — 26/08/2026
 - O que mudou: `pedagogico/GERADOR.md` reescrito. Principais mudanças em
   relação à versão de 19/08:

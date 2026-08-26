@@ -2,6 +2,26 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2044-fix-corrida-token — 26/08/2026
+- O que mudou: **bug real, não só visual.** `carregarTurmasSupabase()`
+  disparava os 4 fetches (turmas, professores, empresas, alunos) sem
+  esperar a troca do `SB_H.Authorization` da chave anônima pro token da
+  sessão (fix de RLS de v-20260826-1813) — os dois rodavam em paralelo. A
+  troca geralmente ganhava por ser rápida, mas com a persistência de aba
+  (v-20260826-1902) a página agora pode abrir direto em Alunos ou
+  Usuários no recarregamento, o que dispara o carregamento assim que o
+  script termina de rodar — cedo o suficiente pra às vezes vencer a
+  corrida. Quando isso acontecia, o fetch saía com a chave anônima, o RLS
+  devolvia zero linhas (não é erro, é filtro funcionando), e a tela
+  parecia vazia sem nenhuma mensagem. Corrigido com uma promise
+  (`SB_SESSAO_PRONTA`) que `carregarTurmasSupabase` aguarda antes de
+  disparar qualquer fetch — a troca de token sempre termina primeiro
+  agora, não é mais uma corrida.
+- Arquivos: interna.html
+- Motivo: reportado pela Karina em 26/08 — aba Students mostrando vazia.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2038-usuario-fim-planilha
+
 ## v-20260826-2038-usuario-fim-planilha — 26/08/2026
 - O que mudou: botão "+ Usuário" saiu da barra de filtro (ao lado de
   "+ Filtro") e foi pro fim da página, logo abaixo da planilha de

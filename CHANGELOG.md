@@ -2,6 +2,38 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1900-usuarios-supabase — 26/08/2026
+- O que mudou: a aba Usuários da `interna.html` era 100% derivada do
+  `dados-mock.js` — a lista nascia dos alunos e professores das turmas
+  mock, nada era persistido (trocar o papel sumia ao recarregar) e
+  ninguém podia ser criado, editado ou excluído. Agora lê da tabela
+  `usuarios` do Supabase: nome, WhatsApp, e-mail e cargo editáveis na
+  própria célula (salva no blur/Enter, com ✓; erro desfaz na memória);
+  empresa, turma e papel em select salvando na hora, com o select de
+  turma oferecendo só turmas da empresa daquele usuário; "+ Usuário"
+  cria e o × exclui, com confirmação avisando que remove o acesso mas
+  não apaga o aluno nem o histórico. Carrega ao abrir a aba,
+  reaproveitando `carregarTurmasSupabase()`. Filtros e CSV migrados pros
+  campos novos.
+- Arquivos: interna.html, schema do Supabase (ver abaixo).
+- Schema (projeto `gajvcgrfljyxgahzfjfp`): tabela `usuarios` nova —
+  nome, email (único, case-insensitive), wpp, cargo, papel,
+  empresa_cliente_id, turma_id, aluno_id, professor_id, auth_user_id,
+  criado_em. `aluno_id`/`professor_id` ligam ao registro correspondente
+  quando aplicável; `auth_user_id` fica reservado pro login via Supabase
+  Auth (próximo passo), pra não precisar mexer na tabela de novo. O
+  `papel` usa o vocabulário que o código já usava
+  (aluno/gestor/aluno_gestor/teacher/interno) em vez de criar um
+  paralelo. Populada a partir dos alunos e professores reais: 13
+  usuários, com a mesma regra de `aluno_gestor` do mock (cargo de gestão
+  em área de pessoas), mais a Karina como `interno`.
+- Motivo: pedido da Karina em 26/08 — precisava editar, adicionar e
+  excluir usuários, e nada disso existia.
+- Reverter para o estado ANTERIOR a esta mudança (arquivos; a tabela
+  `usuarios` precisa ser removida à mão — `DROP TABLE usuarios;` — se
+  for reverter de verdade):
+  git checkout v-20260826-1830-largura-tela-grande
+
 ## v-20260826-1830-largura-tela-grande — 26/08/2026
 - O que mudou: dois sintomas com a mesma causa. O `main` da `interna.html`
   estava travado em `max-width: 1180px`, então a dash não crescia em tela

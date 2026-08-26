@@ -51,6 +51,25 @@
       Karina).
 - [ ] RLS das novas tabelas está aberto pra `anon` (mesma lógica provisória
       do resto da dash). Travar por role quando o Supabase Auth entrar.
+- [ ] **PRÓXIMO PASSO — LOGIN DE VERDADE (pedido da Karina, 26/08).**
+      Configurar login/senha real via Supabase Auth, unindo ao que já
+      existe: a tabela `usuarios` já tem a coluna `auth_user_id`
+      reservada pra isso, então é ligar cada usuário ao registro do Auth
+      sem recadastrar ninguém. O papel (`aluno`/`gestor`/`aluno_gestor`/
+      `teacher`/`interno`) já está gravado por usuário e é o que decide
+      qual dash a pessoa vê. Preservar os 13 usuários já migrados. Vale
+      pra todas as dashes EXCETO os forms públicos (`nova-turma.html`,
+      `nivel-test.html`), que continuam sem login.
+- [ ] **INVENTÁRIO — o que ainda é mock (dados-mock.js) e falta migrar.**
+      Já estão no Supabase: Empresas, Turmas, Alunos, Usuários, Leads,
+      Tasks. Ainda em mock: (a) abas Dados, Alertas e Docs da
+      `interna.html`, que leem `TURMAS`/`ALUNOS`/`PRESENCA`/`DOCS` do
+      mock; (b) `aluno.html`, `manager.html` e `plataforma.html`
+      inteiras. O bloqueio real dessas é que faltam 5 tabelas do schema
+      de 10: `presenca`, `progresso_aluno`, `aulas_assigned`,
+      `trilha_licoes`, `lousas_aula` — sem elas não há de onde ler
+      presença, trilha nem aula dada. Criar conforme cada tela for
+      migrada (regra permanente da Karina), não todas de uma vez.
 - [ ] TESTAR NO NAVEGADOR: sidebar do aluno sem overflow, bolinha ✓/✕
       centralizada nas 4 dashes, aba Hoje do Bruno (deve aparecer vazia
       numa terça-feira real, já que o mock só tem aula marcada pra Qui).

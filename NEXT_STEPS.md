@@ -2,21 +2,32 @@
 
 - [ ] **FOTO REAL EM VEZ DE SVG na Aula 1 (Tirolez — Liderança).** Decisão
       de fonte fechada: Canva (conector destravado em 26/08), estilo
-      aprovado — foto editorial, sem texto/logo/CTA, tom marrom `#54402F`
-      + azul-bebê `#A8D5F2`, espaço negativo pra corte em quadrado.
-      Progresso: **2 de 7 imagens prontas e commitadas** (`manager`
-      v-20260826-2102, `supervisor` v-20260826-2109). Faltam: colleague
-      (colega), team (equipe/time), department (departamento — foto de
-      ambiente/corredor, não retrato), cena "What would you do?" (dois
-      colegas se cumprimentando, sem reproduzir personagens nomeados) e
-      cena "Situational" (colega recebendo alguém novo perto da entrada
-      do departamento, mesmo cuidado). Gerar uma de cada vez, mostrar as
-      4 candidatas e esperar a Karina escolher antes de converter/
-      exportar. "be responsible for" continua sem foto (expressão
-      abstrata, decisão já tomada). Depois de ter as 7, aplicar no
-      `templateaula.html`/aula1-tirolez trocando `vocab.itens[].imagem` e
-      as `cena` de SVG pra `<img>` (igual feito na aula Safety Rules em
-      19/08 — conferir regra CSS `.vocab-img img`).
+      aprovado — foto editorial candid (sem contraluz dramático, "cara de
+      IA" foi recusado em duas rodadas), tom marrom `#54402F` + azul-bebê
+      `#A8D5F2`, espaço negativo pra corte em quadrado. Progresso: **2 de 7
+      fotos de vocab prontas e commitadas** (`manager` v-20260826-2102,
+      `supervisor` v-20260826-2109) **+ a foto de abertura da aula já
+      aplicada** (v-20260826-2130, ver item novo abaixo — não conta nas 7,
+      é uma peça separada). Faltam do vocab: colleague (colega), team
+      (equipe/time), department (departamento — foto de ambiente/corredor,
+      não retrato), cena "What would you do?" (dois colegas se
+      cumprimentando, sem reproduzir personagens nomeados) e cena
+      "Situational" (colega recebendo alguém novo perto da entrada do
+      departamento, mesmo cuidado). Gerar uma de cada vez, mostrar as 4
+      candidatas e esperar a Karina escolher antes de converter/exportar.
+      "be responsible for" continua sem foto (expressão abstrata, decisão
+      já tomada). Depois de ter as 7, aplicar no `templateaula.html`/
+      aula1-tirolez trocando `vocab.itens[].imagem` e as `cena` de SVG pra
+      `<img>` (igual feito na aula Safety Rules em 19/08 — conferir regra
+      CSS `.vocab-img img`).
+- [ ] **Propagar o padrão de abertura em duotone (v-20260826-2130) pras
+      próximas aulas/turmas.** Hoje só a Aula 1 Tirolez tem
+      `aula.abertura.foto`/`kicker` preenchidos (via mock de teste, ainda
+      não gravado em `aulas_assigned`). O suporte no `templateaula.html` já
+      é genérico (campo opcional, sem foto cai no visual antigo), falta
+      decidir se toda aula nova do Módulo 1 em diante vai ganhar foto de
+      abertura própria (custo: 1 geração no Canva por aula) ou só aulas
+      selecionadas.
 - [ ] **Gravar a Aula 1 de verdade em `aulas_assigned`.** A linha
       (turma Tirolez — Liderança, `numero_aula=1`) tem só o esqueleto do
       mapa (`status='mapa'`) — o conteúdo completo foi aprovado em chat no

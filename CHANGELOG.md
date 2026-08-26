@@ -2,6 +2,39 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2130-abertura-duotone — 26/08/2026
+- O que mudou: a tela de abertura do `templateaula.html` (`telaMarcador`, usada
+  no Step 1 de qualquer aula) ganhou suporte a foto de fundo em duotone real +
+  título centralizado. Detalhes:
+  - Foto nova: `assets/aula1-tirolez/abertura-office.jpg` (1600x900, Canva,
+    3 colegas andando/conversando num corredor, luz natural — estilo candid,
+    sem contraluz dramática, depois de duas rodadas de ajuste pedidas pela
+    Karina por ficarem "sensacionalistas/cara de IA").
+  - Duotone via filtro SVG `#duotoneMarca` (novo, inserido uma vez no
+    `<body>`): mapeia luminância da foto para as 2 cores da marca — sombra em
+    `--teal-escuro` (#54402F), luz em `--amarelo-neon` (#A8D5F2). Não é um
+    gradiente de posição; é baseado no valor de cinza de cada pixel, então
+    troca de paleta no futuro é só trocar os 2 `tableValues`.
+  - Tipografia: IBM Plex Mono (Google Fonts, novo `<link>` no `<head>`),
+    caixa alta, no kicker e no título — pedido explícito da Karina por uma
+    "letra mais business, cara de digitando".
+  - Motion: foto entra com `scale(1.04→1)` + fade em 900ms
+    (`cubic-bezier(.165,.84,.44,1)`, categoria ease-out/entrando-na-tela);
+    título entra 150ms depois com fade + `translateY(10px→0)` em 700ms.
+    Durações e curva calibradas pelo skill de motion-design (tela
+    ilustrativa/baixa frequência → `--dur-illustrative`). Respeita
+    `prefers-reduced-motion`.
+  - `telaMarcador()` agora aceita string (comportamento antigo, ainda usado
+    na tela "Fim") OU objeto `{ titulo, kicker, foto }` — sem `foto`, cai no
+    visual simples de sempre. Campo opcional, mesma lógica do `imagem` do
+    Vocab.
+- Arquivos: templateaula.html, assets/aula1-tirolez/abertura-office.jpg (novo)
+- Motivo: a Karina pediu foto real (duotone, simbolizando o tema da aula) na
+  tela de abertura, com o nome da aula centralizado, usando o skill de
+  motion-design pra guiar a entrada.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2109-foto-supervisor
+
 ## v-20260826-2109-foto-supervisor — 26/08/2026
 - O que mudou: segunda foto real da Aula 1 do Módulo 1 "At The Office" (turma
   Tirolez — Liderança, A1): `assets/aula1-tirolez/supervisor.jpg`, foto editorial

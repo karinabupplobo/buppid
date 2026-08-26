@@ -28,6 +28,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Negotiation Phrases</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --teal-escuro: #54402F;
@@ -163,6 +164,87 @@
 
   @media (orientation: landscape) and (max-height: 600px){
     .step-title{ font-size: clamp(16px, 3.4vh, 26px); }
+  }
+
+  /* ===== Tela 1: Abertura com foto de fundo em duotone =====
+     Opcional: só existe quando aula.abertura traz o campo "foto". Sem foto,
+     a tela cai no comportamento antigo (.step-title puro, sem imagem) —
+     mesma lógica do campo opcional "imagem" no Vocab. */
+  .screen.tela-abertura{ padding: 0; position: relative; overflow: hidden; }
+
+  .foto-duotone{
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.04);
+    animation: entradaFoto 900ms cubic-bezier(.165,.84,.44,1) forwards;
+  }
+  .foto-duotone img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* duotone real: mapeia luminância -> 2 cores via filtro SVG
+       (#duotoneMarca, definido uma vez no body), não por posição na tela —
+       sombra vira --teal-escuro, luz vira --amarelo-neon. Só depende dos
+       hex do :root; se a paleta mudar, o filtro acompanha sozinho. */
+    filter: url(#duotoneMarca);
+  }
+  .foto-duotone::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.22) 100%);
+    z-index: 2;
+  }
+
+  @keyframes entradaFoto{
+    from{ opacity: 0; transform: scale(1.04); }
+    to{ opacity: 1; transform: scale(1); }
+  }
+
+  .abertura-titulo-wrap{
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 0 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: entradaTitulo 700ms cubic-bezier(.165,.84,.44,1) forwards;
+    animation-delay: 150ms;
+  }
+  @keyframes entradaTitulo{
+    from{ opacity: 0; transform: translateY(10px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .abertura-kicker{
+    color: var(--amarelo-neon);
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 12px 0;
+  }
+  .abertura-titulo{
+    color: #fff;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 0;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.5);
+  }
+
+  @media (min-width: 700px){
+    .abertura-kicker{ font-size: 15px; }
+    .abertura-titulo{ font-size: 46px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .foto-duotone, .abertura-titulo-wrap{ animation: none; opacity: 1; transform: none; }
   }
 
   /* ===== Tela 1: Vocab (flashcards) ===== */
@@ -817,6 +899,24 @@
 </head>
 <body>
 
+<!-- Filtro de duotone real (luminância -> 2 cores), usado pela foto de
+     fundo da tela de abertura quando aula.abertura.foto existe. Mapeia
+     preto -> --teal-escuro (#54402F) e branco -> --amarelo-neon (#A8D5F2). -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="duotoneMarca">
+    <feColorMatrix type="matrix" values="
+      0.2126 0.7152 0.0722 0 0
+      0.2126 0.7152 0.0722 0 0
+      0.2126 0.7152 0.0722 0 0
+      0      0      0      1 0" />
+    <feComponentTransfer color-interpolation-filters="sRGB">
+      <feFuncR type="table" tableValues="0.3294 0.6588"/>
+      <feFuncG type="table" tableValues="0.2510 0.8353"/>
+      <feFuncB type="table" tableValues="0.1843 0.9490"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
 <div class="anot-bar" id="anot-bar">
   <div class="ctx">
     <b id="anot-aula">Aula</b>
@@ -1142,9 +1242,22 @@
       .replace(/"/g, "&quot;");
   }
 
-  function telaMarcador(titulo) {
-    return '<section class="screen"><h1 class="screen-title step-title">'
-      + esc(titulo) + '</h1></section>';
+  // Aceita string (comportamento antigo, usado no Fim) OU objeto
+  // { titulo, kicker, foto } para a abertura com foto de fundo em duotone.
+  // Sem "foto", cai no visual simples de sempre.
+  function telaMarcador(dados) {
+    const obj = (typeof dados === "string") ? { titulo: dados } : (dados || {});
+    if (!obj.foto) {
+      return '<section class="screen"><h1 class="screen-title step-title">'
+        + esc(obj.titulo) + '</h1></section>';
+    }
+    const kicker = obj.kicker
+      ? '<p class="abertura-kicker">' + esc(obj.kicker) + '</p>' : '';
+    return '<section class="screen tela-abertura">'
+      + '<div class="foto-duotone"><img src="' + esc(obj.foto) + '" alt=""></div>'
+      + '<div class="abertura-titulo-wrap">' + kicker
+      + '<h1 class="abertura-titulo">' + esc(obj.titulo) + '</h1></div>'
+      + '</section>';
   }
 
   // O campo "imagem" traz SVG cru, escrito por nós no JSON da aula — por isso
@@ -1259,7 +1372,11 @@
   function renderAula(aula) {
     if (!aula) return;
     const html = [
-      telaMarcador((aula.abertura && aula.abertura.titulo) || "Step 1"),
+      telaMarcador(aula.abertura ? {
+        titulo: aula.abertura.titulo || "Step 1",
+        kicker: aula.abertura.kicker,
+        foto: aula.abertura.foto
+      } : "Step 1"),
       telaVocab(aula.vocab),
       telaVocabPractice(aula.vocab_practice),
       telaWwyd(aula.what_would_you_do),

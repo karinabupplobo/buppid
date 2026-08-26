@@ -122,13 +122,22 @@ const DESTINO = {
 const msg = document.getElementById("msg");
 function aviso(texto, tipo){ msg.textContent = texto; msg.className = tipo || ""; }
 
-async function usuarioPorEmail(email){
-  const r = await fetch(
-    `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&select=id,nome,papel,senha_provisoria`,
-    { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
-  );
-  if (!r.ok) throw new Error(await r.text());
-  return (await r.json())[0] || null;
+// Consulta pelo cliente do Supabase, não por fetch com a chave anônima:
+// desde que as regras de acesso entraram (RLS), a chave anônima não lê
+// `usuarios` — só o próprio registro do usuário logado. O cliente manda o
+// token da sessão automaticamente. Por isso esta função só funciona DEPOIS
+// do login, nunca antes.
+async function usuarioLogado(authUserId){
+  // Filtra pelo id da sessão, não só `limit(1)`: quem é da Bupp enxerga
+  // todos os usuários, então sem o filtro viria a primeira linha da tabela
+  // em vez do próprio registro.
+  const { data, error } = await sb
+    .from("usuarios")
+    .select("id,nome,papel,senha_provisoria")
+    .eq("auth_user_id", authUserId)
+    .limit(1);
+  if (error) throw new Error(error.message);
+  return (data && data[0]) || null;
 }
 
 // Guardado entre entrar e trocar a senha: depois da troca é ele que diz
@@ -158,7 +167,7 @@ async function redirecionarSeLogado(){
   const { data } = await sb.auth.getSession();
   const sessao = data && data.session;
   if (!sessao) return false;
-  const u = await usuarioPorEmail(sessao.user.email);
+  const u = await usuarioLogado(sessao.user.id);
   if (!u){
     await sb.auth.signOut();
     aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp.", "erro");
@@ -178,14 +187,14 @@ document.getElementById("btn-entrar").onclick = async () => {
   btn.disabled = true;
   aviso("Entrando...", "");
   try{
-    const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
     if (error){
       // Mensagem única pros dois casos (e-mail inexistente e senha errada):
       // dizer qual dos dois errou entrega quem tem conta na plataforma.
       aviso("E-mail ou senha incorretos.", "erro");
       btn.disabled = false; return;
     }
-    const u = await usuarioPorEmail(email);
+    const u = await usuarioLogado(data.user.id);
     if (!u){
       await sb.auth.signOut();
       aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp.", "erro");

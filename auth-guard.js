@@ -64,12 +64,18 @@
     if (!sessao) return paraLogin();
 
     try{
-      const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(sessao.user.email)}&select=id,nome,papel,senha_provisoria,empresa_cliente_id,turma_id,aluno_id,professor_id`,
-        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
-      );
-      if (!r.ok) throw new Error(await r.text());
-      const u = (await r.json())[0];
+      // Pelo cliente do Supabase, não por fetch com a chave anônima: com as
+      // regras de acesso ligadas (RLS) a chave anônima não lê `usuarios`.
+      // O cliente manda o token da sessão, e a política devolve só o
+      // próprio registro. O filtro por auth_user_id é necessário porque
+      // quem é da Bupp enxerga todos, e sem ele viria a primeira linha.
+      const { data, error } = await sb
+        .from("usuarios")
+        .select("id,nome,papel,senha_provisoria,empresa_cliente_id,turma_id,aluno_id,professor_id")
+        .eq("auth_user_id", sessao.user.id)
+        .limit(1);
+      if (error) throw new Error(error.message);
+      const u = data && data[0];
 
       if (!u){ await sb.auth.signOut(); return paraLogin(); }
 

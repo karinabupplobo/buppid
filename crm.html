@@ -1544,7 +1544,9 @@ const SUPABASE_HEADERS = {
 const CLOUD_SECTIONS = ["tasks", "users", "leads"];
 
 const TASKS_STORAGE_KEY = "tasks_std_data";
-const DEFAULT_PASSWORD = "nossaempresa"; // provisional password for every new account and every password reset
+// A senha padrão do login antigo saiu daqui em 26/08: ela ficava em texto
+// puro no código e no banco. Quem cria conta agora é a aba Usuários da
+// interna.html, e a senha vive no Supabase Auth.
 const USERS_STORAGE_KEY = "tasks_std_users";
 const REVISION_KEY = "tasks_std_revision";
 
@@ -1585,7 +1587,7 @@ const TASKS_SEED = [
   ]}
 ];
 const USERS_SEED = [
-  { username: "karina", login: "karina", name: "Karina", email: "", password: DEFAULT_PASSWORD, role: "adm", mustChangePassword: true }
+  { username: "karina", login: "karina", name: "Karina", email: "", role: "adm" }
 ];
 
 function ensureTaskDefaults(t, depth) {
@@ -1691,7 +1693,11 @@ function scheduleCloudSave() {
 async function pushAllSectionsToCloud() {
   const rows = [
     { section: "tasks", data: tasksData, revision: localRevision, updated_at: new Date().toISOString() },
-    { section: "users", data: usersList, revision: localRevision, updated_at: new Date().toISOString() },
+    // Senha nunca vai pra nuvem: o login antigo guardava em texto puro, e as
+    // que existiam foram apagadas em 26/08. O acesso hoje é pelo Supabase
+    // Auth (bcrypt). Este `map` é a trava que impede a reintrodução.
+    { section: "users", data: usersList.map(u => { const { password, ...resto } = u; return resto; }),
+      revision: localRevision, updated_at: new Date().toISOString() },
     { section: "leads", data: leadsData, revision: localRevision, updated_at: new Date().toISOString() }
   ];
   const res = await fetch(SUPABASE_TABLE_URL, {
@@ -4206,11 +4212,8 @@ function renderSettingsUsersList() {
     row.querySelector(".settings-user-reset-password").addEventListener("click", () => {
       const u = usersList.find(x => x.username === username);
       if (!u) return;
-      if (!confirm(`Redefinir a senha de "${u.name || u.login}" para a senha padrão? A pessoa vai precisar trocar no próximo login.`)) return;
-      u.password = DEFAULT_PASSWORD;
-      u.mustChangePassword = true;
-      saveUsersList();
-      settingsMsg(`Senha de "${u.name || u.login}" redefinida para a padrão.`);
+      // Senha não vive mais aqui: quem controla acesso é o Supabase Auth.
+      settingsMsg(`Senha agora se redefine na aba Usuários da interna, não aqui.`);
     });
     row.querySelector(".settings-user-delete").addEventListener("click", () => {
       if (usersList.length <= 1) { alert("Precisa manter pelo menos um usuário."); return; }
@@ -4249,11 +4252,11 @@ document.getElementById("settings-add-user-btn").addEventListener("click", () =>
   const login = prompt("Username (pra fazer login):", name.trim().toLowerCase().replace(/\s+/g, ""));
   if (!login) return;
   const username = login.trim().toLowerCase().replace(/\s+/g, "-") + "-" + Date.now().toString(36).slice(-4);
-  usersList.push({ username, login: login.trim(), name: name.trim(), email: "", password: DEFAULT_PASSWORD, role: "adm", mustChangePassword: true });
+  usersList.push({ username, login: login.trim(), name: name.trim(), email: "", role: "adm" });
   saveUsersList();
   renderSettingsUsersList();
   renderTasksHeaderRow();
-  settingsMsg(`Usuário criado. Senha provisória: "${DEFAULT_PASSWORD}" (vai pedir pra trocar no primeiro login).`);
+  settingsMsg(`Usuário criado aqui só pra aparecer em Responsáveis. Pra dar acesso à plataforma, cadastre na aba Usuários da interna.`);
 });
 
 // Restore a session (if there's a valid one) now that everything it needs

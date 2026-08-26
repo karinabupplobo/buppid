@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2030-botao-usuario-perto-csv — 26/08/2026
+- O que mudou: na aba Users, o botão "+ Usuário" ficava longe do "Exportar
+  CSV" — causa era `.btn-csv{ margin-left: auto }` aplicada em TODOS os
+  botões dessa classe (+ Usuário e Exportar CSV são os dois `.btn-csv` da
+  mesma barra); cada `margin-left: auto` empurra o próprio botão pra
+  direita, então os dois se afastavam um do outro em vez de ficarem juntos
+  na ponta. Trocado pra `.btn-csv:last-child{ margin-left: auto }` — só o
+  último `.btn-csv` de cada barra empurra o grupo pra direita; os demais
+  ficam coladas nele. Não afeta as outras 2 barras que só têm um
+  `.btn-csv` cada (Performance e Docs), onde o comportamento já era esse.
+- Arquivos: interna.html
+- Motivo: pedido direto da Karina em 26/08, com print.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2026-grupo-geral-sidebar
+
 ## v-20260826-2026-grupo-geral-sidebar — 26/08/2026
 - O que mudou: rótulo de grupo "Geral" acima de Performance, Alerts, Tasks
   e Users na sidebar — mesmo estilo (`.tab-grupo`) já usado em "Clients" e

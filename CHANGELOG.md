@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2135-doc-convencao-abertura — 26/08/2026
+- O que mudou: registrada no NEXT_STEPS a convenção de conteúdo da tela de
+  abertura pra Aula 1 — `kicker: "Módulo 1 · Aula 1"` (pequeno), `titulo:
+  "At The Office"` (grande, centralizado). Correção de rumo: eu tinha usado
+  "Aula 1 — Liderança" como título de teste no preview, mas Liderança é o
+  nome da TURMA (Tirolez — Liderança), não da aula/módulo — nunca deveria
+  ir no título da tela de abertura. Nada no código foi alterado: o
+  `templateaula.html` já era genérico (campo vindo dos dados, nada fixo),
+  o erro estava só na massa de teste do preview, que nunca foi commitada.
+- Arquivos: NEXT_STEPS.md
+- Motivo: deixar a convenção certa registrada antes de esquecer, pra quando
+  a Aula 1 for gravada de verdade em `aulas_assigned`.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2130-abertura-duotone
+
 ## v-20260826-2130-abertura-duotone — 26/08/2026
 - O que mudou: a tela de abertura do `templateaula.html` (`telaMarcador`, usada
   no Step 1 de qualquer aula) ganhou suporte a foto de fundo em duotone real +

@@ -28,6 +28,12 @@
       decidir se toda aula nova do Módulo 1 em diante vai ganhar foto de
       abertura própria (custo: 1 geração no Canva por aula) ou só aulas
       selecionadas.
+      **Convenção de conteúdo fechada em 26/08 pra Aula 1:**
+      `kicker: "Módulo 1 · Aula 1"` (pequeno, em cima) e
+      `titulo: "At The Office"` (grande, centralizado — é o nome do
+      módulo/tema, não da turma). Atenção: "Liderança" é o nome da TURMA
+      (Tirolez — Liderança), nunca vai no título da tela de abertura —
+      cuidado pra não confundir os dois ao gerar o JSON da aula.
 - [ ] **Gravar a Aula 1 de verdade em `aulas_assigned`.** A linha
       (turma Tirolez — Liderança, `numero_aula=1`) tem só o esqueleto do
       mapa (`status='mapa'`) — o conteúdo completo foi aprovado em chat no

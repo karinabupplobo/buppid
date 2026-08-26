@@ -1975,12 +1975,17 @@ document.getElementById("btn-salvar-presenca").onclick = () => {
 // ══════════════════════════════════════════════════════════
 //  Navegação por abas
 // ══════════════════════════════════════════════════════════
+// Qual aba estava aberta sobrevive ao F5 — sem isso, recarregar a página
+// sempre jogava de volta pra Hoje.
+const ABA_STORAGE_KEY = "plataforma_ultima_aba";
+
 function irPara(pane){
   document.querySelectorAll(".tab").forEach(t =>
     t.classList.toggle("active", t.dataset.pane === pane));
   document.querySelectorAll(".pane").forEach(p =>
     p.classList.toggle("active", p.id === "pane-" + pane));
   window.scrollTo(0, 0);
+  localStorage.setItem(ABA_STORAGE_KEY, pane);
 }
 document.querySelectorAll(".tab").forEach(t => {
   t.onclick = () => irPara(t.dataset.pane);
@@ -1998,6 +2003,9 @@ function renderTudo(){
 }
 
 renderTudo();
+
+const abaSalva = localStorage.getItem(ABA_STORAGE_KEY);
+if (abaSalva && abaSalva !== "aula" && document.querySelector(`.tab[data-pane="${abaSalva}"]`)) irPara(abaSalva);
 </script>
 </body>
 </html>

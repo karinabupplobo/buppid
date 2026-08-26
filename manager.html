@@ -2184,11 +2184,22 @@ document.getElementById("btn-turmas-rh").onclick = () => {
 };
 
 // ── Navegação ──
+// Qual aba estava aberta sobrevive ao F5 — sem isso, recarregar a página
+// sempre jogava de volta pra Dados.
+const ABA_STORAGE_KEY = "manager_ultima_aba";
+
+function irParaAba(nomePane){
+  const tab = document.querySelector(`.tab[data-pane="${nomePane}"]`);
+  if (!tab) return;
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === tab));
+  document.querySelectorAll(".pane").forEach(p =>
+    p.classList.toggle("active", p.id === "pane-" + nomePane));
+  localStorage.setItem(ABA_STORAGE_KEY, nomePane);
+}
+
 document.querySelectorAll(".tab").forEach(t => {
   t.onclick = () => {
-    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
-    document.querySelectorAll(".pane").forEach(p =>
-      p.classList.toggle("active", p.id === "pane-" + t.dataset.pane));
+    irParaAba(t.dataset.pane);
     window.scrollTo(0, 0);
   };
 });
@@ -2196,6 +2207,9 @@ document.querySelectorAll(".tab").forEach(t => {
 renderTabela();
 renderAvisos();
 renderDocs();
+
+const abaSalva = localStorage.getItem(ABA_STORAGE_KEY);
+if (abaSalva && abaSalva !== "dados" && document.querySelector(`.tab[data-pane="${abaSalva}"]`)) irParaAba(abaSalva);
 </script>
 </body>
 </html>

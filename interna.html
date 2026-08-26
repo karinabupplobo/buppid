@@ -4201,22 +4201,33 @@ document.getElementById("al-limpar").onclick = () => {
   renderAlunosTabela();
 };
 
+// Qual aba estava aberta sobrevive ao F5 — sem isso, recarregar a página
+// sempre jogava de volta pra Dados, mesmo quem estava em Alunos ou Usuários.
+const ABA_STORAGE_KEY = "interna_ultima_aba";
+
+function irParaAba(nomePane){
+  const tab = document.querySelector(`.tab[data-pane="${nomePane}"]`);
+  if (!tab) return;
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === tab));
+  document.querySelectorAll(".pane").forEach(p =>
+    p.classList.toggle("active", p.id === "pane-" + nomePane));
+
+  // As abas Tasks, Leads e Mercado são a própria dash do crm.html embutida.
+  // Carrega o iframe só na primeira vez que a aba é aberta — evita puxar a
+  // dash inteira (e o login) para quem só quer ver os dados.
+  const pane = document.getElementById("pane-" + nomePane);
+  const fr = pane && pane.querySelector(".emb-frame");
+  if (fr && !fr.src) fr.src = fr.dataset.src;
+  if (nomePane === "turmas") abrirAbaTurmas();
+  if (nomePane === "alunos") abrirAbaAlunos();
+  if (nomePane === "usuarios") abrirAbaUsuarios();
+
+  localStorage.setItem(ABA_STORAGE_KEY, nomePane);
+}
+
 document.querySelectorAll(".tab").forEach(t => {
   t.onclick = () => {
-    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
-    document.querySelectorAll(".pane").forEach(p =>
-      p.classList.toggle("active", p.id === "pane-" + t.dataset.pane));
-
-    // As abas Tasks, Leads e Mercado são a própria dash do crm.html embutida.
-    // Carrega o iframe só na primeira vez que a aba é aberta — evita puxar a
-    // dash inteira (e o login) para quem só quer ver os dados.
-    const pane = document.getElementById("pane-" + t.dataset.pane);
-    const fr = pane && pane.querySelector(".emb-frame");
-    if (fr && !fr.src) fr.src = fr.dataset.src;
-    if (t.dataset.pane === "turmas") abrirAbaTurmas();
-    if (t.dataset.pane === "alunos") abrirAbaAlunos();
-    if (t.dataset.pane === "usuarios") abrirAbaUsuarios();
-
+    irParaAba(t.dataset.pane);
     window.scrollTo(0, 0);
   };
 });
@@ -4229,6 +4240,9 @@ renderChipsU();
 renderDocs();
 opcoesTurma();
 renderAlertas();
+
+const abaSalva = localStorage.getItem(ABA_STORAGE_KEY);
+if (abaSalva && abaSalva !== "planilha" && document.querySelector(`.tab[data-pane="${abaSalva}"]`)) irParaAba(abaSalva);
 </script>
 </body>
 </html>

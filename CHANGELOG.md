@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1911-abas-em-ingles — 26/08/2026
+- O que mudou: rótulos das abas trocados pra inglês — Dados → Performance,
+  Alertas → Alerts, Empresas → Companies, Alunos → Students, Usuários →
+  Users, Mercado → Market. Tasks, Leads e Docs já estavam em inglês, sem
+  mudança. Só o texto visível do botão; os `data-pane` internos (planilha,
+  alertas, turmas, alunos, usuarios, mercado) continuam em português — é
+  só identificador de código, não afeta nada.
+- Arquivos: interna.html
+- Motivo: pedido direto da Karina em 26/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1902-persistir-aba
+
 ## v-20260826-1902-persistir-aba — 26/08/2026
 - O que mudou: a última aba usada agora sobrevive ao recarregar a página,
   nas 4 telas que têm esse sistema de abas — `interna.html`, `aluno.html`,

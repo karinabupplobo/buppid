@@ -3499,6 +3499,16 @@ const SB_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhanZjZ3JmbGp5eGdhaHpmamZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNTMxMjcsImV4cCI6MjEwMjgyOTEyN30.e2vNn_QaPCyra2w842VPBncEN6nc7d8tSx68EQ1u-xA";
 const SB_H = { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" };
 
+// RLS por papel (26/08): a chave anônima não lê mais essas tabelas.
+// Troca o Authorization pelo token de quem está logado, assim que a
+// sessão (já salva pelo login) estiver disponível.
+if (window.supabase){
+  window.supabase.createClient(SB_URL, SB_KEY).auth.getSession().then(({ data }) => {
+    const sessao = data && data.session;
+    if (sessao) SB_H.Authorization = `Bearer ${sessao.access_token}`;
+  });
+}
+
 let TURMAS_SB = null, PROFESSORES_SB = null, EMPRESAS_SB = null, ALUNOS_SB = null, turmasCarregadas = false;
 
 async function carregarTurmasSupabase(){

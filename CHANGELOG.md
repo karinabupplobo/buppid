@@ -31,6 +31,21 @@ Entradas mais recentes no topo.
   dropar `aulas_assigned` manualmente se for o caso):
   git checkout v-20260826-2210-gerador-protocolo-v2
 
+## v-20260826-1831-popup-anotacoes-dados — 26/08/2026
+- O que mudou: o card "Anotações" da aba Dados (contagem de registros com
+  anotação do professor) virou clicável — abre popup listando cada
+  anotação do período/filtro atual, com aluno, empresa/turma, aula e
+  data. Reaproveita o modal e o estilo de lista (`.cm-item`) já usados em
+  outros popups da dash. É a mesma anotação por-aula que já aparecia na
+  tabela e na ficha do aluno (campo `anot`/`NOTAS_ALUNO`) — não mexe na
+  tabela `anotacoes_aluno` do Supabase, que é um sistema separado (usado
+  na ficha do aluno, com autor/tipo/histórico).
+- Arquivos: interna.html
+- Motivo: pedido da Karina em 26/08 — card só mostrava número, sem forma
+  de ver as anotações sem abrir aluno por aluno.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2250-aulas-assigned
+
 ## v-20260826-1827-fix-rls-crm — 26/08/2026
 - O que mudou: `crm.html` tinha o mesmo problema já corrigido no
   `interna.html` (v-20260826-1813-fix-rls-interna) — confirmado por SQL

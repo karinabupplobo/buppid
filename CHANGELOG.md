@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2038-usuario-fim-planilha — 26/08/2026
+- O que mudou: botão "+ Usuário" saiu da barra de filtro (ao lado de
+  "+ Filtro") e foi pro fim da página, logo abaixo da planilha de
+  usuários — a correção anterior (v-20260826-2030) resolveu o vão entre
+  os dois botões, mas a Karina queria os dois em lugares diferentes, não
+  colados. A regra `margin-left: auto` do "Exportar CSV" foi restrita a
+  `.barra-planilha .btn-csv:last-child`, pra não vazar pro botão novo
+  fora da barra (que não é mais o último `.btn-csv` da página).
+- Arquivos: interna.html
+- Motivo: pedido direto da Karina em 26/08, com print — "não quero isso,
+  quero o +usuario no fim da página".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2032-alinhar-sidebar
+
 ## v-20260826-2032-alinhar-sidebar — 26/08/2026
 - O que mudou: dois desalinhos na sidebar corrigidos. (1) No desktop, o
   rótulo de grupo (`.tab-grupo`, usado em "Geral"/"Clients"/"Sales") tinha

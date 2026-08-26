@@ -2,6 +2,16 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2026-grupo-geral-sidebar — 26/08/2026
+- O que mudou: rótulo de grupo "Geral" acima de Performance, Alerts, Tasks
+  e Users na sidebar — mesmo estilo (`.tab-grupo`) já usado em "Clients" e
+  "Sales". Só o texto do rótulo; os 4 botões continuam sem indentação
+  (`.tab-sub`), diferente dos itens de Clients/Sales — não foi pedido.
+- Arquivos: interna.html
+- Motivo: pedido direto da Karina em 26/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1726-fechar-paleta-marrom-azul
+
 ## v-20260826-1726-fechar-paleta-marrom-azul — 26/08/2026
 - O que mudou: seção 10 de `docs/icp-comprador.md` fechada — a paleta
   Comb 2 (marrom `#54402F` + azul-bebê `#A8D5F2`) deixa de estar "em

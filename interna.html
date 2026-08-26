@@ -1451,6 +1451,24 @@
   .cm-meta{ font-size: 10.5px; color: var(--cinza-texto); font-weight: 700; }
   .cm-item p{ margin: 3px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--texto); }
   .lead-meta{ font-size: 12.5px; color: var(--cinza-texto); }
+  /* --- Aba Alunos --- */
+  .tag-status{
+    display:inline-block; font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .04em; border-radius: 999px; padding: 3px 9px; white-space: nowrap;
+  }
+  .tag-status.sem{ background: #FBE9DC; color: #8A4B22; }
+  .tag-status.com{ background: #E3F3E8; color: #2E7D46; }
+  .linha-sem-turma{ background: #FFFCF7; }
+  .link-aluno{
+    background:none; border:none; padding:0; font-family:inherit; font-size: inherit;
+    font-weight: 700; color: var(--teal-escuro); cursor:pointer; text-align:left;
+  }
+  .link-aluno:hover{ text-decoration: underline; }
+  .sel-alocar{
+    border:1px solid var(--borda); border-radius: 7px; padding: 4px 7px;
+    font-family:inherit; font-size: 12px; background: var(--branco); color: var(--texto);
+  }
+  .sel-alocar:disabled{ opacity:.5; }
   .anot-autor-fixo{ font-size: 12px; color: var(--cinza-texto); margin-bottom: 8px; }
   .anot-autor-fixo b{ color: var(--texto); }
   .ec-meta{ font-size: 12px; color: var(--cinza-texto); line-height: 1.4; max-width: 520px; }
@@ -1471,18 +1489,6 @@
   .tl-clicavel:hover{ background: rgba(255,255,255,.55); }
   .dt-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 12px; }
   @media (max-width: 480px){ .dt-grid{ grid-template-columns: 1fr; } }
-  .ec-sem-turma{ border-top: 1px dashed var(--borda); margin-top: 10px; padding-top: 10px; }
-  .ec-sem-turma-titulo{ font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
-    color: var(--azul-intermediario); margin-bottom: 7px; }
-  .aluno-sem-turma{
-    width: 100%; display:flex; justify-content: space-between; align-items: center; gap: 10px;
-    background: var(--limao-claro); border: 1px dashed var(--azul-intermediario); border-radius: 8px;
-    padding: 8px 10px; font-family: inherit; cursor: pointer; margin-bottom: 6px;
-  }
-  .aluno-sem-turma:last-child{ margin-bottom: 0; }
-  .aluno-sem-turma:hover{ background: var(--amarelo-neon); }
-  .aluno-sem-turma .ti-nome{ font-size: 12.5px; font-weight: 700; color: var(--texto); }
-  .aluno-sem-turma .ti-grade{ font-size: 11px; font-weight: 700; color: var(--azul-intermediario); white-space: nowrap; }
   .turma-linha h4{ margin: 0 0 2px; font-size: 13.5px; font-weight: 800; color: var(--texto); }
   .turma-linha .tl-meta{ font-size: 11px; color: var(--cinza-texto); }
   .turma-linha .tl-obj{ font-size: 12px; color: var(--texto); margin-top: 4px; line-height: 1.4; }
@@ -1530,6 +1536,7 @@
     <button class="tab active" data-pane="planilha">Dados</button>
     <button class="tab" data-pane="alertas">Alertas</button>
     <button class="tab" data-pane="turmas">Empresas</button>
+    <button class="tab" data-pane="alunos">Alunos</button>
     <button class="tab" data-pane="usuarios">Usuários</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="leads">Leads</button>
@@ -1582,6 +1589,23 @@
     </div>
     <div class="rt-titulo" id="titulo-turmas">Empresas</div>
     <div id="turmas-wrap"></div>
+  </section>
+
+  <section class="pane" id="pane-alunos">
+    <div class="barra-planilha">
+      <select class="filtro" id="al-emp"></select>
+      <select class="filtro" id="al-status">
+        <option value="">Todos</option>
+        <option value="sem">Sem turma</option>
+        <option value="com">Alocados</option>
+      </select>
+      <button class="btn-limpar-col" id="al-limpar" style="display:none;">Limpar filtros</button>
+      <span class="cont-linhas" id="al-cont"></span>
+    </div>
+    <div class="rt-titulo">Alunos</div>
+    <div class="planilha-wrap">
+      <table class="planilha" id="tabela-alunos"></table>
+    </div>
   </section>
 
   <section class="pane" id="pane-usuarios">
@@ -3604,7 +3628,10 @@ function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
       if (!res.ok) throw new Error(await res.text());
       aluno.turma_alunos = [{ turma_id: turmaId }];
       fecharModal();
-      renderTurmas();
+      // A ficha abre tanto da aba Empresas quanto da aba Alunos — atualiza
+      // a que estiver ativa, senão a outra fica com dado velho na tela.
+      if (document.getElementById("pane-alunos").classList.contains("active")) renderAlunosTabela();
+      else renderTurmas();
     } catch(err){
       msg.textContent = "Erro ao alocar: " + err.message; msg.style.color = "var(--erro)"; btnAloc.disabled = false;
     }
@@ -3663,7 +3690,6 @@ function renderTurmas(){
   const html = grupos.map(g => {
     const e = g.empresa;
     const meta = [e.setor, e.contexto_ingles].filter(Boolean).join(" · ");
-    const semTurma = alunosSemTurma(e.id);
     return `
       <div class="empresa-card">
         <div class="ec-cab">
@@ -3679,15 +3705,6 @@ function renderTurmas(){
         <div class="ec-turmas">
           ${g.turmas.length ? g.turmas.map(turmaLinhaHtml).join("") : `<div class="sem-turmas">Nenhuma turma cadastrada ainda pra esta empresa.</div>`}
         </div>
-        ${semTurma.length ? `
-          <div class="ec-sem-turma">
-            <div class="ec-sem-turma-titulo">Sem turma ainda (${semTurma.length})</div>
-            ${semTurma.map(a => `
-              <button type="button" class="aluno-sem-turma" data-aluno-alocar="${a.id}" data-empresa="${e.id}">
-                <span class="ti-nome">${a.nome}</span>
-                <span class="ti-grade">${nivelAlunoLabel(a)}</span>
-              </button>`).join("")}
-          </div>` : ""}
       </div>`;
   }).join("");
 
@@ -3700,13 +3717,6 @@ function renderTurmas(){
   });
   wrap.querySelectorAll("[data-empresa-historico]").forEach(el => {
     el.onclick = () => abrirHistoricoEmpresa(EMPRESAS_SB.find(e => e.id === el.dataset.empresaHistorico));
-  });
-  wrap.querySelectorAll("[data-aluno-alocar]").forEach(btn => {
-    btn.onclick = () => {
-      const aluno = ALUNOS_SB.find(a => a.id === btn.dataset.alunoAlocar);
-      const turmasDaEmpresa = TURMAS_SB.filter(t => t.empresa_cliente_id === btn.dataset.empresa);
-      abrirDetalheAluno(aluno, turmasDaEmpresa);
-    };
   });
 }
 
@@ -3762,6 +3772,132 @@ async function abrirAbaTurmas(){
   }
 }
 
+// ══════════════════════════════════════════════════════════
+//  ABA ALUNOS — planilha de todos os alunos, com quem ainda não tem
+//  turma sempre no topo. É daqui que se aloca, sem precisar entrar em
+//  cada card de empresa.
+// ══════════════════════════════════════════════════════════
+function turmaDoAluno(a){
+  const ta = (a.turma_alunos || [])[0];
+  return ta ? TURMAS_SB.find(t => t.id === ta.turma_id) : null;
+}
+
+function renderAlunosTabela(){
+  const fEmp = document.getElementById("al-emp").value;
+  const fStatus = document.getElementById("al-status").value;
+
+  let lista = ALUNOS_SB.slice();
+  if (fEmp) lista = lista.filter(a => a.empresa_cliente_id === fEmp);
+  if (fStatus === "sem") lista = lista.filter(a => !(a.turma_alunos || []).length);
+  if (fStatus === "com") lista = lista.filter(a => (a.turma_alunos || []).length);
+
+  // Sem turma sempre em cima — é a fila de trabalho pendente.
+  lista.sort((a,b) => {
+    const sa = (a.turma_alunos || []).length ? 1 : 0;
+    const sb = (b.turma_alunos || []).length ? 1 : 0;
+    return sa - sb || a.nome.localeCompare(b.nome, "pt-BR");
+  });
+
+  const nSem = lista.filter(a => !(a.turma_alunos || []).length).length;
+  document.getElementById("al-cont").textContent =
+    `${lista.length} aluno(s) · ${nSem} sem turma`;
+  document.getElementById("al-limpar").style.display = (fEmp || fStatus) ? "inline-flex" : "none";
+
+  const empNome = id => {
+    const e = EMPRESAS_SB.find(x => x.id === id);
+    return e ? e.nome : "—";
+  };
+
+  document.getElementById("tabela-alunos").innerHTML = `
+    <thead><tr>
+      <th>Status</th><th>Nome</th><th>Cargo</th><th>Empresa</th>
+      <th>Nível</th><th>Turma</th>
+    </tr></thead>
+    <tbody>
+      ${lista.length ? lista.map(a => {
+        const turma = turmaDoAluno(a);
+        const semTurma = !(a.turma_alunos || []).length;
+        const turmasDaEmpresa = TURMAS_SB.filter(t => t.empresa_cliente_id === a.empresa_cliente_id);
+        return `<tr class="${semTurma ? "linha-sem-turma" : ""}">
+          <td><span class="tag-status ${semTurma ? "sem" : "com"}">${semTurma ? "Sem turma" : "Alocado"}</span></td>
+          <td><button type="button" class="link-aluno" data-aluno-ficha="${a.id}">${a.nome}</button></td>
+          <td>${a.cargo || "—"}</td>
+          <td>${empNome(a.empresa_cliente_id)}</td>
+          <td>${nivelAlunoLabel(a)}</td>
+          <td>${turma ? turma.nome : `
+            <select class="sel-alocar" data-aluno="${a.id}" ${turmasDaEmpresa.length ? "" : "disabled"}>
+              <option value="">${turmasDaEmpresa.length ? "Alocar em..." : "Empresa sem turma"}</option>
+              ${turmasDaEmpresa.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
+            </select>`}</td>
+        </tr>`;
+      }).join("") : `<tr><td colspan="6" class="sem-turmas">Nenhum aluno com esses filtros.</td></tr>`}
+    </tbody>`;
+
+  document.querySelectorAll("[data-aluno-ficha]").forEach(b => {
+    b.onclick = () => {
+      const aluno = ALUNOS_SB.find(a => a.id === b.dataset.alunoFicha);
+      // Sem turma → a ficha também mostra o bloco de alocar; já alocado,
+      // não faz sentido oferecer.
+      const semTurma = !(aluno.turma_alunos || []).length;
+      const turmasDaEmpresa = semTurma
+        ? TURMAS_SB.filter(t => t.empresa_cliente_id === aluno.empresa_cliente_id)
+        : undefined;
+      abrirDetalheAluno(aluno, turmasDaEmpresa);
+    };
+  });
+  document.querySelectorAll(".sel-alocar").forEach(sel => {
+    sel.onchange = async () => {
+      if (!sel.value) return;
+      const alunoId = sel.dataset.aluno;
+      sel.disabled = true;
+      try{
+        const res = await fetch(`${SB_URL}/rest/v1/turma_alunos`, {
+          method: "POST", headers: SB_H,
+          body: JSON.stringify({ turma_id: sel.value, aluno_id: alunoId })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const aluno = ALUNOS_SB.find(a => a.id === alunoId);
+        aluno.turma_alunos = [{ turma_id: sel.value }];
+        renderAlunosTabela();
+      } catch(err){
+        alert("Erro ao alocar: " + err.message);
+        sel.disabled = false;
+      }
+    };
+  });
+}
+
+function opcoesEmpAlunos(){
+  const sel = document.getElementById("al-emp");
+  sel.innerHTML = `<option value="">Todas as empresas</option>` +
+    EMPRESAS_SB.slice().sort((a,b) => a.nome.localeCompare(b.nome,"pt-BR"))
+      .map(e => `<option value="${e.id}">${e.nome}</option>`).join("");
+}
+
+async function abrirAbaAlunos(){
+  // Reaproveita o mesmo carregamento da aba Empresas — as duas dependem
+  // exatamente das mesmas 4 listas.
+  if (turmasCarregadas) { opcoesEmpAlunos(); renderAlunosTabela(); return; }
+  document.getElementById("tabela-alunos").innerHTML = `<tbody><tr><td class="sem-turmas">Carregando...</td></tr></tbody>`;
+  try{
+    await carregarTurmasSupabase();
+    turmasCarregadas = true;
+    opcoesEmpTurmas();
+    opcoesEmpAlunos();
+    renderAlunosTabela();
+  } catch(err){
+    document.getElementById("tabela-alunos").innerHTML = `<tbody><tr><td class="sem-turmas">Erro ao carregar alunos: ${err.message}</td></tr></tbody>`;
+  }
+}
+
+document.getElementById("al-emp").onchange = renderAlunosTabela;
+document.getElementById("al-status").onchange = renderAlunosTabela;
+document.getElementById("al-limpar").onclick = () => {
+  document.getElementById("al-emp").value = "";
+  document.getElementById("al-status").value = "";
+  renderAlunosTabela();
+};
+
 document.querySelectorAll(".tab").forEach(t => {
   t.onclick = () => {
     document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
@@ -3775,6 +3911,7 @@ document.querySelectorAll(".tab").forEach(t => {
     const fr = pane && pane.querySelector(".emb-frame");
     if (fr && !fr.src) fr.src = fr.dataset.src;
     if (t.dataset.pane === "turmas") abrirAbaTurmas();
+    if (t.dataset.pane === "alunos") abrirAbaAlunos();
 
     window.scrollTo(0, 0);
   };

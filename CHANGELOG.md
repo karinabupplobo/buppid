@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2032-alinhar-sidebar — 26/08/2026
+- O que mudou: dois desalinhos na sidebar corrigidos. (1) No desktop, o
+  rótulo de grupo (`.tab-grupo`, usado em "Geral"/"Clients"/"Sales") tinha
+  padding-left de 6px, contra 14px dos botões `.tab` — os rótulos
+  começavam mais à esquerda que os botões abaixo deles. (2) Os botões
+  dentro de Clients e Sales (`.tab-sub`) tinham `margin-left: 14px` pra
+  indicar visualmente que pertenciam ao grupo, mas isso fazia eles
+  começarem mais à direita que Performance/Alerts/Tasks/Users (que não
+  são `.tab-sub`) — inconsistente. Removida a indentação: todos os
+  rótulos e botões agora começam exatamente na mesma distância da borda,
+  e o agrupamento fica só por cima do rótulo de texto, sem indentação.
+- Arquivos: interna.html
+- Motivo: pedido direto da Karina em 26/08, com print — "os botões não
+  começam na mesma distância".
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2030-botao-usuario-perto-csv
+
 ## v-20260826-2030-botao-usuario-perto-csv — 26/08/2026
 - O que mudou: na aba Users, o botão "+ Usuário" ficava longe do "Exportar
   CSV" — causa era `.btn-csv{ margin-left: auto }` aplicada em TODOS os

@@ -246,11 +246,14 @@ checagem no INPI.
 
 ---
 
-## 10. Paleta de cores (21/08/2026 — Comb 2, em teste na dash do professor)
+## 10. Paleta de cores (fechada em 26/08/2026 — Comb 2: marrom + azul-bebê)
 
-**Status: em teste, não fechada.** Esta é a combinação atualmente aplicada na
-plataforma do professor. Antes de virar paleta oficial da marca, precisa passar
-por peça comercial impressa — proposta em PDF e slide de projetor.
+**Status: fechada.** Combinação aplicada em toda a produção — dash interna
+(`index.html`), plataforma do professor (`plataforma.html`), template de aula
+(`templateaula.html`) e template de trilha (`templatetrilha.html`). Os dois
+riscos registrados abaixo (parentesco de matiz e território de azul-bebê)
+foram avaliados e aceitos conscientemente. Ainda falta testar em peça
+comercial impressa — proposta em PDF e slide de projetor.
 
 | Papel | Hex | Uso |
 |---|---|---|

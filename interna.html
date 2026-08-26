@@ -743,7 +743,11 @@
 
     main{
       grid-column: 2;
-      padding: 30px 34px 60px; max-width: 1180px; width: 100%;
+      /* Sem teto de largura: a tabela de Tasks embutida (index.html) colapsa
+         pro modo cartão abaixo de ~1140px de largura útil, e o teto antigo de
+         1180px menos a sidebar e o padding deixava justamente abaixo disso.
+         Solto aqui, o Tasks embutido fica igual ao standalone em tela grande. */
+      padding: 30px 34px 60px; width: 100%; min-width: 0;
     }
 
     .cols{ display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
@@ -1053,6 +1057,14 @@
      estas três abas passam a ser nativas. */
   .pane.emb{ padding: 0; }
   .pane.emb.active{ display: flex; flex-direction: column; }
+  /* A tabela de Tasks do index.html vira modo cartão abaixo de ~1140px de
+     largura útil. Cada pixel gasto com padding aqui conta, então as abas
+     embutidas anulam o padding lateral do main e usam a largura inteira —
+     é a diferença entre ver a tabela e ver cartões numa tela de 1366px. */
+  @media (min-width: 900px){
+    .pane.emb{ margin-left: -34px; margin-right: -34px; }
+    .pane.emb .emb-frame{ border-radius: 0; border-left: none; border-right: none; }
+  }
   .emb-frame{
     width: 100%; height: calc(100vh - 60px); min-height: 520px;
     border: 1px solid var(--borda); border-radius: 14px;
@@ -1624,11 +1636,11 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=17" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=18" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=17" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=18" title="Leads"></iframe>
   </section>
 
   <section class="pane" id="pane-docs">
@@ -1644,7 +1656,7 @@
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=17" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=18" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">

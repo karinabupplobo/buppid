@@ -34,7 +34,10 @@
   /* Sem porta de login, "Sair" não tem para onde levar. */
   html.sem-senha #logout-btn { display: none !important; }
   html.embutido body { padding: 0 !important; }
-  html.embutido #app { margin-left: 0 !important; padding: 16px !important; max-width: none !important; }
+  /* Padding lateral enxuto: a tabela de Tasks precisa de ~1140px de largura
+     útil pra não virar cartão, e dentro do iframe da interna cada pixel
+     lateral conta. O respiro vertical fica. */
+  html.embutido #app { margin-left: 0 !important; padding: 16px 10px 40px !important; max-width: none !important; }
 
   /* --- Login gate --- */
   #login-gate-backdrop { position: fixed; inset: 0; background: var(--bg); z-index: 200; display: flex; align-items: center; justify-content: center; }

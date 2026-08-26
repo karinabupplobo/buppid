@@ -1369,8 +1369,10 @@
   }
   .mc-atalhos button:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); color: var(--teal-escuro); }
 
-  /* cabeçalho clicável */
-  table.planilha th{ position: sticky; top: 0; z-index: 3; padding: 0; }
+  /* cabeçalho clicável — só a tabela de Dados usa .th-btn, que devolve o
+     padding por dentro do botão. Zerar o padding de todo th.planilha
+     espremia o cabeçalho das outras planilhas (Alunos), que usam th normal. */
+  table.planilha th:has(.th-btn){ padding: 0; }
   .th-btn{
     width: 100%; display: flex; align-items: center; gap: 6px; justify-content: space-between;
     background: none; border: none; cursor: pointer; font-family: inherit;
@@ -1490,6 +1492,14 @@
   }
   .tag-status.sem{ background: #FBE9DC; color: #8A4B22; }
   .tag-status.com{ background: #E3F3E8; color: #2E7D46; }
+  .tag-status.inativo{ background: #ECEAE7; color: #6F6A64; }
+  .linha-inativa{ opacity: .55; }
+  .btn-ativo{
+    background: none; border: 1px solid var(--borda); border-radius: 6px;
+    padding: 4px 9px; font-family: inherit; font-size: 11px; font-weight: 700;
+    color: var(--cinza-texto); cursor: pointer; white-space: nowrap;
+  }
+  .btn-ativo:hover{ border-color: var(--azul-intermediario); color: var(--texto); }
   .linha-sem-turma{ background: #FFFCF7; }
   .link-aluno{
     background:none; border:none; padding:0; font-family:inherit; font-size: inherit;
@@ -1627,9 +1637,10 @@
     <div class="barra-planilha">
       <select class="filtro" id="al-emp"></select>
       <select class="filtro" id="al-status">
-        <option value="">Todos</option>
+        <option value="">Todos (ativos)</option>
         <option value="sem">Sem turma</option>
         <option value="com">Alocados</option>
+        <option value="inativo">Desativados</option>
       </select>
       <button class="btn-limpar-col" id="al-limpar" style="display:none;">Limpar filtros</button>
       <span class="cont-linhas" id="al-cont"></span>
@@ -3491,7 +3502,7 @@ async function carregarTurmasSupabase(){
     fetch(`${SB_URL}/rest/v1/turmas?select=*,empresas_cliente(id,nome,setor,contexto_ingles)&order=criado_em.desc`, { headers: SB_H }),
     fetch(`${SB_URL}/rest/v1/professores?select=id,nome&order=nome`, { headers: SB_H }),
     fetch(`${SB_URL}/rest/v1/empresas_cliente?select=id,nome,setor,contexto_ingles&order=nome`, { headers: SB_H }),
-    fetch(`${SB_URL}/rest/v1/alunos?select=id,nome,cargo,area_atuacao,responsabilidades,email,empresa_cliente_id,nivel_cefr,nivel_banda,nivel_sub,turma_alunos(turma_id)&order=nome`, { headers: SB_H })
+    fetch(`${SB_URL}/rest/v1/alunos?select=id,nome,cargo,area_atuacao,responsabilidades,email,empresa_cliente_id,nivel_cefr,nivel_banda,nivel_sub,ativo,turma_alunos(turma_id)&order=nome`, { headers: SB_H })
   ]);
   TURMAS_SB = await turmasRes.json();
   PROFESSORES_SB = await profRes.json();
@@ -3940,25 +3951,73 @@ function turmaDoAluno(a){
   return ta ? TURMAS_SB.find(t => t.id === ta.turma_id) : null;
 }
 
+// Realocar: tira o aluno da turma atual (se houver) e põe na nova. Turma
+// vazia = deixar sem turma, que é como ele volta pra fila do topo.
+async function realocarAluno(alunoId, turmaId){
+  const aluno = ALUNOS_SB.find(a => a.id === alunoId);
+  if (!aluno) return;
+  const antes = aluno.turma_alunos || [];
+  try{
+    if (antes.length){
+      const del = await fetch(`${SB_URL}/rest/v1/turma_alunos?aluno_id=eq.${alunoId}`, { method: "DELETE", headers: SB_H });
+      if (!del.ok) throw new Error(await del.text());
+    }
+    if (turmaId){
+      const res = await fetch(`${SB_URL}/rest/v1/turma_alunos`, {
+        method: "POST", headers: SB_H,
+        body: JSON.stringify({ turma_id: turmaId, aluno_id: alunoId })
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+    aluno.turma_alunos = turmaId ? [{ turma_id: turmaId }] : [];
+    renderAlunosTabela();
+  } catch(err){
+    aluno.turma_alunos = antes;
+    alert("Erro ao realocar: " + err.message);
+    renderAlunosTabela();
+  }
+}
+
+// Desativar em vez de excluir — o histórico do aluno (anotações, nível)
+// continua existindo. Desativar também tira ele da turma.
+async function alternarAtivoAluno(alunoId){
+  const aluno = ALUNOS_SB.find(a => a.id === alunoId);
+  if (!aluno) return;
+  const desativando = aluno.ativo !== false;
+  if (desativando && !confirm(`Desativar ${aluno.nome}? Ele sai da turma e das listas, mas o histórico é preservado. Dá pra reativar depois.`)) return;
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/alunos?id=eq.${alunoId}`, {
+      method: "PATCH", headers: SB_H, body: JSON.stringify({ ativo: !desativando })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    if (desativando && (aluno.turma_alunos || []).length){
+      await fetch(`${SB_URL}/rest/v1/turma_alunos?aluno_id=eq.${alunoId}`, { method: "DELETE", headers: SB_H });
+      aluno.turma_alunos = [];
+    }
+    aluno.ativo = !desativando;
+    renderAlunosTabela();
+  } catch(err){ alert("Erro: " + err.message); }
+}
+
 function renderAlunosTabela(){
   const fEmp = document.getElementById("al-emp").value;
   const fStatus = document.getElementById("al-status").value;
 
   let lista = ALUNOS_SB.slice();
   if (fEmp) lista = lista.filter(a => a.empresa_cliente_id === fEmp);
+  // Desativado só aparece no filtro próprio — em qualquer outra visão ele
+  // sairia no meio dos ativos e poluiria a fila de trabalho.
+  if (fStatus === "inativo") lista = lista.filter(a => a.ativo === false);
+  else lista = lista.filter(a => a.ativo !== false);
   if (fStatus === "sem") lista = lista.filter(a => !(a.turma_alunos || []).length);
   if (fStatus === "com") lista = lista.filter(a => (a.turma_alunos || []).length);
 
-  // Sem turma sempre em cima — é a fila de trabalho pendente.
-  lista.sort((a,b) => {
-    const sa = (a.turma_alunos || []).length ? 1 : 0;
-    const sb = (b.turma_alunos || []).length ? 1 : 0;
-    return sa - sb || a.nome.localeCompare(b.nome, "pt-BR");
-  });
+  // Ordem: sem turma no topo (fila de trabalho), desativados no fim.
+  const ord = a => a.ativo === false ? 2 : ((a.turma_alunos || []).length ? 1 : 0);
+  lista.sort((a,b) => ord(a) - ord(b) || a.nome.localeCompare(b.nome, "pt-BR"));
 
-  const nSem = lista.filter(a => !(a.turma_alunos || []).length).length;
-  document.getElementById("al-cont").textContent =
-    `${lista.length} aluno(s) · ${nSem} sem turma`;
+  const nSem = lista.filter(a => a.ativo !== false && !(a.turma_alunos || []).length).length;
+  document.getElementById("al-cont").textContent = `${lista.length} aluno(s) · ${nSem} sem turma`;
   document.getElementById("al-limpar").style.display = (fEmp || fStatus) ? "inline-flex" : "none";
 
   const empNome = id => {
@@ -3969,33 +4028,35 @@ function renderAlunosTabela(){
   document.getElementById("tabela-alunos").innerHTML = `
     <thead><tr>
       <th>Status</th><th>Nome</th><th>Cargo</th><th>Empresa</th>
-      <th>Nível</th><th>Turma</th>
+      <th>Nível</th><th>Turma</th><th></th>
     </tr></thead>
     <tbody>
       ${lista.length ? lista.map(a => {
-        const turma = turmaDoAluno(a);
-        const semTurma = !(a.turma_alunos || []).length;
+        const inativo = a.ativo === false;
+        const turmaAtual = (a.turma_alunos || [])[0];
+        const semTurma = !turmaAtual;
         const turmasDaEmpresa = TURMAS_SB.filter(t => t.empresa_cliente_id === a.empresa_cliente_id);
-        return `<tr class="${semTurma ? "linha-sem-turma" : ""}">
-          <td><span class="tag-status ${semTurma ? "sem" : "com"}">${semTurma ? "Sem turma" : "Alocado"}</span></td>
+        return `<tr class="${inativo ? "linha-inativa" : (semTurma ? "linha-sem-turma" : "")}">
+          <td><span class="tag-status ${inativo ? "inativo" : (semTurma ? "sem" : "com")}">${inativo ? "Inativo" : (semTurma ? "Sem turma" : "Alocado")}</span></td>
           <td><button type="button" class="link-aluno" data-aluno-ficha="${a.id}">${a.nome}</button></td>
           <td>${a.cargo || "—"}</td>
           <td>${empNome(a.empresa_cliente_id)}</td>
           <td>${nivelAlunoLabel(a)}</td>
-          <td>${turma ? turma.nome : `
+          <td>${inativo ? "—" : `
             <select class="sel-alocar" data-aluno="${a.id}" ${turmasDaEmpresa.length ? "" : "disabled"}>
-              <option value="">${turmasDaEmpresa.length ? "Alocar em..." : "Empresa sem turma"}</option>
-              ${turmasDaEmpresa.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
+              <option value="">${turmasDaEmpresa.length ? "Sem turma" : "Empresa sem turma"}</option>
+              ${turmasDaEmpresa.map(t => `<option value="${t.id}" ${t.id === (turmaAtual && turmaAtual.turma_id) ? "selected" : ""}>${t.nome}</option>`).join("")}
             </select>`}</td>
+          <td class="td-acoes">
+            <button type="button" class="btn-ativo" data-ativo="${a.id}">${inativo ? "Reativar" : "Desativar"}</button>
+          </td>
         </tr>`;
-      }).join("") : `<tr><td colspan="6" class="sem-turmas">Nenhum aluno com esses filtros.</td></tr>`}
+      }).join("") : `<tr><td colspan="7" class="sem-turmas">Nenhum aluno com esses filtros.</td></tr>`}
     </tbody>`;
 
   document.querySelectorAll("[data-aluno-ficha]").forEach(b => {
     b.onclick = () => {
       const aluno = ALUNOS_SB.find(a => a.id === b.dataset.alunoFicha);
-      // Sem turma → a ficha também mostra o bloco de alocar; já alocado,
-      // não faz sentido oferecer.
       const semTurma = !(aluno.turma_alunos || []).length;
       const turmasDaEmpresa = semTurma
         ? TURMAS_SB.filter(t => t.empresa_cliente_id === aluno.empresa_cliente_id)
@@ -4004,24 +4065,10 @@ function renderAlunosTabela(){
     };
   });
   document.querySelectorAll(".sel-alocar").forEach(sel => {
-    sel.onchange = async () => {
-      if (!sel.value) return;
-      const alunoId = sel.dataset.aluno;
-      sel.disabled = true;
-      try{
-        const res = await fetch(`${SB_URL}/rest/v1/turma_alunos`, {
-          method: "POST", headers: SB_H,
-          body: JSON.stringify({ turma_id: sel.value, aluno_id: alunoId })
-        });
-        if (!res.ok) throw new Error(await res.text());
-        const aluno = ALUNOS_SB.find(a => a.id === alunoId);
-        aluno.turma_alunos = [{ turma_id: sel.value }];
-        renderAlunosTabela();
-      } catch(err){
-        alert("Erro ao alocar: " + err.message);
-        sel.disabled = false;
-      }
-    };
+    sel.onchange = () => realocarAluno(sel.dataset.aluno, sel.value);
+  });
+  document.querySelectorAll("[data-ativo]").forEach(b => {
+    b.onclick = () => alternarAtivoAluno(b.dataset.ativo);
   });
 }
 

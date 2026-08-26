@@ -29,6 +29,13 @@
 
 ## Próximo
 
+- [ ] CONFERIR SE OUTRAS ABAS TÊM O MESMO PROBLEMA de RLS que Alunos/Usuários
+      tinham (v-20260826-1813-fix-rls-interna): o `crm.html` (embutido nas
+      abas Tasks/Leads/Mercado da interna) ainda lê `bupp_dashboard_data`
+      pela chave anônima (`SUPABASE_HEADERS`), sem o mesmo conserto de trocar
+      pelo token da sessão. Só não foi mexido porque a Karina não reportou
+      problema ali ainda — pode estar funcionando por essa tabela ter regra
+      mais aberta, ou pode estar quebrado sem ninguém ter percebido.
 - [ ] TESTAR NO NAVEGADOR o fluxo completo: abrir a aba Empresas e conferir
       se Sertrading, Tirolez e Nelogica aparecem com as turmas certas e o
       professor já atribuído (dado migrado nesta sessão). Testar também

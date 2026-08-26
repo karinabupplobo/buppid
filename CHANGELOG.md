@@ -27,6 +27,24 @@ Entradas mais recentes no topo.
   já têm material (Passo 2 depende disso pra funcionar de verdade — por
   ora todas contam como "sem material"). Registrado no NEXT_STEPS.
 - Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1813-fix-rls-interna
+
+## v-20260826-1813-fix-rls-interna — 26/08/2026
+- O que mudou: `interna.html` fazia as 17 chamadas ao Supabase (turmas,
+  professores, empresas_cliente, alunos, usuarios, anotacoes_aluno,
+  turma_alunos, bupp_dashboard_data) com a chave anônima no header
+  `Authorization` de `SB_H`. Com as regras de acesso por papel (RLS)
+  ligadas, a chave anônima não lê mais essas tabelas — as abas Alunos e
+  Usuários vinham vazias. Corrigido no mesmo padrão já usado em
+  auth-guard.js/index.html/crm.html: cria um cliente Supabase, pega a
+  sessão que o login já salvou, e troca `SB_H.Authorization` pelo token
+  da sessão assim que ela estiver disponível. Como as 17 chamadas usam o
+  mesmo objeto `SB_H` por referência, nenhuma delas precisou mudar — só
+  o Authorization é atualizado antes de qualquer uma rodar (todas
+  disparam sob clique de aba, bem depois do login resolver).
+- Arquivos: interna.html
+- Motivo: reportado pela Karina em 26/08 — Alunos e Usuários sem mostrar nada.
+- Reverter para o estado ANTERIOR a esta mudança:
   git checkout v-20260826-2155-limpa-senha-navegador
 
 ## v-20260826-2130-rls-por-papel — 26/08/2026

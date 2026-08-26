@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2030-protege-crm — 26/08/2026
+- O que mudou: o que parecia "login duplo" era o contrário. O gate próprio
+  do `crm.html` está desligado (`SEM_SENHA = true`) desde antes, então ele
+  entrava direto como "interno" genérico — quem abrisse `crm.html` no
+  endereço via Tasks, Leads e Mercado sem autenticação nenhuma. Agora
+  `crm.html` inclui o `auth-guard.js` aceitando só papel `interno`, e o
+  guarda pula a verificação quando `?embed=1`: embutido nas abas da
+  `interna.html` quem protege é a página de fora, e rodar de novo
+  dispararia um redirect dentro do iframe, quebrando a aba. O nome do
+  usuário deixa de ser genérico e vem do login da plataforma — embutido,
+  lê da página de fora; solto, do próprio guarda; um listener de
+  `usuario-pronto` (no window e no parent) corrige se a página montar
+  antes do guarda resolver, já que ele é assíncrono. O gate antigo de
+  usuário/senha fica no código, desligado como já estava.
+- Arquivos: crm.html, auth-guard.js
+- Motivo: pendência levantada em 26/08 ao renomear o `index.html`.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2015-login-como-inicial
+
 ## v-20260826-2015-login-como-inicial — 26/08/2026
 - O que mudou: a raiz do site passa a ser a tela de login, que é o que
   `plataforma.buppidiomas.com.br` precisa servir. `login.html` virou

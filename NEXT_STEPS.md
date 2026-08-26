@@ -69,12 +69,12 @@
       domínio novo, então se o DNS ainda não responder o site fica
       inacessível pelos dois endereços. `buppidiomas.com.br` é outro site
       e não é pra ser mexido.
-- [ ] **Dois logins convivendo.** `crm.html` (Tasks/Leads/Mercado) tem o
-      gate próprio de usuário/senha em localStorage, anterior ao login
-      novo. Como ele é embutido em iframe na `interna.html`, quem já
-      passou pelo login novo ainda vê o gate antigo dentro da aba.
-      Unificar: fazer o `crm.html` confiar na sessão do Supabase quando
-      estiver embutido, e aposentar o gate próprio.
+- [ ] **Gate antigo do crm.html.** O login por usuário/senha em
+      localStorage continua no código, desligado (`SEM_SENHA = true`), e o
+      acesso agora é controlado pelo login da plataforma
+      (v-20260826-2030). Remover o código morto quando o login novo
+      estiver rodando com gente de verdade — antes disso ele serve de
+      rede de segurança caso algo dê errado.
 - [ ] **INVENTÁRIO — o que ainda é mock (dados-mock.js) e falta migrar.**
       Já estão no Supabase: Empresas, Turmas, Alunos, Usuários, Leads,
       Tasks. Ainda em mock: (a) abas Dados, Alertas e Docs da

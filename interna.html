@@ -2674,6 +2674,26 @@ function vinculoDe(u){
 
 // Salva um campo do usuário direto no Supabase. Chamado a cada blur/change
 // de célula editável — não tem botão "salvar", a edição é na própria linha.
+// Campos que existem em `alunos` e `usuarios` ao mesmo tempo — quando a
+// pessoa é aluno-e-usuário (usuarios.aluno_id preenchido), editar um dos
+// dois sem sincronizar o outro faria nome/cargo/e-mail divergirem entre as
+// duas telas pra quem é, na prática, a mesma conta.
+const CAMPOS_COMPARTILHADOS_ALUNO_USUARIO = ["nome", "cargo", "email"];
+
+// Grava o campo na tabela ligada, direto por filtro — não depende da outra
+// aba já ter carregado os dados em memória (Alunos e Usuários carregam sob
+// demanda, cada uma só quando a pessoa abre a aba). Erro aqui não trava o
+// save do campo principal: o registro-fonte já salvou; o vínculo fica pra
+// a próxima edição ou recarregamento resolver.
+async function sincronizarCampoLigado(tabela, filtroCampo, filtroValor, campo, novo){
+  if (!filtroValor) return;
+  try{
+    await fetch(`${SB_URL}/rest/v1/${tabela}?${filtroCampo}=eq.${filtroValor}`, {
+      method: "PATCH", headers: SB_H, body: JSON.stringify({ [campo]: novo })
+    });
+  } catch(err){ console.error("sincronizarCampoLigado:", err); }
+}
+
 async function salvarCampoUsuario(id, campo, valor, elFeedback){
   const u = USUARIOS_SB.find(x => x.id === id);
   if (!u) return;
@@ -2687,6 +2707,11 @@ async function salvarCampoUsuario(id, campo, valor, elFeedback){
       method: "PATCH", headers: SB_H, body: JSON.stringify({ [campo]: novo })
     });
     if (!res.ok) throw new Error(await res.text());
+    if (u.aluno_id && CAMPOS_COMPARTILHADOS_ALUNO_USUARIO.includes(campo)){
+      await sincronizarCampoLigado("alunos", "id", u.aluno_id, campo, novo);
+      const a = (ALUNOS_SB || []).find(x => x.id === u.aluno_id);
+      if (a) a[campo] = novo;
+    }
     if (elFeedback){ elFeedback.textContent = "✓"; setTimeout(() => elFeedback.textContent = "", 1600); }
   } catch(err){
     u[campo] = antes;   // desfaz na memória pra tela não mentir
@@ -3781,12 +3806,14 @@ const ROTULO_TIPO_CURTO = { prof: "teacher", rh: "manager", aluno: "student", ge
 
 function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
   const autorLogado = usuarioLogadoInterno();
+  const celAl = (campo, tipo) => `<input class="cel-u" type="${tipo||"text"}" data-al="${aluno.id}" data-campo="${campo}" value="${aluno[campo] ? String(aluno[campo]).replace(/"/g,"&quot;") : ""}" placeholder="—">`;
   const corpo = `
     <div class="dt-grid">
+      <div class="mini"><b>Nome</b>${celAl("nome")}</div>
+      <div class="mini"><b>Cargo</b>${celAl("cargo")}</div>
+      <div class="mini"><b>E-mail</b>${celAl("email","email")}</div>
+      <div class="mini"><b>Área de atuação</b>${celAl("area_atuacao")}</div>
       <div class="mini"><b>Nível (Level Test)</b><span>${nivelAlunoLabel(aluno)}</span></div>
-      ${aluno.cargo ? `<div class="mini"><b>Cargo</b><span>${aluno.cargo}</span></div>` : ""}
-      ${aluno.email ? `<div class="mini"><b>E-mail</b><span>${aluno.email}</span></div>` : ""}
-      ${aluno.area_atuacao ? `<div class="mini"><b>Área de atuação</b><span>${aluno.area_atuacao}</span></div>` : ""}
     </div>
     <div class="mini obj alerta-turma"><b>Performance</b><span>Presença e progresso na trilha ainda não estão conectados (tabelas presenca/progresso_aluno pendentes). Só o Level Test está disponível hoje.</span></div>
 
@@ -3823,6 +3850,11 @@ function renderDetalheAluno(aluno, turmasDaEmpresa, anotacoes){
     </div>
   `;
   abrirModal("Aluno", aluno.nome, corpo);
+
+  document.querySelectorAll("#modal-corpo .cel-u[data-al]").forEach(inp => {
+    inp.onblur = () => salvarCampoAluno(inp.dataset.al, inp.dataset.campo, inp.value.trim());
+    inp.onkeydown = e => { if (e.key === "Enter") inp.blur(); };
+  });
 
   const btnAloc = document.getElementById("aloc-confirmar");
   if (btnAloc) btnAloc.onclick = async () => {
@@ -3993,6 +4025,32 @@ function turmaDoAluno(a){
 
 // Realocar: tira o aluno da turma atual (se houver) e põe na nova. Turma
 // vazia = deixar sem turma, que é como ele volta pra fila do topo.
+async function salvarCampoAluno(id, campo, valor, elFeedback){
+  const a = ALUNOS_SB.find(x => x.id === id);
+  if (!a) return;
+  const antes = a[campo];
+  const novo = valor === "" ? null : valor;
+  if (antes === novo) return;
+  a[campo] = novo;
+  if (elFeedback) elFeedback.textContent = "…";
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/alunos?id=eq.${id}`, {
+      method: "PATCH", headers: SB_H, body: JSON.stringify({ [campo]: novo })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    if (CAMPOS_COMPARTILHADOS_ALUNO_USUARIO.includes(campo)){
+      await sincronizarCampoLigado("usuarios", "aluno_id", id, campo, novo);
+      const u = (USUARIOS_SB || []).find(x => x.aluno_id === id);
+      if (u) u[campo] = novo;
+    }
+    if (elFeedback){ elFeedback.textContent = "✓"; setTimeout(() => elFeedback.textContent = "", 1600); }
+  } catch(err){
+    a[campo] = antes;   // desfaz na memória pra tela não mentir
+    alert("Erro ao salvar: " + err.message);
+    renderAlunosTabela();
+  }
+}
+
 async function realocarAluno(alunoId, turmaId){
   const aluno = ALUNOS_SB.find(a => a.id === alunoId);
   if (!aluno) return;

@@ -1541,6 +1541,18 @@ const SUPABASE_HEADERS = {
   "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
   "Content-Type": "application/json"
 };
+
+// RLS por papel (26/08): a chave anônima não lê/escreve mais bupp_dashboard_data
+// nem empresas_cliente. Troca o Authorization pelo token de quem está logado,
+// assim que a sessão (já salva pelo login) estiver disponível. Mesmo padrão
+// do fix em interna.html.
+if (window.supabase){
+  window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY).auth.getSession().then(({ data }) => {
+    const sessao = data && data.session;
+    if (sessao) SUPABASE_HEADERS.Authorization = `Bearer ${sessao.access_token}`;
+  });
+}
+
 const CLOUD_SECTIONS = ["tasks", "users", "leads"];
 
 const TASKS_STORAGE_KEY = "tasks_std_data";

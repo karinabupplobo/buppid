@@ -11,7 +11,7 @@
 //   <script src="auth-guard.js"></script>
 //
 // Regras:
-//   - sem sessão            -> volta pro login
+//   - sem sessão            -> volta pro login (index.html)
 //   - e-mail fora de `usuarios` -> desloga e volta pro login
 //   - papel não aceito      -> manda pra dash do papel certo (não pro login,
 //                              senão a pessoa entraria num laço)
@@ -19,7 +19,8 @@
 // Os formulários públicos (nova-turma.html, nivel-test.html) NÃO incluem
 // este arquivo de propósito — são preenchidos por quem ainda não tem conta.
 //
-// O mapa de destinos é o mesmo do login.html; mudar um exige mudar o outro.
+// O mapa de destinos é o mesmo do index.html (a tela de login); mudar um
+// exige mudar o outro.
 
 (function guardaDeRota(){
   const SUPABASE_URL = "https://gajvcgrfljyxgahzfjfp.supabase.co";
@@ -41,7 +42,7 @@
   estilo.textContent = "body{visibility:hidden}";
   document.head.appendChild(estilo);
   const liberar = () => estilo.remove();
-  const paraLogin = () => location.replace("login.html");
+  const paraLogin = () => location.replace("index.html");
 
   if (!window.supabase){
     console.error("auth-guard: supabase-js não carregou; incluir o CDN antes deste arquivo.");
@@ -66,7 +67,7 @@
       if (!u){ await sb.auth.signOut(); return paraLogin(); }
 
       if (aceitos.length && !aceitos.includes(u.papel)){
-        return location.replace(DESTINO[u.papel] || "login.html");
+        return location.replace(DESTINO[u.papel] || "index.html");
       }
 
       // Deixa o usuário logado disponível pra dash — é daqui que sai o
@@ -83,6 +84,6 @@
   // Sair: qualquer dash pode chamar window.sairDaPlataforma().
   window.sairDaPlataforma = async () => {
     await sb.auth.signOut();
-    location.replace("login.html");
+    location.replace("index.html");
   };
 })();

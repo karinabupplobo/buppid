@@ -743,7 +743,7 @@
 
     main{
       grid-column: 2;
-      /* Sem teto de largura: a tabela de Tasks embutida (index.html) colapsa
+      /* Sem teto de largura: a tabela de Tasks embutida (crm.html) colapsa
          pro modo cartão abaixo de ~1140px de largura útil, e o teto antigo de
          1180px menos a sidebar e o padding deixava justamente abaixo disso.
          Solto aqui, o Tasks embutido fica igual ao standalone em tela grande. */
@@ -1052,12 +1052,12 @@
   .au-chip button:hover{ background: var(--teal-escuro); color: #fff; }
 
   /* ── Abas embutidas (Tasks, Leads, Mercado) ──
-     São a dash do index.html dentro de um iframe: mesmo código, sempre em
+     São a dash do crm.html dentro de um iframe: mesmo código, sempre em
      sincronia. Quando o index for aposentado, o conteúdo migra para cá e
      estas três abas passam a ser nativas. */
   .pane.emb{ padding: 0; }
   .pane.emb.active{ display: flex; flex-direction: column; }
-  /* A tabela de Tasks do index.html vira modo cartão abaixo de ~1140px de
+  /* A tabela de Tasks do crm.html vira modo cartão abaixo de ~1140px de
      largura útil. Cada pixel gasto com padding aqui conta, então as abas
      embutidas anulam o padding lateral do main e usam a largura inteira —
      é a diferença entre ver a tabela e ver cartões numa tela de 1366px. */
@@ -1672,11 +1672,11 @@
   </section>
 
   <section class="pane emb" id="pane-tasks">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=tasks&v=18" title="Tasks"></iframe>
+    <iframe class="emb-frame" data-src="crm.html?embed=1&view=tasks&v=18" title="Tasks"></iframe>
   </section>
 
   <section class="pane emb" id="pane-leads">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=leads&v=18" title="Leads"></iframe>
+    <iframe class="emb-frame" data-src="crm.html?embed=1&view=leads&v=18" title="Leads"></iframe>
   </section>
 
   <section class="pane" id="pane-docs">
@@ -1692,7 +1692,7 @@
   </section>
 
   <section class="pane emb" id="pane-mercado">
-    <iframe class="emb-frame" data-src="index.html?embed=1&view=estudo&v=18" title="Mercado"></iframe>
+    <iframe class="emb-frame" data-src="crm.html?embed=1&view=estudo&v=18" title="Mercado"></iframe>
   </section>
 
   <section class="pane" id="pane-alertas">
@@ -3536,7 +3536,7 @@ function nivelAlunoLabel(a){
 }
 
 // Quem está escrevendo uma anotação não é digitado à mão — vem do login
-// de verdade. index.html (embutido aqui nas abas Tasks/Leads/Mercado) já
+// de verdade. crm.html (embutido aqui nas abas Tasks/Leads/Mercado) já
 // tem login por usuário/senha e guarda a sessão em localStorage; como
 // interna.html é servido da mesma origem, dá pra ler direto, sem duplicar
 // login nenhum. Só funciona depois que a pessoa loga pelo menos uma vez
@@ -3544,7 +3544,7 @@ function nivelAlunoLabel(a){
 function usuarioLogadoInterno(){
   // Vem do login de verdade (auth-guard.js preenche window.USUARIO_LOGADO
   // com o registro da tabela `usuarios`). O fallback abaixo lê a sessão
-  // antiga do index.html e só existe pra não travar quem abrir a página
+  // antiga do crm.html e só existe pra não travar quem abrir a página
   // antes do login estar em uso; sai quando o login virar obrigatório.
   if (window.USUARIO_LOGADO && window.USUARIO_LOGADO.nome) return window.USUARIO_LOGADO.nome;
   try{
@@ -4118,7 +4118,7 @@ document.querySelectorAll(".tab").forEach(t => {
     document.querySelectorAll(".pane").forEach(p =>
       p.classList.toggle("active", p.id === "pane-" + t.dataset.pane));
 
-    // As abas Tasks, Leads e Mercado são a própria dash do index.html embutida.
+    // As abas Tasks, Leads e Mercado são a própria dash do crm.html embutida.
     // Carrega o iframe só na primeira vez que a aba é aberta — evita puxar a
     // dash inteira (e o login) para quem só quer ver os dados.
     const pane = document.getElementById("pane-" + t.dataset.pane);

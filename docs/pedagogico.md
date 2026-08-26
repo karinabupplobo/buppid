@@ -16,22 +16,28 @@ Aula = sequência de **telas em carrossel horizontal**, navegação por swipe
 (ou clique nas bolinhas de navegação no rodapé). Uma tela por vez ocupa a
 tela inteira do celular, sempre centralizada.
 
-### Estrutura de telas (ordem atual)
+### Estrutura de telas (ordem atual — 9 telas, reestruturada em 26/08/2026)
 
 | # | Nome (título visível) | Tipo de conteúdo |
 |---|---|---|
 | 1 | **Step 1** | Tela marcadora de etapa — só o texto centralizado, mesma fonte/estilo dos títulos |
 | 2 | **Vocab** | 6 flashcards (2 linhas x 3), viram ao clicar (frente EN / verso PT) |
-| 3 | **What would you do?** | Card de leitura (texto curto) + card de pergunta + 4 respostas numeradas, cada uma expande/recolhe ao clicar (pode abrir várias ao mesmo tempo) |
-| 4 | **Grammar** | Card grande centralizado ensinando a estrutura gramatical usada na tela anterior |
-| 5 | **Practice** | Exercícios de completar frase sobre a gramática ensinada, resposta revelável por número |
-| 6 | **Situational** | Card grande: fala do Personagem 1; Personagem 2 responde de cabeça (sem input escrito) |
-| 7 | **Debate** | Card grande com uma moção/afirmação para provocar debate em sala |
-| 8 | **Fim** | Tela marcadora de encerramento — só o texto centralizado, mesma fonte/estilo dos títulos (igual à tela Step 1) |
+| 3 | **Vocab Practice** | Exercícios (completar/múltipla) treinando especificamente o vocabulário da tela anterior |
+| 4 | **What would you do?** | Card de leitura (texto curto) + card de pergunta + respostas numeradas expansíveis, reciclando o vocabulário |
+| 5 | **Grammar** | Tabela compacta (Affirmative/Negative/Question ou variação equivalente) — bate o olho e entende a forma, sem parágrafo |
+| 6 | **Practice** | Exercícios de completar frase sobre a gramática ensinada, resposta revelável por número |
+| 7 | **Situational** | Diálogo entre dois personagens; palavras em `<strong>` marcam pontos que o professor/gerador pode trocar ao adaptar pra outra turma |
+| 8 | **Debate** | Card grande com uma moção/afirmação para provocar debate em sala, calibrada pro nível da turma |
+| 9 | **Fim** | Tela marcadora de encerramento — só o texto centralizado, mesma fonte/estilo dos títulos (igual à tela Step 1) |
 
-**Padrão pedagógico por trás da ordem 2→5:** vocabulário → uso em contexto
-(leitura) → explicação da gramática usada nesse contexto → prática guiada →
-aplicação livre (situational) → aplicação em grupo (debate).
+**Padrão pedagógico por trás da ordem 2→6:** vocabulário → prática do
+vocabulário → uso em contexto (leitura) → explicação da gramática usada
+nesse contexto → prática guiada → aplicação livre (situational) →
+aplicação em grupo (debate).
+
+**Histórico:** até 26/08/2026 a estrutura tinha 8 telas, sem a Vocab
+Practice, com Grammar em texto corrido (regra/explicação/exemplo) e
+Situational como fala única + resposta revelável. Ver `CHANGELOG.md`.
 
 ---
 
@@ -115,7 +121,7 @@ não são o conteúdo final de nenhuma aula específica.
 
 ---
 
-## 6. Regras de geração de conteúdo (Pedagógico 2)
+## 6. Regras de geração de conteúdo (Pedagógico 2, reestruturado 26/08/2026)
 
 Regras de dependência entre telas — o que cada tela **deve conter** em
 relação às outras, pensando no gerador de aulas automático:
@@ -123,23 +129,24 @@ relação às outras, pensando no gerador de aulas automático:
 | Tela | Regra de conteúdo |
 |---|---|
 | **Vocab** | Traz sempre o **vocabulário principal daquela aula** — é a fonte de vocabulário que as telas seguintes vão reutilizar. |
+| **Vocab Practice** | Treina especificamente o vocabulário ensinado em Vocab. Nenhum item novo. |
 | **What would you do?** | Traz uma situação que usa **também** o vocabulário ensinado em Vocab (não é uma leitura solta — precisa reaproveitar os termos da tela anterior). |
-| **Grammar** | Ensina a estrutura gramatical daquela aula (a que será usada em Practice, Situational e Debate). |
+| **Grammar** | Ensina a estrutura gramatical daquela aula (a que será usada em Practice, Situational e Debate), em **tabela compacta** — não em texto corrido. |
 | **Practice** | Treina especificamente a gramática ensinada em Grammar. |
-| **Situational** | Traz uma situação que usa a **gramática e/ou o vocabulário** da aula (Grammar e/ou Vocab). |
-| **Debate** | Mesma regra do Situational — traz um debate que usa a **gramática e/ou o vocabulário** da aula. |
+| **Situational** | Diálogo entre dois personagens usando a **gramática e/ou o vocabulário** da aula (Grammar e/ou Vocab). Palavras marcadas em `<strong>` são pontos que o professor/gerador pode trocar ao adaptar a aula pra outra turma — convenção de conteúdo, não interação do app. |
+| **Debate** | Mesma regra de conteúdo do Situational — moção usando a **gramática e/ou o vocabulário** da aula — mas com atenção redobrada: **a moção não pode usar gramática que a turma ainda não viu** (nem da aula atual em diante, nem de nível acima do atual). Erro já cometido nesta sessão: motion com "Should...?" numa turma A1, sendo que "should" só é criterial em A2. 
 
 **Resumo da lógica:** Vocab e Grammar são as duas fontes de conteúdo da
-aula. Toda tela depois delas (What would you do?, Situational, Debate)
-precisa reciclar esse conteúdo em vez de introduzir vocabulário ou
-gramática nova — e Practice é dedicada 100% a treinar a gramática
-ensinada.
+aula. Toda tela depois delas (Vocab Practice, What would you do?,
+Situational, Debate) precisa reciclar esse conteúdo em vez de introduzir
+vocabulário ou gramática nova — Vocab Practice treina 100% o vocabulário,
+Practice treina 100% a gramática ensinada.
 
 ### 6.1 Parâmetros globais de entrada (definidos uma vez por aula)
 
 ```json
 {
-  "nivel": "A2 | B1 | B1+ | B2 | C1",
+  "nivel": "Pre-A1 | A1 | A2 | B1 | B2 | C1 | C2",
   "tema": "setor ou situação de negócio, ex: 'vendas B2B'",
   "gramatica": "estrutura a ensinar, ex: 'second conditional'",
   "objetivo_master": "resultado de negócio da aula, ex: 'negociar prazo de pagamento'",
@@ -147,7 +154,7 @@ ensinada.
 }
 ```
 
-### 6.2 Schema completo de saída (contrato IA → template)
+### 6.2 Schema completo de saída (contrato IA → template, 9 telas)
 
 ```json
 {
@@ -158,7 +165,16 @@ ensinada.
   "vocab": {
     "tipo": "termo | frase",
     "itens": [
-      { "front_en": "...", "back_pt": "...", "imagem": "<svg>...</svg>" }
+      { "front_en": "...", "back_pt": "...", "imagem": "<svg>...</svg> ou <img src=...>" }
+    ]
+  },
+
+  "vocab_practice": {
+    "exercicios": [
+      { "tipo": "completar | multipla_escolha",
+        "enunciado": "...",
+        "opcoes": ["..."],
+        "resposta": "..." }
     ]
   },
 
@@ -170,9 +186,13 @@ ensinada.
   },
 
   "grammar": {
-    "regra": "...",
-    "explicacao": "...",
-    "exemplo": "..."
+    "titulo": "ex: 'Present Simple — routines and facts'",
+    "linhas": [
+      { "forma": "Affirmative", "exemplo": "..." },
+      { "forma": "Negative", "exemplo": "..." },
+      { "forma": "Question", "exemplo": "..." }
+    ],
+    "nota": "(opcional) legenda curta em itálico, uma frase — não parágrafo"
   },
 
   "practice": {
@@ -186,13 +206,15 @@ ensinada.
 
   "situational": {
     "cena": "<svg>...</svg> ou <img>...</img>",
-    "contexto": "(opcional) uma frase de rubrica, situando a cena antes da fala — necessário quando a foto real (ou o SVG) sozinha não deixa claro o que está acontecendo, ex.: cena genérica de ambiente sem os personagens da narrativa. Campo opcional: aulas sem ele continuam renderizando normalmente.",
-    "fala_personagem_1": "...",
-    "resposta_possivel": "..."
+    "contexto": "(opcional) uma frase de rubrica, situando a cena antes do diálogo — necessário quando a foto real (ou o SVG) sozinha não deixa claro o que está acontecendo. Campo opcional: aulas sem ele continuam renderizando normalmente.",
+    "falas": [
+      { "personagem": 1, "texto": "Hi, I'm the new <strong>supervisor</strong>." },
+      { "personagem": 2, "texto": "Nice to meet you! Welcome to the <strong>team</strong>." }
+    ]
   },
 
   "debate": {
-    "mocao": "..."
+    "mocao": "... (só gramática já vista pela turma, nunca de nível acima)"
   },
 
   "encerramento": {
@@ -223,27 +245,50 @@ ensinada.
   - Nenhuma resposta é "certa" — são possibilidades plausíveis para reflexão, não múltipla escolha com gabarito.
   - Deve reaproveitar termos do `vocab` gerado na tela anterior.
 
-- **Grammar**
-  - Explicação sempre em linguagem simples e didática — sem jargão gramatical pesado.
-  - Exemplo sempre ancorado no `tema` da aula (nunca genérico).
+- **Vocab Practice** (nova, 26/08/2026)
+  - Mesmo formato de exercício da tela Practice (completar/múltipla escolha),
+    mas treinando o vocabulário de `vocab`, nunca a gramática da aula.
+  - Quantidade: **variável, 3 a 5**.
+
+- **Grammar** (reformulada em tabela, 26/08/2026)
+  - `linhas` é uma tabela compacta — tipicamente Affirmative/Negative/
+    Question, mas outra tripla pode encaixar melhor conforme a estrutura
+    (ex.: comparative/superlative, ou formas de um modal). Objetivo:
+    **bater o olho e entender a forma**, sem precisar ler parágrafo.
+  - Cada `exemplo` sempre ancorado no `tema` da aula (nunca genérico).
+  - `nota` é opcional e curta (uma frase) — não é o lugar pra reintroduzir
+    o texto corrido que a tabela substituiu.
 
 - **Practice**
   - Quantidade de exercícios: **variável, 3 a 6**.
   - Tipos misturados, escolhidos pelo nível:
-    - A2–B1: completar frase (mais guiado).
-    - B1+–B2: mistura de completar + múltipla escolha.
-    - C1: transformação de frase (produção livre).
+    - Pre-A1–A2: completar frase (mais guiado).
+    - B1–B2: mistura de completar + múltipla escolha.
+    - C1–C2: transformação de frase / reescrita (produção livre).
   - Sempre treina exatamente a regra gerada em `grammar`.
 
-- **Situational**
-  - **`cena` (opcional).** SVG inline em `viewBox="0 0 200 130"`. No desktop o
-    personagem aparece ao lado da fala.
+- **Situational** (virou diálogo, 26/08/2026)
+  - `falas` é uma sequência de turnos `{ personagem: 1 | 2, texto }`, não
+    mais uma fala única + resposta revelável.
+  - `texto` de cada fala entra **cru** (pode ter `<strong>`) — mesma lógica
+    do campo `imagem`: conteúdo do gerador, não do usuário, não passa por
+    escape de HTML no template.
+  - Palavras em `<strong>` marcam pontos que o professor pode trocar ao
+    adaptar a aula pra outra turma/empresa. **Isso é convenção de
+    conteúdo, não mecanismo interativo do app** — decisão explícita da
+    Karina em 26/08/2026, avaliada e descartada a opção de tornar
+    interativo (aluno tocar/editar a palavra).
+  - **`cena` (opcional).** SVG inline em `viewBox="0 0 200 130"`.
   - A IA escolhe se usa gramática, vocabulário, ou os dois — não é obrigatório usar ambos.
-  - Tem um botão opcional "Ver uma resposta possível" (reaproveita a mecânica de número expansível, com 1 item).
-  - Personagem 2 responde de cabeça — não há campo de escrita.
 
 - **Debate**
   - Mesma liberdade de escolha (gramática e/ou vocabulário) do Situational.
+  - **Regra dura, adicionada 26/08/2026: a moção nunca usa estrutura
+    gramatical que a turma ainda não tenha visto** — nem da aula atual em
+    diante no mesmo curso, nem de nível acima do nível da turma. Checar
+    contra o inventário do nível (seção 3 do arquivo em `pedagogico/`)
+    antes de fechar a moção. Erro real cometido nesta sessão: motion com
+    "Should...?" pra turma A1, sendo que `should` só é criterial em A2.
 
 - **Abertura / Encerramento**
   - Título de abertura é **dinâmico**: `nome_modulo` da aula.

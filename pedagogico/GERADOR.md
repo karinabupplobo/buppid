@@ -13,7 +13,7 @@ no `index.html` foi removida em 19/08/2026 — ver `CHANGELOG.md`,
 
 1. Os 7 arquivos de nível desta pasta (`00-pre-a1.md` a `06-c2.md`)
 2. O `README.md` desta pasta — em especial a regra **criterial vs. disponível**
-3. As seções 1 a 6 do `docs/pedagogico.md` — estrutura das 8 telas, componentes,
+3. As seções 1 a 6 do `docs/pedagogico.md` — estrutura das 9 telas, componentes,
    regras de dependência de conteúdo e schema JSON de saída
 
 Só depois de ler é que o Passo 2 começa.
@@ -85,6 +85,15 @@ Karina, caso a caso, **sem regra fixa**:
 - criar combinações novas no arquivo do nível (vira commit próprio),
 - repetir gramática de propósito, em contexto/vocabulário diferente.
 
+**Regra adicional (26/08/2026):** não é preciso esperar a capacidade
+esgotar pra propor uma combinação nova. Se um item **já criterial do
+nível** (existe na seção 3 ou 4 do arquivo) encaixa melhor no tema da aula
+mas ainda não tem linha na matriz da seção 5, o gerador pode usá-lo —
+**mas sempre perguntando à Karina antes de adicionar**, nunca
+silenciosamente. Continua proibido puxar item de nível diferente do
+pedido (isso não muda: ver regra criterial vs. disponível no
+`pedagogico/README.md`).
+
 ---
 
 ## Passo 6 — Temas dos módulos
@@ -155,7 +164,7 @@ Substitui os antigos portões de 20%/60%/100%. Fluxo:
 2. Pedir os temas das 6 aulas desse módulo.
 3. Gerar a aula 1 completa (schema do Passo 10) e pedir aprovação.
 4. Aprovada a aula, atualizar a linha correspondente em `aulas_assigned`:
-   `tema`, `conteudo` (JSON das 8 telas) e `status = 'aprovada'`,
+   `tema`, `conteudo` (JSON das 9 telas) e `status = 'aprovada'`,
    `aprovada_em = now()`. Só então gerar a aula 2 — e assim até a aula 6.
 5. Passar pro módulo 2: pedir os temas das próximas 6 aulas, repetir o ciclo.
 6. Seguir até fechar as 48 aulas.
@@ -170,19 +179,27 @@ Regras:
 
 ## Passo 10 — Formato de saída de cada aula
 
-O JSON das 8 telas, conforme o schema do `docs/pedagogico.md` §6.2,
+O JSON das 9 telas, conforme o schema do `docs/pedagogico.md` §6.2,
 respeitando:
 
 - **Regra de dependência (§6):** Vocab e Grammar são as duas únicas fontes de
-  conteúdo. What would you do?, Situational e Debate reciclam esse conteúdo;
-  Practice treina exclusivamente a gramática da tela Grammar. Nada de
-  vocabulário ou gramática novos no meio da aula.
+  conteúdo. Vocab Practice treina exclusivamente o vocabulário; What would
+  you do?, Situational e Debate reciclam Vocab e/ou Grammar; Practice
+  treina exclusivamente a gramática da tela Grammar. Nada de vocabulário
+  ou gramática novos no meio da aula.
 - **Regra criterial:** a tela Grammar só ensina item criterial do nível
   pedido. As demais telas podem usar livremente qualquer coisa dos níveis
   anteriores.
+- **Debate não avança nível:** a moção nunca usa gramática que a turma
+  ainda não viu, nem do nível pedido em diante — ver regra em
+  `docs/pedagogico.md` §6.3.
 - **Regras por nível (§6.3):** quantidade de itens em Vocab, tipo de
   exercício em Practice, formato do Vocab (termo solto até A2, frase em
   contexto de B1 em diante).
+- **Grammar em tabela, Situational em diálogo** (26/08/2026): ver formato
+  exato em `docs/pedagogico.md` §6.2/§6.3. Palavra em `<strong>` no
+  Situational é convenção de conteúdo (ponto trocável pelo professor),
+  não interação do app.
 - O `contexto_empresa` personaliza a situação; **não** substitui a escolha
   pedagógica feita no mapa.
 

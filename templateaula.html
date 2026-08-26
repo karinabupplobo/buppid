@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <!--
-  PEDAGÓGICO 2 — REGRAS DE GERAÇÃO DE CONTEÚDO
+  PEDAGÓGICO 2 — REGRAS DE GERAÇÃO DE CONTEÚDO (estrutura de 9 telas, 26/08/2026)
   ================================================
-  Vocab        -> traz o vocabulário PRINCIPAL da aula (fonte de vocabulário
-                  reutilizada pelas telas seguintes).
-  What would    -> traz uma situação que usa TAMBÉM o vocabulário de Vocab.
+  Vocab          -> traz o vocabulário PRINCIPAL da aula (fonte de vocabulário
+                    reutilizada pelas telas seguintes).
+  Vocab Practice -> treina especificamente o vocabulário ensinado em Vocab.
+  What would      -> traz uma situação que usa TAMBÉM o vocabulário de Vocab.
   you do?
-  Grammar      -> ensina a gramática da aula (a que será usada em Practice,
-                  Situational e Debate).
-  Practice     -> treina especificamente a gramática ensinada em Grammar.
-  Situational  -> traz uma situação que usa a gramática e/ou o vocabulário
-                  da aula.
-  Debate       -> mesma regra do Situational: debate usando a gramática
-                  e/ou o vocabulário da aula.
+  Grammar        -> ensina a gramática da aula em tabela compacta (afirmativa/
+                    negativa/pergunta ou variação equivalente) — não em texto
+                    corrido. Isso será usado em Practice, Situational e Debate.
+  Practice       -> treina especificamente a gramática ensinada em Grammar.
+  Situational    -> diálogo entre dois personagens usando a gramática e/ou o
+                    vocabulário da aula. Palavras em <strong> marcam pontos que
+                    o professor/gerador pode trocar ao adaptar pra outra turma
+                    — não é interativo no app, é convenção de conteúdo.
+  Debate         -> mesma regra do Situational: frase de debate usando a
+                    gramática e/ou o vocabulário da aula, calibrada pro nível.
 
   Resumo: Vocab e Grammar são as fontes de conteúdo. Toda tela depois delas
   precisa reciclar esse conteúdo, nunca introduzir vocabulário/gramática
-  nova. Practice é 100% dedicada a treinar a gramática ensinada.
+  nova. Vocab Practice e Practice são 100% dedicadas a treinar o que vem
+  antes delas.
 -->
 <html lang="pt-BR">
 <head>
@@ -56,14 +61,14 @@
 
   .screens{
     display: flex;
-    width: 800%; /* 8 telas */
+    width: 900%; /* 9 telas */
     height: 100%;
     transition: transform 0.45s cubic-bezier(0.4, 0.1, 0.2, 1);
     will-change: transform;
   }
 
   .screen{
-    width: calc(100% / 8);
+    width: calc(100% / 9);
     height: 100%;
     flex-shrink: 0;
     display: flex;
@@ -466,6 +471,115 @@
     border-radius: 6px;
   }
 
+  /* ===== Grammar: tabela compacta (afirmativa/negativa/pergunta) =====
+     Substitui o texto corrido antigo (regra/explicação/exemplo em parágrafo).
+     Objetivo: bater o olho e entender a forma sem ler parágrafo. */
+  .gram-tabela{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .gram-linha{
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 4px 12px;
+    align-items: center;
+    background: rgba(217, 226, 140, 0.18);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .gram-forma{
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--texto);
+    opacity: 0.6;
+  }
+
+  .gram-exemplo{
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+    line-height: 1.4;
+  }
+
+  .gram-nota{
+    margin-top: 12px !important;
+    font-size: 12.5px !important;
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  @media (orientation: portrait){
+    .gram-linha{ grid-template-columns: 1fr; gap: 3px; padding: 9px 12px; }
+  }
+
+  @media (orientation: landscape) and (max-height: 600px){
+    .gram-linha{ padding: 1vh 12px; }
+    .gram-forma{ font-size: clamp(9px, 1.6vh, 11.5px); }
+    .gram-exemplo{ font-size: clamp(12px, 2.2vh, 15px); }
+    .gram-tabela{ gap: 0.8vh; }
+  }
+
+  /* ===== Situational: diálogo entre dois personagens =====
+     Substitui o modelo antigo (fala única + resposta revelável). Palavras
+     em <strong> no texto marcam pontos trocáveis pelo professor/gerador ao
+     adaptar a aula pra outra turma — é convenção de conteúdo, não interação
+     do app. O campo "texto" de cada fala entra CRU (pode ter <strong>),
+     mesma lógica do campo "imagem": conteúdo do gerador, não do usuário. */
+  .dialogo{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .fala{
+    max-width: 88%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--texto);
+  }
+
+  .fala strong{
+    background: rgba(217, 226, 140, 0.55);
+    padding: 0 3px;
+    border-radius: 3px;
+  }
+
+  .fala-autor{
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+    margin-bottom: 3px;
+  }
+
+  .fala.p1{
+    background: var(--branco);
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+
+  .fala.p2{
+    background: rgba(217, 226, 140, 0.35);
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+
+  @media (orientation: landscape) and (max-height: 600px){
+    .fala{ font-size: clamp(11px, 2vh, 14px); padding: 1vh 12px; }
+    .dialogo{ gap: 1vh; }
+  }
+
   /* Rubrica de contexto da tela Situational: situa a cena antes da fala,
      como uma didascália de teatro — itálico, discreto, sem caixa. Campo
      opcional no schema; telas antigas sem "contexto" continuam iguais. */
@@ -797,7 +911,45 @@
       </div>
     </section>
 
-    <!-- TELA 2: WHAT WOULD YOU DO? -->
+    <!-- TELA 3: VOCAB PRACTICE -->
+    <section class="screen">
+      <h1 class="screen-title">Vocab Practice</h1>
+      <div class="s4-wrap">
+
+        <div class="answer-item">
+          <div class="answer-head">
+            <span class="num-btn">1</span>
+            <p>"Let's find a middle ___." (fill in the missing word)</p>
+          </div>
+          <div class="answer-body">
+            <p>ground</p>
+          </div>
+        </div>
+
+        <div class="answer-item">
+          <div class="answer-head">
+            <span class="num-btn">2</span>
+            <p>Complete: "I hear what you're ___, but..."</p>
+          </div>
+          <div class="answer-body">
+            <p>saying</p>
+          </div>
+        </div>
+
+        <div class="answer-item">
+          <div class="answer-head">
+            <span class="num-btn">3</span>
+            <p>Complete: "Can we ___ this point later?"</p>
+          </div>
+          <div class="answer-body">
+            <p>revisit</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TELA 4: WHAT WOULD YOU DO? -->
     <section class="screen">
       <h1 class="screen-title">What would you do?</h1>
       <div class="s2-wrap">
@@ -856,18 +1008,30 @@
       </div>
     </section>
 
-    <!-- TELA 3: STRUCTURE -->
+    <!-- TELA 5: GRAMMAR -->
     <section class="screen">
       <h1 class="screen-title">Grammar</h1>
       <div class="big-card">
         <h2>Second Conditional — hypothetical situations</h2>
-        <p><strong>If + past simple, ... would + base verb</strong></p>
-        <p>Use this structure to talk about imaginary, unlikely, or hypothetical situations in a negotiation — things that aren't happening now, but could.</p>
-        <p class="prompt">Example: "If the client asked for a discount, we would review the contract terms."</p>
+        <div class="gram-tabela">
+          <div class="gram-linha">
+            <span class="gram-forma">Affirmative</span>
+            <span class="gram-exemplo">If the client asked for a discount, we would review the terms.</span>
+          </div>
+          <div class="gram-linha">
+            <span class="gram-forma">Negative</span>
+            <span class="gram-exemplo">If the client didn't confirm today, we wouldn't hold the price.</span>
+          </div>
+          <div class="gram-linha">
+            <span class="gram-forma">Question</span>
+            <span class="gram-exemplo">If we offered a better price, would you sign today?</span>
+          </div>
+        </div>
+        <p class="gram-nota">If + past simple, ... would + base verb — for imaginary or unlikely situations, not things happening now.</p>
       </div>
     </section>
 
-    <!-- TELA 4: PRACTICE -->
+    <!-- TELA 6: PRACTICE -->
     <section class="screen">
       <h1 class="screen-title">Practice</h1>
       <div class="s4-wrap">
@@ -915,16 +1079,24 @@
       </div>
     </section>
 
-    <!-- TELA 5: SITUATIONAL -->
+    <!-- TELA 7: SITUATIONAL -->
     <section class="screen">
       <h1 class="screen-title">Situational</h1>
       <div class="big-card">
-        <p><strong>Character 1 (Client):</strong> "Your price is 15% higher than your competitor's. Can you justify that?"</p>
-        <p class="prompt">Character 2 — think about your response in your head. What would you say to defend the price?</p>
+        <div class="dialogo">
+          <div class="fala p1">
+            <span class="fala-autor">Character 1</span>
+            Your price is <strong>15% higher</strong> than your <strong>competitor's</strong>. Can you justify that?
+          </div>
+          <div class="fala p2">
+            <span class="fala-autor">Character 2</span>
+            Our price reflects <strong>faster delivery</strong> and <strong>better support</strong> — that's what you're paying for.
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- TELA 6: DEBATING -->
+    <!-- TELA 8: DEBATING -->
     <section class="screen">
       <h1 class="screen-title">Debate</h1>
       <div class="big-card">
@@ -933,7 +1105,7 @@
       </div>
     </section>
 
-    <!-- TELA 8: FIM -->
+    <!-- TELA 9: FIM -->
     <section class="screen">
       <h1 class="screen-title step-title">Fim</h1>
     </section>
@@ -952,6 +1124,7 @@
     <span class="dot" data-index="5"></span>
     <span class="dot" data-index="6"></span>
     <span class="dot" data-index="7"></span>
+    <span class="dot" data-index="8"></span>
   </div>
 </div>
 
@@ -960,7 +1133,8 @@
   // Aberto direto no navegador, o template mantém o conteúdo estático de exemplo
   // que já está no HTML. Embutido num iframe (a aba Cursos da dash), recebe uma
   // mensagem { type: "bupp:aula", aula: {...} } no schema de docs/pedagogico.md §6.2
-  // e reconstrói as 8 telas a partir dela.
+  // e reconstrói as 9 telas a partir dela (estrutura de 26/08/2026: Vocab Practice
+  // nova, Grammar em tabela, Situational em diálogo — ver comentário no topo do arquivo).
 
   function esc(v) {
     return String(v == null ? "" : v)
@@ -1020,12 +1194,28 @@
       + '</div></section>';
   }
 
+  function telaVocabPractice(vp) {
+    const ex = (vp && vp.exercicios) || [];
+    const itens = ex.map((e, i) => itemExpansivel(i + 1, e.enunciado, e.resposta)).join("");
+    return '<section class="screen"><h1 class="screen-title">Vocab Practice</h1>'
+      + '<div class="s4-wrap">' + itens + '</div></section>';
+  }
+
+  // Grammar virou tabela compacta (afirmativa/negativa/pergunta, ou variação
+  // equivalente) em vez de regra/explicação/exemplo em texto corrido — objetivo
+  // é bater o olho e entender a forma, decisão de 26/08/2026.
   function telaGrammar(g) {
+    const linhas = (g && g.linhas) || [];
+    const tabela = linhas.map(l =>
+      '<div class="gram-linha"><span class="gram-forma">' + esc(l.forma) + '</span>'
+      + '<span class="gram-exemplo">' + esc(l.exemplo) + '</span></div>'
+    ).join("");
+    const nota = (g && g.nota) ? '<p class="gram-nota">' + esc(g.nota) + '</p>' : '';
     return '<section class="screen"><h1 class="screen-title">Grammar</h1>'
       + '<div class="big-card">'
-      + '<h2>' + esc(g && g.regra) + '</h2>'
-      + '<p>' + esc(g && g.explicacao) + '</p>'
-      + '<p class="prompt">' + esc(g && g.exemplo) + '</p>'
+      + '<h2>' + esc(g && g.titulo) + '</h2>'
+      + '<div class="gram-tabela">' + tabela + '</div>'
+      + nota
       + '</div></section>';
   }
 
@@ -1036,19 +1226,26 @@
       + '<div class="s4-wrap">' + itens + '</div></section>';
   }
 
+  // Situational virou diálogo entre dois personagens (decisão de 26/08/2026),
+  // no lugar de fala única + resposta revelável. "texto" de cada fala entra
+  // CRU — pode ter <strong> marcando palavra trocável pelo professor/gerador
+  // ao adaptar pra outra turma; convenção de conteúdo, não interação do app.
+  // Mesma lógica do campo "imagem": conteúdo do gerador, não do usuário.
   function telaSituational(s) {
     const cena = (s && s.cena) ? '<div class="cena">' + s.cena + '</div>' : '';
     const contexto = (s && s.contexto)
       ? '<p class="situational-contexto">' + esc(s.contexto) + '</p>' : '';
-    const conteudo = '<div class="conteudo">'
-      + contexto
-      + '<p><strong>Character 1:</strong> ' + esc(s && s.fala_personagem_1) + '</p>'
-      + '<div class="answers">'
-      + itemExpansivel(1, "Ver uma resposta possível", (s && s.resposta_possivel) || "")
-      + '</div></div>';
+    const falas = (s && s.falas) || [];
+    const dialogo = falas.map(f =>
+      '<div class="fala p' + (f.personagem || 1) + '">'
+      + '<span class="fala-autor">Character ' + (f.personagem || 1) + '</span>'
+      + (f.texto || '')
+      + '</div>'
+    ).join("");
     return '<section class="screen"><h1 class="screen-title">Situational</h1>'
       + '<div class="big-card' + (cena ? ' com-cena' : '') + '">'
-      + cena + conteudo + '</div></section>';
+      + cena + contexto + '<div class="dialogo">' + dialogo + '</div>'
+      + '</div></section>';
   }
 
   function telaDebate(d) {
@@ -1064,6 +1261,7 @@
     const html = [
       telaMarcador((aula.abertura && aula.abertura.titulo) || "Step 1"),
       telaVocab(aula.vocab),
+      telaVocabPractice(aula.vocab_practice),
       telaWwyd(aula.what_would_you_do),
       telaGrammar(aula.grammar),
       telaPractice(aula.practice),
@@ -1094,10 +1292,10 @@
   }
   ligarInteracoes();
 
-  // ---- Navegação por swipe entre as 8 telas ----
+  // ---- Navegação por swipe entre as 9 telas ----
   const screens = document.getElementById('screens');
   const dots = document.querySelectorAll('.dot');
-  const total = 8;
+  const total = 9;
   let current = 0;
 
   const arrowPrev = document.getElementById('arrow-prev');

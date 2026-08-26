@@ -2,6 +2,63 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2320-aula-9-telas — 26/08/2026
+- O que mudou: `templateaula.html` reestruturado de 8 pra 9 telas —
+  decisão da Karina, testada primeiro num preview da Aula 1 (Tirolez —
+  Liderança) antes de aplicar aqui. Mudanças:
+  - **Nova tela "Vocab Practice"** (posição 3), exercícios treinando o
+    vocabulário de Vocab, mesmo mecanismo visual da tela Practice.
+  - **What would you do?** passa da posição 3 pra 4 (sem mudança de
+    conteúdo).
+  - **Grammar** (posição 5) virou tabela compacta (`linhas`:
+    Affirmative/Negative/Question ou variação equivalente) no lugar de
+    regra/explicação/exemplo em texto corrido — objetivo é bater o olho e
+    entender a forma.
+  - **Situational** (posição 7) virou diálogo entre dois personagens
+    (`falas: [...]`) no lugar de fala única + resposta revelável.
+    Palavras em `<strong>` marcam pontos que o professor/gerador pode
+    trocar ao adaptar a aula pra outra turma — é convenção de conteúdo,
+    a Karina decidiu explicitamente que NÃO é interativo no app (avaliei
+    e descartei a opção de aluno tocar/editar a palavra).
+  - **Debate** ganhou regra dura nova: a moção nunca pode usar gramática
+    que a turma ainda não viu (nem do nível pedido em diante). Motivo:
+    a primeira versão da moção da Aula 1 usava "Should...?" pra uma turma
+    A1, sendo que `should` só é criterial em A2 — erro pego pela Karina.
+  - CSS: `.screens{width:900%}`, `.screen{width:calc(100%/9)}`, 9º dot de
+    navegação, `.gram-tabela`/`.gram-linha` novos, `.dialogo`/`.fala`
+    novos. JS: `telaVocabPractice()` nova, `telaGrammar()` e
+    `telaSituational()` reescritas, `renderAula()` com a ordem nova,
+    `total=9`.
+  - `docs/pedagogico.md` atualizado: §1 (tabela de telas), §6 (regras de
+    dependência + regra do Debate), §6.1 (lista de níveis corrigida —
+    estava desatualizada, ainda citava B1+ que foi removido em 19/08 e
+    não citava Pre-A1/C2), §6.2 (schema JSON completo), §6.3 (regras por
+    tela). `pedagogico/GERADOR.md` Passo 10 atualizado, mais duas
+    referências a "8 telas" que sobraram nos Passos 1 e 9.
+  - `pedagogico/GERADOR.md` Passo 5: nova regra — o gerador pode usar item
+    já criterial do nível mesmo sem linha própria na matriz da seção 5,
+    desde que **pergunte antes de cada vez**, sem esperar a capacidade
+    esgotar. Não muda a regra criterial vs. disponível (item de nível
+    diferente do pedido continua proibido).
+- Arquivos: templateaula.html, docs/pedagogico.md, pedagogico/GERADOR.md
+- Motivo: pedido explícito da Karina depois de ver a Aula 1 renderizada —
+  "o defeito são as ilustrações" foi a única crítica ao conteúdo em si,
+  mas a estrutura ganhou uma tela nova e duas telas redesenhadas na mesma
+  rodada de revisão.
+  Observação: `templatetrilha.html` não muda com isso — a trilha já
+  estava aprovada e não depende da estrutura da aula. O conteúdo real da
+  Aula 1 (Tirolez — Liderança, aula 1 de 48) ainda **não foi gravado** em
+  `aulas_assigned` no formato novo — a linha no Supabase continua só com
+  o esqueleto do mapa (`status='mapa'`), porque a Karina quer trocar as
+  ilustrações SVG por foto real antes de fechar o conteúdo (decisão de
+  fonte de imagem — Pexels/Unsplash vs. Canva — ainda em aberto,
+  registrada no NEXT_STEPS). Paleta de cor também segue pendente: este
+  commit mantém petróleo `#0A1214` + limão `#D9E28C` na produção; a
+  troca pra marrom `#54402F` + azul-bebê `#A8D5F2` foi só testada num
+  preview de chat, sem decisão fechada.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-2250-aulas-assigned
+
 ## v-20260826-1926-sidebar-agrupada — 26/08/2026
 - O que mudou: ordem e agrupamento da sidebar. Antes era uma lista plana
   (Performance, Alerts, Companies, Students, Users, Tasks, Leads, Docs,

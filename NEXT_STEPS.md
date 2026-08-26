@@ -1,5 +1,37 @@
 # NEXT STEPS
 
+- [ ] **FOTO REAL EM VEZ DE SVG na Aula 1 (Tirolez — Liderança).** Decisão
+      de fonte ainda aberta: Pexels/Unsplash (CC0, recomendado, já dá pra
+      automatizar) ou Canva (a Karina conectou o app via card, mas as
+      ferramentas não apareceram disponíveis pro Claude em duas tentativas
+      de `tool_search` — pode precisar de conversa nova pra aparecer, ou a
+      conexão não fechou do lado dela). Depois de decidir, refazer o
+      `vocab.itens[].imagem` e as `cena` de What would you do?/Situational
+      da Aula 1 com `<img>` real (o template já suporta, só faltou fonte).
+- [ ] **Gravar a Aula 1 de verdade em `aulas_assigned`.** A linha
+      (turma Tirolez — Liderança, `numero_aula=1`) tem só o esqueleto do
+      mapa (`status='mapa'`) — o conteúdo completo foi aprovado em chat no
+      formato de 9 telas (v-20260826-2320), mas só existe como preview,
+      esperando a decisão de foto acima antes de virar `status='aprovada'`.
+- [ ] **Decidir a paleta de produção do material de aula.**
+      `templateaula.html`/`templatetrilha.html` continuam petróleo+limão.
+      A Karina testou marrom `#54402F` + azul-bebê `#A8D5F2` (Comb 2 de
+      21/08) num preview de chat — nunca respondeu se os dois riscos
+      registrados em `docs/icp-comprador.md` §10 (marrom/azul-bebê sem
+      parentesco de matiz; azul-bebê pode ler como infantil/saúde) foram
+      resolvidos, nem se aplico nos arquivos de produção.
+- [ ] **Trilha não tem protocolo nem tabela.** `pedagogico/GERADOR.md` só
+      cobre a geração da aula (9 telas), não da trilha (10 exercícios já
+      aprovados pra Aula 1, só existem como preview em
+      `templatetrilha.html` local). `docs/plataforma.md` já prevê a
+      tabela `trilha_licoes` ("1 aula → 1 trilha → N lições") mas ela
+      nunca foi criada no Supabase — mesmo padrão do que resolvemos pra
+      `aulas_assigned` em 26/08 (v-20260826-2250), precisa da mesma
+      trilha de decisão (schema + RLS) antes de gravar.
+- [ ] **Assunto essencial da turma Tirolez — Liderança ainda sem aula.**
+      RH pediu ajudar os managers a guiar palestras/conversas em público
+      em inglês — não encaixa no Módulo 1 (At The Office). Precisa entrar
+      em algum módulo dos 7 restantes quando a Karina passar os temas.
 - [ ] **UPLOAD DE ARQUIVO DE VERDADE (Supabase Storage).** A aba Docs da dash do
       RH já tem área de upload, mas sem servidor de arquivos o anexo vira uma
       URL de sessão: existe enquanto a aba está aberta e some ao recarregar —
@@ -159,10 +191,11 @@
 - [x] **Rastrear turma com/sem material gerado — FEITO em 26/08
       (v-20260826-2250).** Tabela `aulas_assigned` criada; "sem material"
       = zero linhas com `status = 'aprovada'` pra aquela turma.
-- [ ] Rodar o `iniciar gerador de aulas` numa turma real pela primeira vez
-      (protocolo v2, v-20260826-2250), preenchendo o CEFR exato e o que
-      mais faltar na turma escolhida — nenhuma das 4 turmas atuais tem
-      `qtd_modulos`/`aulas_por_modulo`/`nivel` CEFR exato preenchidos.
+- [x] **Rodar o `iniciar gerador de aulas` numa turma real — FEITO em
+      26/08.** Turma Tirolez — Liderança, CEFR A1 confirmado com a
+      Karina. Módulo 1 "At The Office" (6 aulas) mapeado e aprovado;
+      Aula 1 e sua trilha com conteúdo aprovado em chat (detalhes e
+      pendências de gravação nos itens do topo deste arquivo).
 - [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional
       da tela Aluno) entra na primeira versão do `plataforma.html`.
 - [ ] MUDAR A ROTINA: depois de qualquer push que altere algo visual (index.html,

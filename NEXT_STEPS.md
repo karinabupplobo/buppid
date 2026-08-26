@@ -60,11 +60,21 @@
       têm e-mail, e sem e-mail não há como enviar link; (3) testar o
       fluxo ponta a ponta com um usuário real. Enquanto isso as dashes já
       redirecionam pro login, então TESTAR ANTES de divulgar o link.
-- [ ] **DOMÍNIO plataforma.buppidiomas.com.br.** CNAME `plataforma` →
-      `karinabupplobo.github.io` no Registro.br; depois GitHub Settings →
-      Pages → Custom domain, e marcar Enforce HTTPS quando o certificado
-      sair. A raiz do site hoje é `index.html` (Tasks/Leads) — decidir se
-      passa a ser o `login.html`.
+- [ ] **DOMÍNIO plataforma.buppidiomas.com.br.** A raiz do site já é a
+      tela de login (v-20260826-2015). Falta o que é fora do código:
+      CNAME `plataforma` → `karinabupplobo.github.io` no Registro.br;
+      depois GitHub Settings → Pages → Custom domain, e Enforce HTTPS
+      quando o certificado sair. **Só pôr o Custom domain DEPOIS do DNS
+      propagar** — o arquivo CNAME faz o github.io redirecionar pro
+      domínio novo, então se o DNS ainda não responder o site fica
+      inacessível pelos dois endereços. `buppidiomas.com.br` é outro site
+      e não é pra ser mexido.
+- [ ] **Dois logins convivendo.** `crm.html` (Tasks/Leads/Mercado) tem o
+      gate próprio de usuário/senha em localStorage, anterior ao login
+      novo. Como ele é embutido em iframe na `interna.html`, quem já
+      passou pelo login novo ainda vê o gate antigo dentro da aba.
+      Unificar: fazer o `crm.html` confiar na sessão do Supabase quando
+      estiver embutido, e aposentar o gate próprio.
 - [ ] **INVENTÁRIO — o que ainda é mock (dados-mock.js) e falta migrar.**
       Já estão no Supabase: Empresas, Turmas, Alunos, Usuários, Leads,
       Tasks. Ainda em mock: (a) abas Dados, Alertas e Docs da

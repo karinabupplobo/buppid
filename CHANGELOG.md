@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2015-login-como-inicial — 26/08/2026
+- O que mudou: a raiz do site passa a ser a tela de login, que é o que
+  `plataforma.buppidiomas.com.br` precisa servir. `login.html` virou
+  `index.html`; a dash de Tasks/Leads/Mercado que ocupava a raiz virou
+  `crm.html`. Os 3 iframes da `interna.html` (abas Tasks, Leads, Mercado)
+  apontam pro nome novo, o `auth-guard.js` manda pro `index.html` em vez
+  de `login.html`, e os comentários das 4 dashes que citavam
+  `index.html` como sendo o CRM foram atualizados.
+  `crm.html` mantém o gate próprio de usuário/senha que já tinha, então
+  não ficou exposto pela renomeação — unificar esse gate com o login novo
+  fica pendente.
+  **Não mexe em `buppidiomas.com.br`**: é outro site, fora deste
+  repositório.
+- Arquivos: index.html (era login.html), crm.html (era index.html),
+  interna.html, aluno.html, manager.html, auth-guard.js
+- Motivo: pedido da Karina em 26/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1636-espaco-titulo-alunos
+
 ## v-20260826-1636-espaco-titulo-alunos — 26/08/2026
 - O que mudou: título "Alunos" na `interna.html` ganhou espaçamento próprio
   (`margin-top: 20px; margin-bottom: 14px`), separado da classe geral

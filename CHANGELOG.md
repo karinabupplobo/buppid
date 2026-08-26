@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-1926-sidebar-agrupada — 26/08/2026
+- O que mudou: ordem e agrupamento da sidebar. Antes era uma lista plana
+  (Performance, Alerts, Companies, Students, Users, Tasks, Leads, Docs,
+  Market). Agora: Performance, Alerts, Tasks, Users soltos no topo; depois
+  um rótulo "Clients" agrupando Companies, Students e Docs; depois um
+  rótulo "Sales" agrupando Leads e Market. Os rótulos de grupo são só
+  texto (não clicam, não colapsam) — os itens de dentro continuam sendo
+  os mesmos botões de sempre, só levemente indentados no desktop
+  (`.tab-sub`) pra mostrar que pertencem ao grupo. `data-pane` de cada
+  botão não mudou, então nenhuma lógica de troca de aba foi tocada — só
+  posição e agrupamento visual.
+- Arquivos: interna.html
+- Motivo: pedido direto da Karina em 26/08.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260826-1911-abas-em-ingles
+
 ## v-20260826-1911-abas-em-ingles — 26/08/2026
 - O que mudou: rótulos das abas trocados pra inglês — Dados → Performance,
   Alertas → Alerts, Empresas → Companies, Alunos → Students, Usuários →

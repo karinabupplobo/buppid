@@ -96,6 +96,15 @@
     text-transform: uppercase; color: var(--teal-escuro);
     background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
   }
+  /* Quem é RH e também faz aula (papel aluno_gestor) troca de visão pelo
+     próprio selo — vira botão, com a seta indicando que dá pra clicar.
+     Para os demais o selo continua sendo só um rótulo. */
+  .whoami span.trocavel{
+    border: none; font-family: inherit; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .whoami span.trocavel::after{ content: "⇄"; font-size: 11px; }
+  .whoami span.trocavel:hover{ background: #fff; }
 
   /* Link pequeno "N turmas", logo abaixo do selo do usuário */
   .link-turmas{
@@ -1415,7 +1424,7 @@
     <img class="logo" src="assets/logo-bupp-marrom-azul-claro.png" alt="bupp idiomas">
     <div class="whoami">
       <strong id="al-nome"></strong>
-      <span>student</span>
+      <span id="selo-papel">student</span>
       <button class="link-turmas" id="btn-turma"><b id="bt-nivel"></b> ›</button>
     </div>
   </div>
@@ -1482,6 +1491,17 @@ const TURMA   = TURMAS.find(t => t.id === USUARIO.turmaId);
 const EU      = TURMA.alunos.find(a => a.id === USUARIO.alunoId);
 
 document.getElementById("al-nome").textContent = "Hi, " + EU.nome.split(" ")[0];
+
+// Quem é RH da empresa E faz aula (papel aluno_gestor) usa o mesmo login
+// para as duas telas: o selo "student" vira o botão que leva para a visão
+// de manager. Quem é só aluno não vê botão nenhum — o selo fica rótulo.
+(function seloTrocaVisao(){
+  const selo = document.getElementById("selo-papel");
+  if (!USUARIO || USUARIO.papel !== "aluno_gestor") return;
+  selo.classList.add("trocavel");
+  selo.title = "Ver a tela de manager";
+  selo.onclick = () => { location.href = "manager.html"; };
+})();
 document.getElementById("bt-nivel").textContent = nivelL(TURMA.nivel);
 
 function classeNota(n){

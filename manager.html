@@ -93,6 +93,13 @@
     text-transform: uppercase; color: var(--teal-escuro);
     background: var(--amarelo-neon); padding: 2px 7px; border-radius: 999px;
   }
+  /* Volta para a visão de aluno — só aparece para quem é aluno_gestor. */
+  .whoami span.trocavel{
+    border: none; font-family: inherit; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .whoami span.trocavel::after{ content: "⇄"; font-size: 11px; }
+  .whoami span.trocavel:hover{ background: #fff; }
 
   /* Link pequeno "N turmas", logo abaixo do selo do usuário */
   .link-turmas{
@@ -1472,7 +1479,7 @@
     <img class="logo" src="assets/logo-bupp-marrom-azul-claro.png" alt="bupp idiomas">
     <div class="whoami">
       <strong id="rh-nome"></strong>
-      <span>manager</span>
+      <span id="selo-papel">manager</span>
       <button class="link-turmas" id="btn-turmas-rh"><b id="bt-turmas-n"></b> turmas ›</button>
     </div>
   </div>
@@ -1535,6 +1542,16 @@ const EMPRESA = GESTOR.empresa;
 const MINHAS_TURMAS = TURMAS.filter(t => t.empresa === EMPRESA);
 
 document.getElementById("rh-nome").textContent = "Hi, " + GESTOR.nome.split(" ")[0];
+
+// Caminho de volta para quem é RH e também faz aula: o selo "manager"
+// leva de volta à tela de aluno. Ver aluno.html para o caminho de ida.
+(function seloTrocaVisao(){
+  const selo = document.getElementById("selo-papel");
+  if (!GESTOR || GESTOR.papel !== "aluno_gestor") return;
+  selo.classList.add("trocavel");
+  selo.title = "Ver a tela de student";
+  selo.onclick = () => { location.href = "aluno.html"; };
+})();
 document.getElementById("bt-turmas-n").textContent = MINHAS_TURMAS.length;
 
 function partesIdent(t){

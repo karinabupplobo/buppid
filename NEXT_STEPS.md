@@ -36,9 +36,10 @@
       Intermediate/Advanced/Proficient) e o logo no lugar da faixa marrom.
       Ainda não testado no REST com a anon key nesta sessão (mesma pegadinha
       do allowlist do subdomínio novo do Supabase).
-- [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; 5 já
+- [ ] O schema relacional de `docs/plataforma.md` tem 10 tabelas; 6 já
       foram criadas (`empresas_cliente`, `turmas`, `professores`, `alunos`,
-      `anotacoes_aluno`). Faltam: `aulas_assigned`, `lousas_aula`,
+      `anotacoes_aluno`, `aulas_assigned` — esta última em 26/08,
+      v-20260826-2250, já com RLS por papel). Faltam: `lousas_aula`,
       `trilha_licoes`, `progresso_aluno`, `presenca`, `profiles`. Criar
       conforme as dashes forem pedindo esses dados (regra permanente da
       Karina).
@@ -73,11 +74,13 @@
       Tasks. Ainda em mock: (a) abas Dados, Alertas e Docs da
       `interna.html`, que leem `TURMAS`/`ALUNOS`/`PRESENCA`/`DOCS` do
       mock; (b) `aluno.html`, `manager.html` e `plataforma.html`
-      inteiras. O bloqueio real dessas é que faltam 5 tabelas do schema
-      de 10: `presenca`, `progresso_aluno`, `aulas_assigned`,
-      `trilha_licoes`, `lousas_aula` — sem elas não há de onde ler
-      presença, trilha nem aula dada. Criar conforme cada tela for
-      migrada (regra permanente da Karina), não todas de uma vez.
+      inteiras. O bloqueio real dessas é que faltam 4 tabelas do schema
+      de 10: `presenca`, `progresso_aluno`, `trilha_licoes`,
+      `lousas_aula` — sem elas não há de onde ler presença nem trilha.
+      `aulas_assigned` já existe (26/08, v-20260826-2250), então "aula
+      dada" já tem onde morar assim que a tela ler de lá. Criar as
+      demais conforme cada tela for migrada (regra permanente da
+      Karina), não todas de uma vez.
 - [ ] TESTAR NO NAVEGADOR: sidebar do aluno sem overflow, bolinha ✓/✕
       centralizada nas 4 dashes, aba Hoje do Bruno (deve aparecer vazia
       numa terça-feira real, já que o mock só tem aula marcada pra Qui).
@@ -127,26 +130,24 @@
       `anotacoes_aluno`, travado no banco e testado. Sem login não se
       alcança nada. Aluno vê só o próprio; professor, suas turmas; RH, sua
       empresa (menos anotações); Bupp, tudo.
-- [ ] **RLS: o que ficou de fora.** (a) As 5 tabelas que ainda não existem
-      (`presenca`, `progresso_aluno`, `aulas_assigned`, `trilha_licoes`,
-      `lousas_aula`) precisam nascer já com política por papel — não
-      repetir o `anon full access`. (b) Anotação tipo `aluno` (o próprio
-      aluno escrevendo) ainda não tem tela nem política de escrita;
-      decidir se o professor vê. (c) Hoje o professor vê anotações tipo
-      `gestao` dos alunos dele — confirmar com a Karina se é isso mesmo ou
-      se a gestão quer um canal privado.
+- [ ] **RLS: o que ficou de fora.** (a) As 4 tabelas que ainda não existem
+      (`presenca`, `progresso_aluno`, `trilha_licoes`, `lousas_aula`)
+      precisam nascer já com política por papel — não repetir o
+      `anon full access` (`aulas_assigned`, criada em 26/08, já seguiu
+      esse padrão). (b) Anotação tipo `aluno` (o próprio aluno escrevendo)
+      ainda não tem tela nem política de escrita; decidir se o professor
+      vê. (c) Hoje o professor vê anotações tipo `gestao` dos alunos dele
+      — confirmar com a Karina se é isso mesmo ou se a gestão quer um
+      canal privado.
 - [ ] Quando `plataforma.html` ganhar uma tela de anotação de aluno pro
       professor (hoje não existe), o autor também precisa ser automático
       — nome do professor logado, tipo "prof". Mesma lógica do que foi
       feito em `interna.html` pra gestão, adaptada pro professor.
-- [ ] **Criar no Supabase uma forma de rastrear turma com/sem material
-      gerado** (tabela `materiais`/`aulas_geradas` ou flag em `turmas`) —
-      o Passo 2 do `pedagogico/GERADOR.md` (v-20260826-2210) depende disso
-      pra listar de verdade "turmas sem material"; hoje trata todas como
-      sem material porque não existe outra forma de saber. Decisão de
-      estrutura pendente com a Karina.
+- [x] **Rastrear turma com/sem material gerado — FEITO em 26/08
+      (v-20260826-2250).** Tabela `aulas_assigned` criada; "sem material"
+      = zero linhas com `status = 'aprovada'` pra aquela turma.
 - [ ] Rodar o `iniciar gerador de aulas` numa turma real pela primeira vez
-      (protocolo v2, v-20260826-2210), preenchendo o CEFR exato e o que
+      (protocolo v2, v-20260826-2250), preenchendo o CEFR exato e o que
       mais faltar na turma escolhida — nenhuma das 4 turmas atuais tem
       `qtd_modulos`/`aulas_por_modulo`/`nivel` CEFR exato preenchidos.
 - [ ] Decidir se o indicador de progresso pessoal do aluno (item opcional

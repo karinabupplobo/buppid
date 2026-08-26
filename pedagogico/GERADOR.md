@@ -23,11 +23,13 @@ Só depois de ler é que o Passo 2 começa.
 ## Passo 2 — Seleção da turma
 
 Listar as turmas por empresa que ainda não têm material gerado e apresentar
-pra Karina escolher qual vamos criar.
+pra Karina escolher qual vamos criar. "Sem material" = a turma não tem
+nenhuma linha com `status = 'aprovada'` em `aulas_assigned`.
 
-> Nota: até existir uma tabela/flag no Supabase rastreando material gerado
-> (item em aberto no NEXT_STEPS), todas as turmas cadastradas contam como
-> "sem material" — nenhuma tem curso real ainda.
+Se a turma escolhida já tiver linhas em `aulas_assigned` (mapa montado mas
+ainda não produzido, ou produção parcial), retomar do ponto onde parou em
+vez de recomeçar do Passo 4 — pular direto pro Passo 9, na primeira aula
+sem `conteudo`.
 
 ---
 
@@ -95,7 +97,9 @@ Perguntar de uma vez os 8 temas/títulos dos módulos.
 
 Montar uma linha por aula (48 linhas), com IDs reais dos arquivos de nível.
 Nada inventado: se a combinação não existe no arquivo do nível, ela não entra
-no mapa.
+no mapa. Esse mapa corresponde 1:1 às colunas de `aulas_assigned`, mas só é
+gravado no Supabase depois da aprovação (Passo 8) — nesta etapa é só
+apresentado em chat.
 
 ```json
 {
@@ -109,12 +113,14 @@ no mapa.
       "gramatica": "second conditional",
       "vocab_id": "B1-V-01",
       "tema": null,
-      "objetivo_master": "negociar prazo de pagamento",
       "objetivo_vinculado": 1
     }
   ]
 }
 ```
+
+O texto do objetivo (`objetivo_master`) não é duplicado no mapa — vem de
+`turmas.objetivo_1`/`objetivo_2` via `objetivo_vinculado`.
 
 Regras do mapa:
 - Gramática em ordem crescente de complexidade, sem repetir `gramatica_id`
@@ -134,9 +140,10 @@ Apresentar o mapa como tabela legível, não como JSON cru.
 ## Passo 8 — Aprovação do mapa
 
 Duas saídas para a Karina:
-- **Aprovar** → segue para o Passo 9
+- **Aprovar** → grava as 48 linhas do mapa em `aulas_assigned`
+  (`status = 'mapa'`, `tema` e `conteudo` nulos), depois segue para o Passo 9
 - **Sugestão de melhoria** → o mapa é refeito **inteiro** incorporando o
-  feedback, não editado ponto a ponto
+  feedback, não editado ponto a ponto — nada é gravado até aprovar
 
 ---
 
@@ -147,7 +154,9 @@ Substitui os antigos portões de 20%/60%/100%. Fluxo:
 1. Entrar no módulo 1 do mapa aprovado.
 2. Pedir os temas das 6 aulas desse módulo.
 3. Gerar a aula 1 completa (schema do Passo 10) e pedir aprovação.
-4. Só depois de aprovada, gerar a aula 2 — e assim até a aula 6 do módulo.
+4. Aprovada a aula, atualizar a linha correspondente em `aulas_assigned`:
+   `tema`, `conteudo` (JSON das 8 telas) e `status = 'aprovada'`,
+   `aprovada_em = now()`. Só então gerar a aula 2 — e assim até a aula 6.
 5. Passar pro módulo 2: pedir os temas das próximas 6 aulas, repetir o ciclo.
 6. Seguir até fechar as 48 aulas.
 

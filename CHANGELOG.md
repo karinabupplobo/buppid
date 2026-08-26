@@ -2,6 +2,35 @@
 
 Entradas mais recentes no topo.
 
+## v-20260826-2250-aulas-assigned — 26/08/2026
+- O que mudou: criada a tabela `aulas_assigned` no Supabase — já estava
+  planejada em `docs/plataforma.md` ("uma aula do Gerador de Aulas
+  atribuída a uma turma numa data") mas nunca tinha sido criada. Colunas
+  cobrem tanto o ciclo de geração do `pedagogico/GERADOR.md` (`numero_aula`,
+  `numero_modulo`, `nome_modulo`, `combinacao_id`, `gramatica_id`,
+  `gramatica`, `vocab_id`, `tema`, `objetivo_vinculado`, `conteudo` jsonb,
+  `status`) quanto o uso futuro de agendamento pela `plataforma.html`
+  (`data`, status `agendada`/`dada`). RLS por papel, no mesmo padrão já em
+  uso em `turmas`: leitura via `sou_bupp()` ou `turma_id in
+  (minhas_turmas())`; escrita só `sou_bupp()` — quem gera/aprova material é
+  a Karina no chat, não o professor.
+  `pedagogico/GERADOR.md` ajustado (Passos 2, 7, 8 e 9) pra referenciar a
+  tabela: "sem material" = zero linhas com `status = 'aprovada'`; retomar
+  produção parcial em vez de recomeçar; mapa só é gravado após aprovação
+  (Passo 8, insert das 48 linhas); cada aula aprovada atualiza sua linha
+  (Passo 9: `tema`, `conteudo`, `status`, `aprovada_em`). Removido o campo
+  redundante `objetivo_master` do exemplo de mapa — deriva de
+  `turmas.objetivo_1`/`objetivo_2` via `objetivo_vinculado`.
+- Arquivos: pedagogico/GERADOR.md; schema Supabase via migration
+  `criar_tabela_aulas_assigned` (aplicada por MCP, sem arquivo local de
+  migration no repo)
+- Motivo: fechar o item (b) do plano — sem essa tabela o Passo 2 do gerador
+  não tinha como saber quais turmas já têm material.
+- Reverter para o estado ANTERIOR a esta mudança (o arquivo volta; a tabela
+  no Supabase **não** é desfeita por `git checkout` — avisar antes de
+  dropar `aulas_assigned` manualmente se for o caso):
+  git checkout v-20260826-2210-gerador-protocolo-v2
+
 ## v-20260826-1827-fix-rls-crm — 26/08/2026
 - O que mudou: `crm.html` tinha o mesmo problema já corrigido no
   `interna.html` (v-20260826-1813-fix-rls-interna) — confirmado por SQL

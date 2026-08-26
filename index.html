@@ -2,9 +2,12 @@
 <!--
   LOGIN — porta de entrada da plataforma (index.html = página inicial)
   ====================================================================
-  Login sem senha: a pessoa digita o e-mail e recebe um link (magic link do
-  Supabase Auth). Ao clicar, volta pra cá com a sessão pronta, e daí é
-  redirecionada pra dash do papel dela (tabela `usuarios`, coluna `papel`):
+  Login por e-mail e senha. Toda conta nasce com a senha padrão bupp2026
+  (criada pelo gatilho `criar_conta_auth` assim que o e-mail é preenchido na
+  aba Usuários) e a coluna `usuarios.senha_provisoria` marcada — o primeiro
+  acesso obriga a trocar antes de liberar a dash.
+
+  Depois de entrar, vai pra dash do papel (tabela `usuarios`, coluna `papel`):
 
     aluno         -> aluno.html
     teacher       -> plataforma.html
@@ -13,8 +16,8 @@
     aluno_gestor  -> aluno.html (o selo lá troca pra manager)
 
   Só entra quem já está cadastrado em `usuarios` com e-mail. Não há
-  auto-cadastro: se o e-mail não estiver na tabela, o login é recusado —
-  senão qualquer pessoa criaria conta sozinha.
+  auto-cadastro: a conta de login nasce do cadastro na aba Usuários, nunca
+  de alguém digitando um e-mail aqui.
 
   Os formulários públicos (nova-turma.html, nivel-test.html) ficam de fora
   do login de propósito: são preenchidos por quem ainda não tem conta.
@@ -74,12 +77,24 @@
 
   <div class="card">
     <h1 id="titulo">Entrar</h1>
-    <p class="sub" id="sub">Digite seu e-mail e enviamos um link de acesso. Não precisa de senha.</p>
+    <p class="sub" id="sub">Use o e-mail cadastrado na Bupp.</p>
 
     <div id="form-area">
       <label for="f-email">E-mail</label>
       <input id="f-email" type="email" autocomplete="email" placeholder="seu@empresa.com.br">
-      <button type="button" id="btn-entrar">Enviar link de acesso</button>
+      <div style="height:12px"></div>
+      <label for="f-senha">Senha</label>
+      <input id="f-senha" type="password" autocomplete="current-password" placeholder="sua senha">
+      <button type="button" id="btn-entrar">Entrar</button>
+    </div>
+
+    <div id="troca-area" style="display:none;">
+      <label for="f-nova">Nova senha</label>
+      <input id="f-nova" type="password" autocomplete="new-password" placeholder="mínimo 8 caracteres">
+      <div style="height:12px"></div>
+      <label for="f-nova2">Repita a nova senha</label>
+      <input id="f-nova2" type="password" autocomplete="new-password">
+      <button type="button" id="btn-trocar">Salvar e entrar</button>
     </div>
 
     <div id="msg"></div>
@@ -109,73 +124,118 @@ function aviso(texto, tipo){ msg.textContent = texto; msg.className = tipo || ""
 
 async function usuarioPorEmail(email){
   const r = await fetch(
-    `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&select=id,nome,papel`,
+    `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&select=id,nome,papel,senha_provisoria`,
     { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
   );
   if (!r.ok) throw new Error(await r.text());
   return (await r.json())[0] || null;
 }
 
-// Se a pessoa já chegou aqui com sessão (voltou do link do e-mail, ou a
-// sessão anterior ainda vale), não faz sentido pedir e-mail de novo:
-// manda direto pra dash dela.
+// Guardado entre entrar e trocar a senha: depois da troca é ele que diz
+// pra onde ir, sem precisar consultar de novo.
+let usuarioAtual = null;
+
+function entrarNaDash(u){
+  document.getElementById("form-area").style.display = "none";
+  document.getElementById("troca-area").style.display = "none";
+  aviso(`Entrando como ${u.nome}...`, "ok");
+  location.replace(DESTINO[u.papel] || "aluno.html");
+}
+
+function pedirNovaSenha(u){
+  usuarioAtual = u;
+  document.getElementById("form-area").style.display = "none";
+  document.getElementById("troca-area").style.display = "block";
+  document.getElementById("titulo").textContent = "Crie sua senha";
+  document.getElementById("sub").textContent = "Você entrou com a senha padrão. Escolha uma senha só sua para continuar.";
+  aviso("");
+  document.getElementById("f-nova").focus();
+}
+
+// Sessão que sobrou de antes: não faz sentido pedir login de novo. Mas se
+// a senha ainda for a provisória, a troca continua obrigatória.
 async function redirecionarSeLogado(){
   const { data } = await sb.auth.getSession();
   const sessao = data && data.session;
   if (!sessao) return false;
-  const email = sessao.user.email;
-  const u = await usuarioPorEmail(email);
+  const u = await usuarioPorEmail(sessao.user.email);
   if (!u){
-    // Autenticou no Auth mas não está cadastrado na plataforma.
     await sb.auth.signOut();
     aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp.", "erro");
     return false;
   }
-  // Guarda o vínculo pro Auth, pra dispensar essa busca nas próximas vezes.
-  if (u.id) fetch(`${SUPABASE_URL}/rest/v1/usuarios?id=eq.${u.id}`, {
-    method: "PATCH",
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ auth_user_id: sessao.user.id })
-  });
-  document.getElementById("form-area").style.display = "none";
-  aviso(`Entrando como ${u.nome}...`, "ok");
-  location.replace(DESTINO[u.papel] || "aluno.html");
+  if (u.senha_provisoria){ pedirNovaSenha(u); return true; }
+  entrarNaDash(u);
   return true;
 }
 
 document.getElementById("btn-entrar").onclick = async () => {
   const email = document.getElementById("f-email").value.trim().toLowerCase();
+  const senha = document.getElementById("f-senha").value;
   const btn = document.getElementById("btn-entrar");
-  if (!email || !email.includes("@")){
-    aviso("Digite um e-mail válido.", "erro"); return;
-  }
+  if (!email || !senha){ aviso("Preencha e-mail e senha.", "erro"); return; }
+
   btn.disabled = true;
-  aviso("Verificando...", "");
+  aviso("Entrando...", "");
   try{
-    // Confere ANTES de mandar o link: sem isso o Supabase criaria uma conta
-    // nova pra qualquer e-mail digitado.
-    const u = await usuarioPorEmail(email);
-    if (!u){
-      aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp para liberar seu acesso.", "erro");
+    const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+    if (error){
+      // Mensagem única pros dois casos (e-mail inexistente e senha errada):
+      // dizer qual dos dois errou entrega quem tem conta na plataforma.
+      aviso("E-mail ou senha incorretos.", "erro");
       btn.disabled = false; return;
     }
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: false, emailRedirectTo: location.href.split("?")[0] }
-    });
-    if (error) throw error;
-    document.getElementById("form-area").style.display = "none";
-    document.getElementById("titulo").textContent = "Link enviado";
-    document.getElementById("sub").textContent = "";
-    aviso(`Enviamos um link de acesso para ${email}. Abra seu e-mail e clique no link para entrar — ele vale por 1 hora.`, "ok");
+    const u = await usuarioPorEmail(email);
+    if (!u){
+      await sb.auth.signOut();
+      aviso("Esse e-mail não está cadastrado na plataforma. Fale com a Bupp.", "erro");
+      btn.disabled = false; return;
+    }
+    if (u.senha_provisoria) return pedirNovaSenha(u);
+    entrarNaDash(u);
   } catch(err){
-    aviso("Não deu para enviar o link: " + (err.message || err), "erro");
+    aviso("Não deu para entrar: " + (err.message || err), "erro");
     btn.disabled = false;
   }
 };
 
-document.getElementById("f-email").onkeydown = e => {
+document.getElementById("btn-trocar").onclick = async () => {
+  const nova = document.getElementById("f-nova").value;
+  const nova2 = document.getElementById("f-nova2").value;
+  const btn = document.getElementById("btn-trocar");
+  if (nova.length < 8){ aviso("A senha precisa ter pelo menos 8 caracteres.", "erro"); return; }
+  if (nova !== nova2){ aviso("As duas senhas não são iguais.", "erro"); return; }
+  if (nova === "bupp2026"){ aviso("Escolha uma senha diferente da padrão.", "erro"); return; }
+
+  btn.disabled = true;
+  aviso("Salvando...", "");
+  try{
+    const { error } = await sb.auth.updateUser({ password: nova });
+    if (error) throw error;
+    // Só depois da senha trocar de fato é que a marca sai — se gravasse
+    // antes e a troca falhasse, a pessoa ficaria com a senha padrão sem
+    // ser mais avisada.
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/usuarios?id=eq.${usuarioAtual.id}`, {
+      method: "PATCH",
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ senha_provisoria: false })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    entrarNaDash(usuarioAtual);
+  } catch(err){
+    aviso("Não deu para salvar a senha: " + (err.message || err), "erro");
+    btn.disabled = false;
+  }
+};
+
+document.getElementById("f-senha").onkeydown = e => {
   if (e.key === "Enter") document.getElementById("btn-entrar").click();
+};
+document.getElementById("f-email").onkeydown = e => {
+  if (e.key === "Enter") document.getElementById("f-senha").focus();
+};
+document.getElementById("f-nova2").onkeydown = e => {
+  if (e.key === "Enter") document.getElementById("btn-trocar").click();
 };
 
 redirecionarSeLogado();

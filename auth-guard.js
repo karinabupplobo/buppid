@@ -12,6 +12,7 @@
 //
 // Regras:
 //   - sem sessão            -> volta pro login (index.html)
+//   - senha ainda provisória -> volta pro login, que obriga a trocar
 //   - e-mail fora de `usuarios` -> desloga e volta pro login
 //   - papel não aceito      -> manda pra dash do papel certo (não pro login,
 //                              senão a pessoa entraria num laço)
@@ -64,13 +65,17 @@
 
     try{
       const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(sessao.user.email)}&select=id,nome,papel,empresa_cliente_id,turma_id,aluno_id,professor_id`,
+        `${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(sessao.user.email)}&select=id,nome,papel,senha_provisoria,empresa_cliente_id,turma_id,aluno_id,professor_id`,
         { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
       );
       if (!r.ok) throw new Error(await r.text());
       const u = (await r.json())[0];
 
       if (!u){ await sb.auth.signOut(); return paraLogin(); }
+
+      // Senha ainda é a padrão: manda trocar antes de ver qualquer dash.
+      // Sem isso bastaria digitar /interna.html pra pular a troca.
+      if (u.senha_provisoria) return paraLogin();
 
       if (aceitos.length && !aceitos.includes(u.papel)){
         return location.replace(DESTINO[u.papel] || "index.html");

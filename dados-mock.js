@@ -27,19 +27,29 @@ const TURMAS = [
     alunos: [
       { id:"a1", nome:"Bruno Tavares",  cargo:"Analista de Comex",
         historico:[
-          { data:"13/08", tipo:"prof", autor:"Prof. Ana", texto:"Participou bem, mas trava em past simple na hora de contar o que já foi negociado.", tratado:true }
+          { data:"13/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"read",
+            destinos:[{ papel:"rh", liberacao:"liberado" }, { papel:"aluno", liberacao:"barrado" }],
+            texto:"Participou bem, mas trava em past simple na hora de contar o que já foi negociado.", tratado:true }
         ] },
       { id:"a2", nome:"Camila Reis",    cargo:"Coord. de Importação",
         historico:[
-          { data:"19/08", tipo:"rh", autor:"RH — Sertrading", texto:"Camila assumiu a conta da Ásia e vai precisar de call semanal em inglês a partir de setembro. Priorizar negociação por telefone.", tratado:false },
-          { data:"06/08", tipo:"prof", autor:"Prof. Ana", texto:"Faltou por viagem a trabalho. Enviei a trilha por e-mail.", tratado:true }
+          { data:"19/08", tipo:"rh", autor:"RH — Sertrading", cat:"request", status:"em_andamento",
+            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+            texto:"Camila assumiu a conta da Ásia e vai precisar de call semanal em inglês a partir de setembro. Priorizar negociação por telefone.", tratado:false },
+          { data:"06/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"read",
+            destinos:[{ papel:"rh", liberacao:"liberado" }, { papel:"aluno", liberacao:"liberado" }],
+            texto:"Faltou por viagem a trabalho. Enviei a trilha por e-mail.", tratado:true }
         ] },
       { id:"a3", nome:"Diego Nunes",    cargo:"Analista Pleno",
         historico:[] },
       { id:"a4", nome:"Fernanda Lopes", cargo:"Supervisora",
         historico:[
-          { data:"18/08", tipo:"aluno", autor:"Fernanda Lopes", texto:"Professora, estou perdida nos condicionais. Consegue retomar antes de avançar?", tratado:false },
-          { data:"15/08", tipo:"gestao", autor:"Gestão Bupp", texto:"Engajamento em queda há 3 aulas. Combinar conversa individual e reportar ao RH se não melhorar até 30/08.", tratado:false }
+          { data:"18/08", tipo:"aluno", autor:"Fernanda Lopes", cat:"request", status:"nao_iniciado",
+            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+            texto:"Professora, estou perdida nos condicionais. Consegue retomar antes de avançar?", tratado:false },
+          { data:"15/08", tipo:"gestao", autor:"Gestão Bupp", cat:"alerta", status:"em_andamento",
+            destinos:[{ papel:"prof", liberacao:"liberado" }, { papel:"rh", liberacao:"barrado" }],
+            texto:"Engajamento em queda há 3 aulas. Combinar conversa individual e reportar ao RH se não melhorar até 30/08.", tratado:false }
         ] }
     ],
     licoes: ["L1","L2","L3","L4","L5"],
@@ -97,7 +107,9 @@ const TURMAS = [
       { id:"d1", nome:"Ricardo Menezes", cargo:"Diretor Comercial", historico:[] },
       { id:"d2", nome:"Patrícia Vlach",  cargo:"Diretora de Operações",
         historico:[
-          { data:"20/08", tipo:"rh", autor:"RH — Sertrading", texto:"Patrícia viaja para a matriz em outubro. Reforçar reunião de resultado.", tratado:false }
+          { data:"20/08", tipo:"rh", autor:"RH — Sertrading", cat:"request", status:"nao_iniciado",
+            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+            texto:"Patrícia viaja para a matriz em outubro. Reforçar reunião de resultado.", tratado:false }
         ] }
     ],
     licoes: ["L1","L2","L3","L4"],
@@ -131,11 +143,15 @@ const TURMAS = [
       { id:"b1", nome:"Gisele Piernikarz", cargo:"Gerente de DHO", historico:[] },
       { id:"b2", nome:"Rafael Souza",      cargo:"Supervisor de Produção",
         historico:[
-          { data:"14/08", tipo:"prof", autor:"Prof. Ana", texto:"Confunde must e should. Retomar com exemplos do chão de fábrica.", tratado:true }
+          { data:"14/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"unread",
+            destinos:[{ papel:"rh", liberacao:"pendente" }, { papel:"aluno", liberacao:"pendente" }],
+            texto:"Confunde must e should. Retomar com exemplos do chão de fábrica.", tratado:true }
         ] },
       { id:"b3", nome:"Marina Alves",      cargo:"Coord. de Qualidade",
         historico:[
-          { data:"20/08", tipo:"gestao", autor:"Gestão Bupp", texto:"Não fez nenhuma trilha desde o início do módulo. Verificar se tem acesso à plataforma antes de tratar como desengajamento.", tratado:false }
+          { data:"20/08", tipo:"gestao", autor:"Gestão Bupp", cat:"alerta", status:"nao_iniciado",
+            destinos:[{ papel:"prof", liberacao:"liberado" }, { papel:"rh", liberacao:"liberado" }],
+            texto:"Não fez nenhuma trilha desde o início do módulo. Verificar se tem acesso à plataforma antes de tratar como desengajamento.", tratado:false }
         ] }
     ],
     licoes: ["L1","L2","L3","L4"],
@@ -176,7 +192,10 @@ const TURMAS = [
     objetivoTurma: "Em 6 meses, apresentar a empresa e sustentar o Q&A com investidor estrangeiro, sem leitura de slide.",
     alunos: [ { id:"c1", nome:"Marcos Boschetti", cargo:"CEO e cofundador",
         historico:[
-          { data:"17/08", tipo:"aluno", autor:"Marcos Boschetti", texto:"Tenho pitch real para investidor dia 05/09. Dá para focar nisso nas próximas aulas?", tratado:false }
+          { data:"17/08", tipo:"aluno", autor:"Marcos Boschetti", cat:"request", status:"feito",
+            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+            resolucao:{ data:"19/08", autor:"Karina Bupp", texto:"Aulas de 26/08 e 02/09 remontadas em cima do pitch. Material novo já enviado ao professor." },
+            texto:"Tenho pitch real para investidor dia 05/09. Dá para focar nisso nas próximas aulas?", tratado:false }
         ] } ],
     licoes: ["L1","L2","L3","L4","L5","L6"],
     progresso: { c1: ["ok","ok","ok","ok","err","pend"] },
@@ -389,6 +408,101 @@ const AVISOS_RH = [
     texto:"Marina Alves não abriu nenhuma trilha desde o início do módulo. Antes de tratarmos como desengajamento, precisamos confirmar com o RH se o acesso chegou até ela.",
     lido:false }
 ];
+
+// ══════════════════════════════════════════════════════════
+//  MENSAGENS
+//  Tudo que circula entre os quatro papéis (interna, professor, RH e aluno)
+//  em três categorias:
+//    comentario — observação, não pede ação.        Colunas: unread / read
+//    alerta     — algo que precisa ser tratado.     Colunas: not started / in progress / done
+//    request    — alguém pedindo alguma coisa.      Colunas: not started / in progress / done
+//
+//  Cada mensagem carrega DESTINOS: para quem ela vai e se já está liberada.
+//  A liberação é por destinatário, não uma chave só — a mesma anotação do
+//  professor pode estar liberada ao aluno e barrada ao RH. Nada que o
+//  professor escreve chega ao RH ou ao aluno sem a interna liberar; o que a
+//  interna escreve já nasce liberado, porque é ela quem decide.
+//
+//  As mensagens nascem do `historico` de cada aluno, que já existia. Os
+//  campos `cat`, `status`, `destinos` e `resolucao` foram acrescentados lá.
+//  O campo antigo `tratado` continua onde está: a aba Alertas ainda o usa.
+//
+//  Enquanto for mock, o id é posicional (`turma|aluno|índice`) e arrastar um
+//  cartão não sobrevive ao reload. Quando a tabela `mensagens` entrar no
+//  Supabase, o id passa a ser o da linha.
+// ══════════════════════════════════════════════════════════
+const CATEGORIAS_MSG = [
+  { k:"comentario", rot:"Comentários", sing:"Comentário",
+    colunas:[ { k:"unread", rot:"Unread" }, { k:"read", rot:"Read" } ] },
+  { k:"alerta", rot:"Alertas", sing:"Alerta",
+    colunas:[ { k:"nao_iniciado", rot:"Not Started" }, { k:"em_andamento", rot:"In Progress" },
+              { k:"feito", rot:"Done" } ] },
+  { k:"request", rot:"Requests", sing:"Request",
+    colunas:[ { k:"nao_iniciado", rot:"Not Started" }, { k:"em_andamento", rot:"In Progress" },
+              { k:"feito", rot:"Done" } ] }
+];
+
+function colunasDe(cat){
+  const c = CATEGORIAS_MSG.find(x => x.k === cat);
+  return c ? c.colunas : [];
+}
+
+// Quem manda e quem recebe. `auto` não é papel de gente: é o alerta que a
+// própria dash calcula a partir de presença, trilha e engajamento.
+const PAPEIS_MSG = [
+  { k:"interna", rot:"Bupp" },
+  { k:"prof",    rot:"Professor" },
+  { k:"rh",      rot:"RH" },
+  { k:"aluno",   rot:"Aluno" },
+  { k:"gestao",  rot:"Gestão Bupp" },
+  { k:"auto",    rot:"Automático" }
+];
+
+function rotPapel(k){ return (PAPEIS_MSG.find(p => p.k === k) || {}).rot || k; }
+
+const LIBERACOES = [
+  { k:"liberado", rot:"Liberado" },
+  { k:"pendente", rot:"Aguardando" },
+  { k:"barrado",  rot:"Barrado" }
+];
+
+// Uma mensagem está na fila de aprovação se veio do professor e tem ao menos
+// um destinatário ainda pendente.
+function aguardandoAprovacao(m){
+  return m.origem === "prof" && (m.destinos || []).some(d => d.liberacao === "pendente");
+}
+
+function montarMensagens(){
+  const out = [];
+  TURMAS.forEach(t => {
+    t.alunos.forEach(a => {
+      (a.historico || []).forEach((h, i) => {
+        if (!h.cat) return;
+        out.push({
+          id: `${t.id}|${a.id}|${i}`,
+          cat: h.cat,
+          status: h.status,
+          origem: h.tipo,
+          autor: h.autor,
+          empresa: t.empresa,
+          turmaId: t.id,
+          turma: t.nome,
+          nivel: t.nivel,
+          alunoId: a.id,
+          aluno: a.nome,
+          data: h.data,
+          texto: h.texto,
+          destinos: (h.destinos || []).map(d => ({ ...d })),
+          resolucao: h.resolucao || null
+        });
+      });
+    });
+  });
+  const chave = d => { const [dd, mm] = (d || "").split("/"); return (mm || "") + (dd || ""); };
+  return out.sort((x, y) => chave(y.data).localeCompare(chave(x.data)));
+}
+
+const MENSAGENS = montarMensagens();
 
 // ══════════════════════════════════════════════════════════
 //  DOCUMENTOS

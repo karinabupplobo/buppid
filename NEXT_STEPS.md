@@ -1,5 +1,22 @@
 # NEXT STEPS
 
+- [ ] **Tela de Mensagens — commits 2 e 3.** O commit 1 (v-20260828-1737) criou só a
+      estrutura no mock. Falta: (2) a aba Mensagens com os três quadros arrastáveis,
+      os botões `+ Comentário` / `+ Alerta` / `+ Request`, a fila de aprovação e o
+      campo de resolução ao arrastar request para Done; (3) remover o card Alertas de
+      Performance e o modal, realojando o "Avisar o RH" no rodapé da tela nova.
+- [ ] **Persistir as mensagens no Supabase.** Enquanto for mock, arrastar cartão não
+      sobrevive ao reload e o id é posicional. Precisa da tabela `mensagens` (categoria,
+      origem, autor, empresa/turma/aluno, texto, status, resolução) e do status dos
+      alertas calculados, que hoje não têm registro nenhum — id proposto
+      `turma|aluno|tipo`.
+- [ ] **Envio pelos outros três papéis.** Hoje só a interna escreve. Falta o RH mandar
+      request e comentário pelo `manager.html`, o aluno mandar request pelo `aluno.html`
+      e o professor mandar as três categorias pelo `plataforma.html`, respeitando a
+      matriz: professor só chega ao RH e ao aluno depois que a interna libera.
+- [ ] **Unificar `AVISOS_RH` com o modelo de mensagens.** O `manager.html` lê essa lista
+      direto. Enquanto não unificar, o canal Bupp → RH fica separado das três categorias.
+
 - [ ] **FOTO REAL EM VEZ DE SVG na Aula 1 (Tirolez — Liderança).** Decisão
       de fonte fechada: Canva (conector destravado em 26/08), estilo
       aprovado — foto editorial candid (sem contraluz dramático, "cara de

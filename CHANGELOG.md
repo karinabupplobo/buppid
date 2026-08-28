@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1737-mensagens-mock — 28/08/2026
+- O que mudou: base de dados das mensagens no mock. Cada recado do `historico` de aluno ganhou
+  `cat` (comentario/alerta/request), `status` (coluna do quadro), `destinos` (para quem vai e se
+  está liberado, pendente ou barrado) e, quando é request resolvido, `resolucao`. Entraram
+  `CATEGORIAS_MSG` com as colunas de cada quadro, `PAPEIS_MSG`, `LIBERACOES`,
+  `aguardandoAprovacao()` e `montarMensagens()`, que produz a lista `MENSAGENS` ordenada por data.
+- Arquivos: dados-mock.js
+- Motivo: primeiro dos três commits da tela de Mensagens. Sem a estrutura de dados, o quadro não
+  tem o que arrastar.
+  Observação: nada foi removido. O campo `tratado` continua onde estava porque a aba Alertas atual
+  ainda o usa; sai no commit 3. As quatro dashes que leem o mock foram carregadas no Chromium sem
+  erro de JS e o card de Alertas continua marcando 5.
+  Enquanto for mock, o id da mensagem é posicional (`turma|aluno|índice`) e arrastar um cartão não
+  sobrevive ao reload — a persistência entra com a tabela `mensagens` no Supabase.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-mensagens-mock
+
 ## v-20260828-1718-card-alertas-performance — 28/08/2026
 - O que mudou: o quinto card de Performance deixou de ser "Anotações" e virou "Alertas", com
   sinal de alerta e o número de alunos em atenção. Clicar abre a antiga aba Alerts inteira num

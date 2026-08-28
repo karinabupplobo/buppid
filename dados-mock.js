@@ -28,7 +28,7 @@ const TURMAS = [
       { id:"a1", nome:"Bruno Tavares",  cargo:"Analista de Comex",
         historico:[
           { data:"13/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"read",
-            destinos:[{ papel:"rh", liberacao:"liberado" }, { papel:"aluno", liberacao:"barrado" }],
+            destinos:[{ papel:"rh", liberacao:"pendente" }],
             texto:"Participou bem, mas trava em past simple na hora de contar o que já foi negociado.", tratado:true }
         ] },
       { id:"a2", nome:"Camila Reis",    cargo:"Coord. de Importação",
@@ -37,7 +37,7 @@ const TURMAS = [
             destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
             texto:"Camila assumiu a conta da Ásia e vai precisar de call semanal em inglês a partir de setembro. Priorizar negociação por telefone.", tratado:false },
           { data:"06/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"read",
-            destinos:[{ papel:"rh", liberacao:"liberado" }, { papel:"aluno", liberacao:"liberado" }],
+            destinos:[{ papel:"rh", liberacao:"pendente" }],
             texto:"Faltou por viagem a trabalho. Enviei a trilha por e-mail.", tratado:true }
         ] },
       { id:"a3", nome:"Diego Nunes",    cargo:"Analista Pleno",
@@ -144,7 +144,7 @@ const TURMAS = [
       { id:"b2", nome:"Rafael Souza",      cargo:"Supervisor de Produção",
         historico:[
           { data:"14/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"unread",
-            destinos:[{ papel:"rh", liberacao:"pendente" }, { papel:"aluno", liberacao:"pendente" }],
+            destinos:[{ papel:"rh", liberacao:"pendente" }],
             texto:"Confunde must e should. Retomar com exemplos do chão de fábrica.", tratado:true }
         ] },
       { id:"b3", nome:"Marina Alves",      cargo:"Coord. de Qualidade",
@@ -418,10 +418,16 @@ const AVISOS_RH = [
 //    request    — alguém pedindo alguma coisa.      Colunas: not started / in progress / done
 //
 //  Cada mensagem carrega DESTINOS: para quem ela vai e se já está liberada.
-//  A liberação é por destinatário, não uma chave só — a mesma anotação do
-//  professor pode estar liberada ao aluno e barrada ao RH. Nada que o
-//  professor escreve chega ao RH ou ao aluno sem a interna liberar; o que a
-//  interna escreve já nasce liberado, porque é ela quem decide.
+//  A liberação é por destinatário, não uma chave só.
+//
+//  Duas regras que valem sempre:
+//    1. Mensagem do professor com destino RH NASCE `pendente`. Nada que o
+//       professor escreve chega ao RH sem a interna liberar. O que a interna
+//       escreve já nasce liberado, porque é ela quem decide.
+//    2. O ALUNO NUNCA É DESTINO. Ele só aparece como `origem`, e só de
+//       request — não recebe comentário, não recebe alerta, não vê a
+//       resolução do que pediu. Os destinatários possíveis são apenas
+//       interna, prof e rh.
 //
 //  As mensagens nascem do `historico` de cada aluno, que já existia. Os
 //  campos `cat`, `status`, `destinos` e `resolucao` foram acrescentados lá.
@@ -453,7 +459,7 @@ const PAPEIS_MSG = [
   { k:"interna", rot:"Bupp" },
   { k:"prof",    rot:"Professor" },
   { k:"rh",      rot:"RH" },
-  { k:"aluno",   rot:"Aluno" },
+  { k:"aluno",   rot:"Aluno" },   // só como origem, nunca como destino
   { k:"gestao",  rot:"Gestão Bupp" },
   { k:"auto",    rot:"Automático" }
 ];

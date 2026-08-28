@@ -13,7 +13,8 @@
 - [ ] **Envio pelos outros três papéis.** Hoje só a interna escreve. Falta o RH mandar
       request e comentário pelo `manager.html`, o aluno mandar request pelo `aluno.html`
       e o professor mandar as três categorias pelo `plataforma.html`, respeitando a
-      matriz: professor só chega ao RH e ao aluno depois que a interna libera.
+      matriz: professor só chega ao RH depois que a interna libera, e o aluno só
+      manda request — não recebe nada.
 - [ ] **Unificar `AVISOS_RH` com o modelo de mensagens.** O `manager.html` lê essa lista
       direto. Enquanto não unificar, o canal Bupp → RH fica separado das três categorias.
 

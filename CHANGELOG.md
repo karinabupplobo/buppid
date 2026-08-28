@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1741-aluno-fora-destinos — 28/08/2026
+- O que mudou: duas correções na matriz de permissão das mensagens. (1) O aluno deixou de ser
+  destinatário: sumiu de todo `destinos` e passa a existir só como `origem`, e só de request —
+  não recebe comentário, não recebe alerta, não vê a resolução do que pediu. Destinatários
+  possíveis agora são apenas interna, prof e rh. (2) Todo comentário do professor com destino RH
+  voltou a nascer `pendente`; dois deles estavam liberados por engano.
+- Arquivos: dados-mock.js
+- Motivo: o estado inicial anterior contradizia a regra — nada que o professor escreve chega ao RH
+  sem a interna liberar. As duas regras ficaram escritas no comentário do bloco MENSAGENS, para
+  não se perderem quando a tabela entrar no Supabase.
+  Efeito: a fila de aprovação passou de 1 para 3 mensagens, que é o correto. As quatro dashes
+  carregam sem erro de JS.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-aluno-fora-destinos
+
 ## v-20260828-1737-mensagens-mock — 28/08/2026
 - O que mudou: base de dados das mensagens no mock. Cada recado do `historico` de aluno ganhou
   `cat` (comentario/alerta/request), `status` (coluna do quadro), `destinos` (para quem vai e se

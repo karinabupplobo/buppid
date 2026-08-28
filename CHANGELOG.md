@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1804-colunas-mensagens-rolagem — 28/08/2026
+- O que mudou: as colunas dos quadros de Mensagens ganharam teto de altura (`max-height: 62vh`) e
+  a lista de cartões passou a rolar por dentro, num contêiner `.mq-cards`. O cabeçalho da coluna
+  (nome e contador) fica parado.
+- Arquivos: interna.html
+- Motivo: a coluna Not Started de Alertas, com 9 cartões, esticava a página inteira muito além da
+  altura da sidebar. Com a rolagem interna, a página caiu de ~4000px para 1873px.
+  Observação: o alvo de arrastar continua sendo a `.mq-col`, não o contêiner novo — arrastar
+  entre colunas foi testado depois da mudança e continua funcionando.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-1754-lead-cliente-pelos-dois-caminhos
+
 ## v-20260828-1754-lead-cliente-pelos-dois-caminhos — 28/08/2026
 - O que mudou: `moverLeadParaEtapa` passou a chamar `criarEmpresaClienteDoLead` quando a etapa
   alvo é "cliente", igual ao que o seletor de etapa dentro do card já fazia.

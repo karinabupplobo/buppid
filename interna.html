@@ -1498,10 +1498,18 @@
     .mq-colunas.c2{ grid-template-columns: repeat(2, 1fr); }
     .mq-colunas.c3{ grid-template-columns: repeat(3, 1fr); }
   }
+  /* A coluna tem teto de altura e quem rola é a lista de cartões, não a
+     coluna inteira — assim o nome da coluna e o contador ficam parados. Sem
+     isso, uma coluna com muitos alertas esticava a página inteira. */
   .mq-col{
     background: var(--bg-dash); border: 1px solid var(--borda); border-radius: 12px;
-    padding: 10px; min-height: 96px;
+    padding: 10px; min-height: 96px; max-height: 62vh;
+    display: flex; flex-direction: column;
   }
+  .mq-cards{ overflow-y: auto; flex: 1; min-height: 34px; padding-right: 3px; }
+  .mq-cards::-webkit-scrollbar{ width: 7px; }
+  .mq-cards::-webkit-scrollbar-thumb{ background: var(--borda); border-radius: 4px; }
+  .mq-cards::-webkit-scrollbar-thumb:hover{ background: var(--border-strong, #d3cfc2); }
   .mq-col.alvo{ border-color: var(--amarelo-neon); background: var(--limao-claro); }
   .mq-col-cab{
     display: flex; align-items: center; justify-content: space-between;
@@ -3665,7 +3673,9 @@ function renderMensagens(){
             return `
               <div class="mq-col" data-cat="${cat.k}" data-status="${col.k}">
                 <div class="mq-col-cab"><span>${col.rot}</span><span class="mq-n">${naCol.length}</span></div>
-                ${naCol.length ? naCol.map(cartaoMensagem).join("") : `<div class="mq-vazio">Vazio</div>`}
+                <div class="mq-cards">
+                  ${naCol.length ? naCol.map(cartaoMensagem).join("") : `<div class="mq-vazio">Vazio</div>`}
+                </div>
               </div>`;
           }).join("")}
         </div>

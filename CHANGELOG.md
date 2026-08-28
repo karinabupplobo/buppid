@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1820-kanban-unico-mensagens — 28/08/2026
+- O que mudou: a aba Messages virou um quadro só. Saíram os três quadros por categoria e a faixa
+  "Aguardando aprovação"; entraram um filtro de categoria (todas / comentários / alertas /
+  requests) ao lado do filtro de empresa e as quatro colunas únicas — Não iniciada, Andamento,
+  Liberado/Resolvido, Bloqueado. Cada cartão ganhou uma etiqueta de categoria e a faixa
+  "Quem vê", com chips de Interno, Professor, RH e Aluno: Interno fica ligado e travado, e Aluno
+  só destrava em request que o próprio aluno escreveu. Os três botões `+` viraram um `+ Nota`
+  único, com a categoria escolhida dentro do formulário. Arrastar um request para
+  Liberado/Resolvido continua pedindo a resolução.
+- Arquivos: interna.html
+- Motivo: segundo dos dois commits do kanban único.
+  Observação: o CSS dos cabeçalhos de quadro (`.msg-quadro`, `.mq-cab`, `.mq-titulo`) e as
+  variações de grade `.c2`/`.c3` ficaram órfãos e foram removidos junto. Em telas abaixo de
+  1300px as quatro colunas caem para duas, e abaixo de 900px para uma.
+  Nada persiste ainda: recarregar devolve o estado inicial.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-1810-mensagens-kanban-unico-mock
+
 ## v-20260828-1810-mensagens-kanban-unico-mock — 28/08/2026
 - O que mudou: a estrutura das mensagens virou eixo único. As colunas por categoria
   (unread/read e not started/in progress/done) deram lugar a um conjunto só, `COLUNAS_MSG`:

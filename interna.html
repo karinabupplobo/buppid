@@ -1475,28 +1475,21 @@
   @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(5,1fr); } }
 
   /* ================= Mensagens ================= */
-  /* Três quadros empilhados, um por categoria. Cada um com suas colunas de
-     status lado a lado, arrastáveis. O <select> em cada cartão faz o mesmo que
-     arrastar — é o caminho de quem está no celular, onde drag-and-drop de HTML
-     nativo não funciona. */
-  .msg-quadro{ margin-bottom: 26px; }
-  .mq-cab{ display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-  .mq-titulo{
-    font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--teal-escuro);
-  }
+  /* Um quadro só, com as quatro colunas lado a lado. Cartões arrastáveis; o
+     <select> em cada cartão faz o mesmo caminho, para o celular, onde
+     drag-and-drop de HTML nativo não funciona. */
   .mq-add{
     border: 1px solid var(--borda); background: var(--branco); color: var(--texto);
     border-radius: 8px; padding: 6px 11px; font-family: inherit; font-size: 12px;
     font-weight: 700; cursor: pointer;
   }
   .mq-add:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
-  .mq-colunas{ display: grid; gap: 12px; }
-  .mq-colunas.c2{ grid-template-columns: 1fr; }
-  .mq-colunas.c3{ grid-template-columns: 1fr; }
+  .mq-colunas{ display: grid; gap: 12px; grid-template-columns: 1fr; }
   @media (min-width: 900px){
-    .mq-colunas.c2{ grid-template-columns: repeat(2, 1fr); }
-    .mq-colunas.c3{ grid-template-columns: repeat(3, 1fr); }
+    .mq-colunas.c4{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1300px){
+    .mq-colunas.c4{ grid-template-columns: repeat(4, 1fr); }
   }
   /* A coluna tem teto de altura e quem rola é a lista de cartões, não a
      coluna inteira — assim o nome da coluna e o contador ficam parados. Sem
@@ -1538,19 +1531,34 @@
   .mc-quem{ font-size: 12px; font-weight: 700; color: var(--texto); }
   .mc-onde{ font-size: 11px; color: var(--cinza-texto); margin-bottom: 6px; }
   .mc-texto{ font-size: 12.5px; color: var(--texto); line-height: 1.45; margin: 0 0 8px; }
+  .mc-cat{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px; border: 1px solid var(--borda); color: var(--texto);
+  }
+  .mc-cat.c-alerta{ border-color: #e6b3ae; color: #a3312a; }
+  .mc-cat.c-request{ border-color: var(--amarelo-neon); color: #8a6d1f; }
+
+  /* Quem vê: interno fica ligado e travado; o aluno só destrava em request
+     que ele mesmo escreveu. */
+  .mc-ve{ display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+  .mc-ve-rot{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--cinza-texto); margin-right: 2px;
+  }
+  .ve-chip{
+    border: 1px solid var(--borda); background: var(--branco); color: var(--cinza-texto);
+    border-radius: 20px; font-family: inherit; font-size: 10.5px; font-weight: 700;
+    padding: 3px 9px; cursor: pointer;
+  }
+  .ve-chip:hover{ border-color: var(--azul-intermediario); color: var(--texto); }
+  .ve-chip.on{
+    background: var(--teal-escuro); border-color: var(--teal-escuro); color: #fff;
+  }
+  .ve-chip.travado{ cursor: default; opacity: .75; }
+  .ve-chip.travado:hover{ border-color: var(--borda); color: var(--cinza-texto); }
+  .ve-chip.on.travado:hover{ color: #fff; border-color: var(--teal-escuro); }
+
   .mc-rod{ display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .mc-dest{
-    font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px;
-    display: inline-flex; align-items: center; gap: 5px;
-  }
-  .mc-dest.lib-liberado{ background: #e8efe3; color: #40632f; }
-  .mc-dest.lib-pendente{ background: #fbf0d8; color: #8a6d1f; }
-  .mc-dest.lib-barrado{ background: #fbe0de; color: #a3312a; }
-  .mc-dest button{
-    border: none; background: rgba(0,0,0,.09); color: inherit; border-radius: 4px;
-    font-family: inherit; font-size: 9.5px; font-weight: 800; padding: 2px 5px; cursor: pointer;
-  }
-  .mc-dest button:hover{ background: rgba(0,0,0,.18); }
   .mc-mover{
     margin-left: auto; border: 1px solid var(--borda); border-radius: 6px; background: var(--branco);
     font-family: inherit; font-size: 10.5px; color: var(--cinza-texto); padding: 3px 5px; cursor: pointer;
@@ -1561,30 +1569,6 @@
   }
   .mc-resol b{ font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--azul-intermediario); }
   .mc-resol p{ margin: 3px 0 0; font-size: 12px; color: var(--texto); line-height: 1.45; }
-
-  /* Fila de aprovação: só existe quando há coisa do professor esperando. */
-  #msg-aprovacao:empty{ display: none; }
-  .apr-caixa{
-    background: #fdf7e6; border: 1px solid #e6d08a; border-radius: 12px;
-    padding: 14px 16px; margin-bottom: 22px;
-  }
-  .apr-titulo{
-    font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-    color: #8a6d1f; margin-bottom: 10px;
-  }
-  .apr-item{
-    display: flex; align-items: flex-start; gap: 12px; padding: 9px 0;
-    border-top: 1px solid #eadfbe;
-  }
-  .apr-item p{ margin: 3px 0 0; font-size: 12.5px; color: var(--texto); line-height: 1.45; }
-  .apr-quem{ font-size: 11.5px; font-weight: 700; color: var(--texto); }
-  .apr-acoes{ display: flex; gap: 6px; flex-shrink: 0; margin-left: auto; }
-  .apr-acoes button{
-    border: none; border-radius: 7px; font-family: inherit; font-size: 11.5px;
-    font-weight: 700; padding: 6px 11px; cursor: pointer; white-space: nowrap;
-  }
-  .apr-liberar{ background: var(--teal-escuro); color: #fff; }
-  .apr-barrar{ background: var(--branco); color: #a3312a; border: 1px solid #e6c2be !important; }
 
   /* ================= Empresas (aba antiga "Turmas") ================= */
   .empresa-card{
@@ -1813,9 +1797,15 @@
   <section class="pane" id="pane-mensagens">
     <div class="barra-planilha">
       <select class="filtro" id="msg-emp"></select>
+      <select class="filtro" id="msg-cat">
+        <option value="">Todas as categorias</option>
+        <option value="comentario">Comentários</option>
+        <option value="alerta">Alertas</option>
+        <option value="request">Requests</option>
+      </select>
+      <button class="mq-add" id="msg-nova">+ Nota</button>
       <span class="cont-linhas" id="msg-cont"></span>
     </div>
-    <div id="msg-aprovacao"></div>
     <div id="msg-quadros"></div>
   </section>
 
@@ -3558,18 +3548,21 @@ function renderAlertas(dados){
 
 // ══════════════════════════════════════════════════════════
 //  MENSAGENS
-//  Três quadros — Comentários, Alertas e Requests — cada um com suas colunas
-//  de status. Arrastar um cartão muda o status; o <select> do cartão faz o
-//  mesmo, para o celular, onde drag-and-drop nativo não funciona.
+//  Um quadro só, com filtro de categoria. Comentários, alertas e requests
+//  dividem as mesmas quatro colunas:
+//    Não iniciada → Andamento → Liberado/Resolvido | Bloqueado
 //
-//  Duas origens se juntam aqui:
-//    - MENSAGENS, escritas por gente (professor, RH, aluno, interna);
-//    - os alertas que a dash calcula sozinha a partir de presença, trilha e
-//      engajamento. Viram cartões de categoria "alerta" e autor "automático".
-//      O tipo "recado pendente" fica de fora de propósito: virou comentário ou
-//      request, e apareceria duas vezes.
+//  A coluna carrega duas coisas ao mesmo tempo: o estado do trabalho e a
+//  decisão de liberação. O "Quem vê" do cartão é a plateia pretendida, e só
+//  vale de fato quando o cartão está em Liberado/Resolvido — em Bloqueado
+//  ninguém de fora vê, marcado ou não.
 //
-//  Enquanto for mock, nada disso persiste: recarregar devolve o estado inicial.
+//  Duas origens se juntam aqui: as MENSAGENS escritas por gente e os alertas
+//  que a dash calcula sozinha (presença, trilha, engajamento), que entram como
+//  cartões de autor "Automático". O tipo "recado pendente" fica de fora deles
+//  de propósito: virou comentário ou request e apareceria duas vezes.
+//
+//  Enquanto for mock, nada persiste: recarregar devolve o estado inicial.
 // ══════════════════════════════════════════════════════════
 function mensagensAutomaticas(){
   const out = [];
@@ -3578,12 +3571,12 @@ function mensagensAutomaticas(){
       alertasDoAluno(a, t).filter(x => x.tipo !== "msg").forEach(x => {
         out.push({
           id: `auto|${t.id}|${a.id}|${x.tipo}`,
-          cat: "alerta", status: "nao_iniciado",
+          cat: "alerta", status: "nao_iniciada",
           origem: "auto", autor: "Automático",
           empresa: t.empresa, turmaId: t.id, turma: t.nome, nivel: t.nivel,
           alunoId: a.id, aluno: a.nome, data: hojeCurto(),
           texto: `<b>${(ROT[x.tipo] || {}).r || x.tipo}</b> — ${x.texto}`,
-          destinos: [{ papel: "interna", liberacao: "liberado" }],
+          vePor: ["interna"],
           resolucao: null
         });
       });
@@ -3598,10 +3591,11 @@ function acharMensagem(id){ return todasMensagens().find(m => m.id === id); }
 
 function msgFiltradas(){
   const emp = document.getElementById("msg-emp").value;
-  return todasMensagens().filter(m => !emp || m.empresa === emp);
+  const cat = document.getElementById("msg-cat").value;
+  return todasMensagens().filter(m => (!emp || m.empresa === emp) && (!cat || m.cat === cat));
 }
 
-function opcoesEmpMsg(){
+function opcoesFiltrosMsg(){
   const sel = document.getElementById("msg-emp");
   const atual = sel.value;
   sel.innerHTML = `<option value="">Todas as empresas</option>` +
@@ -3609,12 +3603,27 @@ function opcoesEmpMsg(){
   sel.value = atual;
 }
 
+function rotCat(k){ return (CATEGORIAS_MSG.find(c => c.k === k) || {}).sing || k; }
+
+// "Quem vê": interno fica sempre ligado e travado, porque a interna vê tudo
+// por definição. O aluno só é marcável em request que ele mesmo escreveu — nos
+// outros cartões o chip aparece desligado e sem clique, com a razão no title,
+// para não parecer defeito.
+function chipsQuemVe(m){
+  return PAPEIS_VE.map(p => {
+    const on = (m.vePor || []).includes(p);
+    if (p === "interna") return `<button class="ve-chip on travado" disabled title="A interna vê tudo">Interno</button>`;
+    if (p === "aluno" && !alunoPodeVer(m))
+      return `<button class="ve-chip travado" disabled title="O aluno só vê request que ele mesmo escreveu">Aluno</button>`;
+    return `<button class="ve-chip${on ? " on" : ""}" data-ve="${m.id}" data-papel="${p}">${rotPapel(p)}</button>`;
+  }).join("");
+}
+
 function cartaoMensagem(m){
-  const cols = colunasDe(m.cat);
-  const dest = (m.destinos || []).filter(d => d.papel !== "interna");
   return `
     <article class="msg-card" draggable="true" data-msg="${m.id}">
       <div class="mc-topo">
+        <span class="mc-cat c-${m.cat}">${rotCat(m.cat)}</span>
         <span class="mc-origem o-${m.origem}">${rotPapel(m.origem)}</span>
         <span class="mc-data">${m.data}</span>
       </div>
@@ -3622,75 +3631,47 @@ function cartaoMensagem(m){
       <div class="mc-onde">${m.aluno ? m.aluno + " · " : ""}${m.turma}</div>
       <p class="mc-texto">${m.texto}</p>
       ${m.resolucao ? `<div class="mc-resol"><b>Resolvido em ${m.resolucao.data} — ${m.resolucao.autor}</b><p>${m.resolucao.texto}</p></div>` : ""}
+      <div class="mc-ve">
+        <span class="mc-ve-rot">Quem vê</span>
+        ${chipsQuemVe(m)}
+      </div>
       <div class="mc-rod">
-        ${dest.map(d => `
-          <span class="mc-dest lib-${d.liberacao}">
-            ${rotPapel(d.papel)}: ${(LIBERACOES.find(l => l.k === d.liberacao) || {}).rot || d.liberacao}
-            ${d.liberacao !== "liberado" ? `<button data-liberar="${m.id}" data-papel="${d.papel}">liberar</button>` : ""}
-          </span>`).join("")}
         <select class="mc-mover" data-mover="${m.id}" aria-label="Mover de coluna">
-          ${cols.map(c => `<option value="${c.k}" ${c.k === m.status ? "selected" : ""}>${c.rot}</option>`).join("")}
+          ${COLUNAS_MSG.map(c => `<option value="${c.k}" ${c.k === m.status ? "selected" : ""}>${c.rot}</option>`).join("")}
         </select>
       </div>
     </article>`;
 }
 
 function renderMensagens(){
-  opcoesEmpMsg();
+  opcoesFiltrosMsg();
   const lista = msgFiltradas();
   document.getElementById("msg-cont").textContent =
     `${lista.length} ${lista.length !== 1 ? "mensagens" : "mensagem"}`;
 
-  const pendentes = lista.filter(aguardandoAprovacao);
-  document.getElementById("msg-aprovacao").innerHTML = !pendentes.length ? "" : `
-    <div class="apr-caixa">
-      <div class="apr-titulo">Aguardando aprovação · ${pendentes.length}</div>
-      ${pendentes.map(m => `
-        <div class="apr-item">
-          <div>
-            <div class="apr-quem">${m.autor} sobre ${m.aluno || m.turma} · ${(CATEGORIAS_MSG.find(c => c.k === m.cat) || {}).sing}</div>
-            <p>${m.texto}</p>
-          </div>
-          <div class="apr-acoes">
-            ${(m.destinos || []).filter(d => d.liberacao === "pendente").map(d => `
-              <button class="apr-liberar" data-liberar="${m.id}" data-papel="${d.papel}">Liberar ao ${rotPapel(d.papel)}</button>
-              <button class="apr-barrar" data-barrar="${m.id}" data-papel="${d.papel}">Barrar</button>`).join("")}
-          </div>
-        </div>`).join("")}
+  document.getElementById("msg-quadros").innerHTML = `
+    <div class="mq-colunas c4">
+      ${COLUNAS_MSG.map(col => {
+        const naCol = lista.filter(m => m.status === col.k);
+        return `
+          <div class="mq-col" data-status="${col.k}">
+            <div class="mq-col-cab"><span>${col.rot}</span><span class="mq-n">${naCol.length}</span></div>
+            <div class="mq-cards">
+              ${naCol.length ? naCol.map(cartaoMensagem).join("") : `<div class="mq-vazio">Vazio</div>`}
+            </div>
+          </div>`;
+      }).join("")}
     </div>`;
-
-  document.getElementById("msg-quadros").innerHTML = CATEGORIAS_MSG.map(cat => {
-    const doQuadro = lista.filter(m => m.cat === cat.k);
-    return `
-      <div class="msg-quadro">
-        <div class="mq-cab">
-          <span class="mq-titulo">${cat.rot}</span>
-          <button class="mq-add" data-add="${cat.k}">+ ${cat.sing}</button>
-        </div>
-        <div class="mq-colunas c${cat.colunas.length}">
-          ${cat.colunas.map(col => {
-            const naCol = doQuadro.filter(m => m.status === col.k);
-            return `
-              <div class="mq-col" data-cat="${cat.k}" data-status="${col.k}">
-                <div class="mq-col-cab"><span>${col.rot}</span><span class="mq-n">${naCol.length}</span></div>
-                <div class="mq-cards">
-                  ${naCol.length ? naCol.map(cartaoMensagem).join("") : `<div class="mq-vazio">Vazio</div>`}
-                </div>
-              </div>`;
-          }).join("")}
-        </div>
-      </div>`;
-  }).join("");
 
   ligarMensagens();
 }
 
-// Request que chega em Done pede a resolução antes de mudar de coluna: é ela
-// que volta para quem pediu.
+// Request que chega em Liberado/Resolvido pede a resolução antes de mudar de
+// coluna: é ela que volta para quem pediu.
 function moverMensagem(id, status){
   const m = acharMensagem(id);
   if (!m || m.status === status) return;
-  if (m.cat === "request" && status === "feito"){ pedirResolucao(m); return; }
+  if (m.cat === "request" && status === "liberado" && !m.resolucao){ pedirResolucao(m); return; }
   m.status = status;
   renderMensagens();
 }
@@ -3703,32 +3684,36 @@ function pedirResolucao(m){
     </div>
     <div class="acoes-modal">
       <button class="btn ghost" id="res-cancelar">Cancelar</button>
-      <button class="btn lime" id="res-salvar">Marcar como resolvido</button>
+      <button class="btn lime" id="res-salvar">Liberar como resolvido</button>
     </div>`);
   document.getElementById("res-cancelar").onclick = () => { fecharModal(); renderMensagens(); };
   document.getElementById("res-salvar").onclick = () => {
     const t = (document.getElementById("res-texto").value || "").trim();
     if (!t){ document.getElementById("res-texto").focus(); return; }
     m.resolucao = { data: hojeCurto(), autor: "Karina Bupp", texto: t };
-    m.status = "feito";
+    m.status = "liberado";
     fecharModal();
     renderMensagens();
   };
 }
 
-function mudarLiberacao(id, papel, valor){
+function alternarQuemVe(id, papel){
   const m = acharMensagem(id);
-  if (!m) return;
-  const d = (m.destinos || []).find(x => x.papel === papel);
-  if (d) d.liberacao = valor;
+  if (!m || papel === "interna") return;
+  if (papel === "aluno" && !alunoPodeVer(m)) return;
+  m.vePor = m.vePor || ["interna"];
+  const i = m.vePor.indexOf(papel);
+  if (i >= 0) m.vePor.splice(i, 1); else m.vePor.push(papel);
   renderMensagens();
 }
 
-// O aluno não entra na lista de destinatários: ele só manda request, nunca
-// recebe. O que a interna escreve já nasce liberado.
-function abrirFormMensagem(cat){
-  const c = CATEGORIAS_MSG.find(x => x.k === cat);
-  abrirModal("Nova mensagem", `Novo ${(c.sing || "").toLowerCase()}`, `
+// + Nota: um botão só, com a categoria escolhida dentro do formulário.
+function abrirFormMensagem(){
+  abrirModal("Nova nota", "Comentário, alerta ou request", `
+    <div class="form-linha">
+      <label for="nm-cat">Categoria</label>
+      <select id="nm-cat">${CATEGORIAS_MSG.map(c => `<option value="${c.k}">${c.sing}</option>`).join("")}</select>
+    </div>
     <div class="form-linha">
       <label for="nm-turma">Turma</label>
       <select id="nm-turma">${TURMAS.map(t => `<option value="${t.id}">${t.empresa} — ${partesIdent(t).turma} · ${nivelL(t.nivel)}</option>`).join("")}</select>
@@ -3738,8 +3723,8 @@ function abrirFormMensagem(cat){
       <select id="nm-aluno"></select>
     </div>
     <div class="form-linha">
-      <label for="nm-dest">Para quem</label>
-      <select id="nm-dest">
+      <label for="nm-ve">Quem vê, além da interna</label>
+      <select id="nm-ve">
         <option value="prof">Professor</option>
         <option value="rh">RH</option>
         <option value="prof,rh">Professor e RH</option>
@@ -3752,7 +3737,7 @@ function abrirFormMensagem(cat){
     </div>
     <div class="acoes-modal">
       <button class="btn ghost" id="nm-cancelar">Cancelar</button>
-      <button class="btn lime" id="nm-salvar">Criar</button>
+      <button class="btn lime" id="nm-salvar">Criar nota</button>
     </div>`);
 
   const selTurma = document.getElementById("nm-turma");
@@ -3771,15 +3756,16 @@ function abrirFormMensagem(cat){
     if (!texto){ document.getElementById("nm-texto").focus(); return; }
     const t = TURMAS.find(x => x.id === selTurma.value);
     const a = t && t.alunos.find(x => x.id === selAluno.value);
-    const papeis = (document.getElementById("nm-dest").value || "").split(",").filter(Boolean);
+    const extras = (document.getElementById("nm-ve").value || "").split(",").filter(Boolean);
     MENSAGENS.unshift({
       id: "nova|" + Date.now(),
-      cat, status: cat === "comentario" ? "unread" : "nao_iniciado",
+      cat: document.getElementById("nm-cat").value,
+      status: "nao_iniciada",
       origem: "interna", autor: "Karina Bupp",
       empresa: t.empresa, turmaId: t.id, turma: t.nome, nivel: t.nivel,
       alunoId: a ? a.id : null, aluno: a ? a.nome : null,
       data: hojeCurto(), texto,
-      destinos: papeis.map(p => ({ papel: p, liberacao: "liberado" })),
+      vePor: ["interna"].concat(extras),
       resolucao: null
     });
     fecharModal();
@@ -3788,21 +3774,14 @@ function abrirFormMensagem(cat){
 }
 
 // Guardado à parte porque o dragover não lê o dataTransfer — só o drop tem
-// acesso ao conteúdo. Sem isso não dá para recusar o alvo errado enquanto o
-// cartão ainda está no ar.
+// acesso ao conteúdo.
 let arrastando = null;
 
 function ligarMensagens(){
   const pane = document.getElementById("pane-mensagens");
 
-  pane.querySelectorAll("[data-add]").forEach(b => {
-    b.onclick = () => abrirFormMensagem(b.dataset.add);
-  });
-  pane.querySelectorAll("[data-liberar]").forEach(b => {
-    b.onclick = () => mudarLiberacao(b.dataset.liberar, b.dataset.papel, "liberado");
-  });
-  pane.querySelectorAll("[data-barrar]").forEach(b => {
-    b.onclick = () => mudarLiberacao(b.dataset.barrar, b.dataset.papel, "barrado");
+  pane.querySelectorAll("[data-ve]").forEach(b => {
+    b.onclick = () => alternarQuemVe(b.dataset.ve, b.dataset.papel);
   });
   pane.querySelectorAll("[data-mover]").forEach(sel => {
     sel.onchange = () => moverMensagem(sel.dataset.mover, sel.value);
@@ -3820,8 +3799,7 @@ function ligarMensagens(){
 
   pane.querySelectorAll(".mq-col").forEach(col => {
     col.ondragover = ev => {
-      const m = acharMensagem(arrastando);
-      if (!m || m.cat !== col.dataset.cat) return;   // muda de coluna, nunca de quadro
+      if (!arrastando) return;
       ev.preventDefault();
       col.classList.add("alvo");
     };
@@ -3830,13 +3808,14 @@ function ligarMensagens(){
       ev.preventDefault();
       col.classList.remove("alvo");
       const id = ev.dataTransfer.getData("text/plain");
-      const m = acharMensagem(id);
-      if (m && m.cat === col.dataset.cat) moverMensagem(id, col.dataset.status);
+      if (acharMensagem(id)) moverMensagem(id, col.dataset.status);
     };
   });
 }
 
 document.getElementById("msg-emp").onchange = renderMensagens;
+document.getElementById("msg-cat").onchange = renderMensagens;
+document.getElementById("msg-nova").onclick = abrirFormMensagem;
 
 
 // ══════════════════════════════════════════════════════════

@@ -1,9 +1,5 @@
 # NEXT STEPS
 
-- [ ] **Kanban único de Mensagens — commit 2.** O mock já está no eixo único
-      (v-20260828-1810). Falta refazer o `interna.html`: um quadro só com filtro de
-      categoria, as quatro colunas novas, o seletor "Quem vê" no cartão, `+ Nota`
-      único no lugar dos três `+`, e remover a faixa "Aguardando aprovação".
 - [ ] **Tela de Mensagens — commit 3.** Falta remover o card Alertas de Performance
       e o modal que ele abre, realojando o "Avisar o RH" no rodapé da tela de
       Mensagens. Os commits 1 (v-20260828-1737, estrutura no mock) e 2
@@ -17,8 +13,9 @@
 - [ ] **Envio pelos outros três papéis.** Hoje só a interna escreve. Falta o RH mandar
       request e comentário pelo `manager.html`, o aluno mandar request pelo `aluno.html`
       e o professor mandar as três categorias pelo `plataforma.html`, respeitando a
-      matriz: professor só chega ao RH depois que a interna libera, e o aluno só
-      manda request — não recebe nada.
+      matriz: nada do professor aparece ao RH antes de a interna mover o cartão para
+      Liberado/Resolvido, e o aluno só manda request e só enxerga o que ele mesmo
+      escreveu.
 - [ ] **Unificar `AVISOS_RH` com o modelo de mensagens.** O `manager.html` lê essa lista
       direto. Enquanto não unificar, o canal Bupp → RH fica separado das três categorias.
 

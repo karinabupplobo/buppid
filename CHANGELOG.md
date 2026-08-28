@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1810-mensagens-kanban-unico-mock — 28/08/2026
+- O que mudou: a estrutura das mensagens virou eixo único. As colunas por categoria
+  (unread/read e not started/in progress/done) deram lugar a um conjunto só, `COLUNAS_MSG`:
+  nao_iniciada → andamento → liberado (Liberado/Resolvido) | bloqueado. O campo `destinos`
+  (par papel + liberação) virou `vePor`, uma lista simples de papéis, porque a liberação passou
+  a morar na coluna. Entraram `PAPEIS_VE` e `alunoPodeVer()`; saíram `LIBERACOES`,
+  `aguardandoAprovacao()` e o `colunas` de cada categoria. As nove mensagens foram remapeadas.
+- Arquivos: dados-mock.js
+- Motivo: primeiro dos dois commits do kanban único.
+  Observação — o que se perdeu no caminho: a liberação era por destinatário, então uma mensagem
+  podia estar liberada ao professor e barrada ao RH ao mesmo tempo. Com um eixo só isso deixou de
+  ser possível. O alerta da Fernanda Lopes era exatamente esse caso (prof liberado, RH barrado) e
+  virou "andamento" com `vePor` só de prof — a decisão de barrar o RH sumiu como estado e virou
+  ausência na lista. Por isso a coluna Bloqueado nasce vazia.
+  ATENÇÃO: entre este commit e o próximo, a aba Messages fica inconsistente — o interna.html
+  ainda procura as colunas antigas e nenhum cartão aparece. Some no commit 2.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-kanban-unico
+
 ## v-20260828-1804-colunas-mensagens-rolagem — 28/08/2026
 - O que mudou: as colunas dos quadros de Mensagens ganharam teto de altura (`max-height: 62vh`) e
   a lista de cartões passou a rolar por dentro, num contêiner `.mq-cards`. O cabeçalho da coluna

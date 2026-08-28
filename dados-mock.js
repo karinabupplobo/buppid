@@ -27,28 +27,23 @@ const TURMAS = [
     alunos: [
       { id:"a1", nome:"Bruno Tavares",  cargo:"Analista de Comex",
         historico:[
-          { data:"13/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"read",
-            destinos:[{ papel:"rh", liberacao:"pendente" }],
+          { data:"13/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"nao_iniciada", vePor:["interna","rh"],
             texto:"Participou bem, mas trava em past simple na hora de contar o que já foi negociado.", tratado:true }
         ] },
       { id:"a2", nome:"Camila Reis",    cargo:"Coord. de Importação",
         historico:[
-          { data:"19/08", tipo:"rh", autor:"RH — Sertrading", cat:"request", status:"em_andamento",
-            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+          { data:"19/08", tipo:"rh", autor:"RH — Sertrading", cat:"request", status:"andamento", vePor:["interna","prof"],
             texto:"Camila assumiu a conta da Ásia e vai precisar de call semanal em inglês a partir de setembro. Priorizar negociação por telefone.", tratado:false },
-          { data:"06/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"read",
-            destinos:[{ papel:"rh", liberacao:"pendente" }],
+          { data:"06/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"nao_iniciada", vePor:["interna","rh"],
             texto:"Faltou por viagem a trabalho. Enviei a trilha por e-mail.", tratado:true }
         ] },
       { id:"a3", nome:"Diego Nunes",    cargo:"Analista Pleno",
         historico:[] },
       { id:"a4", nome:"Fernanda Lopes", cargo:"Supervisora",
         historico:[
-          { data:"18/08", tipo:"aluno", autor:"Fernanda Lopes", cat:"request", status:"nao_iniciado",
-            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+          { data:"18/08", tipo:"aluno", autor:"Fernanda Lopes", cat:"request", status:"nao_iniciada", vePor:["interna","prof","aluno"],
             texto:"Professora, estou perdida nos condicionais. Consegue retomar antes de avançar?", tratado:false },
-          { data:"15/08", tipo:"gestao", autor:"Gestão Bupp", cat:"alerta", status:"em_andamento",
-            destinos:[{ papel:"prof", liberacao:"liberado" }, { papel:"rh", liberacao:"barrado" }],
+          { data:"15/08", tipo:"gestao", autor:"Gestão Bupp", cat:"alerta", status:"andamento", vePor:["interna","prof"],
             texto:"Engajamento em queda há 3 aulas. Combinar conversa individual e reportar ao RH se não melhorar até 30/08.", tratado:false }
         ] }
     ],
@@ -107,8 +102,7 @@ const TURMAS = [
       { id:"d1", nome:"Ricardo Menezes", cargo:"Diretor Comercial", historico:[] },
       { id:"d2", nome:"Patrícia Vlach",  cargo:"Diretora de Operações",
         historico:[
-          { data:"20/08", tipo:"rh", autor:"RH — Sertrading", cat:"request", status:"nao_iniciado",
-            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+          { data:"20/08", tipo:"rh", autor:"RH — Sertrading", cat:"request", status:"nao_iniciada", vePor:["interna","prof"],
             texto:"Patrícia viaja para a matriz em outubro. Reforçar reunião de resultado.", tratado:false }
         ] }
     ],
@@ -143,14 +137,12 @@ const TURMAS = [
       { id:"b1", nome:"Gisele Piernikarz", cargo:"Gerente de DHO", historico:[] },
       { id:"b2", nome:"Rafael Souza",      cargo:"Supervisor de Produção",
         historico:[
-          { data:"14/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"unread",
-            destinos:[{ papel:"rh", liberacao:"pendente" }],
+          { data:"14/08", tipo:"prof", autor:"Prof. Ana", cat:"comentario", status:"nao_iniciada", vePor:["interna","rh"],
             texto:"Confunde must e should. Retomar com exemplos do chão de fábrica.", tratado:true }
         ] },
       { id:"b3", nome:"Marina Alves",      cargo:"Coord. de Qualidade",
         historico:[
-          { data:"20/08", tipo:"gestao", autor:"Gestão Bupp", cat:"alerta", status:"nao_iniciado",
-            destinos:[{ papel:"prof", liberacao:"liberado" }, { papel:"rh", liberacao:"liberado" }],
+          { data:"20/08", tipo:"gestao", autor:"Gestão Bupp", cat:"alerta", status:"nao_iniciada", vePor:["interna","prof","rh"],
             texto:"Não fez nenhuma trilha desde o início do módulo. Verificar se tem acesso à plataforma antes de tratar como desengajamento.", tratado:false }
         ] }
     ],
@@ -192,8 +184,7 @@ const TURMAS = [
     objetivoTurma: "Em 6 meses, apresentar a empresa e sustentar o Q&A com investidor estrangeiro, sem leitura de slide.",
     alunos: [ { id:"c1", nome:"Marcos Boschetti", cargo:"CEO e cofundador",
         historico:[
-          { data:"17/08", tipo:"aluno", autor:"Marcos Boschetti", cat:"request", status:"feito",
-            destinos:[{ papel:"interna", liberacao:"liberado" }, { papel:"prof", liberacao:"liberado" }],
+          { data:"17/08", tipo:"aluno", autor:"Marcos Boschetti", cat:"request", status:"liberado", vePor:["interna","prof","aluno"],
             resolucao:{ data:"19/08", autor:"Karina Bupp", texto:"Aulas de 26/08 e 02/09 remontadas em cima do pitch. Material novo já enviado ao professor." },
             texto:"Tenho pitch real para investidor dia 05/09. Dá para focar nisso nas próximas aulas?", tratado:false }
         ] } ],
@@ -412,25 +403,26 @@ const AVISOS_RH = [
 // ══════════════════════════════════════════════════════════
 //  MENSAGENS
 //  Tudo que circula entre os quatro papéis (interna, professor, RH e aluno)
-//  em três categorias:
-//    comentario — observação, não pede ação.        Colunas: unread / read
-//    alerta     — algo que precisa ser tratado.     Colunas: not started / in progress / done
-//    request    — alguém pedindo alguma coisa.      Colunas: not started / in progress / done
+//  em três categorias — comentário (observação), alerta (algo a tratar) e
+//  request (alguém pedindo). As três dividem o mesmo quadro e as mesmas
+//  quatro colunas.
 //
-//  Cada mensagem carrega DESTINOS: para quem ela vai e se já está liberada.
-//  A liberação é por destinatário, não uma chave só.
+//  A COLUNA é o estado do trabalho E a decisão de liberação, num eixo só:
+//    nao_iniciada → andamento → liberado (Liberado/Resolvido) | bloqueado
+//
+//  O `vePor` é a plateia: a lista de papéis marcados para ver aquilo. Ele só
+//  vale de fato quando o cartão está em `liberado`. Em `bloqueado`, ninguém
+//  de fora vê, independente do que estiver marcado.
 //
 //  Duas regras que valem sempre:
-//    1. Mensagem do professor com destino RH NASCE `pendente`. Nada que o
-//       professor escreve chega ao RH sem a interna liberar. O que a interna
-//       escreve já nasce liberado, porque é ela quem decide.
-//    2. O ALUNO NUNCA É DESTINO. Ele só aparece como `origem`, e só de
-//       request — não recebe comentário, não recebe alerta, não vê a
-//       resolução do que pediu. Os destinatários possíveis são apenas
-//       interna, prof e rh.
+//    1. `interna` está em todo `vePor` e não se desmarca — a interna vê tudo
+//       por definição. Mensagem do professor nasce em `nao_iniciada`: nada que
+//       ele escreve chega ao RH antes de a interna mover para `liberado`.
+//    2. O ALUNO só entra no `vePor` de REQUEST QUE ELE MESMO ESCREVEU. Não vê
+//       comentário, não vê alerta, não vê request de outra pessoa.
 //
 //  As mensagens nascem do `historico` de cada aluno, que já existia. Os
-//  campos `cat`, `status`, `destinos` e `resolucao` foram acrescentados lá.
+//  campos `cat`, `status`, `vePor` e `resolucao` foram acrescentados lá.
 //  O campo antigo `tratado` continua onde está: a aba Alertas ainda o usa.
 //
 //  Enquanto for mock, o id é posicional (`turma|aluno|índice`) e arrastar um
@@ -438,20 +430,19 @@ const AVISOS_RH = [
 //  Supabase, o id passa a ser o da linha.
 // ══════════════════════════════════════════════════════════
 const CATEGORIAS_MSG = [
-  { k:"comentario", rot:"Comentários", sing:"Comentário",
-    colunas:[ { k:"unread", rot:"Unread" }, { k:"read", rot:"Read" } ] },
-  { k:"alerta", rot:"Alertas", sing:"Alerta",
-    colunas:[ { k:"nao_iniciado", rot:"Not Started" }, { k:"em_andamento", rot:"In Progress" },
-              { k:"feito", rot:"Done" } ] },
-  { k:"request", rot:"Requests", sing:"Request",
-    colunas:[ { k:"nao_iniciado", rot:"Not Started" }, { k:"em_andamento", rot:"In Progress" },
-              { k:"feito", rot:"Done" } ] }
+  { k:"comentario", rot:"Comentários", sing:"Comentário" },
+  { k:"alerta",     rot:"Alertas",     sing:"Alerta" },
+  { k:"request",    rot:"Requests",    sing:"Request" }
 ];
 
-function colunasDe(cat){
-  const c = CATEGORIAS_MSG.find(x => x.k === cat);
-  return c ? c.colunas : [];
-}
+// As mesmas quatro colunas para as três categorias — é um quadro só, com
+// filtro para escolher o que aparece.
+const COLUNAS_MSG = [
+  { k:"nao_iniciada", rot:"Não iniciada" },
+  { k:"andamento",    rot:"Andamento" },
+  { k:"liberado",     rot:"Liberado/Resolvido" },
+  { k:"bloqueado",    rot:"Bloqueado" }
+];
 
 // Quem manda e quem recebe. `auto` não é papel de gente: é o alerta que a
 // própria dash calcula a partir de presença, trilha e engajamento.
@@ -459,23 +450,19 @@ const PAPEIS_MSG = [
   { k:"interna", rot:"Bupp" },
   { k:"prof",    rot:"Professor" },
   { k:"rh",      rot:"RH" },
-  { k:"aluno",   rot:"Aluno" },   // só como origem, nunca como destino
+  { k:"aluno",   rot:"Aluno" },   // vê só o request que ele mesmo escreveu
   { k:"gestao",  rot:"Gestão Bupp" },
   { k:"auto",    rot:"Automático" }
 ];
 
 function rotPapel(k){ return (PAPEIS_MSG.find(p => p.k === k) || {}).rot || k; }
 
-const LIBERACOES = [
-  { k:"liberado", rot:"Liberado" },
-  { k:"pendente", rot:"Aguardando" },
-  { k:"barrado",  rot:"Barrado" }
-];
+// Papéis que podem ser marcados no "Quem vê" de um cartão. `interna` fica
+// sempre ligado e travado; `aluno` só é marcável em request do próprio aluno.
+const PAPEIS_VE = ["interna", "prof", "rh", "aluno"];
 
-// Uma mensagem está na fila de aprovação se veio do professor e tem ao menos
-// um destinatário ainda pendente.
-function aguardandoAprovacao(m){
-  return m.origem === "prof" && (m.destinos || []).some(d => d.liberacao === "pendente");
+function alunoPodeVer(m){
+  return m.cat === "request" && m.origem === "aluno";
 }
 
 function montarMensagens(){
@@ -498,7 +485,7 @@ function montarMensagens(){
           aluno: a.nome,
           data: h.data,
           texto: h.texto,
-          destinos: (h.destinos || []).map(d => ({ ...d })),
+          vePor: (h.vePor || ["interna"]).slice(),
           resolucao: h.resolucao || null
         });
       });

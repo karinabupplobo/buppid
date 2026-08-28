@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1750-tela-mensagens — 28/08/2026
+- O que mudou: nova aba Messages na dash interna, com os três quadros — Comentários
+  (Unread/Read), Alertas e Requests (Not Started/In Progress/Done). Cartões arrastáveis entre
+  colunas, com um `<select>` em cada um fazendo o mesmo caminho para celular, onde drag-and-drop
+  nativo não funciona. Fila "Aguardando aprovação" no topo, com Liberar e Barrar por destinatário,
+  e selo de liberação em cada cartão. Botões `+ Comentário`, `+ Alerta` e `+ Request` abrindo
+  formulário com turma, aluno (ou turma inteira) e destinatário — o aluno não aparece como opção,
+  porque nunca recebe. Arrastar um request para Done abre o campo de resolução antes de mover.
+  Filtro por empresa no topo.
+- Arquivos: interna.html
+- Motivo: commit 2 dos três da tela de Mensagens.
+  Observação: os alertas automáticos (presença, trilha, engajamento) entram como cartões de autor
+  "Automático" e são gerados uma única vez no boot — se fossem regerados a cada render, o cartão
+  arrastado voltaria à coluna de origem. O tipo "recado pendente" ficou de fora deles de propósito:
+  virou comentário ou request e apareceria duas vezes.
+  Nada persiste ainda: recarregar devolve o estado inicial.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-tela-mensagens
+
 ## v-20260828-1741-aluno-fora-destinos — 28/08/2026
 - O que mudou: duas correções na matriz de permissão das mensagens. (1) O aluno deixou de ser
   destinatário: sumiu de todo `destinos` e passa a existir só como `origem`, e só de request —

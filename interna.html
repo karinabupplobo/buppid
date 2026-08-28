@@ -1474,6 +1474,110 @@
   .kpi-clicavel:hover{ border-color: var(--azul-intermediario); box-shadow: 0 0 0 1px var(--azul-intermediario) inset; }
   @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(5,1fr); } }
 
+  /* ================= Mensagens ================= */
+  /* Três quadros empilhados, um por categoria. Cada um com suas colunas de
+     status lado a lado, arrastáveis. O <select> em cada cartão faz o mesmo que
+     arrastar — é o caminho de quem está no celular, onde drag-and-drop de HTML
+     nativo não funciona. */
+  .msg-quadro{ margin-bottom: 26px; }
+  .mq-cab{ display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .mq-titulo{
+    font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--teal-escuro);
+  }
+  .mq-add{
+    border: 1px solid var(--borda); background: var(--branco); color: var(--texto);
+    border-radius: 8px; padding: 6px 11px; font-family: inherit; font-size: 12px;
+    font-weight: 700; cursor: pointer;
+  }
+  .mq-add:hover{ background: var(--limao-claro); border-color: var(--amarelo-neon); }
+  .mq-colunas{ display: grid; gap: 12px; }
+  .mq-colunas.c2{ grid-template-columns: 1fr; }
+  .mq-colunas.c3{ grid-template-columns: 1fr; }
+  @media (min-width: 900px){
+    .mq-colunas.c2{ grid-template-columns: repeat(2, 1fr); }
+    .mq-colunas.c3{ grid-template-columns: repeat(3, 1fr); }
+  }
+  .mq-col{
+    background: var(--bg-dash); border: 1px solid var(--borda); border-radius: 12px;
+    padding: 10px; min-height: 96px;
+  }
+  .mq-col.alvo{ border-color: var(--amarelo-neon); background: var(--limao-claro); }
+  .mq-col-cab{
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--azul-intermediario); padding: 2px 4px 9px;
+  }
+  .mq-n{ font-weight: 800; color: var(--texto); }
+  .mq-vazio{ font-size: 11.5px; color: var(--cinza-texto); padding: 6px 4px; font-style: italic; }
+
+  .msg-card{
+    background: var(--branco); border: 1px solid var(--borda); border-radius: 10px;
+    padding: 11px 12px; margin-bottom: 8px; cursor: grab;
+  }
+  .msg-card:active{ cursor: grabbing; }
+  .msg-card.arrastando{ opacity: .45; }
+  .mc-topo{ display: flex; align-items: center; gap: 7px; margin-bottom: 6px; flex-wrap: wrap; }
+  .mc-origem{
+    font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px; background: #ece9f0; color: var(--azul-intermediario);
+  }
+  .mc-origem.o-prof{ background: #e8efe3; color: #40632f; }
+  .mc-origem.o-rh{ background: var(--limao-claro); color: var(--teal-escuro); }
+  .mc-origem.o-aluno{ background: #fbf0d8; color: #8a6d1f; }
+  .mc-origem.o-auto{ background: #fbe0de; color: #a3312a; }
+  .mc-data{ font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
+  .mc-quem{ font-size: 12px; font-weight: 700; color: var(--texto); }
+  .mc-onde{ font-size: 11px; color: var(--cinza-texto); margin-bottom: 6px; }
+  .mc-texto{ font-size: 12.5px; color: var(--texto); line-height: 1.45; margin: 0 0 8px; }
+  .mc-rod{ display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .mc-dest{
+    font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .mc-dest.lib-liberado{ background: #e8efe3; color: #40632f; }
+  .mc-dest.lib-pendente{ background: #fbf0d8; color: #8a6d1f; }
+  .mc-dest.lib-barrado{ background: #fbe0de; color: #a3312a; }
+  .mc-dest button{
+    border: none; background: rgba(0,0,0,.09); color: inherit; border-radius: 4px;
+    font-family: inherit; font-size: 9.5px; font-weight: 800; padding: 2px 5px; cursor: pointer;
+  }
+  .mc-dest button:hover{ background: rgba(0,0,0,.18); }
+  .mc-mover{
+    margin-left: auto; border: 1px solid var(--borda); border-radius: 6px; background: var(--branco);
+    font-family: inherit; font-size: 10.5px; color: var(--cinza-texto); padding: 3px 5px; cursor: pointer;
+  }
+  .mc-resol{
+    margin-top: 8px; padding: 8px 9px; background: var(--bg-dash);
+    border-left: 3px solid var(--amarelo-neon); border-radius: 0 7px 7px 0;
+  }
+  .mc-resol b{ font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--azul-intermediario); }
+  .mc-resol p{ margin: 3px 0 0; font-size: 12px; color: var(--texto); line-height: 1.45; }
+
+  /* Fila de aprovação: só existe quando há coisa do professor esperando. */
+  #msg-aprovacao:empty{ display: none; }
+  .apr-caixa{
+    background: #fdf7e6; border: 1px solid #e6d08a; border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 22px;
+  }
+  .apr-titulo{
+    font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: #8a6d1f; margin-bottom: 10px;
+  }
+  .apr-item{
+    display: flex; align-items: flex-start; gap: 12px; padding: 9px 0;
+    border-top: 1px solid #eadfbe;
+  }
+  .apr-item p{ margin: 3px 0 0; font-size: 12.5px; color: var(--texto); line-height: 1.45; }
+  .apr-quem{ font-size: 11.5px; font-weight: 700; color: var(--texto); }
+  .apr-acoes{ display: flex; gap: 6px; flex-shrink: 0; margin-left: auto; }
+  .apr-acoes button{
+    border: none; border-radius: 7px; font-family: inherit; font-size: 11.5px;
+    font-weight: 700; padding: 6px 11px; cursor: pointer; white-space: nowrap;
+  }
+  .apr-liberar{ background: var(--teal-escuro); color: #fff; }
+  .apr-barrar{ background: var(--branco); color: #a3312a; border: 1px solid #e6c2be !important; }
+
   /* ================= Empresas (aba antiga "Turmas") ================= */
   .empresa-card{
     background: var(--branco); border: 1px solid var(--borda); border-radius: 12px;
@@ -1603,6 +1707,7 @@
   <div class="tabs">
     <div class="tab-grupo">Geral</div>
     <button class="tab active" data-pane="planilha">Performance</button>
+    <button class="tab" data-pane="mensagens">Messages</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="usuarios">Users</button>
 
@@ -1695,6 +1800,15 @@
     <div class="rt-titulo" id="titulo-u">Usuários</div>
     <div class="usuarios-wrap" id="usuarios-wrap"></div>
     <button class="btn-csv" id="btn-novo-u" style="margin-top:14px;">+ Usuário</button>
+  </section>
+
+  <section class="pane" id="pane-mensagens">
+    <div class="barra-planilha">
+      <select class="filtro" id="msg-emp"></select>
+      <span class="cont-linhas" id="msg-cont"></span>
+    </div>
+    <div id="msg-aprovacao"></div>
+    <div id="msg-quadros"></div>
   </section>
 
   <section class="pane emb" id="pane-tasks">
@@ -3435,6 +3549,287 @@ function renderAlertas(dados){
 }
 
 // ══════════════════════════════════════════════════════════
+//  MENSAGENS
+//  Três quadros — Comentários, Alertas e Requests — cada um com suas colunas
+//  de status. Arrastar um cartão muda o status; o <select> do cartão faz o
+//  mesmo, para o celular, onde drag-and-drop nativo não funciona.
+//
+//  Duas origens se juntam aqui:
+//    - MENSAGENS, escritas por gente (professor, RH, aluno, interna);
+//    - os alertas que a dash calcula sozinha a partir de presença, trilha e
+//      engajamento. Viram cartões de categoria "alerta" e autor "automático".
+//      O tipo "recado pendente" fica de fora de propósito: virou comentário ou
+//      request, e apareceria duas vezes.
+//
+//  Enquanto for mock, nada disso persiste: recarregar devolve o estado inicial.
+// ══════════════════════════════════════════════════════════
+function mensagensAutomaticas(){
+  const out = [];
+  TURMAS.forEach(t => {
+    t.alunos.forEach(a => {
+      alertasDoAluno(a, t).filter(x => x.tipo !== "msg").forEach(x => {
+        out.push({
+          id: `auto|${t.id}|${a.id}|${x.tipo}`,
+          cat: "alerta", status: "nao_iniciado",
+          origem: "auto", autor: "Automático",
+          empresa: t.empresa, turmaId: t.id, turma: t.nome, nivel: t.nivel,
+          alunoId: a.id, aluno: a.nome, data: hojeCurto(),
+          texto: `<b>${(ROT[x.tipo] || {}).r || x.tipo}</b> — ${x.texto}`,
+          destinos: [{ papel: "interna", liberacao: "liberado" }],
+          resolucao: null
+        });
+      });
+    });
+  });
+  return out;
+}
+
+let MSG_AUTO = [];
+function todasMensagens(){ return MENSAGENS.concat(MSG_AUTO); }
+function acharMensagem(id){ return todasMensagens().find(m => m.id === id); }
+
+function msgFiltradas(){
+  const emp = document.getElementById("msg-emp").value;
+  return todasMensagens().filter(m => !emp || m.empresa === emp);
+}
+
+function opcoesEmpMsg(){
+  const sel = document.getElementById("msg-emp");
+  const atual = sel.value;
+  sel.innerHTML = `<option value="">Todas as empresas</option>` +
+    [...new Set(TURMAS.map(t => t.empresa))].map(e => `<option>${e}</option>`).join("");
+  sel.value = atual;
+}
+
+function cartaoMensagem(m){
+  const cols = colunasDe(m.cat);
+  const dest = (m.destinos || []).filter(d => d.papel !== "interna");
+  return `
+    <article class="msg-card" draggable="true" data-msg="${m.id}">
+      <div class="mc-topo">
+        <span class="mc-origem o-${m.origem}">${rotPapel(m.origem)}</span>
+        <span class="mc-data">${m.data}</span>
+      </div>
+      <div class="mc-quem">${m.autor}</div>
+      <div class="mc-onde">${m.aluno ? m.aluno + " · " : ""}${m.turma}</div>
+      <p class="mc-texto">${m.texto}</p>
+      ${m.resolucao ? `<div class="mc-resol"><b>Resolvido em ${m.resolucao.data} — ${m.resolucao.autor}</b><p>${m.resolucao.texto}</p></div>` : ""}
+      <div class="mc-rod">
+        ${dest.map(d => `
+          <span class="mc-dest lib-${d.liberacao}">
+            ${rotPapel(d.papel)}: ${(LIBERACOES.find(l => l.k === d.liberacao) || {}).rot || d.liberacao}
+            ${d.liberacao !== "liberado" ? `<button data-liberar="${m.id}" data-papel="${d.papel}">liberar</button>` : ""}
+          </span>`).join("")}
+        <select class="mc-mover" data-mover="${m.id}" aria-label="Mover de coluna">
+          ${cols.map(c => `<option value="${c.k}" ${c.k === m.status ? "selected" : ""}>${c.rot}</option>`).join("")}
+        </select>
+      </div>
+    </article>`;
+}
+
+function renderMensagens(){
+  opcoesEmpMsg();
+  const lista = msgFiltradas();
+  document.getElementById("msg-cont").textContent =
+    `${lista.length} ${lista.length !== 1 ? "mensagens" : "mensagem"}`;
+
+  const pendentes = lista.filter(aguardandoAprovacao);
+  document.getElementById("msg-aprovacao").innerHTML = !pendentes.length ? "" : `
+    <div class="apr-caixa">
+      <div class="apr-titulo">Aguardando aprovação · ${pendentes.length}</div>
+      ${pendentes.map(m => `
+        <div class="apr-item">
+          <div>
+            <div class="apr-quem">${m.autor} sobre ${m.aluno || m.turma} · ${(CATEGORIAS_MSG.find(c => c.k === m.cat) || {}).sing}</div>
+            <p>${m.texto}</p>
+          </div>
+          <div class="apr-acoes">
+            ${(m.destinos || []).filter(d => d.liberacao === "pendente").map(d => `
+              <button class="apr-liberar" data-liberar="${m.id}" data-papel="${d.papel}">Liberar ao ${rotPapel(d.papel)}</button>
+              <button class="apr-barrar" data-barrar="${m.id}" data-papel="${d.papel}">Barrar</button>`).join("")}
+          </div>
+        </div>`).join("")}
+    </div>`;
+
+  document.getElementById("msg-quadros").innerHTML = CATEGORIAS_MSG.map(cat => {
+    const doQuadro = lista.filter(m => m.cat === cat.k);
+    return `
+      <div class="msg-quadro">
+        <div class="mq-cab">
+          <span class="mq-titulo">${cat.rot}</span>
+          <button class="mq-add" data-add="${cat.k}">+ ${cat.sing}</button>
+        </div>
+        <div class="mq-colunas c${cat.colunas.length}">
+          ${cat.colunas.map(col => {
+            const naCol = doQuadro.filter(m => m.status === col.k);
+            return `
+              <div class="mq-col" data-cat="${cat.k}" data-status="${col.k}">
+                <div class="mq-col-cab"><span>${col.rot}</span><span class="mq-n">${naCol.length}</span></div>
+                ${naCol.length ? naCol.map(cartaoMensagem).join("") : `<div class="mq-vazio">Vazio</div>`}
+              </div>`;
+          }).join("")}
+        </div>
+      </div>`;
+  }).join("");
+
+  ligarMensagens();
+}
+
+// Request que chega em Done pede a resolução antes de mudar de coluna: é ela
+// que volta para quem pediu.
+function moverMensagem(id, status){
+  const m = acharMensagem(id);
+  if (!m || m.status === status) return;
+  if (m.cat === "request" && status === "feito"){ pedirResolucao(m); return; }
+  m.status = status;
+  renderMensagens();
+}
+
+function pedirResolucao(m){
+  abrirModal("Request", "Resolução", `
+    <div class="form-linha">
+      <label for="res-texto">O que foi feito</label>
+      <textarea id="res-texto" placeholder="A resposta que volta para ${m.autor}…"></textarea>
+    </div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="res-cancelar">Cancelar</button>
+      <button class="btn lime" id="res-salvar">Marcar como resolvido</button>
+    </div>`);
+  document.getElementById("res-cancelar").onclick = () => { fecharModal(); renderMensagens(); };
+  document.getElementById("res-salvar").onclick = () => {
+    const t = (document.getElementById("res-texto").value || "").trim();
+    if (!t){ document.getElementById("res-texto").focus(); return; }
+    m.resolucao = { data: hojeCurto(), autor: "Karina Bupp", texto: t };
+    m.status = "feito";
+    fecharModal();
+    renderMensagens();
+  };
+}
+
+function mudarLiberacao(id, papel, valor){
+  const m = acharMensagem(id);
+  if (!m) return;
+  const d = (m.destinos || []).find(x => x.papel === papel);
+  if (d) d.liberacao = valor;
+  renderMensagens();
+}
+
+// O aluno não entra na lista de destinatários: ele só manda request, nunca
+// recebe. O que a interna escreve já nasce liberado.
+function abrirFormMensagem(cat){
+  const c = CATEGORIAS_MSG.find(x => x.k === cat);
+  abrirModal("Nova mensagem", `Novo ${(c.sing || "").toLowerCase()}`, `
+    <div class="form-linha">
+      <label for="nm-turma">Turma</label>
+      <select id="nm-turma">${TURMAS.map(t => `<option value="${t.id}">${t.empresa} — ${partesIdent(t).turma} · ${nivelL(t.nivel)}</option>`).join("")}</select>
+    </div>
+    <div class="form-linha">
+      <label for="nm-aluno">Aluno</label>
+      <select id="nm-aluno"></select>
+    </div>
+    <div class="form-linha">
+      <label for="nm-dest">Para quem</label>
+      <select id="nm-dest">
+        <option value="prof">Professor</option>
+        <option value="rh">RH</option>
+        <option value="prof,rh">Professor e RH</option>
+        <option value="">Só interno</option>
+      </select>
+    </div>
+    <div class="form-linha">
+      <label for="nm-texto">Mensagem</label>
+      <textarea id="nm-texto" placeholder="O que precisa ser dito…"></textarea>
+    </div>
+    <div class="acoes-modal">
+      <button class="btn ghost" id="nm-cancelar">Cancelar</button>
+      <button class="btn lime" id="nm-salvar">Criar</button>
+    </div>`);
+
+  const selTurma = document.getElementById("nm-turma");
+  const selAluno = document.getElementById("nm-aluno");
+  const pintarAlunos = () => {
+    const t = TURMAS.find(x => x.id === selTurma.value);
+    selAluno.innerHTML = `<option value="">Turma inteira</option>` +
+      (t ? t.alunos.map(a => `<option value="${a.id}">${a.nome}</option>`).join("") : "");
+  };
+  pintarAlunos();
+  selTurma.onchange = pintarAlunos;
+
+  document.getElementById("nm-cancelar").onclick = fecharModal;
+  document.getElementById("nm-salvar").onclick = () => {
+    const texto = (document.getElementById("nm-texto").value || "").trim();
+    if (!texto){ document.getElementById("nm-texto").focus(); return; }
+    const t = TURMAS.find(x => x.id === selTurma.value);
+    const a = t && t.alunos.find(x => x.id === selAluno.value);
+    const papeis = (document.getElementById("nm-dest").value || "").split(",").filter(Boolean);
+    MENSAGENS.unshift({
+      id: "nova|" + Date.now(),
+      cat, status: cat === "comentario" ? "unread" : "nao_iniciado",
+      origem: "interna", autor: "Karina Bupp",
+      empresa: t.empresa, turmaId: t.id, turma: t.nome, nivel: t.nivel,
+      alunoId: a ? a.id : null, aluno: a ? a.nome : null,
+      data: hojeCurto(), texto,
+      destinos: papeis.map(p => ({ papel: p, liberacao: "liberado" })),
+      resolucao: null
+    });
+    fecharModal();
+    renderMensagens();
+  };
+}
+
+// Guardado à parte porque o dragover não lê o dataTransfer — só o drop tem
+// acesso ao conteúdo. Sem isso não dá para recusar o alvo errado enquanto o
+// cartão ainda está no ar.
+let arrastando = null;
+
+function ligarMensagens(){
+  const pane = document.getElementById("pane-mensagens");
+
+  pane.querySelectorAll("[data-add]").forEach(b => {
+    b.onclick = () => abrirFormMensagem(b.dataset.add);
+  });
+  pane.querySelectorAll("[data-liberar]").forEach(b => {
+    b.onclick = () => mudarLiberacao(b.dataset.liberar, b.dataset.papel, "liberado");
+  });
+  pane.querySelectorAll("[data-barrar]").forEach(b => {
+    b.onclick = () => mudarLiberacao(b.dataset.barrar, b.dataset.papel, "barrado");
+  });
+  pane.querySelectorAll("[data-mover]").forEach(sel => {
+    sel.onchange = () => moverMensagem(sel.dataset.mover, sel.value);
+  });
+
+  pane.querySelectorAll(".msg-card").forEach(el => {
+    el.ondragstart = ev => {
+      arrastando = el.dataset.msg;
+      ev.dataTransfer.setData("text/plain", el.dataset.msg);
+      ev.dataTransfer.effectAllowed = "move";
+      el.classList.add("arrastando");
+    };
+    el.ondragend = () => { arrastando = null; el.classList.remove("arrastando"); };
+  });
+
+  pane.querySelectorAll(".mq-col").forEach(col => {
+    col.ondragover = ev => {
+      const m = acharMensagem(arrastando);
+      if (!m || m.cat !== col.dataset.cat) return;   // muda de coluna, nunca de quadro
+      ev.preventDefault();
+      col.classList.add("alvo");
+    };
+    col.ondragleave = () => col.classList.remove("alvo");
+    col.ondrop = ev => {
+      ev.preventDefault();
+      col.classList.remove("alvo");
+      const id = ev.dataTransfer.getData("text/plain");
+      const m = acharMensagem(id);
+      if (m && m.cat === col.dataset.cat) moverMensagem(id, col.dataset.status);
+    };
+  });
+}
+
+document.getElementById("msg-emp").onchange = renderMensagens;
+
+
+// ══════════════════════════════════════════════════════════
 //  Pop-up de professores
 // ══════════════════════════════════════════════════════════
 // Data curta dd/mm — usada ao registrar avisos e recados criados agora.
@@ -4251,6 +4646,7 @@ function irParaAba(nomePane){
   const pane = document.getElementById("pane-" + nomePane);
   const fr = pane && pane.querySelector(".emb-frame");
   if (fr && !fr.src) fr.src = fr.dataset.src;
+  if (nomePane === "mensagens") renderMensagens();
   if (nomePane === "turmas") abrirAbaTurmas();
   if (nomePane === "alunos") abrirAbaAlunos();
   if (nomePane === "usuarios") abrirAbaUsuarios();
@@ -4271,6 +4667,9 @@ renderTabela();
 // no boot ainda não há dado nenhum pra renderizar.
 renderChipsU();
 renderDocs();
+// Uma vez só: se fossem regerados a cada render, o cartão arrastado voltaria
+// para a coluna de origem toda vez.
+MSG_AUTO = mensagensAutomaticas();
 
 const abaSalva = localStorage.getItem(ABA_STORAGE_KEY);
 if (abaSalva && abaSalva !== "planilha" && document.querySelector(`.tab[data-pane="${abaSalva}"]`)) irParaAba(abaSalva);

@@ -1,10 +1,10 @@
 # NEXT STEPS
 
-- [ ] **Tela de Mensagens — commits 2 e 3.** O commit 1 (v-20260828-1737) criou só a
-      estrutura no mock. Falta: (2) a aba Mensagens com os três quadros arrastáveis,
-      os botões `+ Comentário` / `+ Alerta` / `+ Request`, a fila de aprovação e o
-      campo de resolução ao arrastar request para Done; (3) remover o card Alertas de
-      Performance e o modal, realojando o "Avisar o RH" no rodapé da tela nova.
+- [ ] **Tela de Mensagens — commit 3.** Falta remover o card Alertas de Performance
+      e o modal que ele abre, realojando o "Avisar o RH" no rodapé da tela de
+      Mensagens. Os commits 1 (v-20260828-1737, estrutura no mock) e 2
+      (v-20260828-1750, os quadros, os três `+`, a fila de aprovação e o campo de
+      resolução) já estão feitos.
 - [ ] **Persistir as mensagens no Supabase.** Enquanto for mock, arrastar cartão não
       sobrevive ao reload e o id é posicional. Precisa da tabela `mensagens` (categoria,
       origem, autor, empresa/turma/aluno, texto, status, resolução) e do status dos

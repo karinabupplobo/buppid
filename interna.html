@@ -351,6 +351,15 @@
     background: rgba(24,16,26,0.5);
   }
   .modal.on{ display: flex; }
+  /* O modal de Alertas empresta a própria seção da aba, que é larga demais
+     para os 560px do pop-up padrão. */
+  .modal-cx.largo{ max-width: 880px; }
+  #modal-corpo #pane-alertas{ display: block; }
+  .alertas-filtro{
+    font-size: 11.5px; color: var(--cinza-texto); line-height: 1.5;
+    padding: 0 0 12px; margin-bottom: 4px; border-bottom: 1px solid var(--borda);
+  }
+  .alertas-filtro b{ color: var(--texto); font-weight: 700; }
   .modal-cx{
     background: var(--branco); border-radius: 16px; width: 100%; max-width: 560px;
     max-height: 84vh; display: flex; flex-direction: column; overflow: hidden;
@@ -1458,6 +1467,10 @@
            color: var(--azul-intermediario); margin-top: 2px; }
   .kpi .d{ font-size: 11.5px; color: var(--cinza-texto); margin-top: 2px; }
   .kpi-clicavel{ cursor: pointer; transition: border-color .12s, box-shadow .12s; }
+  /* Card de Alertas: o sinal fica ao lado do número, no mesmo peso visual. */
+  .kpi .v-alerta{ display: flex; align-items: center; gap: 7px; }
+  .kpi .v-alerta svg{ width: 19px; height: 19px; fill: #a3312a; flex-shrink: 0; }
+  .kpi .v-alerta.zerado svg{ fill: var(--cinza-texto); }
   .kpi-clicavel:hover{ border-color: var(--azul-intermediario); box-shadow: 0 0 0 1px var(--azul-intermediario) inset; }
   @media (min-width: 900px){ .kpis{ grid-template-columns: repeat(5,1fr); } }
 
@@ -1590,7 +1603,6 @@
   <div class="tabs">
     <div class="tab-grupo">Geral</div>
     <button class="tab active" data-pane="planilha">Performance</button>
-    <button class="tab" data-pane="alertas">Alerts</button>
     <button class="tab" data-pane="tasks">Tasks</button>
     <button class="tab" data-pane="usuarios">Users</button>
 
@@ -1709,14 +1721,11 @@
     <iframe class="emb-frame" data-src="crm.html?embed=1&view=estudo&v=18" title="Mercado"></iframe>
   </section>
 
+  <!-- Sem barra de filtros própria: os alertas seguem o filtro da planilha de
+       Performance. Esta seção fica escondida no <main> e é emprestada ao modal
+       quando o card "Alertas" é clicado. -->
   <section class="pane" id="pane-alertas">
-    <div class="barra-planilha">
-      <select class="filtro" id="a-emp"></select>
-      <select class="filtro" id="a-turma" disabled></select>
-      <select class="filtro" id="a-prof"></select>
-      <button class="btn-limpar-col" id="a-limpar" style="display:none;">Limpar filtros</button>
-      <span class="cont-linhas" id="a-cont"></span>
-    </div>
+    <div class="alertas-filtro" id="a-filtro-ativo"></div>
     <div id="lista-alertas"></div>
   </section>
 
@@ -2414,7 +2423,7 @@ function renderKPIs(dados){
   const medNota = comNota.length
     ? Math.round(comNota.reduce((n,l) => n + l.nota, 0) / comNota.length) : null;
 
-  const anot = dados.filter(l => l.anot).length;
+  const emAtencao = alunosEmAtencao(dados);
 
   document.getElementById("kpis").innerHTML = `
     <div class="kpi"><div class="v">${EMPRESAS.length}</div>
@@ -2425,28 +2434,14 @@ function renderKPIs(dados){
       <div class="r">Engajamento</div><div class="d">média de ${comEng.length} avaliações</div></div>
     <div class="kpi"><div class="v">${medNota === null ? "–" : medNota + "%"}</div>
       <div class="r">Trilhas</div><div class="d">média de ${comNota.length} registros</div></div>
-    <div class="kpi kpi-clicavel" data-kpi-anot>
-      <div class="v">${anot}</div>
-      <div class="r">Anotações</div><div class="d">escritas pelo professor</div></div>
+    <div class="kpi kpi-clicavel" data-kpi-alertas>
+      <div class="v v-alerta${emAtencao ? "" : " zerado"}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 1.8 20.8h20.4L12 3.2Zm0 5.6c.55 0 1 .45 1 1v4.4a1 1 0 0 1-2 0V9.8c0-.55.45-1 1-1Zm0 8.2a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z"/></svg>
+        ${emAtencao}
+      </div>
+      <div class="r">Alertas</div><div class="d">alunos em atenção</div></div>
   `;
-  document.querySelector("#kpis [data-kpi-anot]").onclick = () => abrirAnotacoesKPI(dados);
-}
-
-// Popup do card "Anotações" em Dados: lista, no período/filtro atual, cada
-// anotação de professor com aluno, empresa/turma e aula — pra não precisar
-// abrir a ficha de aluno por aluno atrás de quem escreveu o quê.
-function abrirAnotacoesKPI(dados){
-  const comAnot = dados.filter(l => l.anot);
-  const corpo = `
-    <div class="cm-lista">
-      ${comAnot.length ? comAnot.map(l => `
-        <div class="cm-item">
-          <div class="cm-meta">${l.aluno} · ${l.empresa} — ${l.turma} · ${l.aula} · ${l.data}</div>
-          <p>${l.anot}</p>
-        </div>`).join("") : `<p class="lead-meta">Nenhuma anotação no período/filtro atual.</p>`}
-    </div>
-  `;
-  abrirModal("Anotações", `${comAnot.length} no período/filtro atual`, corpo);
+  document.querySelector("#kpis [data-kpi-alertas]").onclick = abrirAlertas;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3018,7 +3013,7 @@ function abrirNovoAviso(empresaPre){
       assunto: v("av-assunto"), texto: v("av-texto"), lido: false
     });
     fecharModal();
-    renderAlertas();
+    abrirAlertas();
   };
 }
 
@@ -3316,51 +3311,54 @@ const ROT = {
   msg:   { r:"Recado pendente", c:"lavanda"  }
 };
 
-// ── Filtros da aba Alertas ──
-// Empresa e professor são independentes. Turma só destrava depois que uma
-// empresa é escolhida — sem isso a lista misturaria turmas homônimas de
-// empresas diferentes e não diria nada.
-function opcoesTurma(){
-  const emp = document.getElementById("a-emp").value;
-  const sel = document.getElementById("a-turma");
-  if (!emp){
-    sel.disabled = true;
-    sel.innerHTML = `<option value="">Turma (escolha a empresa)</option>`;
-    return;
-  }
-  sel.disabled = false;
-  const turmas = TURMAS.filter(t => t.empresa === emp);
-  sel.innerHTML = `<option value="">Todas as turmas de ${emp}</option>` +
-    turmas.map(t => `<option value="${t.id}">${partesIdent(t).turma} · ${nivelL(t.nivel)}</option>`).join("");
+// ── Filtro dos alertas ──
+// Os alertas não têm filtro próprio: seguem o que está filtrado na planilha
+// de Performance. O cruzamento é por turma+aluno, que já vem em cada linha —
+// o aluno entra na lista se tiver ao menos uma linha visível na planilha.
+function paresVisiveis(dados){
+  return new Set(dados.map(l => l.turmaId + "|" + l.alunoId));
 }
 
-function renderAlertas(){
+function alunosEmAtencao(dados){
+  const pares = paresVisiveis(dados);
+  let n = 0;
+  TURMAS.forEach(t => t.alunos.forEach(a => {
+    if (pares.has(t.id + "|" + a.id) && alertasDoAluno(a, t).length) n++;
+  }));
+  return n;
+}
+
+function semFiltroAtivo(){
+  return !CHIPS.length && !Object.keys(FILTROS_COL).length;
+}
+
+// Linha que explica de onde vem o recorte, para a lista curta não parecer
+// incompleta sem motivo.
+function textoFiltroAtivo(){
+  if (semFiltroAtivo()) return "Sem filtro — todos os alunos da carteira.";
+  const partes = CHIPS.map(c => `<b>${c.rot}: ${c.valor}</b>`);
+  const nCol = Object.keys(FILTROS_COL).length;
+  if (nCol) partes.push(`<b>${nCol} filtro${nCol !== 1 ? "s" : ""} de coluna</b>`);
+  return "Seguindo o filtro da planilha: " + partes.join(" · ") +
+         ". Para ver todos, limpe o filtro em Performance.";
+}
+
+function renderAlertas(dados){
+  dados = dados || filtradas();
   const box = document.getElementById("lista-alertas");
-  const fEmp   = document.getElementById("a-emp").value;
-  const fTurma = document.getElementById("a-turma").value;
-  const fProf  = document.getElementById("a-prof").value;
+  const pares = paresVisiveis(dados);
 
   const itens = [];
   TURMAS.forEach(t => {
-    if (fEmp && t.empresa !== fEmp) return;
-    if (fTurma && t.id !== fTurma) return;
-    if (fProf && professorDe(t).nome !== fProf) return;
     t.alunos.forEach(a => {
+      if (!pares.has(t.id + "|" + a.id)) return;
       const al = alertasDoAluno(a, t);
       if (al.length) itens.push({ t, a, al });
     });
   });
   itens.sort((x,y) => y.al.length - x.al.length);
 
-  // total sem filtro, para o contador dizer de quanto se está vendo
-  let total = 0;
-  TURMAS.forEach(t => t.alunos.forEach(a => { if (alertasDoAluno(a, t).length) total++; }));
-
-  const nFiltros = [fEmp, fTurma, fProf].filter(Boolean).length;
-  const lim = document.getElementById("a-limpar");
-  lim.style.display = nFiltros ? "inline-flex" : "none";
-  document.getElementById("a-cont").textContent =
-    nFiltros ? `${itens.length} de ${total} alunos` : `${total} aluno${total!==1?"s":""}`;
+  document.getElementById("a-filtro-ativo").innerHTML = textoFiltroAtivo();
 
   // Agrupa os alunos por empresa: a leitura natural aqui é "como está cada
   // cliente", e dentro dele quem precisa de atenção.
@@ -3371,14 +3369,18 @@ function renderAlertas(){
     porEmpresa.get(e).push(x);
   });
 
-  const avisos = AVISOS_RH.filter(a => !fEmp || a.empresa === fEmp);
+  // Sem filtro, todos os avisos. Com filtro, só os das empresas que sobraram —
+  // acompanha o mesmo recorte da lista de alunos acima.
+  const empresasVisiveis = new Set(dados.map(l => l.empresa));
+  const avisos = semFiltroAtivo()
+    ? AVISOS_RH : AVISOS_RH.filter(a => empresasVisiveis.has(a.empresa));
   const rotTipo = { info:"Informativo", atencao:"Atenção", risco:"Risco" };
 
   box.innerHTML = `
     <div class="section-title">${itens.length} aluno${itens.length!==1?"s":""} com ponto de atenção · ${porEmpresa.size} empresa${porEmpresa.size!==1?"s":""}</div>
-    ${!itens.length ? `<div class="card"><p>${nFiltros
-        ? "Nenhum aluno em atenção com esses filtros."
-        : "Nenhum aluno em atenção agora."}</p></div>` : ""}
+    ${!itens.length ? `<div class="card"><p>${semFiltroAtivo()
+        ? "Nenhum aluno em atenção agora."
+        : "Nenhum aluno em atenção dentro do filtro atual."}</p></div>` : ""}
 
     ${[...porEmpresa.entries()].map(([emp, lista]) => `
       <section class="grupo-emp">
@@ -3441,13 +3443,42 @@ function hojeCurto(){
   return String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0");
 }
 
+// A seção de alertas é emprestada ao modal, não copiada. Qualquer outro modal
+// que escreva no corpo tem que devolvê-la ao <main> antes — senão ela é
+// destruída junto com o innerHTML e a aba some de vez.
+function devolverPaneAlertas(){
+  const pane = document.querySelector("#modal-corpo #pane-alertas");
+  if (pane) document.querySelector("main").appendChild(pane);
+  document.querySelector(".modal-cx").classList.remove("largo");
+}
+
+// Alertas: mesma lista que ficava na aba, agora dentro do pop-up do card de
+// Performance, já recortada pelo filtro que estiver valendo na planilha.
+function abrirAlertas(){
+  devolverPaneAlertas();
+  renderAlertas(filtradas());
+  const n = alunosEmAtencao(filtradas());
+  document.getElementById("modal-kicker").textContent = "Alertas";
+  document.getElementById("modal-titulo").textContent =
+    `${n} aluno${n !== 1 ? "s" : ""} em atenção`;
+  const corpo = document.getElementById("modal-corpo");
+  corpo.innerHTML = "";
+  corpo.appendChild(document.getElementById("pane-alertas"));
+  document.querySelector(".modal-cx").classList.add("largo");
+  document.getElementById("modal").classList.add("on");
+}
+
 function abrirModal(kicker, titulo, html){
+  devolverPaneAlertas();
   document.getElementById("modal-kicker").textContent = kicker;
   document.getElementById("modal-titulo").textContent = titulo;
   document.getElementById("modal-corpo").innerHTML = html;
   document.getElementById("modal").classList.add("on");
 }
-function fecharModal(){ document.getElementById("modal").classList.remove("on"); }
+function fecharModal(){
+  devolverPaneAlertas();
+  document.getElementById("modal").classList.remove("on");
+}
 document.getElementById("modal-x").onclick = fecharModal;
 document.getElementById("modal").onclick = e => { if (e.target.id === "modal") fecharModal(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
@@ -3515,23 +3546,6 @@ document.getElementById("btn-empresas").onclick = () => {
 // ══════════════════════════════════════════════════════════
 //  Filtros e navegação
 // ══════════════════════════════════════════════════════════
-// ── Filtros da aba Alertas ──
-const aEmp  = document.getElementById("a-emp");
-const aProf = document.getElementById("a-prof");
-aEmp.innerHTML  = `<option value="">Todas as empresas</option>` +
-  [...new Set(TURMAS.map(t => t.empresa))].map(e => `<option>${e}</option>`).join("");
-aProf.innerHTML = `<option value="">Todos os professores</option>` +
-  PROFESSORES.map(p => `<option>${p.nome}</option>`).join("");
-
-aEmp.onchange = () => { opcoesTurma(); renderAlertas(); };
-document.getElementById("a-turma").onchange = renderAlertas;
-aProf.onchange = renderAlertas;
-document.getElementById("a-limpar").onclick = () => {
-  aEmp.value = ""; aProf.value = "";
-  opcoesTurma();
-  renderAlertas();
-};
-
 document.getElementById("btn-add").onclick = e => {
   e.stopPropagation();
   const p = document.getElementById("af-painel");
@@ -4257,8 +4271,6 @@ renderTabela();
 // no boot ainda não há dado nenhum pra renderizar.
 renderChipsU();
 renderDocs();
-opcoesTurma();
-renderAlertas();
 
 const abaSalva = localStorage.getItem(ABA_STORAGE_KEY);
 if (abaSalva && abaSalva !== "planilha" && document.querySelector(`.tab[data-pane="${abaSalva}"]`)) irParaAba(abaSalva);

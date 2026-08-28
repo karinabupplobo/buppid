@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1718-card-alertas-performance — 28/08/2026
+- O que mudou: o quinto card de Performance deixou de ser "Anotações" e virou "Alertas", com
+  sinal de alerta e o número de alunos em atenção. Clicar abre a antiga aba Alerts inteira num
+  modal largo (880px) — lista agrupada por empresa, "Avisar o RH ›" e avisos já enviados. A aba
+  Alerts saiu da sidebar. Os alertas perderam os filtros próprios (empresa/turma/professor) e
+  passaram a herdar o filtro da planilha, cruzando por turma+aluno. O popup de anotações do
+  professor e a função `abrirAnotacoesKPI` foram removidos.
+- Arquivos: interna.html
+- Motivo: alerta é coisa de olhar todo dia; morava numa aba que exigia sair da tela de dados.
+  Como card, aparece junto dos números e responde ao mesmo recorte.
+  Observação: a `<section id="pane-alertas">` continua no `<main>`, escondida, e é emprestada ao
+  modal na abertura — não é uma cópia. Por isso `abrirModal` e `fecharModal` chamam
+  `devolverPaneAlertas()` antes de escrever no corpo: sem isso o "Avisar o RH" destruiria a seção.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-card-alertas
+
 ## v-20260828-1707-revert-sidebar-clara — 28/08/2026
 - O que mudou: revertida a sidebar clara da dash interna (v-20260828-1705). A sidebar volta a ser
   o bloco marrom com abas claras translúcidas, ativo em azul-bebê, logo na versão branca. O item

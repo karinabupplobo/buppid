@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1754-lead-cliente-pelos-dois-caminhos — 28/08/2026
+- O que mudou: `moverLeadParaEtapa` passou a chamar `criarEmpresaClienteDoLead` quando a etapa
+  alvo é "cliente", igual ao que o seletor de etapa dentro do card já fazia.
+- Arquivos: crm.html
+- Motivo: havia dois caminhos para mudar a etapa de um lead e só um deles criava a empresa em
+  `empresas_cliente`. Pelo outro, o lead fechava negócio, sumia do funil como cliente e nunca
+  aparecia na aba Empresas de interna.html — sem empresa lá, não dá para criar turma.
+  Observação: a checagem de duplicata por nome já existe dentro da função, então lead que vai e
+  volta de etapa não cria a empresa duas vezes.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-lead-cliente-e-rolagem
+
 ## v-20260828-1750-tela-mensagens — 28/08/2026
 - O que mudou: nova aba Messages na dash interna, com os três quadros — Comentários
   (Unread/Read), Alertas e Requests (Not Started/In Progress/Done). Cartões arrastáveis entre

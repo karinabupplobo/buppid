@@ -2558,6 +2558,11 @@ function moverLeadParaEtapa(e, alvo) {
     e.st = alvo.slice(3);
     saveLeadsData(); renderLeads();
     funilMsg(`<b>${esc(e.n)}</b>: ${antes} → ${e.st}.`);
+    // Mesmo gatilho do seletor de etapa dentro do card: chegar em "Cliente"
+    // por qualquer caminho precisa criar a empresa em `empresas_cliente`,
+    // senão ela não aparece na aba Empresas de interna.html e não dá pra
+    // abrir turma. A própria função checa duplicata por nome.
+    if (e.st === "cliente" && antes !== "cliente") criarEmpresaClienteDoLead(e);
     return;
   }
 

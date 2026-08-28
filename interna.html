@@ -60,13 +60,14 @@
      é a borda esquerda do "b" — alinha com o nome do professor abaixo. */
   .logo{ display: block; width: 118px; height: auto; flex-shrink: 0; }
 
-  /* Sidebar inteira em marrom: logo, usuário e abas sobre fundo escuro.
-     Voltar ao topo marrom com abas claras:
-     git checkout v-20260821-1415-ANTES-sidebar-toda-marrom */
+  /* Sidebar clara: mesmo fundo do resto da tela (--bg-dash), separada do
+     conteúdo só por uma borda. Os botões é que carregam o marrom, e o azul-bebê
+     marca o ativo. Voltar à sidebar toda marrom:
+     git checkout v-20260828-ANTES-sidebar-clara */
   .topo-sidebar{
     display: flex; align-items: center; justify-content: space-between;
     gap: 12px; padding-bottom: 18px;
-    border-bottom: 1px solid rgba(255,255,255,.14);
+    border-bottom: 1px solid var(--borda);
   }
 
   /* Nome do usuário. REGRA DE IDIOMA (21/08): a plataforma inteira é em
@@ -80,12 +81,12 @@
        RH do cliente  -> manager
        equipe Bupp    -> internal                                             */
   .whoami{
-    font-size: 11.5px; color: rgba(255,255,255,.7); font-weight: 500;
+    font-size: 11.5px; color: var(--cinza-texto); font-weight: 500;
     line-height: 1.3; text-align: right; flex-shrink: 0;
     display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
   }
   .whoami strong{
-    color: #fff; display: block; font-weight: 700; font-size: 13px;
+    color: var(--texto); display: block; font-weight: 700; font-size: 13px;
     letter-spacing: -0.01em;
   }
   .whoami span{
@@ -100,9 +101,8 @@
     font-family: inherit; font-size: 11px; font-weight: 600;
     color: var(--azul-intermediario); white-space: nowrap;
   }
-  .link-turmas{ color: rgba(255,255,255,.72); }
-  .link-turmas b{ font-weight: 800; color: #fff; }
-  .link-turmas:hover{ color: #fff; text-decoration: underline; }
+  .link-turmas b{ font-weight: 800; color: var(--texto); }
+  .link-turmas:hover{ color: var(--texto); text-decoration: underline; }
 
   /* item de turma no pop-up */
   .turma-item{
@@ -126,13 +126,13 @@
   .tabs::-webkit-scrollbar{ display: none; }
   .tab{
     flex-shrink: 0; cursor: pointer; font-family: inherit;
-    background: rgba(255,255,255,.08); border: 1px solid transparent;
-    color: rgba(255,255,255,.78);
+    background: var(--teal-escuro); border: 1px solid transparent;
+    color: #fff;
     font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
     text-transform: uppercase; padding: 10px 14px; border-radius: 9px;
     transition: background .14s, color .14s;
   }
-  .tab:hover{ background: rgba(255,255,255,.16); color: #fff; }
+  .tab:hover{ background: var(--azul-intermediario); color: #fff; }
   .tab.active{
     background: var(--amarelo-neon); border-color: var(--amarelo-neon);
     color: var(--teal-escuro);
@@ -140,7 +140,7 @@
   }
   .tab-grupo{
     flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: .1em;
-    text-transform: uppercase; color: rgba(255,255,255,.4);
+    text-transform: uppercase; color: var(--cinza-texto);
     padding: 12px 14px 2px; white-space: nowrap;
   }
 
@@ -729,8 +729,8 @@
     /* Sidebar ocupa o lado inteiro, do topo ao rodapé */
     .sidebar{
       grid-column: 1;
-      background: var(--teal-escuro);
-      border-right: none;
+      background: var(--bg-dash);
+      border-right: 1px solid var(--borda);
       margin: 0; border-radius: 0;
       padding: 26px 20px 24px;
       position: sticky; top: 0; height: 100vh;
@@ -788,7 +788,7 @@
   /* Mobile: mantém empilhado */
   @media (max-width: 899px){
     .sidebar{
-      background: var(--teal-escuro); border-bottom: none;
+      background: var(--bg-dash); border-bottom: 1px solid var(--borda);
       border-radius: 0; margin: 0; padding: 18px 18px 16px;
       display: flex; flex-direction: column; gap: 14px;
     }
@@ -1579,7 +1579,7 @@
 
 <aside class="sidebar">
   <div class="topo-sidebar">
-    <img class="logo" src="assets/logo-bupp-marrom-azul-claro.png" alt="bupp idiomas">
+    <img class="logo" src="assets/logo-bupp-marrom-azul.png" alt="bupp idiomas">
     <div class="whoami">
       <strong>Hi, Karina</strong>
       <span>internal</span>

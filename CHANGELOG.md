@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260828-1705-sidebar-clara-interna — 28/08/2026
+- O que mudou: sidebar da dash interna deixou de ser um bloco marrom e passou a usar o mesmo
+  fundo do resto da tela (`--bg-dash` #F7F5F2), separada do conteúdo por `1px solid var(--borda)`.
+  Os botões de aba viraram marrom com texto branco (hover em marrom claro) e o ativo continua
+  azul-bebê com texto marrom. Textos que eram brancos (nome, "N empresas", rótulos de grupo,
+  borda do topo) foram remapeados para as cores de fundo claro, e o logo trocou da versão branca
+  (`logo-bupp-marrom-azul-claro.png`) para a marrom (`logo-bupp-marrom-azul.png`).
+- Arquivos: interna.html
+- Motivo: teste de leitura da dash com sidebar clara — o marrom passa a viver nos botões, não na
+  área inteira.
+  Observação: aplicado só na interna. As dashes de aluno, professor e RH continuam com sidebar
+  marrom, então há divergência visual entre os papéis até a decisão ser estendida.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260828-ANTES-sidebar-clara
+
 ## v-20260826-2135-doc-convencao-abertura — 26/08/2026
 - O que mudou: registrada no NEXT_STEPS a convenção de conteúdo da tela de
   abertura pra Aula 1 — `kicker: "Módulo 1 · Aula 1"` (pequeno), `titulo:

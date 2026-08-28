@@ -1,5 +1,13 @@
 # NEXT STEPS
 
+- [ ] **Decidir se a sidebar clara sai da interna e vai para as outras dashes.**
+      A interna passou a ter sidebar no mesmo fundo da tela, com os botões em
+      marrom e o ativo em azul-bebê (v-20260828-1705). `aluno.html`,
+      `plataforma.html` e `manager.html` continuam com a sidebar toda marrom —
+      hoje os quatro papéis veem visuais diferentes. Se aprovar, replicar as
+      mesmas trocas nos três (fundo, borda, `.tab`, `.whoami`, `.link-turmas`,
+      `.tab-grupo` e a troca do logo branco pelo marrom).
+
 - [ ] **FOTO REAL EM VEZ DE SVG na Aula 1 (Tirolez — Liderança).** Decisão
       de fonte fechada: Canva (conector destravado em 26/08), estilo
       aprovado — foto editorial candid (sem contraluz dramático, "cara de

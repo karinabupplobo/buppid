@@ -51,7 +51,7 @@ por role — evita o aluno precisar saber "qual link é o meu".
 
 | Tabela | O que guarda | Relações |
 |---|---|---|
-| `empresas_cliente` | Empresa contratante (nome, dados). `lead_origem_id` linka de volta ao lead que virou cliente no funil (Leads CRM). | 1:N `turmas` |
+| `empresas_cliente` | Empresa contratante (nome, dados). `lead_origem_id` linka de volta ao lead que virou cliente no funil (Leads CRM). `logo_url` criado em 31/08/2026 e **ainda sem uso** — ver nota abaixo. | 1:N `turmas` |
 | `turmas` | Turma de uma empresa. `empresa_cliente_id` **obrigatório** — toda turma pertence a uma empresa (decisão de 25/08/2026, não existe mais turma "particular"/sem empresa). `tipo`: sempre `corporativa`. Nível em banda (Basic/Intermediate/Advanced/Proficient), módulo do curso, professor responsável. **Uma empresa pode ter N turmas** (ex.: turma de chão de fábrica + turma de liderança, cada uma com seu professor/nível/trilha). | N:1 `empresas_cliente` · N:1 `professores` · 1:N `alunos` |
 | `alunos` | Aluno (nome, cargo). | N:1 `turmas` |
 | `professores` | Professor (nome). | N:M `turmas` |
@@ -62,6 +62,20 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | `progresso_aluno` | Por aluno, por lição da trilha: status (não iniciado / em progresso / feito), timestamp. | N:1 `alunos` · N:1 `trilha_licoes` |
 | `presenca` | Por aluno, por aula: presente / ausente. | N:1 `alunos` · N:1 `aulas_assigned` |
 | `profiles` | Liga `auth.users` a um `role` (`professor` \| `aluno` \| `rh` \| `interno`) e ao registro correspondente (`professor_id` \| `aluno_id` \| `empresa_cliente_id`). | 1:1 `auth.users` |
+
+
+### Nota — `empresas_cliente.logo_url` (31/08/2026)
+
+Coluna criada a pedido da Karina, **contra a recomendação registrada**. Motivo da
+recomendação contrária: a decisão vigente é usar só o logo da Bupp nas telas de aula,
+com caminho fixo em `assets/` — nada é lido do banco. A coluna nasce vazia, esperando
+um recurso que ainda não existe (logo de cliente nas telas), o que contraria a regra
+"tabela/coluna só quando o dashboard precisa".
+
+Quando o logo de cliente entrar, esta coluna já estará pronta, mas vai precisar de
+companhia: upload do arquivo, versão monocromática para o fundo duotone da Capa, e
+regra de contraste. Ver `pedagogico/FUNCOES.md`.
+
 
 ### Regra de visibilidade por role (RLS)
 

@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2042-logo-url-empresas — 31/08/2026
+- O que mudou: coluna `logo_url text` adicionada em `empresas_cliente` (migration
+  `add_logo_url_to_empresas_cliente`) e registrada em `docs/plataforma.md` com nota
+  explicando o estado dela.
+- Arquivos: docs/plataforma.md (+ migration no Supabase)
+- Motivo: pedido explícito da Karina.
+  Observação: **criada contra recomendação, e isso ficou registrado no próprio doc.** A
+  decisão vigente é usar só o logo da Bupp nas telas de aula, com caminho fixo em `assets/`
+  (`logo-bupp-marrom-azul.png` e `logo-bupp-marrom-azul-claro.png`) — nada é lido do banco.
+  A coluna nasce vazia esperando um recurso que ainda não existe, o que contraria a regra
+  "tabela/coluna só quando o dashboard precisa". Quando o logo de cliente entrar, vai
+  precisar também de upload, versão monocromática pro fundo duotone da Capa e regra de
+  contraste.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2036-pedagogico-8-telas-paleta
+  (a coluna no Supabase não volta com o checkout — precisa de `alter table
+  empresas_cliente drop column logo_url;`)
+
 ## v-20260831-2036-pedagogico-8-telas-paleta — 31/08/2026
 - O que mudou: `docs/pedagogico.md` §1 e §2. A tabela de 9 telas fixas (Step 1, Vocab, Vocab
   Practice, What would you do?, Grammar, Practice, Situational, Debate, Fim) foi substituída

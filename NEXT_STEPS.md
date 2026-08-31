@@ -4,7 +4,8 @@
 
 - [ ] **Implementar os blocos em ondas.** `pedagogico/BLOCOS.md` especifica 40 blocos;
       o `templateaula.html` renderiza só a estrutura antiga. Onda 1 = os blocos que a
-      primeira aula real usar, não os 40.
+      primeira aula real usar, não os 40. Hoje 3 de 40 estão implementados
+      (`foto-cards`, `tabela`, `debate`), herdados da estrutura antiga.
 - [ ] **Fechar as 4 decisões em aberto** de `pedagogico/FUNCOES.md`: nome final de
       "Atuar", carga de lição por aula, lição junto ou separada da aula, e a
       duração/frequência real das turmas (o orçamento de 55 min assume aula de 60).

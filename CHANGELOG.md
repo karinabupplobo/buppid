@@ -2,6 +2,26 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2016-biblioteca-blocos — 31/08/2026
+- O que mudou: novo `pedagogico/BLOCOS.md` com os **40 blocos de representação**, 4 a 8 por
+  tela, cada um com contrato de dados em JSON, se pede imagem e status
+  (`especificado` / `implementado`). Entra a **regra de seleção**: uma pergunta só — qual a
+  relação entre os itens? — que mapeia para o bloco (sem relação → `foto-cards`, posição →
+  `piramide`, tempo → `fluxo`, lugar → `mapa-cena`, oposição → `comparativo`, intensidade →
+  `escala`, categoria → `agrupamento`, sequência → `linha-tempo`). Estratégia registrada:
+  **especificar tudo, implementar em ondas** — só entra no template o bloco que uma aula real
+  precisar.
+- Arquivos: pedagogico/BLOCOS.md
+- Motivo: dar forma concreta ao princípio de `FUNCOES.md`. Sem a biblioteca fechada,
+  "representação livre" viraria invenção nova a cada aula e a repetibilidade se perderia.
+  Observação: **só 4 dos 40 blocos pedem foto real** (`foto-cards`, `foto-cena`,
+  `duas-imagens`, `foto-descricao`). Os outros 36 são SVG na paleta da marca ou texto —
+  determinísticos, sem dependência de gerador externo. Isso reduz a trava de imagens de
+  "toda tela precisa de foto" para 4 blocos em 40. Hoje só 3 blocos estão implementados
+  (`foto-cards`, `tabela`, `debate`), herdados da estrutura antiga.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2010-funcoes-pedagogicas
+
 ## v-20260831-2010-funcoes-pedagogicas — 31/08/2026
 - O que mudou: novo `pedagogico/FUNCOES.md`. A aula deixa de ter 9 telas fixas e passa a ter
   **Capa (tela 0) + 7 telas funcionais**, carregando 10 funções pedagógicas nomeadas

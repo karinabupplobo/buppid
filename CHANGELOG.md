@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2028-gerador-protocolo-abertura — 31/08/2026
+- O que mudou: `pedagogico/GERADOR.md` atualizado. **Passo 2 virou conversa de abertura em
+  sequência fixa, uma coisa por vez**: empresa → turma → nível dos alunos (com checagem de mix)
+  → objetivos → quadro consolidado. **Passo 3 passou a ser Módulos** — os 8 nomes e o que
+  precisa ter em cada um além da gramática do nível, cruzado com a matriz. Entrou o **Passo 10,
+  seleção de bloco obrigatória** antes de escrever a aula, e o antigo Passo 10 virou Passo 11.
+  As regras finais foram realinhadas às telas novas (Apresentar e Sistematizar como únicas
+  fontes de conteúdo, "Atuar não avança nível", "aula 100% oral").
+- Arquivos: pedagogico/GERADOR.md
+- Motivo: o protocolo antigo começava pela turma e perguntava tudo de uma vez. A abertura nova
+  espelha como a decisão realmente acontece e lê o nível dos alunos em vez de assumir a banda
+  da turma.
+  Observação: mix de mais de um degrau CEFR (ex: A1 + B1) agora **para o gerador e avisa** —
+  é problema de composição de turma, não de material. Mix de um degrau segue com papéis
+  diferentes na mesma aula, nunca duas versões. O Passo 6 (temas dos módulos) ficou redundante
+  com o Passo 3 e virou só confirmação.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2020-spec-ilustracao
+
 ## v-20260831-2020-spec-ilustracao — 31/08/2026
 - O que mudou: novo `docs/ilustracao.md`. Registra o diagnóstico da trava de imagens da Aula 1
   (três problemas empilhados: instrução incompleta, ausência de seed no Canva, e o semântico —

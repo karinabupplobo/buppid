@@ -12,6 +12,12 @@
 - [ ] **Lição de casa não tem lugar no sistema.** O desenho novo depende dela, mas não
       há campo em `aulas_assigned` nem exibição em `aluno.html`. Criar só quando a
       decisão acima estiver fechada.
+- [ ] **Implementar `ferramentas/valida-imagem.py`** com os 3 portões de
+      `docs/ilustracao.md`: checagem técnica (PIL), passe de OCR e teste do palpite
+      cego. Hoje os três rodam como checklist manual.
+- [ ] **Decidir o destino do kit Humaaans e do `hum.py`.** Com os blocos relacionais em
+      SVG, o caso de uso encolheu — as palavras que ele resolveria (`manager`, `team`,
+      `colleague`) agora vão para `piramide` e `agrupamento`. Commitar ou descartar.
 
 - [ ] **Tela de Mensagens — commit 3.** Falta remover o card Alertas de Performance
       e o modal que ele abre, realojando o "Avisar o RH" no rodapé da tela de

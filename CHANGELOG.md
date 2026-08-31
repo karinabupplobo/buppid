@@ -2,6 +2,25 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2020-spec-ilustracao — 31/08/2026
+- O que mudou: novo `docs/ilustracao.md`. Registra o diagnóstico da trava de imagens da Aula 1
+  (três problemas empilhados: instrução incompleta, ausência de seed no Canva, e o semântico —
+  palavras hierárquicas não têm silhueta), a ordem de preferência de fontes (banco CC0 antes de
+  gerar), o **pré-filtro de 7 itens** para escolha de foto e o **pós-filtro de 3 portões**
+  (checagem técnica em PIL, passe de OCR, e teste do palpite cego automatizado). Documenta o
+  duotone `#duotoneMarca` já com as cores novas — marrom `#54402F` nas sombras, azul-bebê
+  `#A8D5F2` nas luzes.
+- Arquivos: docs/ilustracao.md
+- Motivo: as regras de imagem estavam espalhadas em conversa e nunca tinham sido escritas. Sem
+  isso, cada sessão redescobria os mesmos erros.
+  Observação: o escopo do documento é só os 4 blocos que declaram foto real. O teste do palpite
+  cego é a peça nova — transforma o "guessing test" subjetivo em portão repetível e teria
+  barrado `colleague` na primeira tentativa em vez da terceira. Os 3 portões estão
+  especificados, não implementados: `ferramentas/valida-imagem.py` ainda não existe e por
+  enquanto rodam como checklist manual.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2016-biblioteca-blocos
+
 ## v-20260831-2016-biblioteca-blocos — 31/08/2026
 - O que mudou: novo `pedagogico/BLOCOS.md` com os **40 blocos de representação**, 4 a 8 por
   tela, cada um com contrato de dados em JSON, se pede imagem e status

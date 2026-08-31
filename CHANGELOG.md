@@ -2,6 +2,29 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2150-custom-domain-plataforma — 31/08/2026
+- O que mudou: arquivo `CNAME` criado na raiz com `plataforma.buppidiomas.com.br`, e o campo
+  Custom domain do GitHub Pages do repositório `buppid` apontado para o mesmo subdomínio.
+  Enforce HTTPS ligado.
+- Arquivos: CNAME (novo)
+- Motivo: o DNS na registro.br já estava pronto havia tempo (apex, www e `plataforma` todos
+  resolvendo para os IPs do GitHub Pages, 185.199.108–111.153), mas o campo Custom domain do
+  GitHub nunca tinha sido preenchido por causa de duas pendências que ficaram resolvidas hoje:
+  a ambiguidade de qual repositório hospedava a plataforma (é o `buppid`; `ingles` é só
+  redirect) e o audit de caminhos absolutos, que veio limpo — todos os redirects do
+  `auth-guard.js` e dos dashboards são relativos, sem `href="/"` nem URL `github.io` hardcoded.
+  Observação: **só o subdomínio foi ligado, não o apex.** Um repositório só aceita um domínio
+  customizado, e apontar `buppidiomas.com.br` para cá faria o endereço principal da empresa
+  cair na tela de login em vez de num site institucional — ruim para um negócio B2B cujo
+  comprador pesquisa fornecedor. O apex fica reservado para o repositório `buppidiomas-site`,
+  que ainda não existe (precisa ser criado à mão pela Karina; o token não tem permissão de
+  criar repositório). O site institucional já está montado fora do git e não sobrevive a
+  uma troca de sessão.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-ANTES-custom-domain
+  (o `git checkout` remove o arquivo CNAME mas NÃO limpa o campo Custom domain no GitHub —
+  isso é na interface, em Settings > Pages)
+
 ## v-20260831-2114-nivel-sub-turmas — 31/08/2026
 - O que mudou: nível da turma passou a ter duas colunas. Migration `add_nivel_sub_to_turmas`
   criou `turmas.nivel_sub` (`Low` | `High` | `Misto`, nulo em Proficient, com check constraint).

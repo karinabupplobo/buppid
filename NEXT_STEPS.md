@@ -2,6 +2,13 @@
 
 ## Próximo — reestruturação pedagógica (31/08/2026)
 
+- [ ] **Criar o repositório `buppidiomas-site` à mão** (o token não tem permissão de
+      criar repo) e publicar nele o site institucional, hoje só em `/home/claude/site/`
+      e fora do git — se a sessão cair, some. Depois apontar o apex
+      `buppidiomas.com.br` + `www` para ele. O DNS já está pronto, só falta o repo.
+- [ ] **Publicar `info@buppidiomas.com.br`** só depois de existirem registros MX. Hoje
+      não existem — o endereço aparece em `dados-mock.js` como e-mail fictício.
+
 - [ ] **Preencher `nivel_cefr` dos 3 alunos da Tirolez — Liderança.** Gisele, Rafael
       e Marina estão com `nivel_cefr`, `nivel_banda` e `nivel_sub` nulos, então a
       checagem do passo 2.3 do gerador não roda nessa turma. Ou aplicam o

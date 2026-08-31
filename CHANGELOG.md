@@ -2,6 +2,29 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2114-nivel-sub-turmas — 31/08/2026
+- O que mudou: nível da turma passou a ter duas colunas. Migration `add_nivel_sub_to_turmas`
+  criou `turmas.nivel_sub` (`Low` | `High` | `Misto`, nulo em Proficient, com check constraint).
+  O `nova-turma.html` ganhou o select de sub-nível, que aparece em toda banda menos Proficient
+  e é obrigatório quando aparece. O passo 2.3 do `GERADOR.md` foi reescrito: em vez de só ler
+  os alunos, agora **cruza o que a turma declara com o que os alunos tiraram no teste** e avisa
+  em cinco situações de divergência. Backfill: Tirolez — Liderança marcada como `Basic` + `High`
+  (= A1, batendo com o conteúdo já produzido).
+- Arquivos: nova-turma.html, pedagogico/GERADOR.md, docs/plataforma.md (+ migration no Supabase)
+- Motivo: `turmas` guardava só a banda, então "Intermediate" era ambíguo entre A2 e B1 — que é
+  exatamente a informação de que o gerador precisa pra escolher a gramática criterial. O
+  `nivel-test.html` já produzia banda + sub desde sempre, mas só gravava em `alunos`.
+  Observação: **preenchimento manual, não derivado.** A derivação por trigger foi avaliada e
+  descartada porque a turma se monta antes de os alunos serem alocados — o nível derivado
+  nasceria nulo. A turma declara e o gerador cruza. Fica em aberto o mix que atravessa bandas
+  (A1 + A2): `Misto` só cobre os dois CEFR de dentro da mesma banda; convenção atual é ficar na
+  banda do piso. QA no Chromium: toggle correto nas quatro bandas, sem erro de JS novo (o
+  "Failed to fetch" é pré-existente, é a chamada ao Supabase em `file://`).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2042-logo-url-empresas
+  (a coluna no Supabase não volta com o checkout — precisa de `alter table turmas
+  drop column nivel_sub;`)
+
 ## v-20260831-2042-logo-url-empresas — 31/08/2026
 - O que mudou: coluna `logo_url text` adicionada em `empresas_cliente` (migration
   `add_logo_url_to_empresas_cliente`) e registrada em `docs/plataforma.md` com nota

@@ -2,6 +2,14 @@
 
 ## Próximo — reestruturação pedagógica (31/08/2026)
 
+- [ ] **Preencher `nivel_cefr` dos 3 alunos da Tirolez — Liderança.** Gisele, Rafael
+      e Marina estão com `nivel_cefr`, `nivel_banda` e `nivel_sub` nulos, então a
+      checagem do passo 2.3 do gerador não roda nessa turma. Ou aplicam o
+      `nivel-test.html`, ou se preenche à mão a partir do que a professora observa.
+- [ ] **Decidir o mix que atravessa bandas.** `Misto` só cobre os dois CEFR de dentro
+      da mesma banda; A1 + A2 (Basic/High + Intermediate/Low) não é representável.
+      Convenção provisória: banda do piso com sub `Misto`.
+
 - [ ] **Implementar os blocos em ondas.** `pedagogico/BLOCOS.md` especifica 40 blocos;
       o `templateaula.html` renderiza só a estrutura antiga. Onda 1 = os blocos que a
       primeira aula real usar, não os 40. Hoje 3 de 40 estão implementados

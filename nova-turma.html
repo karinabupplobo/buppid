@@ -135,6 +135,18 @@
           <option value="Proficient">Proficient</option>
         </select>
       </div>
+      <!-- Sub-nível: Low/High/Misto. Escondido em Proficient (C2 não tem sub).
+           Preenchido à mão aqui; o gerador cruza com o teste de nível dos
+           alunos alocados depois e avisa se divergir. -->
+      <div class="campo" id="campo-nivel-sub" style="display:none">
+        <label for="f-nivel-sub">Sub-nível</label>
+        <select id="f-nivel-sub">
+          <option value="">Selecione</option>
+          <option value="Low">Low</option>
+          <option value="High">High</option>
+          <option value="Misto">Misto</option>
+        </select>
+      </div>
       <div class="campo">
         <label for="f-obj1">Objetivo 1 — resultado de negócio (não meta de idioma)</label>
         <textarea id="f-obj1" required placeholder="Ex.: Em 6 meses, o time de Comex negocia frete em inglês do início ao fechamento."></textarea>
@@ -388,15 +400,28 @@ document.querySelectorAll('#dias-grupo input[name="dia"]').forEach(chk => {
   };
 });
 
+// ── Sub-nível aparece em toda banda menos Proficient (C2 não tem sub) ──
+document.getElementById("f-nivel").addEventListener("change", (e) => {
+  const campo = document.getElementById("campo-nivel-sub");
+  const ehProficient = e.target.value === "Proficient";
+  campo.style.display = (e.target.value && !ehProficient) ? "" : "none";
+  if (ehProficient) document.getElementById("f-nivel-sub").value = "";
+});
+
 // ── Salvar ──
 const msg = document.getElementById("msg");
 document.getElementById("btn-salvar").onclick = async () => {
   const nome = document.getElementById("f-nome").value.trim();
   const nivel = document.getElementById("f-nivel").value;
+  const nivelSub = document.getElementById("f-nivel-sub").value;
   const obj1 = document.getElementById("f-obj1").value.trim();
 
   if (!nome || !nivel || !obj1){
     msg.textContent = "Preencha nome, nível e objetivo 1."; msg.className = "erro"; return;
+  }
+  // Proficient (C2) é o único nível sem sub — nos outros o sub é obrigatório.
+  if (nivel !== "Proficient" && !nivelSub){
+    msg.textContent = "Escolha o sub-nível (Low, High ou Misto)."; msg.className = "erro"; return;
   }
   if (!empresaSelecionada){
     msg.textContent = "Selecione ou crie a empresa."; msg.className = "erro"; return;
@@ -442,6 +467,7 @@ document.getElementById("btn-salvar").onclick = async () => {
     const turma = await sbInsert("turmas", {
       nome, tipo: "corporativa", empresa_cliente_id: empresaClienteId, professor_id: null,
       nivel: nivel,
+      nivel_sub: nivel === "Proficient" ? null : nivelSub,
       objetivo_1: obj1,
       objetivo_2: document.getElementById("f-obj2").value.trim() || null,
       dias_semana: diasSelecionados,

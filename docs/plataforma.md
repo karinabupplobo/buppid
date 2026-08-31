@@ -52,7 +52,7 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | Tabela | O que guarda | Relações |
 |---|---|---|
 | `empresas_cliente` | Empresa contratante (nome, dados). `lead_origem_id` linka de volta ao lead que virou cliente no funil (Leads CRM). `logo_url` criado em 31/08/2026 e **ainda sem uso** — ver nota abaixo. | 1:N `turmas` |
-| `turmas` | Turma de uma empresa. `empresa_cliente_id` **obrigatório** — toda turma pertence a uma empresa (decisão de 25/08/2026, não existe mais turma "particular"/sem empresa). `tipo`: sempre `corporativa`. Nível em banda (Basic/Intermediate/Advanced/Proficient), módulo do curso, professor responsável. **Uma empresa pode ter N turmas** (ex.: turma de chão de fábrica + turma de liderança, cada uma com seu professor/nível/trilha). | N:1 `empresas_cliente` · N:1 `professores` · 1:N `alunos` |
+| `turmas` | Turma de uma empresa. Nível em duas colunas: `nivel` (banda) + `nivel_sub` (`Low` \| `High` \| `Misto`, nulo em Proficient) — ver nota abaixo. `empresa_cliente_id` **obrigatório** — toda turma pertence a uma empresa (decisão de 25/08/2026, não existe mais turma "particular"/sem empresa). `tipo`: sempre `corporativa`. Nível em banda (Basic/Intermediate/Advanced/Proficient), módulo do curso, professor responsável. **Uma empresa pode ter N turmas** (ex.: turma de chão de fábrica + turma de liderança, cada uma com seu professor/nível/trilha). | N:1 `empresas_cliente` · N:1 `professores` · 1:N `alunos` |
 | `alunos` | Aluno (nome, cargo). | N:1 `turmas` |
 | `professores` | Professor (nome). | N:M `turmas` |
 | `aulas_assigned` | Uma aula do Gerador de Aulas atribuída a uma turma numa data. Abre no `templateaula.html` (o "material da aula" É o carrossel de 8 telas — não existe .pptx literal). Status: agendada / dada. | N:1 `turmas` |
@@ -63,6 +63,26 @@ por role — evita o aluno precisar saber "qual link é o meu".
 | `presenca` | Por aluno, por aula: presente / ausente. | N:1 `alunos` · N:1 `aulas_assigned` |
 | `profiles` | Liga `auth.users` a um `role` (`professor` \| `aluno` \| `rh` \| `interno`) e ao registro correspondente (`professor_id` \| `aluno_id` \| `empresa_cliente_id`). | 1:1 `auth.users` |
 
+
+### Nota — nível da turma: `turmas.nivel` + `turmas.nivel_sub` (31/08/2026)
+
+O `nivel-test.html` grava três campos em `alunos`: `nivel_cefr` (o dado real),
+`nivel_banda` e `nivel_sub`. O mapeamento é fixo — Basic = Pré-A1/A1,
+Intermediate = A2/B1, Advanced = B2/C1, Proficient = C2 (sem sub).
+
+Até 31/08/2026 `turmas` guardava só a banda, então uma turma "Intermediate" era
+ambígua entre A2 e B1 — justamente a informação de que o gerador precisa pra
+escolher a gramática criterial. A coluna `nivel_sub` fecha esse buraco.
+
+**É preenchimento manual, não derivado.** Foi avaliada a derivação automática
+(trigger somando os alunos e pegando o piso) e descartada: a turma se monta antes
+de os alunos serem alocados, então o nível derivado nasceria nulo. Em vez disso,
+a turma declara e **o gerador cruza** no passo 2.3, avisando quando a declaração
+não bate com os testes dos alunos alocados. Ver `pedagogico/GERADOR.md`.
+
+`Misto` cobre turmas com os dois CEFR da mesma banda. Mix que atravessa bandas
+(A1 + A2) não é representável hoje — convenção: fica na banda do piso com sub
+`Misto`. Decisão em aberto.
 
 ### Nota — `empresas_cliente.logo_url` (31/08/2026)
 

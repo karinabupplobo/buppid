@@ -44,17 +44,45 @@ ainda não produzido, ou produção parcial), retomar do ponto onde parou em vez
 de recomeçar do Passo 4 — pular direto pro Passo 9, na primeira aula sem
 `conteudo`.
 
-### 2.3 — Nível dos alunos e checagem de mix
-Ler `alunos.nivel_cefr` dos alunos da turma (via `turma_alunos`) e **reportar
-a distribuição**, não só a banda da turma.
+### 2.3 — Nível: o que a turma declara vs. o que os alunos tiraram
 
-- **Homogênea** → segue normal.
-- **Mix** (ex: três A2 + dois B1) → aplicar a regra de mix de `FUNCOES.md`:
-  Sistematizar segue o nível **mais baixo**; Apresentar usa o vocabulário do
-  mais alto; Ensaiar e Atuar comportam os dois **por papel**, não por conteúdo
-  paralelo. **Nunca gerar duas versões da aula.**
-- **Mix de mais de um degrau** (ex: A1 + B1) → **parar e avisar a Karina.**
-  Isso está fora da regra e é problema de composição de turma, não de material.
+**A turma declara** banda (`turmas.nivel`) + sub (`turmas.nivel_sub`). O sub é
+preenchido à mão na criação da turma, porque a turma se monta antes de os alunos
+serem alocados.
+
+| Banda | Low | High |
+|---|---|---|
+| Basic | Pré-A1 | A1 |
+| Intermediate | A2 | B1 |
+| Advanced | B2 | C1 |
+| Proficient | — (C2, sem sub) | |
+
+`nivel_sub = 'Misto'` significa que a turma tem os dois CEFR da banda.
+
+**Os alunos têm o dado real**: `alunos.nivel_cefr`, vindo do `nivel-test.html`.
+
+Ler os dois e **cruzar**. Reportar a distribuição real, nunca só a declaração
+da turma.
+
+| Situação | O que fazer |
+|---|---|
+| Declaração bate com os alunos | Segue normal |
+| Turma diz `High`/`Low` mas há os dois CEFR | **Avisar** — deveria ser `Misto`. Perguntar se corrige |
+| Turma diz `Misto` mas todos são o mesmo CEFR | **Avisar** — deveria ser `High` ou `Low` |
+| Aluno fora da banda declarada, um degrau | **Avisar** e tratar como `Misto` |
+| Mais de um degrau de diferença (ex: A1 + B1) | **Parar.** Fora da regra — é composição de turma, não material |
+| Alunos sem `nivel_cefr` preenchido | **Avisar** que a checagem não rodou e seguir pela declaração da turma |
+
+Quando o nível é misto (declarado ou detectado), aplicar a regra de mix de
+`FUNCOES.md`: Sistematizar segue o **piso**; Apresentar usa o vocabulário do
+teto; Ensaiar e Atuar comportam os dois **por papel**, não por conteúdo
+paralelo. **Nunca gerar duas versões da aula.**
+
+**Caso conhecido em aberto:** mix de um degrau pode atravessar bandas (A1 é
+Basic/High, A2 é Intermediate/Low). A turma não consegue declarar isso — `Misto`
+só cobre os dois CEFR de dentro da mesma banda. Convenção atual: a turma fica na
+banda do **piso**, com sub `Misto`, e o aviso registra que o teto está na banda
+seguinte.
 
 ### 2.4 — Objetivos
 Ler `turmas.objetivo_1` e `objetivo_2` e apresentar. São eles que amarram cada

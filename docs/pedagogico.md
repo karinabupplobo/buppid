@@ -16,40 +16,60 @@ Aula = sequência de **telas em carrossel horizontal**, navegação por swipe
 (ou clique nas bolinhas de navegação no rodapé). Uma tela por vez ocupa a
 tela inteira do celular, sempre centralizada.
 
-### Estrutura de telas (ordem atual — 9 telas, reestruturada em 26/08/2026)
+### Estrutura de telas (ordem atual — Capa + 7 telas, reestruturada em 31/08/2026)
 
-| # | Nome (título visível) | Tipo de conteúdo |
-|---|---|---|
-| 1 | **Step 1** | Tela marcadora de etapa — só o texto centralizado, mesma fonte/estilo dos títulos |
-| 2 | **Vocab** | 6 flashcards (2 linhas x 3), viram ao clicar (frente EN / verso PT) |
-| 3 | **Vocab Practice** | Exercícios (completar/múltipla) treinando especificamente o vocabulário da tela anterior |
-| 4 | **What would you do?** | Card de leitura (texto curto) + card de pergunta + respostas numeradas expansíveis, reciclando o vocabulário |
-| 5 | **Grammar** | Tabela compacta (Affirmative/Negative/Question ou variação equivalente) — bate o olho e entende a forma, sem parágrafo |
-| 6 | **Practice** | Exercícios de completar frase sobre a gramática ensinada, resposta revelável por número |
-| 7 | **Situational** | Diálogo entre dois personagens; palavras em `<strong>` marcam pontos que o professor/gerador pode trocar ao adaptar pra outra turma |
-| 8 | **Debate** | Card grande com uma moção/afirmação para provocar debate em sala, calibrada pro nível da turma |
-| 9 | **Fim** | Tela marcadora de encerramento — só o texto centralizado, mesma fonte/estilo dos títulos (igual à tela Step 1) |
+A arquitetura completa está em **`pedagogico/FUNCOES.md`** (as 10 funções, os 6
+invariantes, o orçamento de minutos, a regra de mix de nível) e a forma de cada
+tela em **`pedagogico/BLOCOS.md`** (os 40 blocos). Esta seção é só o resumo.
 
-**Padrão pedagógico por trás da ordem 2→6:** vocabulário → prática do
-vocabulário → uso em contexto (leitura) → explicação da gramática usada
-nesse contexto → prática guiada → aplicação livre (situational) →
-aplicação em grupo (debate).
+| # | Tela | Funções pedagógicas | Min |
+|---|---|---|---|
+| 0 | **Capa** | — (identidade: foto duotone + kicker + título) | — |
+| 1 | **Abertura** | Retomar + Contextualizar | 6 |
+| 2 | **Apresentar** | Apresentar + Fixar oral | 10 |
+| 3 | **Lacuna** | Provocar a lacuna | 5 |
+| 4 | **Sistematizar** | Sistematizar | 4 |
+| 5 | **Praticar → Ensaiar** | Praticar + Ensaiar (dois estágios) | 12 |
+| 6 | **Atuar** | Atuar (produção livre, sem apoio) | 15 |
+| 7 | **Registrar** | Registrar (can-do statement) | 3 |
 
-**Histórico:** até 26/08/2026 a estrutura tinha 8 telas, sem a Vocab
-Practice, com Grammar em texto corrido (regra/explicação/exemplo) e
-Situational como fala única + resposta revelável. Ver `CHANGELOG.md`.
+**Princípio:** função pedagógica fixa, representação livre. O que nunca muda é o
+que precisa acontecer em cada tela; a forma é escolhida aula a aula na biblioteca
+de blocos.
+
+**Padrão por trás da ordem:** o aluno precisa sentir a falta da estrutura antes de
+receber a regra. Por isso Lacuna (3) vem antes de Sistematizar (4). Depois a curva
+de retirada de apoio: Praticar (tudo à vista) → Ensaiar (roteiro) → Atuar (nada).
+
+**A aula é 100% oral. A escrita é 100% lição de casa** — e a lição vem sempre
+depois da aula, nunca antes.
+
+**Logo da Bupp em todas as telas**, canto superior direito:
+`assets/logo-bupp-marrom-azul-claro.png` na Capa (fundo escuro),
+`assets/logo-bupp-marrom-azul.png` nas telas de conteúdo.
+
+**Histórico:** até 26/08/2026 eram 8 telas; de 26/08 a 31/08, 9 telas fixas
+(Step 1, Vocab, Vocab Practice, What would you do?, Grammar, Practice,
+Situational, Debate, Fim). A estrutura de 9 telas amarrava a forma ao conteúdo —
+palavras que se definem por relação não cabiam em flashcard. Ver `CHANGELOG.md`,
+`v-20260831-2010-funcoes-pedagogicas`.
 
 ---
 
 ## 2. Sistema visual (design tokens)
 
 ```css
---teal-escuro: #0A1214        /* fundo — petróleo bem chumbado, quase preto */
---amarelo-neon: #D9E28C       /* verde-limão (ref: Pantone 2281 C) — cor de destaque/ativo */
---azul-intermediario: #3C6E78 /* tap highlight (flash de toque no mobile), meio-termo entre as duas acima */
+--teal-escuro: #54402F        /* marrom — fundo da aula */
+--amarelo-neon: #A8D5F2       /* azul-bebê — cor de destaque/ativo */
+--azul-intermediario: #8A7767 /* tap highlight (flash de toque no mobile), meio-termo entre as duas acima */
 --branco: #FFFFFF             /* fundo dos cards */
 --texto: #000000              /* texto dentro dos cards */
 ```
+
+**Atenção aos nomes das variáveis.** Eles são herança da paleta petróleo + limão e
+**não descrevem mais os valores**: `--teal-escuro` é marrom, `--amarelo-neon` é
+azul-bebê, `--azul-intermediario` é um marrom médio. Renomear exige tocar todas as
+regras de cor do `templateaula.html` — está no NEXT_STEPS, não foi feito.
 
 **Regras de aplicação:**
 - Fundo de toda a aula: sempre `--teal-escuro`.
@@ -61,12 +81,15 @@ Situational como fala única + resposta revelável. Ver `CHANGELOG.md`.
   escritos dentro da área branca do card.
 - Nada de texto decorativo ao redor dos elementos além do título da tela.
 - Tap highlight do navegador (o azul que pisca ao tocar) sempre sobrescrito
-  para `rgba(60, 110, 120, 0.45)` (`--azul-intermediario`), nunca o azul
-  padrão do sistema.
+  para `--azul-intermediario`, nunca o azul padrão do sistema.
+- **Duotone da Capa:** filtro SVG `#duotoneMarca`, mapeando luminância → 2 cores
+  via `feComponentTransfer` (sombras `#54402F`, luzes `#A8D5F2`). Mapeamento por
+  valor de pixel, não por posição. Ver `docs/ilustracao.md`.
 
-**Combinação testada e descartada:** terracota escuro (`#2A0F08`) + pêssego
-(`#FFC98B`). Perdeu para a combinação teal + verde-limão acima — manter
-registrado caso queira revisitar.
+**Paletas testadas e descartadas:** terracota escuro (`#2A0F08`) + pêssego
+(`#FFC98B`); ameixa + lavanda; e petróleo (`#0A1214`) + verde-limão (`#D9E28C`),
+que foi a paleta oficial entre 15/08 e 26/08/2026 e ainda aparece em documentos
+antigos. A paleta ativa é a de cima. Ver `docs/paletas-testadas.md`.
 
 ---
 

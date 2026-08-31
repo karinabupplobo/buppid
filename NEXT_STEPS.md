@@ -18,6 +18,10 @@
 - [ ] **Decidir o destino do kit Humaaans e do `hum.py`.** Com os blocos relacionais em
       SVG, o caso de uso encolheu — as palavras que ele resolveria (`manager`, `team`,
       `colleague`) agora vão para `piramide` e `agrupamento`. Commitar ou descartar.
+- [ ] **Renomear as variáveis de cor do `templateaula.html`.** `--teal-escuro` hoje
+      é marrom `#54402F`, `--amarelo-neon` é azul-bebê `#A8D5F2` e
+      `--azul-intermediario` é marrom médio. Os nomes são herança da paleta petróleo
+      e enganam quem lê. Renomear toca todas as regras de cor do arquivo.
 
 - [ ] **Tela de Mensagens — commit 3.** Falta remover o card Alertas de Performance
       e o modal que ele abre, realojando o "Avisar o RH" no rodapé da tela de

@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2036-pedagogico-8-telas-paleta — 31/08/2026
+- O que mudou: `docs/pedagogico.md` §1 e §2. A tabela de 9 telas fixas (Step 1, Vocab, Vocab
+  Practice, What would you do?, Grammar, Practice, Situational, Debate, Fim) foi substituída
+  pela estrutura **Capa + 7 telas funcionais**, com as funções pedagógicas e o orçamento de
+  minutos de cada uma, e apontando para `pedagogico/FUNCOES.md` e `pedagogico/BLOCOS.md`.
+  Entraram a regra "aula 100% oral, escrita 100% lição" e o logo da Bupp em todas as telas.
+  Na §2, os design tokens foram corrigidos de petróleo `#0A1214` + limão `#D9E28C` para a
+  paleta ativa **marrom `#54402F` + azul-bebê `#A8D5F2`**, com o duotone da Capa documentado.
+- Arquivos: docs/pedagogico.md
+- Motivo: o documento descrevia uma paleta abandonada em 26/08 e uma estrutura de telas
+  substituída em 31/08. Era a única fonte que o gerador lia para tokens de cor.
+  Observação: **nenhuma mudança de código foi necessária** — o `templateaula.html` já estava
+  em marrom + azul-bebê desde 26/08. Era defasagem só de documentação. Ficou registrado que
+  os nomes das variáveis são herança da paleta antiga e não descrevem mais os valores
+  (`--teal-escuro` é marrom, `--amarelo-neon` é azul-bebê) — renomear virou item do NEXT_STEPS.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2028-gerador-protocolo-abertura
+
 ## v-20260831-2028-gerador-protocolo-abertura — 31/08/2026
 - O que mudou: `pedagogico/GERADOR.md` atualizado. **Passo 2 virou conversa de abertura em
   sequência fixa, uma coisa por vez**: empresa → turma → nível dos alunos (com checagem de mix)

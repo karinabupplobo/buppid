@@ -1,5 +1,17 @@
 # NEXT STEPS
 
+## Próximo — reestruturação pedagógica (31/08/2026)
+
+- [ ] **Implementar os blocos em ondas.** `pedagogico/BLOCOS.md` especifica 40 blocos;
+      o `templateaula.html` renderiza só a estrutura antiga. Onda 1 = os blocos que a
+      primeira aula real usar, não os 40.
+- [ ] **Fechar as 4 decisões em aberto** de `pedagogico/FUNCOES.md`: nome final de
+      "Atuar", carga de lição por aula, lição junto ou separada da aula, e a
+      duração/frequência real das turmas (o orçamento de 55 min assume aula de 60).
+- [ ] **Lição de casa não tem lugar no sistema.** O desenho novo depende dela, mas não
+      há campo em `aulas_assigned` nem exibição em `aluno.html`. Criar só quando a
+      decisão acima estiver fechada.
+
 - [ ] **Tela de Mensagens — commit 3.** Falta remover o card Alertas de Performance
       e o modal que ele abre, realojando o "Avisar o RH" no rodapé da tela de
       Mensagens. Os commits 1 (v-20260828-1737, estrutura no mock) e 2

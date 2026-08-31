@@ -2,6 +2,26 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2010-funcoes-pedagogicas — 31/08/2026
+- O que mudou: novo `pedagogico/FUNCOES.md`. A aula deixa de ter 9 telas fixas e passa a ter
+  **Capa (tela 0) + 7 telas funcionais**, carregando 10 funções pedagógicas nomeadas
+  (Retomar, Contextualizar, Apresentar, Fixar, Provocar a lacuna, Sistematizar, Praticar,
+  Ensaiar, Atuar, Registrar). Princípio central: **função pedagógica fixa, representação
+  livre** — a forma de cada tela é escolhida aula a aula na biblioteca de `BLOCOS.md`.
+  Entra a regra de corte **"silêncio não ocupa tela de aula"**: a aula é 100% oral, a escrita
+  é 100% lição de casa. Seis invariantes, orçamento de 55 min, regra de mix de nível
+  (papéis diferentes, nunca duas versões da aula) e logo da Bupp em todas as telas.
+- Arquivos: pedagogico/FUNCOES.md
+- Motivo: a estrutura de 9 telas amarrava a forma ao conteúdo. Palavras que se definem por
+  relação (manager, supervisor, director) não cabem em flashcard — foi a causa raiz da trava
+  de imagens da Aula 1, que vinha sendo tratada como problema de prompt.
+  Observação: quatro decisões ficaram registradas como em aberto dentro do próprio documento
+  (nome final de "Atuar", carga de lição, lição junto ou separada, duração/frequência real
+  das turmas). A lição de casa existe no desenho mas não tem campo em `aulas_assigned` nem
+  exibição em `aluno.html` — nada foi criado no schema por isso.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-ANTES-reestruturacao-pedagogica
+
 ## v-20260828-1820-kanban-unico-mensagens — 28/08/2026
 - O que mudou: a aba Messages virou um quadro só. Saíram os três quadros por categoria e a faixa
   "Aguardando aprovação"; entraram um filtro de categoria (todas / comentários / alertas /

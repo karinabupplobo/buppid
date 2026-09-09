@@ -30,9 +30,19 @@ Só depois de ler é que o Passo 2 começa.
 Não perguntar tudo de uma vez. A sequência é sempre esta, e cada etapa só
 começa depois da resposta da anterior.
 
-### 2.1 — Empresa
+### 2.1 — Empresa (ou teste avulso)
 Ler as empresas ativas em `empresas_cliente` e apresentar a lista pra Karina
-escolher qual vamos mexer.
+escolher qual vamos mexer. **Sempre incluir a opção `T` no final da lista:**
+
+```
+1. Tirolez
+2. ...
+T. Teste avulso — sem empresa, não grava nada
+```
+
+Se ela escolher `T`, **desviar para o Passo 2-T** e pular 2.2 a 2.5, além dos
+Passos 3 a 8 (módulos, estrutura, capacidade, temas, mapa, aprovação). Retomar
+o fluxo normal no Passo 9.
 
 ### 2.2 — Turma
 Ler as turmas daquela empresa (`turmas.empresa_cliente_id`) e apresentar a
@@ -98,6 +108,47 @@ Perguntar só o que falta e não dá pra inferir do cadastro:
   Advanced/Proficient) e os alunos não tiverem `nivel_cefr` preenchido.
 - `assuntos_essenciais` e `restricoes`, se estiverem nulos.
 - Qualquer contexto adicional que a Karina julgue relevante.
+
+---
+
+## Passo 2-T — Teste avulso (só quando a empresa escolhida for `T`)
+
+Serve pra testar o gerador com uma aula só, sem montar material de 48. Não tem
+empresa, não tem turma, **não grava nada em lugar nenhum** — nem
+`aulas_assigned`, nem qualquer outra tabela. A aula é produzida, renderizada no
+`templateaula.html` local pra conferência visual, e descartada.
+
+Como não existe turma, não existe mapa a poluir. Por isso não faz falta status
+novo nem mudança de schema.
+
+Perguntar, uma coisa por vez:
+
+**2-T.1 — Nível.** CEFR direto (`A2`, `B1`, ...) ou banda + sub. **`Misto` é
+permitido** — é justamente a regra menos validada, e o teste avulso é o lugar
+barato de exercitá-la. Em misto, valem as mesmas regras de `FUNCOES.md`:
+Sistematizar segue o piso, Apresentar usa o vocabulário do teto, Ensaiar e
+Atuar separam por papel. Nunca duas versões da aula.
+
+**2-T.2 — Tema.** A Karina diz.
+
+**2-T.3 — Ponto gramatical.** **Eu proponho** a partir do tema e do nível,
+validado contra a matriz criterial do arquivo de nível, e mostro pra ela
+aprovar. Nunca escolher sozinho e seguir.
+
+**2-T.4 — Objetivo.** Perguntar qual objetivo de negócio a aula exercita. É
+**opcional**: se ela não der, inventar um cenário de trabalho plausível pro
+tema e **avisar qual foi inventado**. Sem objetivo as telas Lacuna e Atuar
+perdem a âncora de contexto e a aula sai genérica — por isso o cenário
+inventado precisa ficar explícito, não implícito.
+
+Depois disso, ir direto para o **Passo 10** (seleção de bloco) e seguir
+normalmente. No Passo 9, ignorar tudo que fala em módulo, numeração de aula e
+gravação no banco.
+
+Se a Karina quiser gerar uma aula avulsa **dentro de uma turma real** (com
+empresa, objetivos e gravação), esse é outro caminho: escolher a empresa
+normalmente em 2.1 e avisar que é aula única. Aí ela tem contexto real e pode
+ser gravada em `aulas_assigned` se a Karina pedir.
 
 ---
 
@@ -309,5 +360,8 @@ Respeitando:
 - Não avança pra próxima aula sem aprovação explícita da anterior.
 - Não pergunta tudo de uma vez no Passo 2 — a sequência é empresa, turma,
   nível, objetivos, e só então módulos.
+- Não grava nada no banco em modo teste avulso (Passo 2-T), nem quando a aula
+  fica boa. Se a Karina quiser guardar, ela pede — e aí é o caminho de aula
+  avulsa dentro de turma real, não o teste.
 - Não gera duas versões da mesma aula por causa de mix de nível.
 - Não escreve nada na dash — a integração será construída depois.

@@ -2,6 +2,29 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2222-gerador-teste-avulso — 31/08/2026
+- O que mudou: `pedagogico/GERADOR.md` ganhou o **modo de teste avulso**. O passo 2.1 passa a
+  listar sempre uma opção `T` no fim das empresas ("Teste avulso — sem empresa, não grava
+  nada"). Escolhendo `T`, o gerador desvia para o novo **Passo 2-T**, pulando 2.2 a 2.5 e os
+  Passos 3 a 8 (módulos, estrutura, capacidade, temas, mapa, aprovação), e retoma no Passo 9.
+  O 2-T pergunta nível (CEFR ou banda+sub, **`Misto` permitido**), tema, ponto gramatical
+  (proposto por mim a partir do tema e do nível, validado contra a matriz criterial, e
+  aprovado pela Karina) e objetivo (**opcional** — sem ele, invento um cenário de trabalho e
+  aviso qual foi).
+- Arquivos: pedagogico/GERADOR.md
+- Motivo: testar o gerador exigia montar um material inteiro de 48 aulas antes de descobrir
+  qualquer erro. Com o avulso dá pra validar a estrutura nova com uma aula só.
+  Observação: **a decisão de tirar a empresa do caminho resolveu o problema pela raiz.** As
+  três alternativas que eu tinha proposto (não gravar / gravar com `status = 'teste'` /
+  gravar normal) existiam só porque a aula de teste teria turma e poluiria o mapa. Sem
+  empresa não há mapa a poluir, então não faz falta status novo nem mudança de schema — o
+  modo teste simplesmente não grava. Aula avulsa **dentro** de turma real continua sendo
+  outro caminho: escolhe a empresa normalmente e pode ser gravada se a Karina pedir.
+  Efeito colateral útil: uma aula de teste já revela quais blocos ainda estão `especificado`
+  e precisam de onda de implementação no `templateaula.html`.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260831-2150-custom-domain-plataforma
+
 ## v-20260831-2150-custom-domain-plataforma — 31/08/2026
 - O que mudou: arquivo `CNAME` criado na raiz com `plataforma.buppidiomas.com.br`, e o campo
   Custom domain do GitHub Pages do repositório `buppid` apontado para o mesmo subdomínio.

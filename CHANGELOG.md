@@ -2,6 +2,24 @@
 
 Entradas mais recentes no topo.
 
+## v-20260831-2238-custom-domain-ativo — 31/08/2026
+- O que mudou: custom domain efetivamente ativado no GitHub Pages. A plataforma agora responde
+  em `https://plataforma.buppidiomas.com.br/`, com certificado emitido (`approved`) e Enforce
+  HTTPS ligado. Complementa `v-20260831-2150`, que só tinha criado o arquivo CNAME.
+- Arquivos: nenhum (configuração via API do GitHub Pages)
+- Motivo: fechar o custom domain, que estava pendente desde a configuração do DNS.
+  Observação: o `PUT /repos/{owner}/{repo}/pages` exige **duas** permissões, não uma —
+  o cabeçalho `x-accepted-github-permissions` respondeu `pages=write,administration=write`.
+  Ficou registrado porque a documentação não deixa isso óbvio e o 403 não explica sozinho.
+  Recomendação: **remover `Administration: Read & write` do token agora que o domínio está
+  configurado.** É a permissão que permite apagar o repositório, e o domínio é operação de uma
+  vez só — não vale carregar esse risco em permanência. Contents + Pages + Actions bastam para
+  o trabalho do dia a dia.
+- Reverter para o estado ANTERIOR a esta mudança:
+  não há commit a reverter — para desfazer, limpar o campo Custom domain em Settings > Pages
+  (ou `PUT /pages` com `cname` nulo) e remover o arquivo CNAME com
+  `git checkout v-20260831-ANTES-custom-domain -- CNAME`
+
 ## v-20260831-2222-gerador-teste-avulso — 31/08/2026
 - O que mudou: `pedagogico/GERADOR.md` ganhou o **modo de teste avulso**. O passo 2.1 passa a
   listar sempre uma opção `T` no fim das empresas ("Teste avulso — sem empresa, não grava

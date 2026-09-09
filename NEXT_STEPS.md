@@ -2,6 +2,12 @@
 
 ## Próximo — reestruturação pedagógica (31/08/2026)
 
+- [ ] **Remover `Administration: Read & write` do token do GitHub.** Foi adicionada
+      em 31/08 só para configurar o custom domain (o endpoint exige
+      `pages=write,administration=write`). O domínio já está configurado e é operação
+      de uma vez só; a permissão permite apagar o repositório e não deve ficar
+      permanente. Contents + Pages + Actions bastam para o dia a dia.
+
 - [ ] **Criar o repositório `buppidiomas-site` à mão** (o token não tem permissão de
       criar repo) e publicar nele o site institucional, hoje só em `/home/claude/site/`
       e fora do git — se a sessão cair, some. Depois apontar o apex

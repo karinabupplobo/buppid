@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1810-logo-telas — 16/09/2026
+- O que mudou: logo da Bupp no canto superior direito de todas as telas do formato de
+  blocos (Capa inclusive). A etiqueta "anotada" do modo professor desceu para não ficar
+  embaixo do logo.
+- Arquivos: templateaula.html, pedagogico/FUNCOES.md
+- Motivo: o FUNCOES.md já dizia que o logo aparece em todas as telas, mas o template não
+  tinha logo nenhum.
+  Observação: o doc mandava usar `logo-bupp-marrom-azul.png` nas telas de conteúdo
+  "de fundo claro", mas o fundo delas é marrom — esse logo fica invisível ali (conferido
+  em screenshot). Usei a versão clara em todas e corrigi a tabela do FUNCOES.md.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1800-template-blocos
+
 ## v-20260916-1800-template-blocos — 16/09/2026
 - O que mudou: `templateaula.html` passa a ler o formato de blocos (Capa + 7 telas,
   `{ capa, telas: [{ tela, bloco, minutos, dados }] }`). Renderização por nome de bloco

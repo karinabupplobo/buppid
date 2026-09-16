@@ -921,6 +921,17 @@
     margin-bottom: 2px;
   }
 
+  /* Logo da Bupp em todas as telas do formato novo, canto superior direito.
+     Versão clara em todas: o fundo das telas de conteúdo também é marrom. */
+  .screen[data-tela]{ position: relative; }
+  .logo-tela{
+    position: absolute; top: 14px; right: 18px; height: 30px; width: auto;
+    z-index: 4; pointer-events: none; user-select: none;
+  }
+  .screen[data-tela] .marca-anot{ top: 52px; }
+  @media (orientation: portrait), (max-height: 480px){ .logo-tela{ height: 22px; top: 10px; right: 12px; } }
+  @media (min-width: 900px) and (min-height: 620px){ .logo-tela{ height: 38px; top: 22px; right: 28px; } }
+
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
 
 </style>
@@ -1269,11 +1280,15 @@
     console.warn("[templateaula] aula malformada:", problemas);
   }
 
+  const LOGO_TELA = '<img class="logo-tela" src="assets/logo-bupp-marrom-azul-claro.png" alt="Bupp Idiomas">';
+
   function telaCapa(capa) {
     const c = capa || {};
-    if (c.foto) return telaMarcador({ titulo: c.titulo, kicker: c.kicker, foto: c.foto });
+    if (c.foto) return telaMarcador({ titulo: c.titulo, kicker: c.kicker, foto: c.foto })
+      .replace('<section class="screen tela-abertura">',
+               '<section class="screen tela-abertura" data-tela="capa">' + LOGO_TELA);
     const kicker = c.kicker ? '<p class="abertura-kicker-simples">' + esc(c.kicker) + '</p>' : '';
-    return '<section class="screen" data-tela="capa">' + kicker
+    return '<section class="screen" data-tela="capa">' + LOGO_TELA + kicker
       + '<h1 class="screen-title step-title">' + esc(c.titulo) + '</h1></section>';
   }
 
@@ -1285,6 +1300,7 @@
     const existe = Object.keys(BLOCOS_POR_TELA).some(k => BLOCOS_POR_TELA[k].indexOf(t.bloco) !== -1);
     const corpo = BLOCOS[t.bloco] ? BLOCOS[t.bloco](t.dados || {}) : blocoPendente(t.bloco, existe);
     return '<section class="screen" data-tela="' + esc(t.tela) + '" data-bloco="' + esc(t.bloco) + '">'
+      + LOGO_TELA
       + '<h1 class="screen-title">' + esc(titulo) + min + '</h1>'
       + corpo + '</section>';
   }

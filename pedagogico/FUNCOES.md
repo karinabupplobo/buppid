@@ -116,10 +116,11 @@ O logo aparece em **todas as telas**, canto superior direito.
 
 | Arquivo | Onde |
 |---|---|
-| `assets/logo-bupp-marrom-azul-claro.png` | Capa (fundo duotone escuro) |
-| `assets/logo-bupp-marrom-azul.png` | telas de conteúdo (fundo claro) |
+| `assets/logo-bupp-marrom-azul-claro.png` | todas as telas — Capa e conteúdo |
 
-Caminho fixo no template. Não vem do banco.
+O fundo das telas de conteúdo também é marrom `#54402F` (os cards brancos ficam por
+cima), então a versão marrom do logo (`logo-bupp-marrom-azul.png`) some ali. Ela
+serve para superfície clara fora da aula. Caminho fixo no template. Não vem do banco.
 
 ---
 

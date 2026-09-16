@@ -912,7 +912,7 @@
 
   /* Campos de uso do professor (gabarito, regra-alvo). Some para o aluno. */
   .so-prof{
-    background: rgba(138,119,103,0.14); border-left: 3px solid var(--azul-intermediario);
+    background: #EFE7DD; border-left: 3px solid var(--azul-intermediario);
     border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #3a2e24;
   }
   .so-prof::before{
@@ -931,6 +931,65 @@
   .screen[data-tela] .marca-anot{ top: 52px; }
   @media (orientation: portrait), (max-height: 480px){ .logo-tela{ height: 22px; top: 10px; right: 12px; } }
   @media (min-width: 900px) and (min-height: 620px){ .logo-tela{ height: 38px; top: 22px; right: 28px; } }
+
+  /* --- Componentes compartilhados dos blocos de texto (onda 2) --- */
+  .bk{ width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 10px; }
+  .bk-rotulo{
+    color: var(--amarelo-neon); font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; text-align: center; margin: 0 0 2px;
+  }
+  .bk-destaque, .big-card p.bk-destaque{
+    font-size: 22px; font-weight: 700; line-height: 1.35; color: var(--texto); text-align: center;
+  }
+  .big-card .bk-destaque{ margin: 0; }
+  .bk-nota, .big-card p.bk-nota{ font-size: 13px; color: var(--texto); opacity: 0.65; text-align: center; margin: 10px 0 0; }
+  .bk-chips{ display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+  .bk-chip{
+    background: rgba(168,213,242,0.35); border: 1.5px solid var(--amarelo-neon); color: var(--texto);
+    border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600;
+  }
+  .big-card .so-prof{ margin-top: 14px; }
+  .bk .so-prof{ margin: 4px 0 0; }
+
+  /* Cartão fechado: conteúdo que só um aluno (ou só o professor) pode ver.
+     Fica fechado na tela projetada e abre ao toque. */
+  .bk-fechados{ display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
+  .cartao-fechado{
+    background: var(--branco); border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+  .fechado-head{
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer;
+    -webkit-tap-highlight-color: rgba(138, 119, 103, 0.45);
+  }
+  .fechado-head b{ font-size: 14px; color: var(--texto); }
+  .fechado-head span{ margin-left: auto; font-size: 11px; font-weight: 700; color: var(--azul-intermediario); }
+  .cartao-fechado.aberto .fechado-head span{ color: var(--teal-escuro); }
+  .fechado-corpo{ display: none; padding: 0 14px 14px; font-size: 14px; line-height: 1.5; color: var(--texto); }
+  .cartao-fechado.aberto .fechado-corpo{ display: block; }
+  .fechado-corpo p{ margin: 0 0 6px; }
+  .fechado-corpo ul{ margin: 0 0 6px; padding-left: 18px; }
+  .fechado-corpo .rot{ font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .55; }
+
+  @media (min-width: 900px) and (min-height: 620px){
+    .bk{ max-width: 960px; gap: 14px; }
+    .bk-destaque, .big-card p.bk-destaque{ font-size: 34px; }
+    .bk-rotulo{ font-size: 13px; }
+    .bk-nota, .big-card p.bk-nota{ font-size: 16px; }
+    .bk-chip{ font-size: 16px; padding: 7px 16px; }
+    .bk-fechados{ grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .bk-fechados.tres{ grid-template-columns: repeat(3, 1fr); }
+    .fechado-head{ padding: 18px 20px; }
+    .fechado-head b{ font-size: 18px; }
+    .fechado-corpo{ font-size: 17px; padding: 0 20px 20px; }
+  }
+  @media (orientation: landscape) and (max-height: 600px){
+    .bk-destaque, .big-card p.bk-destaque{ font-size: clamp(15px, 3.4vh, 22px); }
+    .bk{ gap: 1vh; }
+    .fechado-head{ padding: 0.8vh 12px; }
+  }
+
+  /* ---- fim dos estilos de bloco ---- */
 
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
 
@@ -1234,6 +1293,56 @@
     + '<p class="prompt">Take a side. Prepare two arguments to defend your position.</p>'
     + '</div>';
 
+  // ---- Peças compartilhadas dos blocos de texto (onda 2) ----
+  // Lista numerada em cartões abertos (sem gabarito escondido).
+  function listaNumerada(itens) {
+    return (itens || []).map((t, i) => itemAberto(i + 1, t)).join("");
+  }
+
+  // Cartão que só abre ao toque: briefing secreto, papel, objeção.
+  // "corpo" é HTML já montado (com esc() aplicado por quem chama).
+  function cartaoFechado(titulo, corpo) {
+    return '<div class="cartao-fechado"><div class="fechado-head">'
+      + '<span class="num-btn">&#128274;</span><b>' + esc(titulo) + '</b>'
+      + '<span>tap to open</span></div>'
+      + '<div class="fechado-corpo">' + corpo + '</div></div>';
+  }
+
+  function listaSimples(itens) {
+    const li = (itens || []).map(t => '<li>' + esc(t) + '</li>').join("");
+    return li ? '<ul>' + li + '</ul>' : '';
+  }
+
+  function chips(itens) {
+    return '<div class="bk-chips">'
+      + (itens || []).map(t => '<span class="bk-chip">' + esc(t) + '</span>').join("")
+      + '</div>';
+  }
+
+  // Card grande com uma frase em destaque, rótulo opcional em cima e nota embaixo.
+  function cardDestaque(rotulo, texto, extra) {
+    return '<div class="big-card">'
+      + (rotulo ? '<p class="bk-rotulo" style="color:var(--azul-intermediario)">' + esc(rotulo) + '</p>' : '')
+      + '<p class="bk-destaque">' + esc(texto) + '</p>'
+      + (extra || '') + '</div>';
+  }
+
+  // ---- Tela 1 · Abertura ----
+  BLOCOS["recall-rapido"] = (d) =>
+    '<div class="bk">'
+    + (d.aula_referencia ? '<p class="bk-rotulo">From lesson ' + esc(d.aula_referencia) + ' · no notes</p>'
+                         : '<p class="bk-rotulo">From last lesson · no notes</p>')
+    + listaNumerada(d.perguntas) + '</div>';
+
+  BLOCOS["checagem-licao"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Homework check · say it out loud</p>'
+    + listaNumerada(d.itens) + soProf(d.instrucao_professor) + '</div>';
+
+  BLOCOS["pergunta-disparo"] = (d) =>
+    cardDestaque("", d.pergunta, d.nota ? '<p class="bk-nota">' + esc(d.nota) + '</p>' : '');
+
+  // ---- fim dos renderizadores de bloco ----
+
   function blocoPendente(nome, existe) {
     return '<div class="big-card bloco-pendente">'
       + '<h2>Bloco <code>' + esc(nome || "(sem bloco)") + '</code> '
@@ -1381,6 +1490,14 @@
     document.querySelectorAll('.answer-head').forEach(head => {
       head.addEventListener('click', () => {
         head.closest('.answer-item').classList.toggle('open');
+      });
+    });
+    // Cartão fechado dos blocos com briefing individual (onda 2).
+    document.querySelectorAll('.fechado-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const c = head.closest('.cartao-fechado');
+        c.classList.toggle('aberto');
+        head.querySelector('span:last-child').textContent = c.classList.contains('aberto') ? 'tap to close' : 'tap to open';
       });
     });
   }

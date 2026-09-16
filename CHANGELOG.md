@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1905-blocos-abertura — 16/09/2026
+- O que mudou: onda 2, parte 1 — blocos `recall-rapido`, `checagem-licao` e
+  `pergunta-disparo` (tela Abertura) implementados no template, junto com as peças
+  compartilhadas dos blocos de texto (lista numerada, card de destaque, chips, cartão
+  fechado que abre ao toque). Campo de professor ganhou fundo claro próprio para ficar
+  legível fora dos cards. BLOCOS.md: status e inventário atualizados (6 de 40) e registro
+  da decisão de implementar os 40 em ondas.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: pedido da Karina de produzir os 37 blocos restantes depois do formato novo.
+  Observação: inverte a regra antiga de "implementar só o que uma aula real pedir" —
+  decisão da Karina, registrada no BLOCOS.md. QA: screenshot desktop 1280×800 e celular
+  390×844 de cada bloco, sem erro de JS e sem estouro de altura.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1840-schema-blocos
+
 ## v-20260916-1840-schema-blocos — 16/09/2026
 - O que mudou: `docs/pedagogico.md` §6.2 reescrito com o envelope do formato de blocos
   (`capa` + 7 `telas` com `tela`, `bloco`, `minutos`, `dados`) e as regras que o

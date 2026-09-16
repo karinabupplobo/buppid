@@ -33,8 +33,9 @@ vocabulário coerente é melhor pedagogia de qualquer jeito.
 
 ## Estratégia de implementação: especificar tudo, implementar em ondas
 
-Os 40 blocos estão **especificados**. Só entram no `templateaula.html` os que uma aula
-real precisar — onda por onda. Cada bloco implementado exige screenshot próprio no QA
+Os 40 blocos estão **especificados**. Até 16/09/2026 a regra era implementar só os que
+uma aula real pedisse. **Em 16/09 a Karina decidiu implementar os 40**, em ondas: onda 2 =
+os 23 de texto puro, onda 3 = os 11 em SVG, onda 4 = os 3 com foto real. Cada bloco implementado exige screenshot próprio no QA
 visual, e bloco quebrado só aparece em sala.
 
 A coluna **Status** de cada bloco é a fonte da verdade:
@@ -129,14 +130,14 @@ Perguntas orais rápidas sobre a aula anterior, sem consulta. O bloco padrão de
 ```json
 { "perguntas": ["...", "..."], "aula_referencia": 3 }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `checagem-licao`
 Retomada explícita da lição de casa: itens que o aluno responde de viva voz.
 ```json
 { "itens": ["...", "..."], "instrucao_professor": "(opcional)" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `foto-cena`
 Foto duotone de uma cena de trabalho + pergunta de contextualização.
@@ -150,7 +151,7 @@ Uma pergunta única, grande, centralizada. Sem imagem, sem apoio.
 ```json
 { "pergunta": "...", "nota": "(opcional)" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `duas-imagens`
 Duas cenas contrastantes lado a lado: "qual se parece com o seu dia?"
@@ -481,13 +482,13 @@ Status: especificado
 
 | Tela | Blocos | Implementados |
 |---|---|---|
-| 1. Abertura | 6 | 0 |
-| 2. Apresentar | 8 | 1 (`foto-cards`) |
+| 1. Abertura | 6 | 3 |
+| 2. Apresentar | 8 | 1 |
 | 3. Lacuna | 5 | 0 |
-| 4. Sistematizar | 5 | 1 (`tabela`) |
+| 4. Sistematizar | 5 | 1 |
 | 5. Praticar → Ensaiar | 6 | 0 |
-| 6. Atuar | 6 | 1 (`debate`) |
+| 6. Atuar | 6 | 1 |
 | 7. Registrar | 4 | 0 |
-| **Total** | **40** | **3** |
+| **Total** | **40** | **6** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

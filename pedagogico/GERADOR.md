@@ -341,6 +341,12 @@ Respeitando:
 - **Aula 100% oral:** nenhum bloco de aula pede escrita. Drill escrito, tabela
   de gramática pra estudo, exercício de completar e leitura vão pra lição de
   casa, sempre **depois** da aula, nunca antes (invariante 2).
+- **Orçamento de 50 minutos (obrigatório):** cada tela declara `minutos`, a soma é
+  50 e Atuar é a tela mais longa (padrão: 5 · 9 · 4 · 4 · 11 · 14 · 3). Antes de
+  mostrar a aula, conferir **cada bloco contra "Limites de tamanho" do `BLOCOS.md`** e
+  apresentar a checagem numa linha por tela (bloco · minutos · tamanho usado / limite).
+  Passou do limite, corta conteúdo. Mudar minutos de uma tela só com aprovação da Karina
+  naquela aula, mantendo a soma em 50.
 - **Regras por nível (§6.3):** formato dos itens de Apresentar — termo solto
   até A2, frase em contexto de B1 em diante. A quantidade de itens é dada pelo
   bloco escolhido (pirâmide de 4 níveis, escala de 5 pontos), não mais fixa em 6.

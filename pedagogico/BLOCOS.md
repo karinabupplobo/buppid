@@ -66,18 +66,63 @@ quatro blocos**.
 Cada tela do JSON de saída declara seu tipo:
 
 ```json
-{ "tela": "apresentar", "bloco": "piramide", "dados": { } }
+{ "tela": "apresentar", "bloco": "piramide", "minutos": 9, "dados": { } }
 ```
 
 O campo `bloco` é obrigatório e tem que ser um dos nomes desta biblioteca. O template
-renderiza por `bloco`; bloco desconhecido não renderiza.
+renderiza por `bloco`; bloco especificado mas ainda não implementado aparece como cartão
+de pendência, e bloco fora da biblioteca gera aviso (decisão de 16/09/2026 — tela vazia
+só seria descoberta em sala).
+
+O campo `minutos` é obrigatório. A soma das 7 telas é **50** — ver "Orçamento de 50
+minutos" em `FUNCOES.md`.
+
+---
+
+## Limites de tamanho
+
+O limite de cada bloco é o que faz o conteúdo caber nos minutos da tela. Passou do
+limite, a tela estoura — corta conteúdo, não minutos de outra tela.
+
+| Tela (min) | Bloco | Limite |
+|---|---|---|
+| Abertura (5) | `recall-rapido` | até 4 perguntas |
+| | `checagem-licao` | até 4 itens |
+| | `foto-cena`, `pergunta-disparo` | 1 pergunta |
+| | `duas-imagens` | 2 imagens, 1 pergunta |
+| | `citacao-cena` | 1 fala de até 25 palavras |
+| Apresentar (9) | `foto-cards` | até 6 itens |
+| | `piramide` | até 5 níveis |
+| | `fluxo`, `linha-tempo` | até 6 etapas / marcos |
+| | `mapa-cena` | até 7 rótulos |
+| | `comparativo` | até 5 pares |
+| | `escala` | até 6 pontos |
+| | `agrupamento` | até 3 grupos e 8 itens no total |
+| Lacuna (4) | `tarefa-impossivel`, `traducao-armadilha`, `foto-descricao` | 1 tarefa |
+| | `escolha-forcada` | até 3 frases |
+| | `dialogo-incompleto` | até 6 falas, até 3 lacunas |
+| Sistematizar (4) | `tabela` | até 4 linhas, nota de 1 frase |
+| | `contraste-par` | exatamente 2 frases |
+| | `formula` | até 5 partes |
+| | `regra-descoberta` | até 3 perguntas |
+| | `linha-tempo-verbal` | até 4 marcos |
+| Praticar → Ensaiar (11) | `drill-oral` | até 8 itens |
+| | `substituicao`, `sequencia-perguntas`, `cartoes-situacao` | até 6 |
+| | `roleplay-roteiro` | até 3 papéis, até 3 falas de apoio por papel |
+| | `info-gap` | até 4 itens em "tem" e em "precisa", por papel |
+| Atuar (14) | `simulacao-reuniao` | `duracao_min` igual aos minutos da tela; até 4 papéis |
+| | `apresentacao-relampago` | `tempo_por_aluno_min` × nº de alunos ≤ 12 (2 min de fechamento); sem turma, contar 5 alunos |
+| | `pitch-cliente` | até 3 objeções |
+| | `negociacao-dois-lados`, `call-problema`, `debate` | 1 cenário / 1 moção |
+| Registrar (3) | `can-do` | até 3 statements |
+| | `resumo-oral`, `compromisso`, `licao-ponte` | 1 instrução / pergunta |
 
 Campos marcados `(opcional)` podem faltar sem quebrar a renderização.
 
 ---
 
 # Tela 1 — Abertura
-*Funções: Retomar + Contextualizar · 6 min · oral*
+*Funções: Retomar + Contextualizar · 5 min · oral*
 
 ### `recall-rapido`
 Perguntas orais rápidas sobre a aula anterior, sem consulta. O bloco padrão de Retomar.
@@ -125,7 +170,7 @@ Imagem: não (SVG de balão) · Status: especificado
 ---
 
 # Tela 2 — Apresentar
-*Funções: Apresentar + Fixar oral · 10 min · oral*
+*Funções: Apresentar + Fixar oral · 9 min · oral*
 
 ### `foto-cards`
 Cards com foto duotone, viram ao clicar (frente EN / verso PT). O bloco atual.
@@ -199,7 +244,7 @@ Imagem: não (SVG) · Status: especificado
 ---
 
 # Tela 3 — Lacuna
-*Função: Provocar a lacuna · 5 min · oral*
+*Função: Provocar a lacuna · 4 min · oral*
 
 Nenhum bloco desta tela explica nada. O aluno tenta e trava — é esse o ponto.
 
@@ -290,7 +335,7 @@ Imagem: não (SVG) · Status: especificado
 ---
 
 # Tela 5 — Praticar → Ensaiar
-*Funções: Praticar + Ensaiar · 12 min · oral · dois estágios*
+*Funções: Praticar + Ensaiar · 11 min · oral · dois estágios*
 
 Esta tela tem dois estágios na mesma tela: começa com apoio total e o andaime sai na
 metade. O campo `estagio` marca a virada.
@@ -344,7 +389,7 @@ Imagem: não · Status: especificado
 ---
 
 # Tela 6 — Atuar
-*Função: Atuar · 15 min · oral · sem apoio*
+*Função: Atuar · 14 min · oral · sem apoio*
 
 A tela mais longa da aula. Nenhum bloco daqui oferece roteiro, tabela ou frase pronta.
 Invariante 4: nada aqui exige gramática que a turma ainda não encontrou.
@@ -353,7 +398,7 @@ Invariante 4: nada aqui exige gramática que a turma ainda não encontrou.
 Reunião de trabalho com pauta, sem falas dadas.
 ```json
 { "pauta": "...", "papeis": [{ "n": 1, "descricao": "...", "objetivo": "..." }],
-  "duracao_min": 15 }
+  "duracao_min": 14 }
 ```
 Imagem: não · Status: especificado
 

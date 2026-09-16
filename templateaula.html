@@ -1266,6 +1266,11 @@
     });
     if (soma !== MINUTOS_AULA)
       prob.push("Os minutos somam " + soma + "; a aula dura " + MINUTOS_AULA + ".");
+    // Atuar é a tela mais longa (FUNCOES.md, "Orçamento de 50 minutos").
+    const atuar = telas.find(t => t.tela === "atuar");
+    if (atuar && typeof atuar.minutos === "number" &&
+        telas.some(t => t !== atuar && typeof t.minutos === "number" && t.minutos >= atuar.minutos))
+      prob.push("Atuar precisa ser a tela mais longa da aula.");
     return prob;
   }
 

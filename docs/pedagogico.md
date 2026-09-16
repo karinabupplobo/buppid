@@ -25,13 +25,17 @@ tela em **`pedagogico/BLOCOS.md`** (os 40 blocos). Esta seção é só o resumo.
 | # | Tela | Funções pedagógicas | Min |
 |---|---|---|---|
 | 0 | **Capa** | — (identidade: foto duotone + kicker + título) | — |
-| 1 | **Abertura** | Retomar + Contextualizar | 6 |
-| 2 | **Apresentar** | Apresentar + Fixar oral | 10 |
-| 3 | **Lacuna** | Provocar a lacuna | 5 |
+| 1 | **Abertura** | Retomar + Contextualizar | 5 |
+| 2 | **Apresentar** | Apresentar + Fixar oral | 9 |
+| 3 | **Lacuna** | Provocar a lacuna | 4 |
 | 4 | **Sistematizar** | Sistematizar | 4 |
-| 5 | **Praticar → Ensaiar** | Praticar + Ensaiar (dois estágios) | 12 |
-| 6 | **Atuar** | Atuar (produção livre, sem apoio) | 15 |
+| 5 | **Praticar → Ensaiar** | Praticar + Ensaiar (dois estágios) | 11 |
+| 6 | **Atuar** | Atuar (produção livre, sem apoio) | 14 |
 | 7 | **Registrar** | Registrar (can-do statement) | 3 |
+| | | **Total** | **50** |
+
+**A aula dura 50 minutos em slides** (16/09/2026). Como isso é garantido: `FUNCOES.md`,
+"Orçamento de 50 minutos".
 
 **Princípio:** função pedagógica fixa, representação livre. O que nunca muda é o
 que precisa acontecer em cada tela; a forma é escolhida aula a aula na biblioteca

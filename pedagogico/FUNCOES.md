@@ -88,18 +88,31 @@ em vez de tela própria.
 | Tela | Funções | Modo | Min |
 |---|---|---|---|
 | **0. Capa** | — (identidade) | — | — |
-| 1. Abertura | Retomar + Contextualizar | oral | 6 |
-| 2. Apresentar | Apresentar + Fixar oral | oral | 10 |
-| 3. Lacuna | Provocar a lacuna | oral | 5 |
+| 1. Abertura | Retomar + Contextualizar | oral | 5 |
+| 2. Apresentar | Apresentar + Fixar oral | oral | 9 |
+| 3. Lacuna | Provocar a lacuna | oral | 4 |
 | 4. Sistematizar | Sistematizar | oral | 4 |
-| 5. Praticar → Ensaiar | Praticar + Ensaiar (dois estágios) | oral | 12 |
-| 6. **Atuar** | Atuar | oral | 15 |
+| 5. Praticar → Ensaiar | Praticar + Ensaiar (dois estágios) | oral | 11 |
+| 6. **Atuar** | Atuar | oral | 14 |
 | 7. Registrar | Registrar | oral | 3 |
-| | | | **55** |
+| | | | **50** |
 
-Aula de 60 minutos de agenda não são 60 de aula: entrada, atraso de reunião, troca de
-tela, pergunta no meio. O orçamento fecha em 55 justamente para absorver isso sem
-sacrificar a tela 6.
+### Orçamento de 50 minutos (decidido em 16/09/2026)
+
+**A aula dura 50 minutos em slides.** O orçamento fecha exatamente em 50 — não há folga
+separada. Até 16/09 eram 55 minutos, assumindo aula de 60 com 5 de absorção.
+
+Como isso é garantido, e não só declarado:
+
+1. **Cada tela do JSON declara `minutos`.** O padrão é o da tabela acima.
+2. **O template confere.** Soma diferente de 50, tela sem minutos ou Atuar deixando de ser
+   a tela mais longa aparecem como aviso no topo da aula (nunca para o aluno).
+3. **Cada bloco tem limite de tamanho** em `BLOCOS.md` ("Limites de tamanho"). É o
+   limite que impede uma tela de 9 minutos de chegar com conteúdo para 20.
+4. **O gerador checa antes de mostrar a aula** (`GERADOR.md`, Passo 11).
+
+Mudar os minutos de uma tela é permitido só se a soma continuar 50, Atuar continuar a
+mais longa e a Karina aprovar a troca naquela aula.
 
 ### Tela 0 — Capa
 
@@ -170,9 +183,9 @@ Registradas em 31/08/2026, a decidir com a Karina:
 - **Carga de lição por aula** — 10, 15 ou 30 minutos.
 - **Lição desenhada junto com a aula** (mesmo gerador, mesma passada) **ou peça
   separada.**
-- **Duração e frequência real das turmas.** O orçamento de 55 min assume aula de 60.
-  Se houver turma de aula dupla (2h), as 10 funções cabem sem compressão e as telas 1,
-  2 e 5 podem voltar a se desdobrar.
+- **Frequência real das turmas e aula dupla.** A duração está fechada em 50 min
+  (16/09/2026). Se houver turma de aula dupla, as 10 funções cabem sem compressão e as
+  telas 1, 2 e 5 podem voltar a se desdobrar — decidir quando existir o caso.
 
 Enquanto não decidido: a lição existe no desenho mas não tem campo em
 `aulas_assigned` nem exibição em `aluno.html`. Nada foi criado no schema por isso —

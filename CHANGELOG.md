@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1825-aula-50-min — 16/09/2026
+- O que mudou: orçamento da aula de 55 para **50 minutos** (5 · 9 · 4 · 4 · 11 · 14 · 3),
+  sem folga separada. Campo `minutos` obrigatório em cada tela do JSON; seção nova
+  "Limites de tamanho" no BLOCOS.md com o teto de conteúdo de cada um dos 40 blocos;
+  Passo 11 do GERADOR.md exige checar minutos e limites antes de mostrar a aula; o
+  template avisa também quando Atuar deixa de ser a tela mais longa. Decisão em aberto
+  sobre duração fechada no FUNCOES.md (sobra só frequência / aula dupla).
+- Arquivos: pedagogico/FUNCOES.md, pedagogico/BLOCOS.md, pedagogico/GERADOR.md,
+  docs/pedagogico.md, templateaula.html
+- Motivo: a Karina definiu que a aula dura 50 min em slides e pediu garantia, não só a
+  tabela.
+  Observação: o orçamento antigo reservava 5 min para atraso e troca de tela; agora não
+  há essa folga — atraso de reunião sai do tempo de Atuar em sala. Limites de tamanho
+  são estimativa inicial, a calibrar com as primeiras aulas reais.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1810-logo-telas
+
 ## v-20260916-1810-logo-telas — 16/09/2026
 - O que mudou: logo da Bupp no canto superior direito de todas as telas do formato de
   blocos (Capa inclusive). A etiqueta "anotada" do modo professor desceu para não ficar

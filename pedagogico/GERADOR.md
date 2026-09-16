@@ -306,6 +306,9 @@ E só então escolher o bloco. Regras:
 
 - **Um bloco por tela.** Se o conteúdo não cabe num só, o conteúdo está
   incoerente — revisa o conteúdo, não empilha blocos (invariante 6).
+- **`mapa-cena`: escolher a cena pelos objetos.** Cada termo precisa de um objeto
+  desenhado na cena (lista em `BLOCOS.md`). Termo sem objeto → a cena ou o bloco estão
+  errados; nunca apontar o número para um objeto "parecido".
 - Palavra **relacional** (hierarquia, processo, gradação, categoria) **nunca
   vai pra `foto-cards`.** Vai pro bloco relacional correspondente, que é SVG.
   Essa foi a causa raiz da trava de imagens da Aula 1 — ver `docs/ilustracao.md`.

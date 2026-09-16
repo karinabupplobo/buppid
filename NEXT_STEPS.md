@@ -26,9 +26,9 @@
 - [ ] **QA dos 40 blocos com aula real e no celular em paisagem.** Os 40 estão
       implementados (v-20260917-0105). O QA foi com dados de amostra em desktop 1280×800
       e celular 390×844 retrato; paisagem baixa e projetor de sala ainda não foram vistos.
-- [ ] **Documentar as coordenadas dos objetos das 4 cenas do `mapa-cena`** no
-      `BLOCOS.md` (onde fica janela, porta, mesa... em cada cena), senão o gerador chuta
-      `x`/`y` e o número cai fora do objeto.
+- [ ] **Ampliar os objetos das cenas do `mapa-cena` quando uma aula pedir.** Hoje são 7
+      por cena (lista no `BLOCOS.md`). Objeto novo = desenhar na cena + posição em
+      `OBJETOS_CENA` no template + linha na tabela.
 - [ ] **Rodar o gerador no modo teste avulso (`T`) e abrir a aula no template.** Agora
       há onde ver a aula. Primeiro teste real do formato novo e dos limites de tamanho.
 - [ ] **Calibrar os limites de tamanho do `BLOCOS.md` com aula real.** São estimativa

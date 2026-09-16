@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0930-mapa-cena-por-objeto — 17/09/2026
+- O que mudou: `mapa-cena` deixa de receber `x`/`y` e passa a receber `objeto`,
+  escolhido de uma lista fixa de 7 objetos por cena (tabela no BLOCOS.md). O template guarda
+  a posição de cada objeto desenhado (`OBJETOS_CENA`). Validação nova no aviso do topo:
+  cena inexistente, objeto fora da lista (o número não aparece) e objeto repetido. Criado o
+  gancho `VALIDA_BLOCO` para checagens próprias de cada bloco. GERADOR.md Passo 10: cena
+  escolhida pelos objetos que o vocabulário precisa.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md, pedagogico/GERADOR.md, NEXT_STEPS.md
+- Motivo: o gerador não vê a cena, então qualquer coordenada seria chute. Na própria
+  amostra de QA anterior havia um "badge" apontado para uma recepção sem crachá desenhado.
+  Observação: quebra o contrato anterior (`x`/`y` não é mais lido); nenhuma aula real
+  usava o bloco. QA: as 4 cenas com os 7 objetos cada, número conferido sobre o objeto em
+  desktop e celular.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-0105-blocos-foto
+
 ## v-20260917-0105-blocos-foto — 16/09/2026
 - O que mudou: onda 4 (última) — blocos com foto real: `foto-cena` (foto + pergunta e
   contexto opcional), `duas-imagens` (duas fotos com rótulo + pergunta) e

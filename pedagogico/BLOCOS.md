@@ -205,9 +205,24 @@ Uma cena esquemática com rótulos numerados apontando para partes dela. Para lu
 para itens que coexistem no mesmo espaço.
 ```json
 { "cena": "escritorio | fabrica | reuniao | recepcao",
-  "rotulos": [{ "n": 1, "en": "...", "pt": "...", "x": 0.2, "y": 0.6 }] }
+  "rotulos": [{ "n": 1, "objeto": "janela", "en": "window", "pt": "janela" }] }
 ```
-`x`/`y` em fração de 0 a 1. Imagem: não (SVG de cena) · Status: implementado
+**`objeto` é escolhido da lista da cena — nunca coordenada.** O template sabe onde cada
+objeto está desenhado (decisão de 16/09/2026; até então eram `x`/`y` chutados pelo
+gerador, que não vê a cena). Objeto fora da lista gera aviso no topo e o número não
+aparece; o mesmo objeto duas vezes também gera aviso. Acento, maiúscula e espaço não
+importam (`"Placa de aviso"` = `placa-de-aviso`).
+
+| Cena | Objetos desenhados |
+|---|---|
+| `escritorio` | janela, porta, mesa, computador, cadeira, planta, chão |
+| `fabrica` | máquina, esteira, produto na esteira, caixas, empilhadeira, placa de aviso, telhado |
+| `reuniao` | tela, quadro branco, mesa, cadeira, notebook, papéis, relógio |
+| `recepcao` | balcão, entrada, placa, computador, sofá, quadro, planta |
+
+Se o vocabulário da aula precisa de um item que não está na lista de nenhuma cena, o
+bloco é outro — não se força o termo num objeto parecido. Imagem: não (SVG de cena) ·
+Status: implementado
 
 ### `comparativo`
 Duas colunas em oposição, item a item.

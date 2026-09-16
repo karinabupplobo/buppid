@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0945-contraste-par-destaque-por-frase — 17/09/2026
+- O que mudou: `contraste-par` passa a ter um `destaque` em cada frase do `par`, em
+  vez de um só para as duas. Validação nova no aviso do topo: par diferente de 2 frases,
+  frase sem destaque e destaque que não aparece na frase. O `destaque` único antigo
+  continua aceito como reserva.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: o que muda entre as frases raramente é o mesmo texto ("work" vs "'m working");
+  com destaque único, o gerador teria de marcar justamente a parte que não muda.
+  Observação: antes, destaque ausente na frase simplesmente não marcava nada, em silêncio.
+  QA desktop e celular com destaques diferentes em cada frase.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-0930-mapa-cena-por-objeto
+
 ## v-20260917-0930-mapa-cena-por-objeto — 17/09/2026
 - O que mudou: `mapa-cena` deixa de receber `x`/`y` e passa a receber `objeto`,
   escolhido de uma lista fixa de 7 objetos por cena (tabela no BLOCOS.md). O template guarda

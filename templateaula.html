@@ -1827,11 +1827,30 @@
     return f.replace(re, m => '<mark class="sis-mark">' + m + '</mark>');
   }
 
+  // Cada frase tem o próprio "destaque" (o que muda nela). O "destaque" único no nível
+  // de cima fica só como reserva, para dados no contrato anterior.
+  function destaqueDaFrase(p, d) {
+    return (p && p.destaque) || (d && d.destaque) || "";
+  }
+
+  VALIDA_BLOCO["contraste-par"] = (d) => {
+    const prob = [];
+    const par = d.par || [];
+    if (par.length !== 2) prob.push("precisa de exatamente 2 frases; tem " + par.length + ".");
+    par.slice(0, 2).forEach((p, i) => {
+      const alvo = destaqueDaFrase(p, d).trim();
+      if (!alvo) prob.push("frase " + (i + 1) + " sem destaque.");
+      else if (String(p.frase || "").toLowerCase().indexOf(alvo.toLowerCase()) === -1)
+        prob.push("o destaque \"" + alvo + "\" não aparece na frase " + (i + 1) + " — nada fica marcado.");
+    });
+    return prob;
+  };
+
   BLOCOS["contraste-par"] = (d) => {
     const par = (d.par || []).slice(0, 2).map((p, i) =>
       '<div class="sis-par-item ' + (i ? 'b' : 'a') + '">'
       + (p.rotulo ? '<span class="sis-par-rot">' + esc(p.rotulo) + '</span>' : '')
-      + '<p class="sis-par-frase">' + marcarDestaque(p.frase, d.destaque) + '</p></div>'
+      + '<p class="sis-par-frase">' + marcarDestaque(p.frase, destaqueDaFrase(p, d)) + '</p></div>'
     ).join('<div class="sis-par-vs">vs</div>');
     return '<div class="bk"><p class="bk-rotulo">Spot the difference</p><div class="sis-par">' + par + '</div></div>';
   };

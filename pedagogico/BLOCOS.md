@@ -319,10 +319,16 @@ Imagem: não · Status: implementado
 ### `contraste-par`
 Duas frases lado a lado com a diferença destacada. Para quando a regra é uma oposição.
 ```json
-{ "par": [{ "frase": "...", "rotulo": "..." }, { "frase": "...", "rotulo": "..." }],
-  "destaque": "palavra ou trecho que muda" }
+{ "par": [
+  { "frase": "I work in the warehouse.", "rotulo": "every day", "destaque": "work" },
+  { "frase": "I'm working in the warehouse this week.", "rotulo": "only now", "destaque": "'m working" }
+] }
 ```
-Imagem: não (SVG) · Status: implementado
+**Cada frase tem o próprio `destaque`** — o trecho que muda *naquela* frase, copiado
+exatamente como aparece nela (decisão de 16/09/2026; antes era um destaque só para as
+duas, e o trecho comum costuma ser justamente o que não muda). Destaque que não aparece
+na frase gera aviso no topo. Um `destaque` único fora do `par` ainda é aceito como
+reserva, mas não se gera aula nova assim. Imagem: não (SVG) · Status: implementado
 
 ### `formula`
 Estrutura visual da frase: S + V + O, com exemplo abaixo.

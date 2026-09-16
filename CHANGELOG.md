@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0050-bloco-mapa-cena — 16/09/2026
+- O que mudou: onda 3, parte 4 (fim da onda 3) — bloco `mapa-cena` com as 4 cenas
+  esquemáticas em SVG na paleta (`escritorio`, `fabrica`, `reuniao`, `recepcao`),
+  marcadores numerados em `x`/`y` e legenda com o termo (português escondido até o
+  toque). No desktop a legenda fica ao lado da cena; no celular, embaixo. BLOCOS.md: 37 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 3 da implementação dos 40 blocos.
+  Observação: `cena` fora das 4 cai no escritório. `x`/`y` são posição na cena
+  desenhada, então o gerador precisa conhecer onde cada objeto está em cada cena — vale
+  documentar as coordenadas dos objetos de cada cena no BLOCOS.md antes do primeiro uso
+  real (item no NEXT_STEPS). QA das 4 cenas no desktop e no celular sem erro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-0035-bloco-citacao-cena
+
 ## v-20260917-0035-bloco-citacao-cena — 16/09/2026
 - O que mudou: onda 3, parte 3 — bloco `citacao-cena` (Abertura): personagem esquemático
   em SVG na paleta, fala em balão e a pergunta "o que você responderia?" embaixo. Completa

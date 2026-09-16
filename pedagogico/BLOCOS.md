@@ -207,7 +207,7 @@ para itens que coexistem no mesmo espaço.
 { "cena": "escritorio | fabrica | reuniao | recepcao",
   "rotulos": [{ "n": 1, "en": "...", "pt": "...", "x": 0.2, "y": 0.6 }] }
 ```
-`x`/`y` em fração de 0 a 1. Imagem: não (SVG de cena) · Status: especificado
+`x`/`y` em fração de 0 a 1. Imagem: não (SVG de cena) · Status: implementado
 
 ### `comparativo`
 Duas colunas em oposição, item a item.
@@ -483,12 +483,12 @@ Status: implementado
 | Tela | Blocos | Implementados |
 |---|---|---|
 | 1. Abertura | 6 | 4 |
-| 2. Apresentar | 8 | 7 |
+| 2. Apresentar | 8 | 8 |
 | 3. Lacuna | 5 | 4 |
 | 4. Sistematizar | 5 | 5 |
 | 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 6 |
 | 7. Registrar | 4 | 4 |
-| **Total** | **40** | **36** |
+| **Total** | **40** | **37** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

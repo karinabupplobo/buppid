@@ -24,11 +24,11 @@
       Convenção provisória: banda do piso com sub `Misto`.
 
 - [ ] **Terminar a implementação dos 40 blocos (decisão de 16/09: todos, em ondas).**
-      O template já lê o formato Capa + 7 telas (v-20260916-1800) e a onda 2 está
-      completa: 26 de 40 implementados. Falta a onda 3 (11 em SVG/desenho: os 6
-      relacionais de Apresentar, `mapa-cena` com as 4 cenas, `contraste-par`, `formula`,
-      `linha-tempo-verbal`, `citacao-cena`) e a onda 4 (3 com foto: `foto-cena`,
-      `duas-imagens`, `foto-descricao`). Status de cada bloco no `BLOCOS.md`.
+      Ondas 2 e 3 completas: 37 de 40 implementados. Falta a onda 4 (3 com foto:
+      `foto-cena`, `duas-imagens`, `foto-descricao`). Status de cada bloco no `BLOCOS.md`.
+- [ ] **Documentar as coordenadas dos objetos das 4 cenas do `mapa-cena`** no
+      `BLOCOS.md` (onde fica janela, porta, mesa... em cada cena), senão o gerador chuta
+      `x`/`y` e o número cai fora do objeto.
 - [ ] **Rodar o gerador no modo teste avulso (`T`) e abrir a aula no template.** Agora
       há onde ver a aula. Primeiro teste real do formato novo e dos limites de tamanho.
 - [ ] **Calibrar os limites de tamanho do `BLOCOS.md` com aula real.** São estimativa

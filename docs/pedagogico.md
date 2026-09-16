@@ -99,6 +99,10 @@ antigos. A paleta ativa é a de cima. Ver `docs/paletas-testadas.md`.
 
 ## 3. Componentes reutilizáveis
 
+> **Formato antigo.** Esta seção e a 5 descrevem os componentes das 9 telas (até
+> 16/09/2026). No formato de blocos, cada bloco tem seu visual — ver `pedagogico/BLOCOS.md`.
+> Não são leitura do gerador.
+
 ### Flashcard (flip)
 - Retângulo branco, 3D flip no eixo Y ao clicar, desflipa ao clicar de novo.
 - Verso vira `--amarelo-neon`.
@@ -148,38 +152,42 @@ não são o conteúdo final de nenhuma aula específica.
 
 ---
 
-## 6. Regras de geração de conteúdo (Pedagógico 2, reestruturado 26/08/2026)
+## 6. Regras de geração de conteúdo (formato de blocos, reescrito em 17/09/2026)
 
-Regras de dependência entre telas — o que cada tela **deve conter** em
-relação às outras, pensando no gerador de aulas automático:
+Arquitetura: `pedagogico/FUNCOES.md` (funções, telas, minutos, invariantes). Forma de cada
+tela: `pedagogico/BLOCOS.md` (os 40 blocos, contrato de dados e limites de tamanho).
+Protocolo de conversa: `pedagogico/GERADOR.md`. Esta seção junta as regras de
+**conteúdo** — o que pode e o que não pode entrar em cada tela.
 
-| Tela | Regra de conteúdo |
+**Regra de dependência.** Só duas telas trazem conteúdo novo:
+
+| Fonte | O que traz |
 |---|---|
-| **Vocab** | Traz sempre o **vocabulário principal daquela aula** — é a fonte de vocabulário que as telas seguintes vão reutilizar. |
-| **Vocab Practice** | Treina especificamente o vocabulário ensinado em Vocab. Nenhum item novo. |
-| **What would you do?** | Traz uma situação que usa **também** o vocabulário ensinado em Vocab (não é uma leitura solta — precisa reaproveitar os termos da tela anterior). |
-| **Grammar** | Ensina a estrutura gramatical daquela aula (a que será usada em Practice, Situational e Debate), em **tabela compacta** — não em texto corrido. |
-| **Practice** | Treina especificamente a gramática ensinada em Grammar. |
-| **Situational** | Diálogo entre dois personagens usando a **gramática e/ou o vocabulário** da aula (Grammar e/ou Vocab). Palavras marcadas em `<strong>` são pontos que o professor/gerador pode trocar ao adaptar a aula pra outra turma — convenção de conteúdo, não interação do app. |
-| **Debate** | Mesma regra de conteúdo do Situational — moção usando a **gramática e/ou o vocabulário** da aula — mas com atenção redobrada: **a moção não pode usar gramática que a turma ainda não viu** (nem da aula atual em diante, nem de nível acima do atual). Erro já cometido nesta sessão: motion com "Should...?" numa turma A1, sendo que "should" só é criterial em A2. 
+| **Apresentar** (tela 2) | o vocabulário novo da aula |
+| **Sistematizar** (tela 4) | a estrutura gramatical nova da aula |
 
-**Resumo da lógica:** Vocab e Grammar são as duas fontes de conteúdo da
-aula. Toda tela depois delas (Vocab Practice, What would you do?,
-Situational, Debate) precisa reciclar esse conteúdo em vez de introduzir
-vocabulário ou gramática nova — Vocab Practice treina 100% o vocabulário,
-Practice treina 100% a gramática ensinada.
+Todas as outras (Abertura, Lacuna, Praticar → Ensaiar, Atuar, Registrar) só reciclam o que
+veio dessas duas ou de aulas anteriores. Nada de vocabulário ou gramática novos no meio da
+aula. A Lacuna vem **antes** de Sistematizar, mas já exige a estrutura que Sistematizar vai
+ensinar — é assim que o aluno sente a falta (invariante 1).
 
-### 6.1 Parâmetros globais de entrada (definidos uma vez por aula)
+Até 16/09/2026 esta seção descrevia as 9 telas fixas (Vocab, Grammar, Situational...). O
+texto antigo está no git, antes de `v-20260917-1030-regras-conteudo-blocos`.
 
-```json
-{
-  "nivel": "Pre-A1 | A1 | A2 | B1 | B2 | C1 | C2",
-  "tema": "setor ou situação de negócio, ex: 'vendas B2B'",
-  "gramatica": "estrutura a ensinar, ex: 'second conditional'",
-  "objetivo_master": "resultado de negócio da aula, ex: 'negociar prazo de pagamento'",
-  "nome_modulo": "nome da aula/módulo, ex: 'Negotiation Basics'"
-}
-```
+### 6.1 Parâmetros de entrada (definidos uma vez por aula, antes de gerar)
+
+Não é o JSON de saída — é o que o gerador precisa ter fechado com a Karina (Passos 2 a 9
+do `GERADOR.md`, ou 2-T no teste avulso):
+
+| Parâmetro | De onde vem |
+|---|---|
+| `nivel` | CEFR exato; em turma mista, piso e teto (`FUNCOES.md`, "Mix de nível") |
+| `tema` | tema da aula, que vira `capa.titulo` |
+| `gramatica_id` | ID da matriz do arquivo de nível (ex: `A2-G-006`) — nunca inventado |
+| `objetivo` | `turmas.objetivo_1`/`objetivo_2` via `objetivo_vinculado`; no teste avulso, pode ser inventado, **avisando** |
+| `contexto_empresa` | setor, operação e uso de inglês da empresa — personaliza a situação, não a pedagogia |
+| `modulo` e `aula` | número do módulo e da aula, que vira `capa.kicker` |
+| `aula_anterior` | o que a turma viu na aula anterior — só existe a partir da aula 2 do módulo |
 
 ### 6.2 Schema completo de saída (contrato gerador → template, Capa + 7 telas)
 
@@ -229,80 +237,69 @@ antigo está no git, antes de `v-20260916-1840-schema-blocos`. Não gerar aula n
 
 ### 6.3 Regras específicas por tela
 
-> **Atenção (16/09/2026):** esta seção descreve as telas do **formato antigo** de 9
-> telas e ainda cita a paleta petróleo, descartada. Para aula nova valem `FUNCOES.md`,
-> `BLOCOS.md` e o Passo 11 do `GERADOR.md`. Continuam valendo daqui: termo solto até A2 e
-> frase em contexto de B1 em diante; a convenção do `<strong>`; e a regra dura da moção
-> do debate. Reescrita pendente no NEXT_STEPS.
+**Tela 1 — Abertura** (5 min)
+- Na **aula 1 de cada módulo não existe Retomar** (invariante 5): usar um bloco de
+  Contextualizar (`pergunta-disparo`, `citacao-cena`, `foto-cena`, `duas-imagens`), nunca
+  `recall-rapido` ou `checagem-licao`.
+- `recall-rapido` pergunta só sobre `aula_anterior`, sem consulta. `checagem-licao` só
+  quando a aula anterior teve lição.
+- A situação de contextualização vem do `contexto_empresa` e do `objetivo` da aula.
 
-- **Vocab**
-  - Quantidade de itens: **variável**, o grid se adapta ao número (a IA decide com base na densidade de vocabulário do tema).
-  - Conteúdo por nível: **A1–A2** → termo/expressão solta + tradução (ex: "deadline" → "prazo final"). **B1 em diante** → frase pronta de uso em contexto.
-  - **`imagem` (opcional).** SVG inline, em `viewBox="0 0 64 64"`, traço petróleo
-    `#0A1214` com preenchimento de acento limão `#D9E28C` — o card é branco, então
-    a ilustração precisa ler bem em traço escuro. Só entra quando o item é
-    **ilustrável**: objeto concreto ou ação visível. Na prática isso quer dizer
-    Pre-A1, A1 e A2, onde o Vocab é termo solto. Frase pronta de B1 em diante
-    quase nunca é ilustrável — e imagem genérica em frase vira enfeite, não
-    apoio de memória. Item sem o campo renderiza como sempre: só texto.
+**Tela 2 — Apresentar** (9 min)
+- Escolher o bloco pela pergunta de `BLOCOS.md`: **qual é a relação entre os itens?**
+  Palavra relacional (hierarquia, processo, gradação, categoria) **nunca** vai para
+  `foto-cards`.
+- Formato dos itens: **termo solto até A2; frase em contexto de B1 em diante**
+  (`foto-cards.tipo` = `termo` ou `frase`).
+- Turma mista: vocabulário do **teto** — vocabulário extra não quebra ninguém.
+- `mapa-cena`: cada termo precisa de um objeto desenhado na cena (lista em `BLOCOS.md`).
 
-- **What would you do?**
-  - **`cena` (opcional).** SVG inline em `viewBox="0 0 200 130"`, mesma paleta.
-    Ilustra a situação da leitura. No desktop a cena ocupa uma coluna inteira ao
-    lado do texto; sem ela, o conteúdo volta a coluna única. No celular entra
-    acima da leitura.
-  - Quantidade de respostas: **variável, 2 a 4**.
-  - Nenhuma resposta é "certa" — são possibilidades plausíveis para reflexão, não múltipla escolha com gabarito.
-  - Deve reaproveitar termos do `vocab` gerado na tela anterior.
+**Tela 3 — Lacuna** (4 min)
+- A tarefa exige **exatamente** a estrutura que Sistematizar vai ensinar, com o
+  vocabulário da tela 2. Nenhuma explicação na tela.
+- Gabarito, frase esperada e tradução-alvo vão só nos campos de uso do professor
+  (`exemplo_esperado`, `correta`, `alvo`, fala com `lacuna: true`).
 
-- **Vocab Practice** (nova, 26/08/2026)
-  - Mesmo formato de exercício da tela Practice (completar/múltipla escolha),
-    mas treinando o vocabulário de `vocab`, nunca a gramática da aula.
-  - Quantidade: **variável, 3 a 5**.
+**Tela 4 — Sistematizar** (4 min)
+- **Só gramática criterial do nível pedido** (regra criterial vs. disponível,
+  `pedagogico/README.md`). Turma mista: o **piso**.
+- Uma estrutura por aula. Exemplos ancorados no `tema`, nunca genéricos.
+- `nota` é uma frase, não parágrafo. A tabela completa para estudo vai para a lição,
+  depois da aula (invariante 2).
+- `contraste-par`: um `destaque` por frase, copiado exatamente como aparece nela.
 
-- **Grammar** (reformulada em tabela, 26/08/2026)
-  - `linhas` é uma tabela compacta — tipicamente Affirmative/Negative/
-    Question, mas outra tripla pode encaixar melhor conforme a estrutura
-    (ex.: comparative/superlative, ou formas de um modal). Objetivo:
-    **bater o olho e entender a forma**, sem precisar ler parágrafo.
-  - Cada `exemplo` sempre ancorado no `tema` da aula (nunca genérico).
-  - `nota` é opcional e curta (uma frase) — não é o lugar pra reintroduzir
-    o texto corrido que a tabela substituiu.
+**Tela 5 — Praticar → Ensaiar** (11 min)
+- Recicla só o que veio das telas 2 e 4.
+- `estagio: "praticar"` = certo/errado claro, apoio total. `estagio: "ensaiar"` = cenário
+  com andaime parcial.
+- Turma mista: diferença por **papel** (quem abre, quem tem a informação incompleta),
+  nunca por conteúdo paralelo.
 
-- **Practice**
-  - Quantidade de exercícios: **variável, 3 a 6**.
-  - Tipos misturados, escolhidos pelo nível:
-    - Pre-A1–A2: completar frase (mais guiado).
-    - B1–B2: mistura de completar + múltipla escolha.
-    - C1–C2: transformação de frase / reescrita (produção livre).
-  - Sempre treina exatamente a regra gerada em `grammar`.
+**Tela 6 — Atuar** (14 min, a mais longa)
+- Nenhum roteiro, tabela ou frase pronta.
+- **Nada exige gramática que a turma ainda não viu** — nem da aula atual em diante, nem de
+  nível acima (invariante 4). Vale com força dobrada para a moção do `debate`. Erro já
+  cometido: moção com "Should...?" para turma A1, sendo que `should` só é criterial em A2.
+  Checar contra a seção 3 do arquivo do nível antes de fechar a moção.
+- Briefings individuais (objetivo, limite, problema, objeções) vão nos campos que o
+  template mostra em cartão fechado.
 
-- **Situational** (virou diálogo, 26/08/2026)
-  - `falas` é uma sequência de turnos `{ personagem: 1 | 2, texto }`, não
-    mais uma fala única + resposta revelável.
-  - `texto` de cada fala entra **cru** (pode ter `<strong>`) — mesma lógica
-    do campo `imagem`: conteúdo do gerador, não do usuário, não passa por
-    escape de HTML no template.
-  - Palavras em `<strong>` marcam pontos que o professor pode trocar ao
-    adaptar a aula pra outra turma/empresa. **Isso é convenção de
-    conteúdo, não mecanismo interativo do app** — decisão explícita da
-    Karina em 26/08/2026, avaliada e descartada a opção de tornar
-    interativo (aluno tocar/editar a palavra).
-  - **`cena` (opcional).** SVG inline em `viewBox="0 0 200 130"`.
-  - A IA escolhe se usa gramática, vocabulário, ou os dois — não é obrigatório usar ambos.
+**Tela 7 — Registrar** (3 min)
+- `can-do`: frases verificáveis começando com "I can", ligadas ao que Atuar exercitou.
+- Nenhum conteúdo novo.
 
-- **Debate**
-  - Mesma liberdade de escolha (gramática e/ou vocabulário) do Situational.
-  - **Regra dura, adicionada 26/08/2026: a moção nunca usa estrutura
-    gramatical que a turma ainda não tenha visto** — nem da aula atual em
-    diante no mesmo curso, nem de nível acima do nível da turma. Checar
-    contra o inventário do nível (seção 3 do arquivo em `pedagogico/`)
-    antes de fechar a moção. Erro real cometido nesta sessão: motion com
-    "Should...?" pra turma A1, sendo que `should` só é criterial em A2.
-
-- **Abertura / Encerramento**
-  - Título de abertura é **dinâmico**: `nome_modulo` da aula.
-  - Encerramento fica fixo como "Fim" (a definir se também deve incorporar o nome do módulo).
+**Regras que valem para todas as telas**
+- **Aula 100% oral.** Nenhum bloco pede escrita; drill escrito, leitura e exercício de
+  completar vão para a lição.
+- **Minutos e tamanho:** cada tela declara `minutos` (soma 50) e respeita "Limites de
+  tamanho" do `BLOCOS.md`.
+- **Convenção do `<strong>`:** nas falas de diálogo, palavra em `<strong>` marca ponto
+  trocável pelo professor ao adaptar para outra turma. Convenção de conteúdo, não
+  interação do app.
+- **Foto real** só nos 4 blocos que pedem (`foto-cards`, `foto-cena`, `duas-imagens`,
+  `foto-descricao`), seguindo `docs/ilustracao.md`. Sem foto aprovada, preferir outro bloco.
+- **Idioma na tela:** instruções e rótulos visíveis ao aluno em inglês; português só
+  como tradução (`pt`, `back_pt`) e em campos de professor quando ajudar.
 
 ---
 

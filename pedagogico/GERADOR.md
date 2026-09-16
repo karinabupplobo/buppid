@@ -17,8 +17,9 @@ no `index.html` foi removida em 19/08/2026 — ver `CHANGELOG.md`,
    de cada um
 3. Os 7 arquivos de nível desta pasta (`00-pre-a1.md` a `06-c2.md`)
 4. O `README.md` desta pasta — em especial a regra **criterial vs. disponível**
-5. As seções 1 a 6 do `docs/pedagogico.md` — componentes, regras de dependência de
-   conteúdo e schema JSON de saída
+5. A seção 6 do `docs/pedagogico.md` — regras de conteúdo por tela, parâmetros de
+   entrada e schema JSON de saída (as seções 3 e 5 descrevem o formato antigo e não são
+   leitura do gerador)
 6. `docs/ilustracao.md` — só se a aula for usar algum dos 4 blocos que pedem foto real
 
 Só depois de ler é que o Passo 2 começa.

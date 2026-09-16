@@ -40,8 +40,9 @@
 - [ ] **Converter o `CURSOS_SEED` do `crm.html` e a Aula 1 Tirolez para o formato de
       blocos.** O template ainda lê o formato antigo por compatibilidade; aula nova
       não deve ser gerada nele.
-- [ ] **Reescrever `docs/pedagogico.md` §6.3** (regras por tela). Descreve as 9 telas
-      antigas e cita a paleta petróleo; hoje só tem aviso no topo (v-20260916-1840).
+- [ ] **Atualizar as instruções do projeto no claude.ai (a Karina faz).** A seção 3
+      ainda manda ler "`docs/pedagogico.md` §1–6"; desde v-20260917-1030 a leitura do
+      gerador é só a §6 (as §3 e §5 descrevem o formato antigo).
 - [ ] **Fechar as 3 decisões em aberto** de `pedagogico/FUNCOES.md`: nome final de
       "Atuar", carga de lição por aula e lição junto ou separada da aula. (Duração
       fechada em 16/09: 50 min em slides. Sobra só frequência / aula dupla.)

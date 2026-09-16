@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-1030-regras-conteudo-blocos — 17/09/2026
+- O que mudou: `docs/pedagogico.md` §6 reescrita para o formato de blocos — regra de
+  dependência (só Apresentar e Sistematizar trazem conteúdo novo), §6.1 com os parâmetros
+  de entrada que o gerador fecha antes de gerar, §6.3 com as regras de conteúdo de cada
+  uma das 7 telas e as transversais (oral, minutos, `<strong>`, foto, idioma). As regras
+  antigas que continuam valendo foram mantidas: termo solto até A2 / frase de B1 em
+  diante, a convenção do `<strong>` e a regra dura da moção do debate. §3 e §5 marcadas
+  como formato antigo. GERADOR.md Passo 1 passa a mandar ler só a §6.
+- Arquivos: docs/pedagogico.md, pedagogico/GERADOR.md, NEXT_STEPS.md
+- Motivo: o gerador lia as §1–6, e a §6 ainda descrevia as 9 telas antigas e a paleta
+  petróleo — risco de aula saindo misturada entre formato velho e novo.
+  Observação: regra nova explicitada que antes só estava implícita — "instruções e
+  rótulos visíveis ao aluno em inglês". As instruções do projeto no claude.ai ainda citam
+  "§1–6"; ajuste é da Karina (item no NEXT_STEPS).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-1010-previa-aula
+
 ## v-20260917-1010-previa-aula — 17/09/2026
 - O que mudou: página nova `previa-aula.html` (só papel interno): cola ou abre o JSON de
   uma aula no formato de blocos e mostra no `templateaula.html`, com seletor "ver como"

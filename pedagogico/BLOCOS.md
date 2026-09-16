@@ -189,7 +189,7 @@ relativa** — o significado está na altura, não na aparência.
 { "niveis": [{ "en": "director", "pt": "diretor", "nota": "(opcional)" }],
   "legenda": "(opcional)" }
 ```
-Ordem do array = topo → base. Imagem: não (SVG) · Status: especificado
+Ordem do array = topo → base. Imagem: não (SVG) · Status: implementado
 
 ### `fluxo`
 Caixas encadeadas por setas. Para etapas de um processo.
@@ -198,7 +198,7 @@ Caixas encadeadas por setas. Para etapas de um processo.
   "ciclico": false }
 ```
 `ciclico: true` fecha a última etapa de volta na primeira. Imagem: não (SVG) ·
-Status: especificado
+Status: implementado
 
 ### `mapa-cena`
 Uma cena esquemática com rótulos numerados apontando para partes dela. Para lugares e
@@ -216,7 +216,7 @@ Duas colunas em oposição, item a item.
   "coluna_b": { "titulo": "...", "itens": [{ "en": "...", "pt": "..." }] } }
 ```
 As duas colunas precisam ter o mesmo número de itens. Imagem: não (SVG) ·
-Status: especificado
+Status: implementado
 
 ### `escala`
 Barra horizontal com pontos marcados, do menor ao maior. Para gradação de intensidade
@@ -225,14 +225,14 @@ ou frequência.
 { "eixo": "frequência | intensidade | certeza",
   "pontos": [{ "en": "never", "pt": "nunca" }] }
 ```
-Ordem do array = menor → maior. Imagem: não (SVG) · Status: especificado
+Ordem do array = menor → maior. Imagem: não (SVG) · Status: implementado
 
 ### `agrupamento`
 Itens dentro de caixas nomeadas. Para pertencimento a categorias.
 ```json
 { "grupos": [{ "titulo": "...", "itens": [{ "en": "...", "pt": "..." }] }] }
 ```
-Imagem: não (SVG) · Status: especificado
+Imagem: não (SVG) · Status: implementado
 
 ### `linha-tempo`
 Eixo horizontal com marcos datados ou ordenados. Para sequência histórica ou de
@@ -240,7 +240,7 @@ carreira.
 ```json
 { "marcos": [{ "rotulo": "...", "en": "...", "pt": "..." }] }
 ```
-Imagem: não (SVG) · Status: especificado
+Imagem: não (SVG) · Status: implementado
 
 ---
 
@@ -483,12 +483,12 @@ Status: implementado
 | Tela | Blocos | Implementados |
 |---|---|---|
 | 1. Abertura | 6 | 3 |
-| 2. Apresentar | 8 | 1 |
+| 2. Apresentar | 8 | 7 |
 | 3. Lacuna | 5 | 4 |
 | 4. Sistematizar | 5 | 2 |
 | 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 6 |
 | 7. Registrar | 4 | 4 |
-| **Total** | **40** | **26** |
+| **Total** | **40** | **32** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

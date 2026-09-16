@@ -2,6 +2,23 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0010-blocos-relacionais — 16/09/2026
+- O que mudou: onda 3, parte 1 — os 6 blocos relacionais de Apresentar: `piramide`
+  (níveis em trapézio, topo → base), `fluxo` (etapas com seta; `ciclico` mostra a volta
+  ao passo 1), `escala` (barra com pontos, menor → maior), `comparativo` (pares
+  alinhados em duas colunas), `agrupamento` (caixas nomeadas) e `linha-tempo` (eixo
+  com marcos). O português fica escondido até o toque no diagrama. No celular em retrato,
+  fluxo, escala e linha do tempo viram verticais. BLOCOS.md: 32 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 3 da implementação dos 40 blocos — são os blocos que resolvem a causa
+  raiz da trava de imagens da Aula 1 (palavra relacional não vai para foto-cards).
+  Observação: desenhados em HTML/CSS com SVG só nas setas e ícones, não SVG puro —
+  continua determinístico, na paleta e sem imagem externa, e o texto quebra de linha
+  sozinho. Usa `color-mix()` no CSS (navegadores a partir de 2023). QA desktop e
+  celular sem erro e sem estouro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-0000-next-steps-blocos
+
 ## v-20260917-0000-next-steps-blocos — 16/09/2026
 - O que mudou: NEXT_STEPS atualizado com o trabalho de 16/09 — item de blocos passa a
   refletir 26 de 40 e as ondas 3 e 4; decisão de duração marcada como fechada; itens

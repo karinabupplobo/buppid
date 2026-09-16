@@ -1016,6 +1016,115 @@
   .bk-cando .num-btn{ background: var(--amarelo-neon); color: var(--teal-escuro); }
   .bk-cando p{ font-weight: 600; }
 
+  /* --- Onda 3 · blocos relacionais de Apresentar --- */
+  .rel{ width: 100%; max-width: 980px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
+  .rel-en{ display: block; font-weight: 700; font-size: 15px; line-height: 1.25; }
+  .rel-pt{ display: block; font-size: 12.5px; line-height: 1.25; opacity: 0; max-height: 0; overflow: hidden; transition: opacity .25s, max-height .25s; }
+  .rel.mostra-pt .rel-pt{ opacity: .75; max-height: 3em; }
+  .rel-nota{ display: block; font-size: 11px; opacity: .6; margin-top: 2px; }
+  .rel-legenda{ color: rgba(255,255,255,.8); font-size: 13px; text-align: center; margin: 4px 0 0; }
+  .rel-dica{ color: rgba(255,255,255,.45); font-size: 11px; margin: 0; }
+  .rel.mostra-pt .rel-dica{ visibility: hidden; }
+
+  /* pirâmide: trapézios empilhados, cor do azul-bebê (topo) ao branco (base) */
+  .pir{ width: 100%; max-width: 720px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .pir-nivel{
+    width: var(--w); min-height: 56px; padding: 8px 12% ; text-align: center; color: var(--texto);
+    background: color-mix(in srgb, var(--amarelo-neon) calc((1 - var(--k)) * 100%), #ffffff);
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .pir-nivel:first-child{ clip-path: polygon(24% 0, 76% 0, 100% 100%, 0 100%); padding-top: 14px; }
+
+  /* fluxo: caixas encadeadas por seta */
+  .flx{ display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+  /* seta + caixa quebram de linha juntas, para nenhuma seta ficar solta no fim da linha */
+  .flx-passo{ display: flex; align-items: center; gap: 8px; }
+  .flx-etapa{
+    background: var(--branco); color: var(--texto); border-radius: 12px; padding: 12px 14px; min-width: 110px;
+    max-width: 200px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,.35); position: relative;
+  }
+  .flx-n{ position: absolute; top: -9px; left: -9px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--amarelo-neon); color: var(--teal-escuro); font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; }
+  .rel-seta{ width: 28px; height: 18px; color: var(--amarelo-neon); flex-shrink: 0; }
+  .flx-volta{ display: flex; align-items: center; gap: 6px; color: var(--amarelo-neon); font-size: 12px; font-weight: 700; }
+  .flx-volta svg{ width: 18px; height: 18px; }
+
+  /* escala: barra em gradiente com pontos */
+  .esc-eixo{ color: var(--amarelo-neon); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin: 0; }
+  .esc{ position: relative; width: 100%; max-width: 860px; height: 150px; }
+  .esc-barra{ position: absolute; left: 0; right: 0; top: 50px; height: 10px; border-radius: 5px;
+    background: linear-gradient(90deg, rgba(168,213,242,.2), var(--amarelo-neon)); }
+  .esc-ponto{ position: absolute; left: var(--p); top: 0; transform: translateX(-50%); width: 110px;
+    display: flex; flex-direction: column; align-items: center; }
+  .esc-ponto:first-child + .esc-ponto{ }
+  .esc-dot{ margin-top: 44px; width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--teal-escuro);
+    background: color-mix(in srgb, var(--amarelo-neon) calc(var(--k) * 100%), #ffffff); box-shadow: 0 0 0 3px var(--amarelo-neon); }
+  .esc-rot{ margin-top: 12px; background: var(--branco); color: var(--texto); border-radius: 8px; padding: 6px 8px; text-align: center; }
+  .esc-pontas{ width: 100%; max-width: 860px; display: flex; justify-content: space-between; color: rgba(255,255,255,.55); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+
+  /* comparativo: duas colunas, pares alinhados */
+  .cmp{ width: 100%; max-width: 860px; display: grid; grid-template-columns: 1fr 34px 1fr; gap: 8px; align-items: stretch; }
+  .cmp-tit{ text-align: center; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 6px; border-radius: 8px; }
+  .cmp-tit.a{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .cmp-tit.b{ background: var(--azul-intermediario); color: #fff; }
+  .cmp-cel{ background: var(--branco); color: var(--texto); border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .cmp-cel.a{ border-left: 5px solid var(--amarelo-neon); }
+  .cmp-cel.b{ border-right: 5px solid var(--azul-intermediario); }
+  .cmp-vs{ color: var(--amarelo-neon); font-size: 20px; display: flex; align-items: center; justify-content: center; }
+
+  /* agrupamento: caixas nomeadas com itens dentro */
+  .agr{ width: 100%; display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .agr-grupo{ border: 2px dashed var(--amarelo-neon); border-radius: 14px; padding: 10px; }
+  .agr-tit{ color: var(--amarelo-neon); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 8px; text-align: center; }
+  .agr-itens{ display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .agr-item{ background: var(--branco); color: var(--texto); border-radius: 10px; padding: 8px 12px; text-align: center; }
+
+  /* linha do tempo: eixo com marcos */
+  .lt{ position: relative; width: 100%; max-width: 940px; display: flex; justify-content: space-between; gap: 6px; padding: 0 4px; }
+  .lt-linha{ position: absolute; left: 0; right: 0; top: 34px; height: 4px; background: var(--amarelo-neon); border-radius: 2px; }
+  .lt-marco{ position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+  .lt-rotulo{ color: var(--amarelo-neon); font-size: 12px; font-weight: 800; height: 22px; white-space: nowrap; }
+  .lt-dot{ width: 18px; height: 18px; border-radius: 50%; background: var(--teal-escuro); border: 4px solid var(--amarelo-neon); margin-top: 2px; }
+  .lt-termo{ margin-top: 10px; background: var(--branco); color: var(--texto); border-radius: 8px; padding: 6px 8px; text-align: center; max-width: 150px; }
+
+  @media (orientation: portrait){
+    .flx{ flex-direction: column; flex-wrap: nowrap; }
+    .flx-passo{ flex-direction: column; width: 100%; max-width: 260px; }
+    .rel-fluxo .rel-seta{ transform: rotate(90deg); }
+    .flx-etapa{ max-width: 260px; width: 100%; }
+    .esc{ height: auto; display: flex; flex-direction: column-reverse; gap: 6px; }
+    .esc-barra{ left: 10px; right: auto; top: 0; bottom: 0; width: 8px; height: auto;
+      background: linear-gradient(0deg, rgba(168,213,242,.2), var(--amarelo-neon)); }
+    .esc-ponto{ position: relative; left: 0; transform: none; width: auto; flex-direction: row; align-items: center; gap: 10px; }
+    .esc-dot{ margin: 0 0 0 3px; width: 16px; height: 16px; }
+    .esc-rot{ margin: 0; }
+    .esc-pontas{ display: none; }
+    .lt{ flex-direction: column; gap: 10px; padding-left: 26px; }
+    .lt-linha{ left: 8px; right: auto; top: 0; bottom: 0; width: 4px; height: auto; }
+    .lt-marco{ flex-direction: row; align-items: center; gap: 8px; }
+    .lt-rotulo{ order: 2; height: auto; }
+    .lt-dot{ position: absolute; left: -26px; margin: 0; }
+    .lt-termo{ margin: 0; order: 1; max-width: none; }
+    .pir-nivel{ min-height: 48px; }
+  }
+  @media (min-width: 900px) and (min-height: 620px){
+    .rel-en{ font-size: 20px; }
+    .rel-pt{ font-size: 16px; }
+    .rel-nota{ font-size: 14px; }
+    .rel-legenda{ font-size: 16px; }
+    .pir-nivel{ min-height: 78px; }
+    .flx-etapa{ padding: 16px 18px; min-width: 128px; max-width: 200px; }
+    .rel-seta{ width: 40px; height: 24px; }
+    .esc{ height: 150px; }
+    .esc-ponto{ width: 150px; }
+    .cmp{ grid-template-columns: 1fr 50px 1fr; gap: 12px; }
+    .cmp-tit{ font-size: 15px; }
+    .agr{ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .lt-termo{ max-width: 180px; }
+  }
+
   /* ---- fim dos estilos de bloco ---- */
 
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
@@ -1531,6 +1640,90 @@
     cardDestaque("Homework", d.resumo_licao,
       d.tempo_estimado_min ? chips(["about " + d.tempo_estimado_min + " min"]) : '');
 
+  // ---- Onda 3 · Tela 2 · Apresentar — blocos relacionais ----
+  // Desenhados com HTML/CSS e SVG inline na paleta da marca: determinísticos, sem
+  // imagem externa. O português fica escondido até o toque (mesma lógica do verso
+  // do flashcard: primeiro o aluno tenta sem tradução).
+  function termoRel(it, extraCls) {
+    return '<span class="rel-en">' + esc(it.en) + '</span>'
+      + (it.pt ? '<span class="rel-pt">' + esc(it.pt) + '</span>' : '')
+      + (it.nota ? '<span class="rel-nota">' + esc(it.nota) + '</span>' : '');
+  }
+  function envoltorioRel(cls, miolo, legenda) {
+    return '<div class="rel ' + cls + '" data-toque-pt>'
+      + miolo
+      + (legenda ? '<p class="rel-legenda">' + esc(legenda) + '</p>' : '')
+      + '<p class="rel-dica">tap to show Portuguese</p></div>';
+  }
+  const SETA_SVG = '<svg class="rel-seta" viewBox="0 0 40 24" aria-hidden="true">'
+    + '<path d="M2 12 H32 M24 4 L34 12 L24 20" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  // Ordem do array = topo → base. A largura cresce para baixo.
+  BLOCOS["piramide"] = (d) => {
+    const n = (d.niveis || []).length || 1;
+    const niveis = (d.niveis || []).map((it, i) => {
+      const w = 46 + (54 * i / Math.max(1, n - 1));
+      return '<div class="pir-nivel" style="--w:' + w.toFixed(1) + '%;--k:' + (i / Math.max(1, n - 1)).toFixed(2) + '">'
+        + termoRel(it) + '</div>';
+    }).join("");
+    return envoltorioRel("rel-piramide", '<div class="pir">' + niveis + '</div>', d.legenda);
+  };
+
+  BLOCOS["fluxo"] = (d) => {
+    const etapas = (d.etapas || []).map((it, i) =>
+      '<div class="flx-passo">' + (i ? SETA_SVG : '')
+      + '<div class="flx-etapa"><span class="flx-n">' + (i + 1) + '</span>' + termoRel(it) + '</div></div>'
+    ).join("");
+    const volta = d.ciclico
+      ? '<div class="flx-volta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>back to step 1</div>' : '';
+    return envoltorioRel("rel-fluxo", '<div class="flx">' + etapas + '</div>' + volta);
+  };
+
+  // Ordem do array = menor → maior.
+  BLOCOS["escala"] = (d) => {
+    const pts = d.pontos || [];
+    const n = Math.max(1, pts.length - 1);
+    const marcas = pts.map((it, i) =>
+      '<div class="esc-ponto" style="--p:' + (100 * i / n).toFixed(1) + '%;--k:' + (i / n).toFixed(2) + '">'
+      + '<span class="esc-dot"></span><span class="esc-rot">' + termoRel(it) + '</span></div>'
+    ).join("");
+    return envoltorioRel("rel-escala",
+      '<p class="esc-eixo">' + esc(d.eixo || "") + '</p>'
+      + '<div class="esc"><div class="esc-barra"></div>' + marcas + '</div>'
+      + '<div class="esc-pontas"><span>less</span><span>more</span></div>');
+  };
+
+  BLOCOS["comparativo"] = (d) => {
+    const a = d.coluna_a || {}, b = d.coluna_b || {};
+    const ia = a.itens || [], ib = b.itens || [];
+    const linhas = ia.map((it, i) =>
+      '<div class="cmp-cel a">' + termoRel(it) + '</div>'
+      + '<div class="cmp-vs">&#8596;</div>'
+      + '<div class="cmp-cel b">' + termoRel(ib[i] || {}) + '</div>'
+    ).join("");
+    return envoltorioRel("rel-comparativo",
+      '<div class="cmp">'
+      + '<div class="cmp-tit a">' + esc(a.titulo) + '</div><div></div><div class="cmp-tit b">' + esc(b.titulo) + '</div>'
+      + linhas + '</div>');
+  };
+
+  BLOCOS["agrupamento"] = (d) => {
+    const grupos = (d.grupos || []).map(g =>
+      '<div class="agr-grupo"><p class="agr-tit">' + esc(g.titulo) + '</p><div class="agr-itens">'
+      + (g.itens || []).map(it => '<div class="agr-item">' + termoRel(it) + '</div>').join("")
+      + '</div></div>'
+    ).join("");
+    return envoltorioRel("rel-agrupamento", '<div class="agr">' + grupos + '</div>');
+  };
+
+  BLOCOS["linha-tempo"] = (d) => {
+    const marcos = (d.marcos || []).map(it =>
+      '<div class="lt-marco"><span class="lt-rotulo">' + esc(it.rotulo) + '</span>'
+      + '<span class="lt-dot"></span><span class="lt-termo">' + termoRel(it) + '</span></div>'
+    ).join("");
+    return envoltorioRel("rel-linha-tempo", '<div class="lt"><div class="lt-linha"></div>' + marcos + '</div>');
+  };
+
   // ---- fim dos renderizadores de bloco ----
 
   function blocoPendente(nome, existe) {
@@ -1684,6 +1877,10 @@
       head.addEventListener('click', () => {
         head.closest('.answer-item').classList.toggle('open');
       });
+    });
+    // Blocos relacionais (onda 3): toque no diagrama mostra/esconde o português.
+    document.querySelectorAll('[data-toque-pt]').forEach(el => {
+      el.addEventListener('click', () => el.classList.toggle('mostra-pt'));
     });
     // Cartão fechado dos blocos com briefing individual (onda 2).
     document.querySelectorAll('.fechado-head').forEach(head => {

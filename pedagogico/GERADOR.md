@@ -115,8 +115,11 @@ Perguntar só o que falta e não dá pra inferir do cadastro:
 
 Serve pra testar o gerador com uma aula só, sem montar material de 48. Não tem
 empresa, não tem turma, **não grava nada em lugar nenhum** — nem
-`aulas_assigned`, nem qualquer outra tabela. A aula é produzida, renderizada no
-`templateaula.html` local pra conferência visual, e descartada.
+`aulas_assigned`, nem qualquer outra tabela. A aula é produzida em JSON (formato de
+blocos, `docs/pedagogico.md` §6.2) e entregue à Karina num bloco de código. Ela cola em
+**`previa-aula.html`** (plataforma.buppidiomas.com.br/previa-aula.html, só papel
+interno), que mostra a aula no template e lista o que não segue a estrutura — e depois
+descarta: a prévia não salva nada.
 
 Como não existe turma, não existe mapa a poluir. Por isso não faz falta status
 novo nem mudança de schema.

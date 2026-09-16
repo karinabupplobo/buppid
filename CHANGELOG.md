@@ -2,6 +2,22 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-1010-previa-aula — 17/09/2026
+- O que mudou: página nova `previa-aula.html` (só papel interno): cola ou abre o JSON de
+  uma aula no formato de blocos e mostra no `templateaula.html`, com seletor "ver como"
+  (prévia interna, professor, aluno) e a mesma lista de problemas do aviso do topo ao
+  lado. Aceita o JSON cercado por ```json. Nada é salvo — só memória da aba. GERADOR.md
+  Passo 2-T aponta para ela.
+- Arquivos: previa-aula.html, pedagogico/GERADOR.md
+- Motivo: a aula gerada não tinha como ser aberta pela Karina — o template só recebia
+  aula pelo `CURSOS_SEED` antigo do crm.html ou pelo console do navegador.
+  Observação: não há link para a prévia em nenhuma dash; acesso direto pela URL. QA:
+  JSON quebrado, JSON válido com cerca de código, troca para modo aluno (minutos somem)
+  e aula com minutos errados (aviso aparece nos dois lugares), sem erro de JS. O login
+  foi simulado no QA — a checagem real do auth-guard fica para o teste no navegador.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-ANTES-previa-aula
+
 ## v-20260917-0945-contraste-par-destaque-por-frase — 17/09/2026
 - O que mudou: `contraste-par` passa a ter um `destaque` em cada frase do `par`, em
   vez de um só para as duas. Validação nova no aviso do topo: par diferente de 2 frases,

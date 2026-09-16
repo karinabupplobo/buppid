@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!--
+  PRÉVIA DE AULA — ferramenta interna do gerador de aulas
+  ======================================================
+  Cola (ou abre) o JSON de uma aula no formato de blocos (docs/pedagogico.md §6.2)
+  e mostra no templateaula.html, do jeito que professor ou aluno veriam.
+
+  NÃO GRAVA NADA: o JSON vive só na memória desta aba — nada de banco, nada de
+  localStorage. Fechou a aba, some. É o que o modo teste avulso do gerador
+  (pedagogico/GERADOR.md, Passo 2-T) exige.
+
+  Protegida pelo login: só papel "interno".
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prévia de aula — Bupp</title>
+<script>window.PAPEIS_ACEITOS = ["interno"];</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth-guard.js?v=1"></script>
+<style>
+  :root{ --marrom:#54402F; --azul:#A8D5F2; --marrom-medio:#8A7767; --fundo:#F5F1EB; --borda:#dcd3c7; }
+  *{ box-sizing: border-box; }
+  html, body{ margin: 0; height: 100%; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--fundo); color: #2a211a; }
+  .wrap{ display: grid; grid-template-columns: 380px 1fr; height: 100vh; }
+  .painel{ display: flex; flex-direction: column; gap: 10px; padding: 16px; border-right: 1px solid var(--borda); background: #fff; min-height: 0; }
+  h1{ margin: 0; font-size: 16px; color: var(--marrom); }
+  .sub{ margin: 0; font-size: 12px; color: #7a6d62; line-height: 1.45; }
+  textarea{ flex: 1; min-height: 160px; width: 100%; resize: none; border: 1px solid var(--borda); border-radius: 8px;
+    padding: 10px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: #2a211a; }
+  textarea:focus{ outline: 2px solid var(--azul); border-color: var(--marrom-medio); }
+  .linha{ display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button, .arquivo{ border: 1px solid var(--marrom); background: var(--marrom); color: #fff; border-radius: 7px;
+    padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+  button.sec, .arquivo{ background: #fff; color: var(--marrom); }
+  .arquivo input{ display: none; }
+  select{ border: 1px solid var(--borda); border-radius: 7px; padding: 7px 8px; font-size: 12.5px; background: #fff; }
+  label.rot{ font-size: 11px; font-weight: 700; color: #7a6d62; text-transform: uppercase; letter-spacing: .06em; }
+  .status{ font-size: 12.5px; line-height: 1.45; border-radius: 8px; padding: 8px 10px; display: none; }
+  .status.ok{ display: block; background: #eaf5ec; color: #1f5a2e; border: 1px solid #b9dcc1; }
+  .status.erro{ display: block; background: #fbecea; color: #7a2419; border: 1px solid #ecc2bb; }
+  .status ul{ margin: 4px 0 0; padding-left: 18px; }
+  .palco{ position: relative; background: var(--marrom); min-height: 0; }
+  iframe{ width: 100%; height: 100%; border: 0; display: block; }
+  .vazio{ position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.6);
+    font-size: 14px; text-align: center; padding: 24px; pointer-events: none; }
+  @media (max-width: 820px){
+    .wrap{ grid-template-columns: 1fr; grid-template-rows: auto 70vh; height: auto; }
+    textarea{ min-height: 180px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="painel">
+    <h1>Prévia de aula</h1>
+    <p class="sub">Cole o JSON da aula (formato de blocos) ou abra um arquivo .json. Nada é salvo:
+      fechou a aba, some.</p>
+    <textarea id="json" spellcheck="false" placeholder='{ "capa": { ... }, "telas": [ ... ] }'></textarea>
+    <div class="linha">
+      <button id="carregar" type="button">Mostrar aula</button>
+      <label class="arquivo">Abrir .json<input id="arquivo" type="file" accept=".json,application/json"></label>
+      <button id="limpar" class="sec" type="button">Limpar</button>
+    </div>
+    <div class="linha">
+      <label class="rot" for="modo">Ver como</label>
+      <select id="modo">
+        <option value="">Prévia interna (tudo visível)</option>
+        <option value="professor">Professor</option>
+        <option value="leitura">Aluno</option>
+      </select>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="palco">
+    <iframe id="frame" title="Aula"></iframe>
+    <div class="vazio" id="vazio">A aula aparece aqui.</div>
+  </div>
+</div>
+
+<script>
+  // Aula atual só em memória (regra do teste avulso: não gravar nada).
+  let aulaAtual = null;
+  const $ = (id) => document.getElementById(id);
+
+  function mostrarStatus(tipo, titulo, itens) {
+    const box = $("status");
+    box.className = "status " + tipo;
+    box.innerHTML = "";
+    const b = document.createElement("b");
+    b.textContent = titulo;
+    box.appendChild(b);
+    if (itens && itens.length) {
+      const ul = document.createElement("ul");
+      itens.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+      box.appendChild(ul);
+    }
+  }
+
+  // O gerador às vezes devolve o JSON dentro de ```json ... ``` — aceita assim também.
+  function lerJson(texto) {
+    const limpo = String(texto || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+    if (!limpo) throw new Error("Nada colado.");
+    return JSON.parse(limpo);
+  }
+
+  function abrirNoTemplate() {
+    if (!aulaAtual) return;
+    const frame = $("frame");
+    const modo = $("modo").value;
+    frame.onload = () => {
+      frame.contentWindow.postMessage({ type: "bupp:aula", aula: aulaAtual }, location.origin);
+      // Os mesmos problemas que o aviso do topo mostra, repetidos aqui ao lado.
+      setTimeout(() => {
+        let prob = [];
+        try { prob = frame.contentWindow.validarAula ? frame.contentWindow.validarAula(aulaAtual) : []; } catch (e) {}
+        if (prob.length) mostrarStatus("erro", "A aula abriu, mas não segue a estrutura:", prob);
+        else mostrarStatus("ok", "Aula válida: Capa + " + aulaAtual.telas.length + " telas, 50 minutos.");
+      }, 150);
+      frame.focus();
+    };
+    frame.src = "templateaula.html?" + (modo ? "modo=" + modo + "&" : "") + "v=" + Date.now();
+    $("vazio").style.display = "none";
+  }
+
+  function carregarTexto(texto) {
+    let aula;
+    try {
+      aula = lerJson(texto);
+    } catch (e) {
+      aulaAtual = null;
+      mostrarStatus("erro", "JSON inválido.", [e.message]);
+      return;
+    }
+    if (!aula || !Array.isArray(aula.telas)) {
+      aulaAtual = null;
+      mostrarStatus("erro", "Não é uma aula no formato de blocos.", ["Falta a lista \"telas\" (docs/pedagogico.md §6.2)."]);
+      return;
+    }
+    aulaAtual = aula;
+    abrirNoTemplate();
+  }
+
+  $("carregar").addEventListener("click", () => carregarTexto($("json").value));
+  $("modo").addEventListener("change", abrirNoTemplate);
+  $("limpar").addEventListener("click", () => {
+    aulaAtual = null;
+    $("json").value = "";
+    $("frame").removeAttribute("src");
+    $("vazio").style.display = "";
+    $("status").className = "status";
+  });
+  $("arquivo").addEventListener("change", (ev) => {
+    const f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { $("json").value = r.result; carregarTexto(r.result); };
+    r.readAsText(f);
+    ev.target.value = "";
+  });
+</script>
+</body>
+</html>

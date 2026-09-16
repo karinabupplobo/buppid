@@ -166,7 +166,7 @@ Fala curta de um personagem em balão + "o que você responderia?".
 ```json
 { "personagem": "...", "fala": "...", "pergunta": "..." }
 ```
-Imagem: não (SVG de balão) · Status: especificado
+Imagem: não (SVG de balão) · Status: implementado
 
 ---
 
@@ -482,13 +482,13 @@ Status: implementado
 
 | Tela | Blocos | Implementados |
 |---|---|---|
-| 1. Abertura | 6 | 3 |
+| 1. Abertura | 6 | 4 |
 | 2. Apresentar | 8 | 7 |
 | 3. Lacuna | 5 | 4 |
 | 4. Sistematizar | 5 | 5 |
 | 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 6 |
 | 7. Registrar | 4 | 4 |
-| **Total** | **40** | **35** |
+| **Total** | **40** | **36** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

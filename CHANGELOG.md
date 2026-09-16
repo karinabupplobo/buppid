@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0025-blocos-sistematizar-visuais — 16/09/2026
+- O que mudou: onda 3, parte 2 — blocos `contraste-par` (duas frases lado a lado, com o
+  `destaque` marcado em cada uma), `formula` (partes da estrutura ligadas por "+" e
+  exemplo embaixo) e `linha-tempo-verbal` (eixo SVG com o ponto de referência marcado).
+  Completa a tela Sistematizar. BLOCOS.md: 35 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 3 da implementação dos 40 blocos.
+  Observação: `destaque` é um texto só e é marcado onde aparecer nas duas frases; se o
+  trecho que muda for diferente em cada frase, o gerador precisa escolher um trecho comum
+  (ex: a raiz do verbo). QA desktop e celular sem erro e sem estouro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-0010-blocos-relacionais
+
 ## v-20260917-0010-blocos-relacionais — 16/09/2026
 - O que mudou: onda 3, parte 1 — os 6 blocos relacionais de Apresentar: `piramide`
   (níveis em trapézio, topo → base), `fluxo` (etapas com seta; `ciclico` mostra a volta

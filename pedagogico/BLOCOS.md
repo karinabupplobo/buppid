@@ -307,7 +307,7 @@ Duas frases lado a lado com a diferença destacada. Para quando a regra é uma o
 { "par": [{ "frase": "...", "rotulo": "..." }, { "frase": "...", "rotulo": "..." }],
   "destaque": "palavra ou trecho que muda" }
 ```
-Imagem: não (SVG) · Status: especificado
+Imagem: não (SVG) · Status: implementado
 
 ### `formula`
 Estrutura visual da frase: S + V + O, com exemplo abaixo.
@@ -315,7 +315,7 @@ Estrutura visual da frase: S + V + O, com exemplo abaixo.
 { "partes": ["Subject", "Verb", "Object"], "exemplo": "...",
   "nota": "(opcional)" }
 ```
-Imagem: não (SVG) · Status: especificado
+Imagem: não (SVG) · Status: implementado
 
 ### `regra-descoberta`
 Perguntas encadeadas que levam o aluno a formular a regra ele mesmo.
@@ -331,7 +331,7 @@ Eixo de tempo com o ponto de referência marcado. Só para tempos verbais.
   "marcos": [{ "rotulo": "past", "marcado": true }],
   "exemplo": "..." }
 ```
-Imagem: não (SVG) · Status: especificado
+Imagem: não (SVG) · Status: implementado
 
 ---
 
@@ -485,10 +485,10 @@ Status: implementado
 | 1. Abertura | 6 | 3 |
 | 2. Apresentar | 8 | 7 |
 | 3. Lacuna | 5 | 4 |
-| 4. Sistematizar | 5 | 2 |
+| 4. Sistematizar | 5 | 5 |
 | 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 6 |
 | 7. Registrar | 4 | 4 |
-| **Total** | **40** | **32** |
+| **Total** | **40** | **35** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

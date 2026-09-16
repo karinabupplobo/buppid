@@ -963,8 +963,8 @@
     -webkit-tap-highlight-color: rgba(138, 119, 103, 0.45);
   }
   .fechado-head b{ font-size: 14px; color: var(--texto); }
-  .fechado-head span{ margin-left: auto; font-size: 11px; font-weight: 700; color: var(--azul-intermediario); }
-  .cartao-fechado.aberto .fechado-head span{ color: var(--teal-escuro); }
+  .fechado-acao{ margin-left: auto; white-space: nowrap; font-size: 11px; font-weight: 700; color: var(--azul-intermediario); }
+  .cartao-fechado.aberto .fechado-acao{ color: var(--teal-escuro); }
   .fechado-corpo{ display: none; padding: 0 14px 14px; font-size: 14px; line-height: 1.5; color: var(--texto); }
   .cartao-fechado.aberto .fechado-corpo{ display: block; }
   .fechado-corpo p{ margin: 0 0 6px; }
@@ -1327,7 +1327,7 @@
   function cartaoFechado(titulo, corpo) {
     return '<div class="cartao-fechado"><div class="fechado-head">'
       + '<span class="num-btn">&#128274;</span><b>' + esc(titulo) + '</b>'
-      + '<span>tap to open</span></div>'
+      + '<span class="fechado-acao">tap to open</span></div>'
       + '<div class="fechado-corpo">' + corpo + '</div></div>';
   }
 
@@ -1462,6 +1462,48 @@
     + (d.cartoes || []).map((c, i) => cartaoFechado("Card " + (i + 1),
         '<p>' + esc(c.situacao) + '</p>' + (c.papel ? '<p class="rot">Your role</p><p>' + esc(c.papel) + '</p>' : '')
       )).join("")
+    + '</div></div>';
+
+  // ---- Tela 6 · Atuar ----
+  // Nenhum roteiro nem frase pronta. Briefings individuais ficam em cartão fechado.
+  BLOCOS["simulacao-reuniao"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Meeting · ' + esc(d.duracao_min || 14) + ' min · no script</p>'
+    + cardDestaque("Agenda", d.pauta)
+    + '<div class="bk-fechados' + ((d.papeis || []).length > 2 ? ' tres' : '') + '">'
+    + (d.papeis || []).map(p => cartaoFechado("Role " + p.n + " — " + (p.descricao || ""),
+        '<p class="rot">Your goal</p><p>' + esc(p.objetivo) + '</p>')).join("")
+    + '</div></div>';
+
+  function briefingLado(l) {
+    const x = l || {};
+    return '<p class="rot">Your goal</p><p>' + esc(x.objetivo) + '</p>'
+      + '<p class="rot">Your limit</p><p>' + esc(x.limite) + '</p>';
+  }
+
+  BLOCOS["negociacao-dois-lados"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Negotiation · read only your side</p>'
+    + cardDestaque("", d.cenario)
+    + '<div class="bk-fechados">'
+    + cartaoFechado("Side A", briefingLado(d.lado_a))
+    + cartaoFechado("Side B", briefingLado(d.lado_b))
+    + '</div></div>';
+
+  BLOCOS["apresentacao-relampago"] = (d) =>
+    cardDestaque("Stand up · no notes", d.tema,
+      chips([(d.tempo_por_aluno_min || 2) + " min each"].concat(d.criterio ? [d.criterio] : [])));
+
+  BLOCOS["call-problema"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Phone call · back to back, no eye contact</p>'
+    + '<div class="bk-fechados">'
+    + cartaoFechado("Caller", '<p>' + esc(d.papel_quem_liga) + '</p><p class="rot">The problem</p><p>' + esc(d.problema) + '</p>')
+    + cartaoFechado("Receiver", '<p>' + esc(d.papel_quem_atende) + '</p>')
+    + '</div></div>';
+
+  BLOCOS["pitch-cliente"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Pitch · the client pushes back</p>'
+    + cardDestaque("Sell this", d.produto)
+    + '<div class="bk-fechados">'
+    + cartaoFechado("Client's objections", listaSimples(d.objecoes))
     + '</div></div>';
 
   // ---- fim dos renderizadores de bloco ----
@@ -1623,7 +1665,7 @@
       head.addEventListener('click', () => {
         const c = head.closest('.cartao-fechado');
         c.classList.toggle('aberto');
-        head.querySelector('span:last-child').textContent = c.classList.contains('aberto') ? 'tap to close' : 'tap to open';
+        head.querySelector('.fechado-acao').textContent = c.classList.contains('aberto') ? 'tap to close' : 'tap to open';
       });
     });
   }

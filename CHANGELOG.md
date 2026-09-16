@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1945-blocos-atuar — 16/09/2026
+- O que mudou: onda 2, parte 5 — os 5 blocos restantes da tela Atuar:
+  `simulacao-reuniao` (pauta + objetivo de cada papel em cartão fechado),
+  `negociacao-dois-lados` (lado A / lado B fechados), `apresentacao-relampago` (tema +
+  tempo por aluno), `call-problema` (o problema fica só no cartão de quem liga) e
+  `pitch-cliente` (objeções só no cartão do cliente). Corrigido o cabeçalho do cartão
+  fechado, que centralizava o título quando fechado. BLOCOS.md: 22 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 2 da implementação dos 40 blocos.
+  Observação: nenhum bloco de Atuar mostra frase pronta, como manda o FUNCOES.md. QA
+  desktop e celular sem erro e sem estouro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1935-blocos-praticar-ensaiar
+
 ## v-20260916-1935-blocos-praticar-ensaiar — 16/09/2026
 - O que mudou: onda 2, parte 4 — os 6 blocos da tela Praticar → Ensaiar: `drill-oral`
   (prompt com resposta que abre ao toque), `substituicao` (frase-base + chips),

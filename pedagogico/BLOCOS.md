@@ -401,7 +401,7 @@ Reunião de trabalho com pauta, sem falas dadas.
 { "pauta": "...", "papeis": [{ "n": 1, "descricao": "...", "objetivo": "..." }],
   "duracao_min": 14 }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `negociacao-dois-lados`
 Dois lados com objetivos incompatíveis. Cada um só vê o próprio briefing.
@@ -410,14 +410,14 @@ Dois lados com objetivos incompatíveis. Cada um só vê o próprio briefing.
   "lado_a": { "objetivo": "...", "limite": "..." },
   "lado_b": { "objetivo": "...", "limite": "..." } }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `apresentacao-relampago`
 Cada aluno apresenta algo curto do próprio trabalho, em pé, sem anotação.
 ```json
 { "tema": "...", "tempo_por_aluno_min": 2, "criterio": "(opcional)" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `debate`
 Moção provocativa para debate em grupo. O bloco atual.
@@ -432,14 +432,14 @@ Simulação de ligação em que um problema real precisa ser explicado e resolvi
 ```json
 { "problema": "...", "papel_quem_liga": "...", "papel_quem_atende": "..." }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `pitch-cliente`
 Aluno apresenta produto, serviço ou proposta a um "cliente" que faz objeções.
 ```json
 { "produto": "...", "objecoes": ["...", "..."] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ---
 
@@ -487,8 +487,8 @@ Status: especificado
 | 3. Lacuna | 5 | 4 |
 | 4. Sistematizar | 5 | 2 |
 | 5. Praticar → Ensaiar | 6 | 6 |
-| 6. Atuar | 6 | 1 |
+| 6. Atuar | 6 | 6 |
 | 7. Registrar | 4 | 0 |
-| **Total** | **40** | **17** |
+| **Total** | **40** | **22** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

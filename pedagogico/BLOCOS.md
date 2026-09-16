@@ -254,28 +254,28 @@ Pede oralmente uma tarefa que exige exatamente a estrutura que ele ainda não te
 ```json
 { "instrucao": "...", "exemplo_esperado": "(uso do professor, não exibido)" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `escolha-forcada`
 Duas ou três frases, uma correta. O aluno escolhe e justifica. Sem correção imediata.
 ```json
 { "frases": ["...", "..."], "correta": 0, "pergunta": "Which one sounds right? Why?" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `traducao-armadilha`
 Frase em português cuja tradução literal falha — expõe a lacuna estrutural.
 ```json
 { "pt": "...", "literal_errada": "...", "alvo": "(uso do professor)" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `dialogo-incompleto`
 Diálogo com lacunas que o aluno completa de viva voz.
 ```json
 { "falas": [{ "personagem": 1, "texto": "...", "lacuna": true }] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `foto-descricao`
 Foto de uma cena que só pode ser descrita usando a estrutura nova.
@@ -484,11 +484,11 @@ Status: especificado
 |---|---|---|
 | 1. Abertura | 6 | 3 |
 | 2. Apresentar | 8 | 1 |
-| 3. Lacuna | 5 | 0 |
+| 3. Lacuna | 5 | 4 |
 | 4. Sistematizar | 5 | 1 |
 | 5. Praticar → Ensaiar | 6 | 0 |
 | 6. Atuar | 6 | 1 |
 | 7. Registrar | 4 | 0 |
-| **Total** | **40** | **6** |
+| **Total** | **40** | **10** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

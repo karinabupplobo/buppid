@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1915-blocos-lacuna — 16/09/2026
+- O que mudou: onda 2, parte 2 — blocos `tarefa-impossivel`, `escolha-forcada`,
+  `traducao-armadilha` e `dialogo-incompleto` (tela Lacuna). Gabarito, frase literal
+  errada e fala esperada das lacunas aparecem só para o professor. BLOCOS.md: 10 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 2 da implementação dos 40 blocos.
+  Observação: em `traducao-armadilha` a frase literal errada NÃO é mostrada ao aluno —
+  vai só para o professor, para não ancorar o erro antes de o aluno tentar. QA desktop e
+  celular sem erro e sem estouro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1905-blocos-abertura
+
 ## v-20260916-1905-blocos-abertura — 16/09/2026
 - O que mudou: onda 2, parte 1 — blocos `recall-rapido`, `checagem-licao` e
   `pergunta-disparo` (tela Abertura) implementados no template, junto com as peças

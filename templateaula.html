@@ -989,6 +989,18 @@
     .fechado-head{ padding: 0.8vh 12px; }
   }
 
+  /* --- Lacuna: diálogo incompleto --- */
+  .bk-dialogo .fala.p1{ background: #f3efe9; }
+  .lacuna-linha{
+    display: block; min-width: 180px; height: 1.3em; border-bottom: 2px dashed var(--azul-intermediario);
+  }
+  .lacuna-gabarito{ display: block; margin-top: 4px; font-size: 12px; font-style: italic; opacity: 0.6; }
+  @media (min-width: 900px) and (min-height: 620px){
+    .bk-dialogo .fala{ font-size: 18px; }
+    .lacuna-linha{ min-width: 300px; }
+    .lacuna-gabarito{ font-size: 14px; }
+  }
+
   /* ---- fim dos estilos de bloco ---- */
 
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
@@ -1340,6 +1352,45 @@
 
   BLOCOS["pergunta-disparo"] = (d) =>
     cardDestaque("", d.pergunta, d.nota ? '<p class="bk-nota">' + esc(d.nota) + '</p>' : '');
+
+  // ---- Tela 3 · Lacuna ----
+  // Nenhum bloco daqui explica nada; gabarito só aparece para o professor.
+  BLOCOS["tarefa-impossivel"] = (d) =>
+    cardDestaque("", d.instrucao,
+      soProf(d.exemplo_esperado ? "Expected: " + d.exemplo_esperado : ""));
+
+  BLOCOS["escolha-forcada"] = (d) => {
+    const letras = "ABC";
+    const frases = (d.frases || []).map((f, i) =>
+      '<div class="answer-item-aberto"><span class="num-btn">' + letras[i] + '</span>'
+      + '<p>' + esc(f) + '</p></div>').join("");
+    const correta = (typeof d.correta === "number" && d.frases && d.frases[d.correta])
+      ? "Correct: " + letras[d.correta] + " — no correction yet, let them argue." : "";
+    return '<div class="bk"><p class="bk-destaque" style="color:#fff">'
+      + esc(d.pergunta || "Which one sounds right? Why?") + '</p>'
+      + frases + soProf(correta) + '</div>';
+  };
+
+  BLOCOS["traducao-armadilha"] = (d) => {
+    const prof = [d.literal_errada ? "Literal (wrong): " + d.literal_errada : "",
+                  d.alvo ? "Target: " + d.alvo : ""].filter(Boolean).join(" · ");
+    return cardDestaque("Say it in English", d.pt, soProf(prof));
+  };
+
+  // Fala com lacuna: o aluno vê a linha em branco; o professor vê a fala esperada.
+  // "texto" entra cru (pode ter <strong>), mesma convenção do diálogo antigo.
+  BLOCOS["dialogo-incompleto"] = (d) => {
+    const falas = (d.falas || []).map(f => {
+      const p = f.personagem === 2 ? 2 : 1;
+      const corpo = f.lacuna
+        ? '<span class="lacuna-linha">&nbsp;</span>'
+          + (VE_PROFESSOR ? '<span class="lacuna-gabarito">' + (f.texto || '') + '</span>' : '')
+        : (f.texto || '');
+      return '<div class="fala p' + p + (f.lacuna ? ' com-lacuna' : '') + '">'
+        + '<span class="fala-autor">Character ' + p + '</span>' + corpo + '</div>';
+    }).join("");
+    return '<div class="big-card bk-dialogo"><div class="dialogo">' + falas + '</div></div>';
+  };
 
   // ---- fim dos renderizadores de bloco ----
 

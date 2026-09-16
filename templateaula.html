@@ -1012,6 +1012,10 @@
     .bk-apoio{ font-size: 16px; }
   }
 
+  /* --- Registrar --- */
+  .bk-cando .num-btn{ background: var(--amarelo-neon); color: var(--teal-escuro); }
+  .bk-cando p{ font-weight: 600; }
+
   /* ---- fim dos estilos de bloco ---- */
 
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
@@ -1505,6 +1509,27 @@
     + '<div class="bk-fechados">'
     + cartaoFechado("Client's objections", listaSimples(d.objecoes))
     + '</div></div>';
+
+  // ---- Tela 7 · Registrar ----
+  BLOCOS["can-do"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Now I can</p>'
+    + (d.statements || []).map(s =>
+        '<div class="answer-item-aberto bk-cando"><span class="num-btn">&#10003;</span><p>' + esc(s) + '</p></div>'
+      ).join("") + '</div>';
+
+  BLOCOS["resumo-oral"] = (d) =>
+    cardDestaque("Everyone speaks", d.instrucao,
+      chips(["at least " + (d.minimo_por_aluno || 1) + " each"]));
+
+  BLOCOS["compromisso"] = (d) =>
+    cardDestaque("This week", d.pergunta,
+      (d.exemplos || []).filter(Boolean).length
+        ? '<p class="bk-nota">e.g. ' + d.exemplos.filter(Boolean).map(esc).join(" · ") + '</p>' : '');
+
+  // Depende da decisão em aberto sobre carga de lição (FUNCOES.md).
+  BLOCOS["licao-ponte"] = (d) =>
+    cardDestaque("Homework", d.resumo_licao,
+      d.tempo_estimado_min ? chips(["about " + d.tempo_estimado_min + " min"]) : '');
 
   // ---- fim dos renderizadores de bloco ----
 

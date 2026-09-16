@@ -452,21 +452,21 @@ do RH com dado de resultado, não de presença.
 ```json
 { "statements": ["I can introduce my team to a visitor.", "..."] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `resumo-oral`
 Cada aluno diz em voz alta uma coisa que leva da aula.
 ```json
 { "instrucao": "...", "minimo_por_aluno": 1 }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `compromisso`
 Onde o aluno vai usar isso na semana — compromisso concreto e datado.
 ```json
 { "pergunta": "...", "exemplos": ["(opcional)"] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `licao-ponte`
 Apresenta a lição de casa, ligando-a ao que acabou de ser feito em aula.
@@ -474,7 +474,7 @@ Apresenta a lição de casa, ligando-a ao que acabou de ser feito em aula.
 { "resumo_licao": "...", "tempo_estimado_min": 15 }
 ```
 Depende da decisão em aberto sobre carga de lição — ver `FUNCOES.md`. Imagem: não ·
-Status: especificado
+Status: implementado
 
 ---
 
@@ -488,7 +488,7 @@ Status: especificado
 | 4. Sistematizar | 5 | 2 |
 | 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 6 |
-| 7. Registrar | 4 | 0 |
-| **Total** | **40** | **22** |
+| 7. Registrar | 4 | 4 |
+| **Total** | **40** | **26** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

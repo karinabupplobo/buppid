@@ -2,6 +2,19 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1955-blocos-registrar — 16/09/2026
+- O que mudou: onda 2, parte 6 (fim da onda 2) — os 4 blocos da tela Registrar:
+  `can-do` (statements com check), `resumo-oral`, `compromisso` e `licao-ponte`.
+  Com isso a aula de exemplo renderiza as 7 telas sem nenhum cartão de pendência.
+  BLOCOS.md: 26 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 2 da implementação dos 40 blocos.
+  Observação: `licao-ponte` renderiza, mas a lição de casa continua sem campo em
+  `aulas_assigned` e sem tela no `aluno.html` (decisão em aberto no FUNCOES.md). Os
+  statements de `can-do` ainda não chegam ao dashboard do RH — hoje só aparecem na aula.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1945-blocos-atuar
+
 ## v-20260916-1945-blocos-atuar — 16/09/2026
 - O que mudou: onda 2, parte 5 — os 5 blocos restantes da tela Atuar:
   `simulacao-reuniao` (pauta + objetivo de cada papel em cartão fechado),

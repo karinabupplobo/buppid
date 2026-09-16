@@ -1392,6 +1392,12 @@
     return '<div class="big-card bk-dialogo"><div class="dialogo">' + falas + '</div></div>';
   };
 
+  // ---- Tela 4 · Sistematizar ----
+  BLOCOS["regra-descoberta"] = (d) =>
+    '<div class="bk"><p class="bk-rotulo">Find the rule</p>'
+    + listaNumerada(d.perguntas)
+    + soProf(d.regra_alvo ? "Rule: " + d.regra_alvo : "") + '</div>';
+
   // ---- fim dos renderizadores de bloco ----
 
   function blocoPendente(nome, existe) {

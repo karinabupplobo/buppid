@@ -2,6 +2,14 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1925-bloco-regra-descoberta — 16/09/2026
+- O que mudou: onda 2, parte 3 — bloco `regra-descoberta` (tela Sistematizar): perguntas
+  encadeadas numeradas; a regra-alvo aparece só para o professor. BLOCOS.md: 11 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 2 da implementação dos 40 blocos.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1915-blocos-lacuna
+
 ## v-20260916-1915-blocos-lacuna — 16/09/2026
 - O que mudou: onda 2, parte 2 — blocos `tarefa-impossivel`, `escolha-forcada`,
   `traducao-armadilha` e `dialogo-incompleto` (tela Lacuna). Gabarito, frase literal

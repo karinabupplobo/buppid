@@ -322,7 +322,7 @@ Perguntas encadeadas que levam o aluno a formular a regra ele mesmo.
 ```json
 { "perguntas": ["...", "..."], "regra_alvo": "(uso do professor, não exibido)" }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `linha-tempo-verbal`
 Eixo de tempo com o ponto de referência marcado. Só para tempos verbais.
@@ -485,10 +485,10 @@ Status: especificado
 | 1. Abertura | 6 | 3 |
 | 2. Apresentar | 8 | 1 |
 | 3. Lacuna | 5 | 4 |
-| 4. Sistematizar | 5 | 1 |
+| 4. Sistematizar | 5 | 2 |
 | 5. Praticar → Ensaiar | 6 | 0 |
 | 6. Atuar | 6 | 1 |
 | 7. Registrar | 4 | 0 |
-| **Total** | **40** | **10** |
+| **Total** | **40** | **11** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

@@ -181,76 +181,59 @@ Practice treina 100% a gramática ensinada.
 }
 ```
 
-### 6.2 Schema completo de saída (contrato IA → template, 9 telas)
+### 6.2 Schema completo de saída (contrato gerador → template, Capa + 7 telas)
+
+Formato de blocos, em uso desde 16/09/2026 (`templateaula.html`,
+`v-20260916-1800-template-blocos`). A lista de blocos permitidos em cada tela e o
+formato de `dados` de cada bloco estão em **`pedagogico/BLOCOS.md`** — lá é a fonte
+da verdade; aqui fica só o envelope.
 
 ```json
 {
-  "abertura": {
-    "titulo": "Negotiation Basics"
+  "capa": {
+    "kicker": "Módulo 1 · Aula 2",
+    "titulo": "Planning The Week",
+    "foto": "(opcional) assets/... — com foto, a Capa sai em duotone"
   },
-
-  "vocab": {
-    "tipo": "termo | frase",
-    "itens": [
-      { "front_en": "...", "back_pt": "...", "imagem": "<svg>...</svg> ou <img src=...>" }
-    ]
-  },
-
-  "vocab_practice": {
-    "exercicios": [
-      { "tipo": "completar | multipla_escolha",
-        "enunciado": "...",
-        "opcoes": ["..."],
-        "resposta": "..." }
-    ]
-  },
-
-  "what_would_you_do": {
-    "cena": "<svg>...</svg>",
-    "leitura": "...",
-    "pergunta": "...",
-    "respostas": ["...", "..."]
-  },
-
-  "grammar": {
-    "titulo": "ex: 'Present Simple — routines and facts'",
-    "linhas": [
-      { "forma": "Affirmative", "exemplo": "..." },
-      { "forma": "Negative", "exemplo": "..." },
-      { "forma": "Question", "exemplo": "..." }
-    ],
-    "nota": "(opcional) legenda curta em itálico, uma frase — não parágrafo"
-  },
-
-  "practice": {
-    "exercicios": [
-      { "tipo": "completar | transformar | multipla_escolha",
-        "enunciado": "...",
-        "opcoes": ["..."],
-        "resposta": "..." }
-    ]
-  },
-
-  "situational": {
-    "cena": "<svg>...</svg> ou <img>...</img>",
-    "contexto": "(opcional) uma frase de rubrica, situando a cena antes do diálogo — necessário quando a foto real (ou o SVG) sozinha não deixa claro o que está acontecendo. Campo opcional: aulas sem ele continuam renderizando normalmente.",
-    "falas": [
-      { "personagem": 1, "texto": "Hi, I'm the new <strong>supervisor</strong>." },
-      { "personagem": 2, "texto": "Nice to meet you! Welcome to the <strong>team</strong>." }
-    ]
-  },
-
-  "debate": {
-    "mocao": "... (só gramática já vista pela turma, nunca de nível acima)"
-  },
-
-  "encerramento": {
-    "titulo": "Fim"
-  }
+  "telas": [
+    { "tela": "abertura",         "bloco": "pergunta-disparo", "minutos": 5,  "dados": { } },
+    { "tela": "apresentar",       "bloco": "foto-cards",       "minutos": 9,  "dados": { } },
+    { "tela": "lacuna",           "bloco": "escolha-forcada",  "minutos": 4,  "dados": { } },
+    { "tela": "sistematizar",     "bloco": "tabela",           "minutos": 4,  "dados": { } },
+    { "tela": "praticar-ensaiar", "bloco": "roleplay-roteiro", "minutos": 11, "dados": { } },
+    { "tela": "atuar",            "bloco": "debate",           "minutos": 14, "dados": { } },
+    { "tela": "registrar",        "bloco": "can-do",           "minutos": 3,  "dados": { } }
+  ]
 }
 ```
 
+Regras do envelope — o template confere todas e mostra aviso no topo quando falham
+(o aviso nunca aparece para o aluno):
+
+- `capa.titulo` obrigatório. `kicker` = `Módulo N · Aula N`; `titulo` = tema da aula,
+  nunca o nome da turma.
+- `telas` tem **exatamente 7** itens, **nesta ordem**: abertura, apresentar, lacuna,
+  sistematizar, praticar-ensaiar, atuar, registrar.
+- `bloco` precisa pertencer à tela (tabela de cada tela em `BLOCOS.md`). Bloco da
+  biblioteca ainda não implementado aparece como cartão de pendência.
+- `minutos` obrigatório; a soma é **50** e `atuar` é a tela mais longa.
+- Títulos visíveis são fixos no template, não vêm do JSON: Warm-up, New language,
+  Try it, The pattern, Practice, Your turn, Wrap-up.
+- Campos marcados "uso do professor" em `BLOCOS.md` aparecem com `?modo=professor` e na
+  prévia interna (sem `modo`); somem em `?modo=leitura`.
+
+**Compatibilidade.** Aula sem o campo `telas` é lida no formato antigo de 9 telas
+(`abertura`, `vocab`, `vocab_practice`, `what_would_you_do`, `grammar`, `practice`,
+`situational`, `debate`, `encerramento`), em uso de 26/08 a 31/08/2026. O schema completo
+antigo está no git, antes de `v-20260916-1840-schema-blocos`. Não gerar aula nova nele.
+
 ### 6.3 Regras específicas por tela
+
+> **Atenção (16/09/2026):** esta seção descreve as telas do **formato antigo** de 9
+> telas e ainda cita a paleta petróleo, descartada. Para aula nova valem `FUNCOES.md`,
+> `BLOCOS.md` e o Passo 11 do `GERADOR.md`. Continuam valendo daqui: termo solto até A2 e
+> frase em contexto de B1 em diante; a convenção do `<strong>`; e a regra dura da moção
+> do debate. Reescrita pendente no NEXT_STEPS.
 
 - **Vocab**
   - Quantidade de itens: **variável**, o grid se adapta ao número (a IA decide com base na densidade de vocabulário do tema).

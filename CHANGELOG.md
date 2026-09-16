@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1840-schema-blocos — 16/09/2026
+- O que mudou: `docs/pedagogico.md` §6.2 reescrito com o envelope do formato de blocos
+  (`capa` + 7 `telas` com `tela`, `bloco`, `minutos`, `dados`) e as regras que o
+  template confere. §6.3 ganhou aviso de que descreve o formato antigo.
+- Arquivos: docs/pedagogico.md
+- Motivo: o §6.2 ainda documentava o schema de 9 telas como contrato oficial, divergindo
+  do FUNCOES.md, do BLOCOS.md e agora do template.
+  Observação: §6.3 (regras por tela) e §9 (estado da dash) seguem desatualizados — ficaram
+  como item do NEXT_STEPS, fora do escopo pedido.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1825-aula-50-min
+
 ## v-20260916-1825-aula-50-min — 16/09/2026
 - O que mudou: orçamento da aula de 55 para **50 minutos** (5 · 9 · 4 · 4 · 11 · 14 · 3),
   sem folga separada. Campo `minutos` obrigatório em cada tela do JSON; seção nova

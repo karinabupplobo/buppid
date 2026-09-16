@@ -346,7 +346,7 @@ Repetição com variação, resposta certa clara.
 ```json
 { "estagio": "praticar", "itens": [{ "prompt": "...", "resposta": "..." }] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `substituicao`
 Frase-base fixa, elementos que trocam.
@@ -354,14 +354,14 @@ Frase-base fixa, elementos que trocam.
 { "estagio": "praticar", "base": "...",
   "substituicoes": ["...", "..."] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `sequencia-perguntas`
 Perguntas em cadeia, cada resposta puxa a próxima.
 ```json
 { "estagio": "praticar", "perguntas": ["...", "..."] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `roleplay-roteiro`
 Cenário com roteiro parcial: as falas-chave estão dadas, o resto o aluno preenche.
@@ -369,7 +369,7 @@ Cenário com roteiro parcial: as falas-chave estão dadas, o resto o aluno preen
 { "estagio": "ensaiar", "cenario": "...",
   "papeis": [{ "n": 1, "descricao": "...", "falas_apoio": ["..."] }] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `info-gap`
 Dois alunos com informações diferentes; só falando um completa o do outro.
@@ -378,14 +378,14 @@ Dois alunos com informações diferentes; só falando um completa o do outro.
   "papel_a": { "tem": ["..."], "precisa": ["..."] },
   "papel_b": { "tem": ["..."], "precisa": ["..."] } }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ### `cartoes-situacao`
 Cartões de situação que o professor distribui; cada aluno reage ao seu.
 ```json
 { "estagio": "ensaiar", "cartoes": [{ "situacao": "...", "papel": "..." }] }
 ```
-Imagem: não · Status: especificado
+Imagem: não · Status: implementado
 
 ---
 
@@ -486,9 +486,9 @@ Status: especificado
 | 2. Apresentar | 8 | 1 |
 | 3. Lacuna | 5 | 4 |
 | 4. Sistematizar | 5 | 2 |
-| 5. Praticar → Ensaiar | 6 | 0 |
+| 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 1 |
 | 7. Registrar | 4 | 0 |
-| **Total** | **40** | **11** |
+| **Total** | **40** | **17** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

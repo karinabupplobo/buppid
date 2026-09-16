@@ -2,6 +2,21 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1935-blocos-praticar-ensaiar — 16/09/2026
+- O que mudou: onda 2, parte 4 — os 6 blocos da tela Praticar → Ensaiar: `drill-oral`
+  (prompt com resposta que abre ao toque), `substituicao` (frase-base + chips),
+  `sequencia-perguntas`, `roleplay-roteiro` (papéis com falas de apoio), `info-gap` e
+  `cartoes-situacao` (briefings em cartão fechado). Rótulo do estágio (Practice / Rehearse)
+  lido do campo `estagio`. Aula de exemplo ganhou o segundo papel do roleplay.
+  BLOCOS.md: 17 de 40.
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md
+- Motivo: onda 2 da implementação dos 40 blocos.
+  Observação: briefings secretos resolvidos com cartão fechado que abre ao toque, como
+  aprovado — na tela projetada, o professor abre um lado por vez. QA desktop e celular
+  sem erro e sem estouro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1925-bloco-regra-descoberta
+
 ## v-20260916-1925-bloco-regra-descoberta — 16/09/2026
 - O que mudou: onda 2, parte 3 — bloco `regra-descoberta` (tela Sistematizar): perguntas
   encadeadas numeradas; a regra-alvo aparece só para o professor. BLOCOS.md: 11 de 40.

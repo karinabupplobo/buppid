@@ -1001,6 +1001,17 @@
     .lacuna-gabarito{ font-size: 14px; }
   }
 
+  /* --- Praticar → Ensaiar --- */
+  .bk .s4-wrap{ max-width: none; }
+  .bk-cadeia .answer-item-aberto + .answer-item-aberto{ position: relative; }
+  .bk-papeis{ display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .bk-papel p{ margin: 0; }
+  .bk-apoio{ margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: var(--texto); opacity: .8; }
+  @media (min-width: 900px) and (min-height: 620px){
+    .bk-papeis{ grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+    .bk-apoio{ font-size: 16px; }
+  }
+
   /* ---- fim dos estilos de bloco ---- */
 
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
@@ -1398,6 +1409,61 @@
     + listaNumerada(d.perguntas)
     + soProf(d.regra_alvo ? "Rule: " + d.regra_alvo : "") + '</div>';
 
+  // ---- Tela 5 · Praticar → Ensaiar ----
+  // O campo "estagio" marca a virada do apoio total para o andaime parcial.
+  function rotuloEstagio(d, padrao) {
+    const e = (d && d.estagio) || padrao;
+    return '<p class="bk-rotulo">' + (e === "ensaiar" ? "Rehearse · partial support" : "Practice · full support") + '</p>';
+  }
+
+  BLOCOS["drill-oral"] = (d) =>
+    '<div class="bk">' + rotuloEstagio(d, "praticar")
+    + '<div class="s4-wrap bk-drill">'
+    + (d.itens || []).map((it, i) => itemExpansivel(i + 1, it.prompt, it.resposta)).join("")
+    + '</div></div>';
+
+  BLOCOS["substituicao"] = (d) =>
+    '<div class="bk">' + rotuloEstagio(d, "praticar")
+    + cardDestaque("", d.base, chips(d.substituicoes)) + '</div>';
+
+  BLOCOS["sequencia-perguntas"] = (d) =>
+    '<div class="bk">' + rotuloEstagio(d, "praticar")
+    + '<div class="bk-cadeia">' + listaNumerada(d.perguntas) + '</div></div>';
+
+  BLOCOS["roleplay-roteiro"] = (d) => {
+    const papeis = (d.papeis || []).map(p =>
+      '<div class="answer-item-aberto bk-papel"><span class="num-btn">' + esc(p.n) + '</span><div>'
+      + '<p><b>' + esc(p.descricao) + '</b></p>'
+      + ((p.falas_apoio || []).length
+          ? '<ul class="bk-apoio">' + p.falas_apoio.map(f => '<li>' + esc(f) + '</li>').join("") + '</ul>' : '')
+      + '</div></div>').join("");
+    return '<div class="bk">' + rotuloEstagio(d, "ensaiar")
+      + '<p class="bk-destaque" style="color:#fff">' + esc(d.cenario) + '</p>'
+      + '<div class="bk-papeis">' + papeis + '</div></div>';
+  };
+
+  function briefingGap(lado) {
+    const l = lado || {};
+    return '<p class="rot">You have</p>' + listaSimples(l.tem)
+      + '<p class="rot">Find out</p>' + listaSimples(l.precisa);
+  }
+
+  BLOCOS["info-gap"] = (d) =>
+    '<div class="bk">' + rotuloEstagio(d, "ensaiar")
+    + '<p class="bk-destaque" style="color:#fff">' + esc(d.cenario) + '</p>'
+    + '<div class="bk-fechados">'
+    + cartaoFechado("Student A", briefingGap(d.papel_a))
+    + cartaoFechado("Student B", briefingGap(d.papel_b))
+    + '</div></div>';
+
+  BLOCOS["cartoes-situacao"] = (d) =>
+    '<div class="bk">' + rotuloEstagio(d, "ensaiar")
+    + '<div class="bk-fechados tres">'
+    + (d.cartoes || []).map((c, i) => cartaoFechado("Card " + (i + 1),
+        '<p>' + esc(c.situacao) + '</p>' + (c.papel ? '<p class="rot">Your role</p><p>' + esc(c.papel) + '</p>' : '')
+      )).join("")
+    + '</div></div>';
+
   // ---- fim dos renderizadores de bloco ----
 
   function blocoPendente(nome, existe) {
@@ -1526,7 +1592,10 @@
                  nota: "Use it for plans with a day and a time." } },
       { tela: "praticar-ensaiar", bloco: "roleplay-roteiro", minutos: 11,
         dados: { estagio: "ensaiar", cenario: "Two colleagues compare their schedules for next week.",
-                 papeis: [{ n: 1, descricao: "Has a full week", falas_apoio: ["On Monday I'm..."] }] } },
+                 papeis: [
+                   { n: 1, descricao: "Has a very full week", falas_apoio: ["On Monday I'm...", "Sorry, I'm... on..."] },
+                   { n: 2, descricao: "Needs the meeting before Thursday", falas_apoio: ["Are you free on...?", "What about...?"] }
+                 ] } },
       { tela: "atuar", bloco: "debate", minutos: 14,
         dados: { mocao: "Meetings on Friday afternoon are a waste of time." } },
       { tela: "registrar", bloco: "can-do", minutos: 3,

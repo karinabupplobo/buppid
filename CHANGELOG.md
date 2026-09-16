@@ -2,6 +2,18 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0000-next-steps-blocos — 16/09/2026
+- O que mudou: NEXT_STEPS atualizado com o trabalho de 16/09 — item de blocos passa a
+  refletir 26 de 40 e as ondas 3 e 4; decisão de duração marcada como fechada; itens
+  novos: teste avulso do gerador, calibrar limites de tamanho, `can-do` até o RH,
+  converter `CURSOS_SEED`/Aula 1 para blocos, reescrever §6.3.
+- Arquivos: NEXT_STEPS.md, CHANGELOG.md
+- Motivo: os commits de 16/09 não atualizaram o NEXT_STEPS, como a regra do projeto pede.
+  Observação: itens velhos contraditórios (aba Gerador na dash, paleta teal/limão) não
+  foram mexidos — fora do escopo, já apontados à Karina.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-1955-blocos-registrar
+
 ## v-20260916-1955-blocos-registrar — 16/09/2026
 - O que mudou: onda 2, parte 6 (fim da onda 2) — os 4 blocos da tela Registrar:
   `can-do` (statements com check), `resumo-oral`, `compromisso` e `licao-ponte`.

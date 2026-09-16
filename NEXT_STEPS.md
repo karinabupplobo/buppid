@@ -23,13 +23,28 @@
       da mesma banda; A1 + A2 (Basic/High + Intermediate/Low) não é representável.
       Convenção provisória: banda do piso com sub `Misto`.
 
-- [ ] **Implementar os blocos em ondas.** `pedagogico/BLOCOS.md` especifica 40 blocos;
-      o `templateaula.html` renderiza só a estrutura antiga. Onda 1 = os blocos que a
-      primeira aula real usar, não os 40. Hoje 3 de 40 estão implementados
-      (`foto-cards`, `tabela`, `debate`), herdados da estrutura antiga.
-- [ ] **Fechar as 4 decisões em aberto** de `pedagogico/FUNCOES.md`: nome final de
-      "Atuar", carga de lição por aula, lição junto ou separada da aula, e a
-      duração/frequência real das turmas (o orçamento de 55 min assume aula de 60).
+- [ ] **Terminar a implementação dos 40 blocos (decisão de 16/09: todos, em ondas).**
+      O template já lê o formato Capa + 7 telas (v-20260916-1800) e a onda 2 está
+      completa: 26 de 40 implementados. Falta a onda 3 (11 em SVG/desenho: os 6
+      relacionais de Apresentar, `mapa-cena` com as 4 cenas, `contraste-par`, `formula`,
+      `linha-tempo-verbal`, `citacao-cena`) e a onda 4 (3 com foto: `foto-cena`,
+      `duas-imagens`, `foto-descricao`). Status de cada bloco no `BLOCOS.md`.
+- [ ] **Rodar o gerador no modo teste avulso (`T`) e abrir a aula no template.** Agora
+      há onde ver a aula. Primeiro teste real do formato novo e dos limites de tamanho.
+- [ ] **Calibrar os limites de tamanho do `BLOCOS.md` com aula real.** São estimativa
+      inicial para caber em 50 min (v-20260916-1825); a aula perdeu a folga de 5 min
+      que o orçamento de 55 tinha.
+- [ ] **`can-do` não chega ao RH.** O bloco renderiza na aula, mas os statements não
+      são gravados nem aparecem no `manager.html`. Decidir onde moram (provável
+      `progresso_aluno`) quando a tela do RH for migrada.
+- [ ] **Converter o `CURSOS_SEED` do `crm.html` e a Aula 1 Tirolez para o formato de
+      blocos.** O template ainda lê o formato antigo por compatibilidade; aula nova
+      não deve ser gerada nele.
+- [ ] **Reescrever `docs/pedagogico.md` §6.3** (regras por tela). Descreve as 9 telas
+      antigas e cita a paleta petróleo; hoje só tem aviso no topo (v-20260916-1840).
+- [ ] **Fechar as 3 decisões em aberto** de `pedagogico/FUNCOES.md`: nome final de
+      "Atuar", carga de lição por aula e lição junto ou separada da aula. (Duração
+      fechada em 16/09: 50 min em slides. Sobra só frequência / aula dupla.)
 - [ ] **Lição de casa não tem lugar no sistema.** O desenho novo depende dela, mas não
       há campo em `aulas_assigned` nem exibição em `aluno.html`. Criar só quando a
       decisão acima estiver fechada.

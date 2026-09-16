@@ -2,6 +2,28 @@
 
 Entradas mais recentes no topo.
 
+## v-20260916-1800-template-blocos — 16/09/2026
+- O que mudou: `templateaula.html` passa a ler o formato de blocos (Capa + 7 telas,
+  `{ capa, telas: [{ tela, bloco, minutos, dados }] }`). Renderização por nome de bloco
+  (tabela `BLOCOS`), número de telas dinâmico (some o 9 fixo do CSS, do JS e das
+  bolinhas), validação visível de ordem/bloco/minutos (soma 50), cartão de pendência
+  para bloco ainda não implementado, minutos ao lado do título e campos de professor
+  (`.so-prof`) ocultos para o aluno. Títulos visíveis: Warm-up, New language, Try it,
+  The pattern, Practice, Your turn, Wrap-up. As 9 telas de negociação escritas à mão no
+  HTML saíram; no lugar, uma aula de exemplo em JSON (A2, A2-G-006) renderizada ao abrir.
+  Os 3 blocos já existentes (`foto-cards`, `tabela`, `debate`) foram portados;
+  `foto-cards` aceita `foto` (caminho) além do SVG antigo em `imagem`.
+- Arquivos: templateaula.html
+- Motivo: o gerador já produz no formato novo desde 31/08, mas o template só conhecia
+  as 9 telas antigas — a aula gerada não tinha onde ser vista.
+  Observação: formato antigo continua renderizando (compatibilidade com o
+  `CURSOS_SEED` do crm.html). Aviso e cartão de pendência contrariam o "bloco
+  desconhecido não renderiza" do BLOCOS.md — decisão aprovada pela Karina em 16/09.
+  Anotações do professor são indexadas por número de tela: uma aula antiga anotada,
+  reaberta no formato novo, fica com as anotações deslocadas (hoje só localStorage de teste).
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260916-ANTES-template-formato-novo
+
 ## v-20260831-2238-custom-domain-ativo — 31/08/2026
 - O que mudou: custom domain efetivamente ativado no GitHub Pages. A plataforma agora responde
   em `https://plataforma.buppidiomas.com.br/`, com certificado emitido (`approved`) e Enforce

@@ -1,27 +1,17 @@
 <!DOCTYPE html>
 <!--
-  PEDAGÓGICO 2 — REGRAS DE GERAÇÃO DE CONTEÚDO (estrutura de 9 telas, 26/08/2026)
+  TEMPLATE DE AULA — formato de blocos (Capa + 7 telas, estrutura de 31/08/2026)
   ================================================
-  Vocab          -> traz o vocabulário PRINCIPAL da aula (fonte de vocabulário
-                    reutilizada pelas telas seguintes).
-  Vocab Practice -> treina especificamente o vocabulário ensinado em Vocab.
-  What would      -> traz uma situação que usa TAMBÉM o vocabulário de Vocab.
-  you do?
-  Grammar        -> ensina a gramática da aula em tabela compacta (afirmativa/
-                    negativa/pergunta ou variação equivalente) — não em texto
-                    corrido. Isso será usado em Practice, Situational e Debate.
-  Practice       -> treina especificamente a gramática ensinada em Grammar.
-  Situational    -> diálogo entre dois personagens usando a gramática e/ou o
-                    vocabulário da aula. Palavras em <strong> marcam pontos que
-                    o professor/gerador pode trocar ao adaptar pra outra turma
-                    — não é interativo no app, é convenção de conteúdo.
-  Debate         -> mesma regra do Situational: frase de debate usando a
-                    gramática e/ou o vocabulário da aula, calibrada pro nível.
+  Fonte da verdade: pedagogico/FUNCOES.md (funções, telas, minutos, invariantes)
+  e pedagogico/BLOCOS.md (os 40 blocos e o contrato de dados de cada um).
 
-  Resumo: Vocab e Grammar são as fontes de conteúdo. Toda tela depois delas
-  precisa reciclar esse conteúdo, nunca introduzir vocabulário/gramática
-  nova. Vocab Practice e Practice são 100% dedicadas a treinar o que vem
-  antes delas.
+  A aula chega como { capa: {...}, telas: [ { tela, bloco, minutos, dados } x7 ] }.
+  Cada tela é desenhada pelo nome do bloco (tabela BLOCOS no script). Bloco
+  especificado mas ainda não implementado aparece como cartão de aviso, nunca
+  some. A soma dos minutos precisa fechar 50 — a aula dura 50 min em slides.
+
+  Compatibilidade: aula sem "telas" (formato antigo de 9 telas, até 31/08) ainda
+  renderiza pelo caminho antigo — é o que o CURSOS_SEED do crm.html manda.
 -->
 <html lang="pt-BR">
 <head>
@@ -62,14 +52,14 @@
 
   .screens{
     display: flex;
-    width: 900%; /* 9 telas */
+    width: calc(var(--n, 1) * 100%); /* --n = número de telas, definido pelo script */
     height: 100%;
     transition: transform 0.45s cubic-bezier(0.4, 0.1, 0.2, 1);
     will-change: transform;
   }
 
   .screen{
-    width: calc(100% / 9);
+    width: calc(100% / var(--n, 1));
     height: 100%;
     flex-shrink: 0;
     display: flex;
@@ -895,6 +885,44 @@
     .anot-nota, .anot-leitura{ bottom: 46px; width: calc(100% - 24px); }
   }
 
+  /* ═══════════ Formato de blocos (31/08/2026) ═══════════ */
+
+  /* Minutos da tela, ao lado do título. Só para quem conduz ou revisa a aula. */
+  .tela-min{
+    display: inline-block; margin-left: 8px; padding: 2px 7px; border-radius: 10px;
+    background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7);
+    font-size: 10.5px; letter-spacing: 0.04em; text-transform: none; vertical-align: 1px;
+  }
+
+  /* Aviso de aula malformada (ordem, bloco, minutos). Nunca aparece para o aluno. */
+  .aviso-aula{
+    position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 50;
+    max-width: min(760px, calc(100% - 24px)); background: #FFF4D6; color: #3a2a12;
+    border: 1.5px solid #d9a441; border-radius: 10px; padding: 10px 14px;
+    font-size: 12.5px; line-height: 1.5; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+  .aviso-aula[hidden]{ display: none; }
+  .aviso-aula b{ display: block; margin-bottom: 2px; }
+  .aviso-aula ul{ margin: 0; padding-left: 18px; }
+  body.modo-professor .aviso-aula{ top: 60px; }
+
+  /* Bloco especificado em BLOCOS.md mas ainda sem renderizador. */
+  .bloco-pendente{ border: 2px dashed #d9a441; }
+  .bloco-pendente code{ background: rgba(168,213,242,0.35); padding: 1px 6px; border-radius: 4px; }
+
+  /* Campos de uso do professor (gabarito, regra-alvo). Some para o aluno. */
+  .so-prof{
+    background: rgba(138,119,103,0.14); border-left: 3px solid var(--azul-intermediario);
+    border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #3a2e24;
+  }
+  .so-prof::before{
+    content: "Professor"; display: block; font-size: 10px; font-weight: 800;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--azul-intermediario);
+    margin-bottom: 2px;
+  }
+
+  .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
+
 </style>
 </head>
 <body>
@@ -951,281 +979,15 @@
   <span class="ab aviso" id="aviso-pub">Alunos veem estas anotações</span>
 </div>
 
+<div class="aviso-aula" id="aviso-aula" hidden></div>
+
 <div class="app" id="app">
-  <div class="screens" id="screens">
-
-    <!-- TELA 1: STEP 1 -->
-    <section class="screen">
-      <h1 class="screen-title step-title">Step 1</h1>
-    </section>
-
-    <!-- TELA 2: VOCAB -->
-    <section class="screen">
-      <h1 class="screen-title">Vocab</h1>
-      <div class="wrap">
-        <div class="grid">
-
-          <div class="card-slot">
-            <div class="card">
-              <div class="face face-front"><p>"Let's find a middle ground."</p></div>
-              <div class="face face-back"><p>"Vamos encontrar um meio-termo."</p></div>
-            </div>
-          </div>
-
-          <div class="card-slot">
-            <div class="card">
-              <div class="face face-front"><p>"I hear what you're saying, but..."</p></div>
-              <div class="face face-back"><p>"Entendo o que você diz, mas..."</p></div>
-            </div>
-          </div>
-
-          <div class="card-slot">
-            <div class="card">
-              <div class="face face-front"><p>"Can we revisit this point later?"</p></div>
-              <div class="face face-back"><p>"Podemos retomar esse ponto depois?"</p></div>
-            </div>
-          </div>
-
-          <div class="card-slot">
-            <div class="card">
-              <div class="face face-front"><p>"That works for us."</p></div>
-              <div class="face face-back"><p>"Isso funciona para nós."</p></div>
-            </div>
-          </div>
-
-          <div class="card-slot">
-            <div class="card">
-              <div class="face face-front"><p>"We need more time to consider this."</p></div>
-              <div class="face face-back"><p>"Precisamos de mais tempo para avaliar isso."</p></div>
-            </div>
-          </div>
-
-          <div class="card-slot">
-            <div class="card">
-              <div class="face face-front"><p>"Let's put that on hold for now."</p></div>
-              <div class="face face-back"><p>"Vamos deixar isso em espera por enquanto."</p></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- TELA 3: VOCAB PRACTICE -->
-    <section class="screen">
-      <h1 class="screen-title">Vocab Practice</h1>
-      <div class="s4-wrap">
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">1</span>
-            <p>"Let's find a middle ___." (fill in the missing word)</p>
-          </div>
-          <div class="answer-body">
-            <p>ground</p>
-          </div>
-        </div>
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">2</span>
-            <p>Complete: "I hear what you're ___, but..."</p>
-          </div>
-          <div class="answer-body">
-            <p>saying</p>
-          </div>
-        </div>
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">3</span>
-            <p>Complete: "Can we ___ this point later?"</p>
-          </div>
-          <div class="answer-body">
-            <p>revisit</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- TELA 4: WHAT WOULD YOU DO? -->
-    <section class="screen">
-      <h1 class="screen-title">What would you do?</h1>
-      <div class="s2-wrap">
-
-        <div class="reading-card">
-          <p>During the meeting, the sales director offered to extend the payment terms by 30 days if the client agreed to sign a two-year contract instead of one.</p>
-        </div>
-
-        <div class="question-card">
-          <p>Why did the sales director offer to extend the payment terms?</p>
-        </div>
-
-        <div class="answers">
-
-          <div class="answer-item">
-            <div class="answer-head">
-              <span class="num-btn">1</span>
-              <p>Tap to reveal</p>
-            </div>
-            <div class="answer-body">
-              <p>To close a shorter, one-year deal quickly.</p>
-            </div>
-          </div>
-
-          <div class="answer-item">
-            <div class="answer-head">
-              <span class="num-btn">2</span>
-              <p>Tap to reveal</p>
-            </div>
-            <div class="answer-body">
-              <p>To secure a longer, two-year contract with the client.</p>
-            </div>
-          </div>
-
-          <div class="answer-item">
-            <div class="answer-head">
-              <span class="num-btn">3</span>
-              <p>Tap to reveal</p>
-            </div>
-            <div class="answer-body">
-              <p>To reduce the company's cash flow risk.</p>
-            </div>
-          </div>
-
-          <div class="answer-item">
-            <div class="answer-head">
-              <span class="num-btn">4</span>
-              <p>Tap to reveal</p>
-            </div>
-            <div class="answer-body">
-              <p>To match a competitor's lower price.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- TELA 5: GRAMMAR -->
-    <section class="screen">
-      <h1 class="screen-title">Grammar</h1>
-      <div class="big-card">
-        <h2>Second Conditional — hypothetical situations</h2>
-        <div class="gram-tabela">
-          <div class="gram-linha">
-            <span class="gram-forma">Affirmative</span>
-            <span class="gram-exemplo">If the client asked for a discount, we would review the terms.</span>
-          </div>
-          <div class="gram-linha">
-            <span class="gram-forma">Negative</span>
-            <span class="gram-exemplo">If the client didn't confirm today, we wouldn't hold the price.</span>
-          </div>
-          <div class="gram-linha">
-            <span class="gram-forma">Question</span>
-            <span class="gram-exemplo">If we offered a better price, would you sign today?</span>
-          </div>
-        </div>
-        <p class="gram-nota">If + past simple, ... would + base verb — for imaginary or unlikely situations, not things happening now.</p>
-      </div>
-    </section>
-
-    <!-- TELA 6: PRACTICE -->
-    <section class="screen">
-      <h1 class="screen-title">Practice</h1>
-      <div class="s4-wrap">
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">1</span>
-            <p>If we ___ (offer) a better price, they would sign today.</p>
-          </div>
-          <div class="answer-body">
-            <p>offered</p>
-          </div>
-        </div>
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">2</span>
-            <p>She would agree if we ___ (extend) the deadline.</p>
-          </div>
-          <div class="answer-body">
-            <p>extended</p>
-          </div>
-        </div>
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">3</span>
-            <p>If they ___ (not accept) the terms, we would lose the deal.</p>
-          </div>
-          <div class="answer-body">
-            <p>didn't accept</p>
-          </div>
-        </div>
-
-        <div class="answer-item">
-          <div class="answer-head">
-            <span class="num-btn">4</span>
-            <p>We would close the deal if the client ___ (trust) our proposal.</p>
-          </div>
-          <div class="answer-body">
-            <p>trusted</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- TELA 7: SITUATIONAL -->
-    <section class="screen">
-      <h1 class="screen-title">Situational</h1>
-      <div class="big-card">
-        <div class="dialogo">
-          <div class="fala p1">
-            <span class="fala-autor">Character 1</span>
-            Your price is <strong>15% higher</strong> than your <strong>competitor's</strong>. Can you justify that?
-          </div>
-          <div class="fala p2">
-            <span class="fala-autor">Character 2</span>
-            Our price reflects <strong>faster delivery</strong> and <strong>better support</strong> — that's what you're paying for.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TELA 8: DEBATING -->
-    <section class="screen">
-      <h1 class="screen-title">Debate</h1>
-      <div class="big-card">
-        <p><strong>Motion:</strong> "Every negotiation point should be confirmed in writing — never agreed to over a phone call."</p>
-        <p class="prompt">Take a side. Prepare two arguments to defend your position.</p>
-      </div>
-    </section>
-
-    <!-- TELA 9: FIM -->
-    <section class="screen">
-      <h1 class="screen-title step-title">Fim</h1>
-    </section>
-
-  </div>
+  <div class="screens" id="screens"></div>
 
   <button id="arrow-prev" class="nav-arrow hidden" type="button" aria-label="Tela anterior">&#8249;</button>
   <button id="arrow-next" class="nav-arrow" type="button" aria-label="Próxima tela">&#8250;</button>
 
-  <div class="dots">
-    <span class="dot active" data-index="0"></span>
-    <span class="dot" data-index="1"></span>
-    <span class="dot" data-index="2"></span>
-    <span class="dot" data-index="3"></span>
-    <span class="dot" data-index="4"></span>
-    <span class="dot" data-index="5"></span>
-    <span class="dot" data-index="6"></span>
-    <span class="dot" data-index="7"></span>
-    <span class="dot" data-index="8"></span>
-  </div>
+  <div class="dots" id="dots"></div>
 </div>
 
 <script>
@@ -1233,8 +995,8 @@
   // Aberto direto no navegador, o template mantém o conteúdo estático de exemplo
   // que já está no HTML. Embutido num iframe (a aba Cursos da dash), recebe uma
   // mensagem { type: "bupp:aula", aula: {...} } no schema de docs/pedagogico.md §6.2
-  // e reconstrói as 9 telas a partir dela (estrutura de 26/08/2026: Vocab Practice
-  // nova, Grammar em tabela, Situational em diálogo — ver comentário no topo do arquivo).
+  // e reconstrói as telas a partir dela. Formato novo (Capa + 7 telas por bloco) ou,
+  // por compatibilidade, o antigo de 9 telas — ver comentário no topo do arquivo.
 
   function esc(v) {
     return String(v == null ? "" : v)
@@ -1369,9 +1131,8 @@
       + '</div></section>';
   }
 
-  function renderAula(aula) {
-    if (!aula) return;
-    const html = [
+  function renderFormatoAntigo(aula) {
+    return [
       telaMarcador(aula.abertura ? {
         titulo: aula.abertura.titulo || "Step 1",
         kicker: aula.abertura.kicker,
@@ -1386,10 +1147,205 @@
       telaDebate(aula.debate),
       telaMarcador((aula.encerramento && aula.encerramento.titulo) || "Fim")
     ].join("");
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  FORMATO DE BLOCOS — Capa + 7 telas (pedagogico/FUNCOES.md)
+  //  Uma tela = um bloco. O bloco é desenhado pela tabela BLOCOS abaixo.
+  // ══════════════════════════════════════════════════════════
+  const MODO_AULA = new URLSearchParams(location.search).get("modo") || "";
+  // Campos de professor (gabarito, regra-alvo) e minutos somem só para o aluno.
+  // Sem modo (prévia interna na dash) aparecem, para a revisão.
+  const VE_PROFESSOR = MODO_AULA !== "leitura" && MODO_AULA !== "aluno";
+  const MINUTOS_AULA = 50;
+
+  // Ordem fixa, título visível e orçamento de minutos de cada tela (soma 50).
+  const TELAS_ORDEM = [
+    { tela: "abertura",         titulo: "Warm-up",      min: 5  },
+    { tela: "apresentar",       titulo: "New language", min: 9  },
+    { tela: "lacuna",           titulo: "Try it",       min: 4  },
+    { tela: "sistematizar",     titulo: "The pattern",  min: 4  },
+    { tela: "praticar-ensaiar", titulo: "Practice",     min: 11 },
+    { tela: "atuar",            titulo: "Your turn",    min: 14 },
+    { tela: "registrar",        titulo: "Wrap-up",      min: 3  }
+  ];
+
+  // Quais blocos pertencem a qual tela — espelho de pedagogico/BLOCOS.md.
+  const BLOCOS_POR_TELA = {
+    "abertura":         ["recall-rapido", "checagem-licao", "foto-cena", "pergunta-disparo", "duas-imagens", "citacao-cena"],
+    "apresentar":       ["foto-cards", "piramide", "fluxo", "mapa-cena", "comparativo", "escala", "agrupamento", "linha-tempo"],
+    "lacuna":           ["tarefa-impossivel", "escolha-forcada", "traducao-armadilha", "dialogo-incompleto", "foto-descricao"],
+    "sistematizar":     ["tabela", "contraste-par", "formula", "regra-descoberta", "linha-tempo-verbal"],
+    "praticar-ensaiar": ["drill-oral", "substituicao", "sequencia-perguntas", "roleplay-roteiro", "info-gap", "cartoes-situacao"],
+    "atuar":            ["simulacao-reuniao", "negociacao-dois-lados", "apresentacao-relampago", "debate", "call-problema", "pitch-cliente"],
+    "registrar":        ["can-do", "resumo-oral", "compromisso", "licao-ponte"]
+  };
+
+  // Renderizadores: recebem "dados" e devolvem o HTML de dentro da tela.
+  // Bloco novo = uma entrada nova aqui + status "implementado" em BLOCOS.md.
+  const BLOCOS = {};
+
+  // Campo de uso do professor: só entra no HTML quando quem vê não é aluno.
+  function soProf(texto) {
+    return (VE_PROFESSOR && texto) ? '<p class="so-prof">' + esc(texto) + '</p>' : '';
+  }
+
+  // "foto" é caminho de arquivo (contrato novo); "imagem" é SVG cru do formato
+  // antigo, escrito por nós no JSON — entra sem escapar, como antes.
+  BLOCOS["foto-cards"] = (d) => {
+    const itens = (d && d.itens) || [];
+    const cards = itens.map(it => {
+      const midia = it.foto ? '<img src="' + esc(it.foto) + '" alt="">' : (it.imagem || "");
+      const img = midia ? '<div class="vocab-img">' + midia + '</div>' : '';
+      return '<div class="card-slot"><div class="card">'
+        + '<div class="face face-front' + (midia ? ' tem-img' : '') + '">'
+        + img + '<p>' + esc(it.front_en) + '</p></div>'
+        + '<div class="face face-back"><p>' + esc(it.back_pt) + '</p></div>'
+        + '</div></div>';
+    }).join("");
+    return '<div class="wrap"><div class="grid">' + cards + '</div></div>';
+  };
+
+  BLOCOS["tabela"] = (d) => {
+    const linhas = (d && d.linhas) || [];
+    const tabela = linhas.map(l =>
+      '<div class="gram-linha"><span class="gram-forma">' + esc(l.forma) + '</span>'
+      + '<span class="gram-exemplo">' + esc(l.exemplo) + '</span></div>'
+    ).join("");
+    const nota = (d && d.nota) ? '<p class="gram-nota">' + esc(d.nota) + '</p>' : '';
+    return '<div class="big-card"><h2>' + esc(d && d.titulo) + '</h2>'
+      + '<div class="gram-tabela">' + tabela + '</div>' + nota + '</div>';
+  };
+
+  BLOCOS["debate"] = (d) =>
+    '<div class="big-card">'
+    + '<p><strong>Motion:</strong> ' + esc(d && d.mocao) + '</p>'
+    + '<p class="prompt">Take a side. Prepare two arguments to defend your position.</p>'
+    + '</div>';
+
+  function blocoPendente(nome, existe) {
+    return '<div class="big-card bloco-pendente">'
+      + '<h2>Bloco <code>' + esc(nome || "(sem bloco)") + '</code> '
+      + (existe ? 'ainda não implementado' : 'não existe na biblioteca') + '</h2>'
+      + '<p>' + (existe
+        ? 'Está especificado em pedagogico/BLOCOS.md e entra numa das próximas ondas de implementação.'
+        : 'O nome precisa ser um dos 40 blocos de pedagogico/BLOCOS.md.') + '</p>'
+      + '</div>';
+  }
+
+  // Confere o que FUNCOES.md e BLOCOS.md exigem. Devolve a lista de problemas.
+  function validarAula(aula) {
+    const prob = [];
+    const telas = aula.telas || [];
+    if (!aula.capa || !aula.capa.titulo) prob.push("Capa sem título.");
+    if (telas.length !== TELAS_ORDEM.length)
+      prob.push("A aula tem " + telas.length + " telas; precisa ter 7 (fora a Capa).");
+    let soma = 0;
+    telas.forEach((t, i) => {
+      const esperada = TELAS_ORDEM[i];
+      const n = i + 1;
+      if (esperada && t.tela !== esperada.tela)
+        prob.push("Tela " + n + " é \"" + t.tela + "\"; na ordem fixa deveria ser \"" + esperada.tela + "\".");
+      const permitidos = BLOCOS_POR_TELA[t.tela];
+      if (!t.bloco) prob.push("Tela " + n + " sem bloco.");
+      else if (permitidos && permitidos.indexOf(t.bloco) === -1)
+        prob.push("Bloco \"" + t.bloco + "\" não pertence à tela \"" + t.tela + "\".");
+      if (typeof t.minutos !== "number") prob.push("Tela " + n + " sem minutos.");
+      else soma += t.minutos;
+    });
+    if (soma !== MINUTOS_AULA)
+      prob.push("Os minutos somam " + soma + "; a aula dura " + MINUTOS_AULA + ".");
+    return prob;
+  }
+
+  function mostrarAviso(problemas) {
+    const box = document.getElementById("aviso-aula");
+    if (!problemas.length || MODO_AULA === "leitura" || MODO_AULA === "aluno") {
+      box.hidden = true; box.innerHTML = ""; return;
+    }
+    box.innerHTML = "<b>Esta aula não segue a estrutura.</b><ul>"
+      + problemas.map(p => "<li>" + esc(p) + "</li>").join("") + "</ul>";
+    box.hidden = false;
+    console.warn("[templateaula] aula malformada:", problemas);
+  }
+
+  function telaCapa(capa) {
+    const c = capa || {};
+    if (c.foto) return telaMarcador({ titulo: c.titulo, kicker: c.kicker, foto: c.foto });
+    const kicker = c.kicker ? '<p class="abertura-kicker-simples">' + esc(c.kicker) + '</p>' : '';
+    return '<section class="screen" data-tela="capa">' + kicker
+      + '<h1 class="screen-title step-title">' + esc(c.titulo) + '</h1></section>';
+  }
+
+  function telaBloco(t) {
+    const def = TELAS_ORDEM.find(x => x.tela === t.tela);
+    const titulo = def ? def.titulo : t.tela;
+    const min = (VE_PROFESSOR && typeof t.minutos === "number")
+      ? '<span class="tela-min">' + t.minutos + ' min</span>' : '';
+    const existe = Object.keys(BLOCOS_POR_TELA).some(k => BLOCOS_POR_TELA[k].indexOf(t.bloco) !== -1);
+    const corpo = BLOCOS[t.bloco] ? BLOCOS[t.bloco](t.dados || {}) : blocoPendente(t.bloco, existe);
+    return '<section class="screen" data-tela="' + esc(t.tela) + '" data-bloco="' + esc(t.bloco) + '">'
+      + '<h1 class="screen-title">' + esc(titulo) + min + '</h1>'
+      + corpo + '</section>';
+  }
+
+  function renderFormatoBlocos(aula) {
+    mostrarAviso(validarAula(aula));
+    return telaCapa(aula.capa) + (aula.telas || []).map(telaBloco).join("");
+  }
+
+  function renderAula(aula) {
+    if (!aula) return;
+    let html;
+    if (Array.isArray(aula.telas)) {
+      html = renderFormatoBlocos(aula);
+    } else {
+      mostrarAviso([]);
+      html = renderFormatoAntigo(aula);
+    }
     document.getElementById('screens').innerHTML = html;
+    montarNavegacao();
     ligarInteracoes();
     goTo(0);
   }
+
+  // Aula de exemplo no formato novo. Nível A2, gramática A2-G-006 (present
+  // continuous com valor de futuro). Telas com bloco ainda não implementado
+  // mostram o cartão de pendência até a onda correspondente.
+  const AULA_EXEMPLO = {
+    capa: { kicker: "Módulo 1 · Aula 2", titulo: "Planning The Week" },
+    telas: [
+      { tela: "abertura", bloco: "pergunta-disparo", minutos: 5,
+        dados: { pergunta: "What is the most important meeting on your calendar this week?" } },
+      { tela: "apresentar", bloco: "foto-cards", minutos: 9,
+        dados: { tipo: "termo", itens: [
+          { front_en: "deadline", back_pt: "prazo" },
+          { front_en: "supplier", back_pt: "fornecedor" },
+          { front_en: "schedule", back_pt: "agenda / cronograma" },
+          { front_en: "call", back_pt: "ligação" },
+          { front_en: "visit", back_pt: "visita" },
+          { front_en: "report", back_pt: "relatório" }
+        ] } },
+      { tela: "lacuna", bloco: "escolha-forcada", minutos: 4,
+        dados: { frases: ["I meet the supplier tomorrow.", "I'm meeting the supplier tomorrow."],
+                 correta: 1, pergunta: "Which one sounds right? Why?" } },
+      { tela: "sistematizar", bloco: "tabela", minutos: 4,
+        dados: { titulo: "Present continuous — plans already on the calendar",
+                 linhas: [
+                   { forma: "Affirmative", exemplo: "I'm meeting the supplier on Tuesday." },
+                   { forma: "Negative", exemplo: "We aren't sending the report today." },
+                   { forma: "Question", exemplo: "Are you visiting the factory on Friday?" }
+                 ],
+                 nota: "Use it for plans with a day and a time." } },
+      { tela: "praticar-ensaiar", bloco: "roleplay-roteiro", minutos: 11,
+        dados: { estagio: "ensaiar", cenario: "Two colleagues compare their schedules for next week.",
+                 papeis: [{ n: 1, descricao: "Has a full week", falas_apoio: ["On Monday I'm..."] }] } },
+      { tela: "atuar", bloco: "debate", minutos: 14,
+        dados: { mocao: "Meetings on Friday afternoon are a waste of time." } },
+      { tela: "registrar", bloco: "can-do", minutos: 3,
+        dados: { statements: ["I can talk about my plans for next week."] } }
+    ]
+  };
 
   window.addEventListener('message', (ev) => {
     const d = ev.data;
@@ -1409,11 +1365,20 @@
   }
   ligarInteracoes();
 
-  // ---- Navegação por swipe entre as 9 telas ----
+  // ---- Navegação por swipe — número de telas vem da aula renderizada ----
   const screens = document.getElementById('screens');
-  const dots = document.querySelectorAll('.dot');
-  const total = 9;
+  let dots = [];
+  let total = 0;
   let current = 0;
+
+  function montarNavegacao(){
+    total = screens.children.length;
+    screens.style.setProperty('--n', total);
+    const box = document.getElementById('dots');
+    box.innerHTML = Array.from({ length: total },
+      (_, i) => '<span class="dot" data-index="' + i + '"></span>').join('');
+    dots = Array.from(box.children);
+  }
 
   const arrowPrev = document.getElementById('arrow-prev');
   const arrowNext = document.getElementById('arrow-next');
@@ -1466,9 +1431,14 @@
     }
   }, { passive: true });
 
-  dots.forEach(dot => {
-    dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
+  document.getElementById('dots').addEventListener('click', (e) => {
+    const dot = e.target.closest('.dot');
+    if (dot) goTo(parseInt(dot.dataset.index));
   });
+
+  // Aberto sem dados (plataforma do professor, histórico do aluno, prévia),
+  // mostra a aula de exemplo. A dash que embute o template troca por postMessage.
+  renderAula(AULA_EXEMPLO);
 
   // ══════════════════════════════════════════════════════════
   //  ANOTAÇÕES DO PROFESSOR NA AULA

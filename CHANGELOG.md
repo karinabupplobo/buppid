@@ -2,6 +2,20 @@
 
 Entradas mais recentes no topo.
 
+## v-20260917-0105-blocos-foto — 16/09/2026
+- O que mudou: onda 4 (última) — blocos com foto real: `foto-cena` (foto + pergunta e
+  contexto opcional), `duas-imagens` (duas fotos com rótulo + pergunta) e
+  `foto-descricao` (foto + instrução). Fotos passam pelo filtro de duotone da marca;
+  foto que não carrega vira aviso tracejado "photo not found" em vez de buraco.
+  **BLOCOS.md: 40 de 40 implementados.**
+- Arquivos: templateaula.html, pedagogico/BLOCOS.md, NEXT_STEPS.md
+- Motivo: fim da implementação dos 40 blocos pedida pela Karina em 16/09.
+  Observação: o QA usou as fotos da Aula 1 Tirolez só como amostra de layout — não são
+  cenas escolhidas pelas regras do docs/ilustracao.md para esses blocos. QA desktop e
+  celular sem erro.
+- Reverter para o estado ANTERIOR a esta mudança:
+  git checkout v-20260917-0050-bloco-mapa-cena
+
 ## v-20260917-0050-bloco-mapa-cena — 16/09/2026
 - O que mudou: onda 3, parte 4 (fim da onda 3) — bloco `mapa-cena` com as 4 cenas
   esquemáticas em SVG na paleta (`escritorio`, `fabrica`, `reuniao`, `recepcao`),

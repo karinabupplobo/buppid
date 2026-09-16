@@ -144,7 +144,7 @@ Foto duotone de uma cena de trabalho + pergunta de contextualização.
 ```json
 { "foto": "assets/...", "pergunta": "...", "contexto": "(opcional)" }
 ```
-Imagem: **sim, foto real** · Status: especificado
+Imagem: **sim, foto real** · Status: implementado
 
 ### `pergunta-disparo`
 Uma pergunta única, grande, centralizada. Sem imagem, sem apoio.
@@ -159,7 +159,7 @@ Duas cenas contrastantes lado a lado: "qual se parece com o seu dia?"
 { "imagens": [{ "foto": "...", "rotulo": "..." }, { "foto": "...", "rotulo": "..." }],
   "pergunta": "..." }
 ```
-Imagem: **sim, duas fotos reais** · Status: especificado
+Imagem: **sim, duas fotos reais** · Status: implementado
 
 ### `citacao-cena`
 Fala curta de um personagem em balão + "o que você responderia?".
@@ -282,7 +282,7 @@ Foto de uma cena que só pode ser descrita usando a estrutura nova.
 ```json
 { "foto": "assets/...", "instrucao": "..." }
 ```
-Imagem: **sim, foto real** · Status: especificado
+Imagem: **sim, foto real** · Status: implementado
 
 ---
 
@@ -482,13 +482,13 @@ Status: implementado
 
 | Tela | Blocos | Implementados |
 |---|---|---|
-| 1. Abertura | 6 | 4 |
+| 1. Abertura | 6 | 6 |
 | 2. Apresentar | 8 | 8 |
-| 3. Lacuna | 5 | 4 |
+| 3. Lacuna | 5 | 5 |
 | 4. Sistematizar | 5 | 5 |
 | 5. Praticar → Ensaiar | 6 | 6 |
 | 6. Atuar | 6 | 6 |
 | 7. Registrar | 4 | 4 |
-| **Total** | **40** | **37** |
+| **Total** | **40** | **40** |
 
 A Capa (tela 0) não tem bloco: é sempre foto duotone + kicker + título.

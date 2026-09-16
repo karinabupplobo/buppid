@@ -1183,6 +1183,38 @@
     .mapa-leg .num-btn{ width: 30px; height: 30px; font-size: 14px; }
   }
 
+  /* --- Onda 4 · blocos com foto --- */
+  .fto{ width: 100%; max-width: 1180px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .foto-marca{ position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden;
+    background: rgba(255,255,255,.08); box-shadow: 0 8px 28px rgba(0,0,0,.4); }
+  .foto-marca img{ width: 100%; height: 100%; object-fit: cover; display: block; filter: url(#duotoneMarca); }
+  .foto-aviso{ display: none; position: absolute; inset: 0; align-items: center; justify-content: center;
+    color: var(--amarelo-neon); font-size: 13px; font-weight: 700; border: 2px dashed #d9a441; border-radius: 14px; }
+  .foto-marca.foto-falhou img{ display: none; }
+  .foto-marca.foto-falhou .foto-aviso, .foto-marca:not(:has(img)) .foto-aviso{ display: flex; }
+  .fto-cena .foto-marca{ max-width: 520px; max-height: 42vh; }
+  .fto-texto{ display: flex; flex-direction: column; gap: 6px; max-width: 560px; }
+  .fto-contexto{ margin: 0; color: rgba(255,255,255,.75); font-style: italic; font-size: 14px; text-align: center; }
+  .fto-par{ width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fto-par-item{ margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .fto-par-item figcaption{ color: var(--amarelo-neon); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; text-align: center; }
+  @media (orientation: landscape) and (max-height: 600px){
+    .fto-cena{ flex-direction: row; }
+    .fto-cena .foto-marca{ max-width: 48%; max-height: 70vh; }
+    .fto-duas .foto-marca{ aspect-ratio: 16 / 9; }
+  }
+  @media (min-width: 900px) and (min-height: 620px){
+    .fto-cena{ flex-direction: row; gap: 40px; }
+    .fto-cena .foto-marca{ flex: 1.2; max-width: 620px; max-height: 64vh; }
+    .fto-cena .fto-texto{ flex: 1; }
+    .fto-cena .bk-destaque, .fto-cena .fto-contexto{ text-align: left; }
+    .fto-cena .bk-rotulo{ text-align: left; }
+    .fto-contexto{ font-size: 18px; }
+    .fto-par{ gap: 28px; max-width: 1000px; margin: 0 auto; }
+    .fto-duas .foto-marca{ aspect-ratio: 16 / 10; }
+    .fto-par-item figcaption{ font-size: 15px; }
+  }
+
   /* ---- fim dos estilos de bloco ---- */
 
   .abertura-kicker-simples{ color: rgba(255,255,255,0.7); font-size: 13px; margin: 0 0 6px; }
@@ -1929,6 +1961,35 @@
       + CENAS_SVG[cena] + marcas + '</svg>'
       + '<div class="mapa-legenda">' + legenda + '</div></div>');
   };
+
+  // ---- Onda 4 · blocos com foto real (foto-cena, duas-imagens, foto-descricao) ----
+  // Foto passa pelo mesmo filtro de duotone da Capa (#duotoneMarca). Regras de escolha
+  // e filtragem da foto: docs/ilustracao.md. Foto que não carrega vira aviso visível.
+  function fotoMarca(src, cls) {
+    return '<div class="foto-marca ' + (cls || '') + '">'
+      + (src ? '<img src="' + esc(src) + '" alt="" onerror="this.parentNode.classList.add(\'foto-falhou\')">' : '')
+      + '<span class="foto-aviso">photo not found</span></div>';
+  }
+
+  BLOCOS["foto-cena"] = (d) =>
+    '<div class="fto fto-cena">' + fotoMarca(d.foto)
+    + '<div class="fto-texto">'
+    + (d.contexto ? '<p class="fto-contexto">' + esc(d.contexto) + '</p>' : '')
+    + '<p class="bk-destaque" style="color:#fff">' + esc(d.pergunta) + '</p></div></div>';
+
+  BLOCOS["duas-imagens"] = (d) => {
+    const imgs = (d.imagens || []).slice(0, 2).map(im =>
+      '<figure class="fto-par-item">' + fotoMarca(im.foto)
+      + '<figcaption>' + esc(im.rotulo) + '</figcaption></figure>'
+    ).join("");
+    return '<div class="fto fto-duas"><div class="fto-par">' + imgs + '</div>'
+      + '<p class="bk-destaque" style="color:#fff">' + esc(d.pergunta || "Which one looks like your day?") + '</p></div>';
+  };
+
+  BLOCOS["foto-descricao"] = (d) =>
+    '<div class="fto fto-cena">' + fotoMarca(d.foto)
+    + '<div class="fto-texto"><p class="bk-rotulo">Describe it</p>'
+    + '<p class="bk-destaque" style="color:#fff">' + esc(d.instrucao) + '</p></div></div>';
 
   // ---- fim dos renderizadores de bloco ----
 
